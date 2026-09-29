@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { GameState, Hex, HexId } from '../core/types';
+import { WATER_TERRAIN, type GameState, type Hex, type HexId } from '../core/types';
 import { hexToWorld, neighbors } from '../core/hex';
 import { Instances } from './instances';
 import { HEX_SIZE, topHeight } from './layout';
@@ -13,7 +13,7 @@ export function decorationPoint(decoration: number): { x: number; z: number; sca
 export function waterfallNeighbors(state: Readonly<GameState>, id: HexId): HexId[] {
   const hex = state.hexes[id];
   if (!hex || hex.terrain !== 'riverbed' || hex.biome === null) return [];
-  return neighbors(id, state.cols, state.rows).filter(next => state.hexes[next].elevation < hex.elevation);
+  return neighbors(id, state.cols, state.rows).filter(next => WATER_TERRAIN.includes(state.hexes[next].terrain) && state.hexes[next].elevation < hex.elevation);
 }
 
 export class Decorations {

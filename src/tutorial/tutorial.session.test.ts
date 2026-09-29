@@ -29,12 +29,12 @@ describe('tutorial driven by real session events', () => {
     expect(panel.dataset.line).toBe('spread');
     session.advance(session.state.config.animation.spreadMaxMs);
     expect(panel.dataset.line).toBe('buildings');
-    const pair: Record<MainBiome, [string, string]> = {
-      forest: ['lumber_camp', 'sawmill'], desert: ['quarry', 'quarry'], arctic: ['ice_drill', 'ice_drill'],
-    };
-    expect(session.placeBuilding(origin, 0, pair[biome][0]).ok).toBe(true);
+    const roster = session.state.config.rosters[biome];
+    const pair = session.state.config.combos.find(recipe => recipe.buildings.length === 2 && recipe.buildings.every(id => roster.includes(id)))!;
+    expect(pair).toBeDefined();
+    expect(session.placeBuilding(origin, 0, pair.buildings[0]).ok).toBe(true);
     expect(panel.dataset.line).toBe('buildings');
-    const combo = session.placeBuilding(origin, 1, pair[biome][1]);
+    const combo = session.placeBuilding(origin, 1, pair.buildings[1]);
     expect(combo.ok).toBe(true);
     if (combo.ok) expect(combo.value.payouts.some(payout => payout.kind === 'pair')).toBe(true);
     expect(panel.dataset.line).toBe('combos');

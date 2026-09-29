@@ -7,34 +7,42 @@ export class NaturalTerrain {
   private readonly peak: Instances;
   private readonly channel: Instances;
   private readonly banks: Instances;
+  private readonly branches: Instances;
   private readonly trunks: Instances;
   private readonly crowns: Instances;
   private readonly marsh: Instances;
   constructor(parent: THREE.Group, count: number) {
     this.peak = new Instances(parent, new THREE.ConeGeometry(0.72, 1.15, 5), 0xaaa59a, count);
     this.channel = new Instances(parent, new THREE.CylinderGeometry(0.68, 0.68, 0.025, 6), 0xffffff, count);
-    this.banks = new Instances(parent, new THREE.BoxGeometry(0.12, 0.1, 1.16), 0x756c5c, count * 2);
+    this.banks = new Instances(parent, new THREE.BoxGeometry(0.035, 0.03, 0.85), 0x756c5c, count * 12);
+    this.branches = new Instances(parent, new THREE.BoxGeometry(0.42, 0.025, 0.88), 0xffffff, count * 6);
     this.trunks = new Instances(parent, new THREE.CylinderGeometry(0.06, 0.09, 0.3, 5), 0x625045, count * 3);
     this.crowns = new Instances(parent, new THREE.ConeGeometry(0.25, 0.55, 5), 0xffffff, count * 3);
     this.marsh = new Instances(parent, new THREE.CylinderGeometry(0.73, 0.73, 0.025, 6), 0xffffff, count);
   }
-  refresh(hex: Hex, x: number, z: number): void {
+  refresh(hex: Hex, x: number, z: number, directions: { x: number; z: number }[] = []): void {
     const id = hex.id;
     const y = topHeight(hex.elevation);
     this.peak.hide(id); this.channel.hide(id); this.marsh.hide(id);
-    for (let j = 0; j < 2; j++) this.banks.hide(id * 2 + j);
+    for (let j = 0; j < 6; j++) {
+      this.branches.hide(id * 6 + j); this.banks.hide(id * 12 + j * 2); this.banks.hide(id * 12 + j * 2 + 1);
+    }
     for (let j = 0; j < 3; j++) { this.trunks.hide(id * 3 + j); this.crowns.hide(id * 3 + j); }
     switch (hex.terrain) {
       case 'mountain': this.peak.set(id, x, y + 0.575, z); break;
       case 'riverbed':
       case 'basin': {
         const wet = hex.biome !== null;
-        this.channel.set(id, x, y + 0.018, z, hex.terrain === 'riverbed' ? 0.55 : 1, 1, 1);
+        this.channel.set(id, x, y + 0.028, z, hex.terrain === 'riverbed' ? 0.45 : 1, 1, hex.terrain === 'riverbed' ? 0.45 : 1);
         this.channel.color(id, wet ? 0x69aeb6 : 0x4f4840);
-        if (hex.terrain === 'riverbed') {
-          this.banks.set(id * 2, x - 0.43, y + 0.07, z);
-          this.banks.set(id * 2 + 1, x + 0.43, y + 0.07, z);
-        }
+        directions.forEach((direction, index) => {
+          const angle = Math.atan2(direction.x, direction.z);
+          this.branches.set(id * 6 + index, x + direction.x * 0.43, y + 0.022, z + direction.z * 0.43, 1, 1, 1, 0, angle);
+          this.branches.color(id * 6 + index, wet ? 0x69aeb6 : 0x4f4840);
+          if (hex.terrain === 'riverbed' && directions.length <= 2) for (const [bank, sign] of [-1, 1].entries())
+            this.banks.set(id * 12 + index * 2 + bank, x + direction.x * 0.46 + direction.z * sign * 0.25,
+              y + 0.05, z + direction.z * 0.46 - direction.x * sign * 0.25, 1, 1, 1, 0, angle);
+        });
         break;
       }
       case 'woods':

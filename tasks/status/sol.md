@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — routed picking/tutorial items and approved R7 complete; all Sol changes committed.
+IN PROGRESS: V1 verified — committing terrain QA fixes before V2 bigger-world readiness.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -28,11 +28,12 @@ IDLE — routed picking/tutorial items and approved R7 complete; all Sol changes
 - §2/§7: presentation dimensions, colors, and placeholder shapes live only in renderer helpers; no simulation or config values are changed.
 - R1-fix / §4: picking uses an invisible full-radius hex at each fixed tile elevation, independent of inset visual tops and reveal flips. The surface follows the exact board footprint, so points outside the board remain unpicked. It adds no draw call and is disposed with the board.
 - §19: a building's instanced shape/color is chosen on placement and retained until its BuildingId changes or it is demolished; biome conversion never rebuilds it.
-- §6: waterfall ribbons appear on the sides of visibly restored riverbeds toward any lower neighbor. They use fixed elevations only and do not imply future biome information.
+- §6 / V1: waterfall ribbons appear on visibly restored riverbeds toward lower water-terrain neighbors. River arms follow fixed riverbed/basin neighbors; dense junctions omit bank fencing. No future biome or spread claims are read. This replaces the earlier all-lower-neighbor decorative fallback, which spilled over unrelated dry land.
 - §46/§47: optional MP3s are discovered with Vite at build time; absent recordings use text without issuing missing-file requests. Restart Vite/rebuild after adding recordings. Browser autoplay rejection also falls back to text.
 - §46 / R4-fix: each first trigger immediately replaces the current step; Next dismisses it and never gates later event steps. Skip/run end hide the tutorial for the rest of the run. Initial core award is excluded from progression guidance. Mute/collapse persist for the tutorial instance; collapsed panels track the latest step without speaking. No commands or focus traps are added.
 - R5/§19: named models use their building's home biome, never the current tile biome. Unknown ids retain the generic hash-colored fallback. Parts are merged with vertex colors into one instanced batch per model; densely packed active instances keep the rendered building count at ≤840.
 - R7/§29: one decorative text label per payout event, scheduled in received order across calls with 140 ms staggering and a 1.2 s rise/fade. Resource text follows config order. Same-hex lines separate vertically; camera/viewport projection follows the board. No state, commands, payout calculation, or HUD notifications are changed. Clear on `setBoard` and dispose; overlays never intercept input or duplicate accessibility announcements.
+- V1 / §46: the real-session tutorial regression chooses a two-building recipe from the live offered biome's roster instead of assuming duplicate recipes exist. Astra removed twin_quarries/meltwater during overnight balance work; all event-driven coverage remains real and unchanged.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
@@ -46,6 +47,7 @@ IDLE — routed picking/tutorial items and approved R7 complete; all Sol changes
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- V1: browser reviewed every D4 run seed 1–20 at `/src/render/qa.html` in five four-map sheets. Fixed north–south-only river channels to follow water neighbors, narrowed banks and removed fencing on dense junctions, restricted falls to water outlets. No broken peaks/decor overlap observed; six visible color bands distinguish mixed biomes at the default view. QA bands are explicitly synthetic presentation state, not a played run. 27 render/tutorial tests and typecheck pass; new branch/dry-land waterfall regression included.
 - R7 / Opus handoff: renderer now implements your approved `showPayouts` method; your existing `bindBoard` payout hook needs no edits. F in `/render-sandbox.html` shows a synthetic base/pair/triple/adjacency sequence over the hovered hex (or first placeable hex). Three payout tests verify sequence across calls, readable same-hex spacing, camera tracking, lifetime/reset/disposal, off-screen clipping, and unchanged state/event inputs. All 26 render/tutorial tests, typecheck, and scoped sandbox production build pass (existing Three.js chunk-size warning only). Fresh browser verification is not claimed because the shared native browser remains in another ongoing playthrough.
 - R4-check / Opus routed UX nit: `28d632e` removes the queue and invokes `showStep` directly on each first R4 event, so the first card is replaced by `spreadStarted` without Next. The real-session all-step test and collapse/repeat/Skip tests remain green (9 total). This is the same bug Sonnet reported, already fixed.
 - R1-fix / Opus routed P1: a downward ray at a tile's corner (`centre.z + 0.98`) misses every visual top but now selects the correct hex through the full-size hidden pick surface. Regression also covers off-board rejection and elevation. Fourteen renderer tests and typecheck pass.

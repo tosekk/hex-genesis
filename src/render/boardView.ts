@@ -12,6 +12,7 @@ import { sampleReveal } from './reveal';
 import { addTable, Decorations } from './decorations';
 import { createPickSurface } from './picking';
 import { PayoutLabels } from './payouts';
+import { waterDirections } from './water';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -61,7 +62,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     reveals.delete(id);
     tops.set(id, p.x, topHeight(hex.elevation) - 0.025, p.z);
     tops.color(id, tileColor(hex.biome));
-    natural?.refresh(hex, p.x, p.z);
+    natural?.refresh(hex, p.x, p.z, waterDirections(current, id));
     buildings?.refresh(hex, p.x, p.z);
     decorations?.refresh(hex, p.x, p.z);
     decorations?.refreshFalls(current, id);
@@ -197,7 +198,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       if (tween.showTarget && !reveal.swapped) {
         reveal.swapped = true;
         tops!.color(id, tileColor(reveal.hex.biome));
-        natural?.refresh(reveal.hex, p.x, p.z);
+        natural?.refresh(reveal.hex, p.x, p.z, state ? waterDirections(state, id) : []);
         buildings?.refresh(reveal.hex, p.x, p.z);
         decorations?.refresh(reveal.hex, p.x, p.z);
         if (state) decorations?.refreshFalls(state, id);

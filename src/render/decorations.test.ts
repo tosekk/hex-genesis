@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { makeTestState } from '../core/testing';
 import { decorationPoint, waterfallNeighbors } from './decorations';
 import { SLOT_ANCHORS } from './layout';
+import { waterDirections } from './water';
 
 describe('terrain presentation', () => {
   it('uses stable decoration bits and keeps features clear of building anchors', () => {
@@ -13,7 +14,7 @@ describe('terrain presentation', () => {
   });
   it('shows waterfalls only after a riverbed is visibly restored and only downhill', () => {
     const state = makeTestState({ cols: 3, rows: 3,
-      hex: (col, row) => col === 1 && row === 1 ? { terrain: 'riverbed', elevation: 2 } : { elevation: 1 } });
+      hex: (col, row) => col === 1 && row === 1 ? { terrain: 'riverbed', elevation: 2 } : { terrain: 'riverbed', elevation: 1 } });
     expect(waterfallNeighbors(state, 4)).toEqual([]);
     state.hexes[4].biome = 'forest';
     expect(waterfallNeighbors(state, 4)).toEqual([1, 2, 3, 5, 7, 8]);
@@ -22,5 +23,16 @@ describe('terrain presentation', () => {
     expect(JSON.stringify(state)).toBe(before);
     const flat = makeTestState({ cols: 3, rows: 3, hex: () => ({ terrain: 'riverbed', elevation: 2, biome: 'forest' }) });
     expect(waterfallNeighbors(flat, 4)).toEqual([]);
+  });
+  it('connects all river bends/branches using only fixed water terrain and avoids spilling over dry land', () => {
+    const state = makeTestState({ cols: 3, rows: 3, hex: (col, row) =>
+      col === 1 && row === 1 ? { terrain: 'riverbed', elevation: 2, biome: 'taiga' } :
+      (col === 0 || col === 2) && row === 1 ? { terrain: 'riverbed', elevation: 1 } : { elevation: 0 } });
+    expect(waterDirections(state, 4)).toEqual([{ x: -1, z: 0 }, { x: 1, z: 0 }]);
+    expect(waterfallNeighbors(state, 4)).toEqual([3, 5]);
+    state.hexes[1] = { ...state.hexes[1], terrain: 'basin' };
+    expect(waterDirections(state, 4)).toHaveLength(3);
+    state.hexes[4].biome = null;
+    expect(waterDirections(state, 4)).toHaveLength(3); expect(waterfallNeighbors(state, 4)).toEqual([]);
   });
 });
