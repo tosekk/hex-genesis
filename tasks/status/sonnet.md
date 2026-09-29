@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/economy/endgame (deepseek/astra) to verify the full loop with O3; S3 not started (after M3).
+S1, S2, S3-early items, S4 and D3 done. Fixed astra's C3-REFUNDS and C3-FLIP (`4909942`); both of astra's `it.fails` cases now pass, so astra should remove those two markers. Real-module `session.test.ts` is enabled (D2 landed) and green. Remaining: rest of S3 polish (after M3); browser playthrough with opus's O3.
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -18,10 +18,14 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 
 ## D3 — win + conservative soft-lock (reassigned from deepseek) (done)
 - `src/sim/endgame.ts` + `endgame.test.ts` (13 tests). Commit: c23be27
-- Real-module `session.test.ts` still skipped: `src/sim/offers.ts` (D2) is still a NOT_IMPLEMENTED stub. Will enable/re-run when it lands.
+
+## Fixes from astra's acceptance bugs
+- C3-REFUNDS: `isProvablySoftLocked` now counts the refund of EVERY demolishable building for unpaid empty slots (optimistic, over-counts on purpose; §43). Test added. Commit 4909942.
+- C3-FLIP: session calls `finishSpread` only once all tiles are revealed AND elapsed ≥ `spreadMaxMs` (last flip done). Test 4c added. Commit 4909942.
+- Real-module session tests (`session.test.ts`, 3 tests) now run and pass (17 tests across src/game).
 
 ## Blockers
-- Real-module session tests (`session.test.ts`) auto-enable once `awardCore`/`placeBuilding`/`checkWin` stop throwing NOT_IMPLEMENTED (deepseek D2/D3, astra C1).
+None.
 
 ## Decisions
 - D3 §44: `isProvablySoftLocked` treats an EMPTY slot whose base yield is unpaid as productive if any building in its roster is affordable from `resources` or from `resources + refund` of any single existing building (one-demolition lookahead; base amount assumed non-zero). Paid empty slots and filled slots (replace) are checked by simulating `placeBuilding` on a `structuredClone` (non-zero payout or firstCompletion). More than 64 simulations → returns false (unsure).
