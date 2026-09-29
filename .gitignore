@@ -2,3 +2,5 @@ node_modules
 dist
 release
 .DS_Store
+# Local Claude Code tooling (preview launch config, per-user settings). Shared checkout, so nothing to share via git.
+.claude/

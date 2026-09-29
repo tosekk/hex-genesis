@@ -27,16 +27,18 @@ bindBoard(session, board);
 createHud(el('ui'), session, board);
 createTutorial(el('tutorial'), session);
 
-session.newRun(pickSeed());
-
+// Start the frame loop before the first run so a throw during newRun can't stop rendering.
+// The next frame is scheduled first, so one bad frame doesn't kill the loop either.
 let last = performance.now();
 function frame(t: number) {
+  requestAnimationFrame(frame);
   const dt = Math.min(100, Math.max(0, t - last));
   last = t;
   session.advance(dt);
   board.update(dt);
-  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 window.addEventListener('resize', () => board.resize());
+
+session.newRun(pickSeed());
