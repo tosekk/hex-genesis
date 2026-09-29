@@ -27,6 +27,7 @@ export function createQuickBuild(root: HTMLElement, session: GameSession, ui: In
     const def = s.config.buildings[b];
     const affordable = Object.entries(def.cost).every(([r, v]) => (s.resources[r] ?? 0) >= v);
     chip.textContent = `Repeat: ${buildingName(s.config, b)} · ${fmtResources(def.cost)} · [R / Shift+click]`;
+    chip.setAttribute('aria-label', chip.textContent);
     chip.classList.toggle('unaffordable', !affordable);
     chip.title = 'Click to clear';
   }

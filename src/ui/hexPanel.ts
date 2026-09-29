@@ -54,7 +54,9 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
           const affordable = Object.entries(def.cost).every(([r, v]) => (s.resources[r] ?? 0) >= v);
           const btn = el('button', 'btn build');
           btn.dataset.building = b;
-          btn.appendChild(el('span', 'b-name', def.name));
+          const nameBox = el('span', 'b-name');
+          nameBox.append(def.name, el('small', 'b-yield', `yields ${fmtResources(def.baseYield, true)}`));
+          btn.appendChild(nameBox);
           const costs = el('span', 'b-cost');
           const missing: string[] = [];
           for (const [r, v] of Object.entries(def.cost)) {

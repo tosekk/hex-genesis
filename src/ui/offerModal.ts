@@ -11,11 +11,13 @@ export function createOfferModal(root: HTMLElement, session: GameSession) {
     overlay.replaceChildren();
     const box = el('div', 'panel modal');
     box.appendChild(el('h2', undefined, 'Choose a biome for your core'));
+    const cfg = session.state.config;
     const cards = el('div', 'cards');
     offer.options.forEach((biome, i) => {
       const card = el('button', `card biome-${biome}`);
       card.dataset.index = String(i);
       card.append(el('div', 'card-icon', BIOME_ICON[biome]), el('div', 'card-title', BIOME_LABEL[biome]),
+        el('div', 'card-roster', `Buildings: ${cfg.rosters[biome].map((b) => cfg.buildings[b]?.name ?? b).join(', ')}`),
         el('div', 'card-key', `[${i + 1}]`));
       card.addEventListener('click', () => session.chooseOffer(i as 0 | 1));
       cards.appendChild(card);
