@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-R8 verified; preparing its commit and final status. R7 implementation skipped pending Opus approval.
+IDLE — available. R6 → R5 → R7 (request filed, skipped pending approval) → R8 handled in order; all Sol changes committed.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -14,6 +14,7 @@ R8 verified; preparing its commit and final status. R7 implementation skipped pe
 - R6 — win conditions match §41; biome resource identities/mountain mine bonus from economy v1, quick-build hint retained, all VO text synchronized; 7 tutorial tests/typecheck green — `5f627e0`.
 - R5 — 24 home-biome procedural models, packed instancing, labeled gallery and 840-building/five-layer load test; 12 renderer tests/typecheck/build green, browser observed 120 fps/clean console — `e8f1624`.
 - R7 — optional payout method requested; no approval found in Opus's contract changelog or core contract, so implementation skipped as instructed — request/status commit `4ac133e`.
+- R8 — four resource/six biome SVG icons, accessible 24×24 assets and 16/24/48px light/dark review page; XML/browser checks pass, 19 scoped tests/typecheck green — `5ebeb94`.
 
 ## Blockers
 <!-- what, waiting on whom -->
