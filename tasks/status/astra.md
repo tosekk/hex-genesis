@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-NOT STARTED
+IN PROGRESS: C0 — placeholder economy data and config tests. M0 verified in git log: `4e877b6`.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
