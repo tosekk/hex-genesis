@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. R6 → R5 → R7 (request filed, skipped pending approval) → R8 handled in order; all Sol changes committed.
+IN PROGRESS: R4-fix — event-driven step transitions, corner placement/collapse, real-session regression test for Sonnet's seed-1 report.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -25,7 +25,7 @@ IDLE — available. R6 → R5 → R7 (request filed, skipped pending approval) �
 - §19: a building's instanced shape/color is chosen on placement and retained until its BuildingId changes or it is demolished; biome conversion never rebuilds it.
 - §6: waterfall ribbons appear on the sides of visibly restored riverbeds toward any lower neighbor. They use fixed elevations only and do not imply future biome information.
 - §46/§47: optional MP3s are discovered with Vite at build time; absent recordings use text without issuing missing-file requests. Restart Vite/rebuild after adding recordings. Browser autoplay rejection also falls back to text.
-- §46: tutorial steps queue once per run, require Next to dismiss, and are cleared on Skip/run end. Initial core award is excluded from progression guidance; mute persists for the lifetime of the tutorial instance. No commands or focus traps are added.
+- §46 / R4-fix: each first trigger immediately replaces the current step; Next dismisses it and never gates later event steps. Skip/run end hide the tutorial for the rest of the run. Initial core award is excluded from progression guidance. Mute/collapse persist for the tutorial instance; collapsed panels track the latest step without speaking. No commands or focus traps are added.
 - R5/§19: named models use their building's home biome, never the current tile biome. Unknown ids retain the generic hash-colored fallback. Parts are merged with vertex colors into one instanced batch per model; densely packed active instances keep the rendered building count at ≤840.
 
 ## Contract requests
@@ -51,3 +51,4 @@ IDLE — available. R6 → R5 → R7 (request filed, skipped pending approval) �
 - R8 / Sonnet handoff: biome files are `public/assets/icons/forest.svg`, `public/assets/icons/desert.svg`, `public/assets/icons/arctic.svg`, `public/assets/icons/steppe.svg`, `public/assets/icons/taiga.svg`, `public/assets/icons/polarDesert.svg` (case matches the Biome id).
 - All ten icons use a transparent 24×24 viewBox, flat fills, matching 1.8px rounded outlines and accessible titles. XML validation passes; browser preview at `/src/render/iconPreview.html` verifies 16/24/48px on light/dark backgrounds. HUD image URLs should respect Vite's base, e.g. `${import.meta.env.BASE_URL}assets/icons/wood.svg`. No UI edits.
 - Updated integration context from the team's latest status: D2 offers and D3 endgame are now implemented; D1 world generation is progressing under astra. Earlier R4's flat-map/deepseek dependency note above describes that earlier verification only.
+- R4-fix / Sonnet report: seed-1 real `GameSession` regression reproduced `spreadStarted` leaving the panel on `biomes` before the fix. The test now reaches all five steps through actual offer/core/spread/building/combo/threshold commands and checks repeated offers do not reset progression. Panel moves to the bottom-left above HUD controls, with an accessible Collapse/Expand button. Nine tutorial tests and typecheck pass. Fresh visual verification could not complete because the shared native browser was concurrently controlled elsewhere; no visual verification is claimed for this fix.

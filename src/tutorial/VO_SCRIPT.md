@@ -2,7 +2,7 @@
 
 Use a warm, calm assistant voice. Read at a conversational pace; short pauses between sentences. Export MP3 with no leading silence. No runtime TTS is used.
 
-Place optional recordings in `public/audio/vo/<lineId>.mp3`, then restart Vite/rebuild so asset discovery picks them up. If no file exists, the text and face work without any audio request. Next, Skip, Mute, run end, and dispose stop playback. Autoplay restrictions fall back to text.
+Place optional recordings in `public/audio/vo/<lineId>.mp3`, then restart Vite/rebuild so asset discovery picks them up. If no file exists, the text and face work without any audio request. A new step replaces the previous line. Next, Skip, Mute, Collapse, run end, and dispose stop playback. Expanding resumes the latest step. Autoplay restrictions fall back to text.
 
 | Line ID / filename | Text | Tone |
 |---|---|---|

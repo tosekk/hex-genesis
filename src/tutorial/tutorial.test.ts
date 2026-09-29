@@ -28,19 +28,36 @@ const spread: SessionEvent = { type: 'spreadStarted', result: { origin: 0, biome
 const offer: SessionEvent = { type: 'offerShown', offer: { options: ['forest', 'desert'], reshuffled: false } };
 
 describe('tutorial assistant', () => {
-  it('queues all five event steps once per run and excludes the first core award', () => {
+  it('advances each first event immediately, ignores repeats, and excludes the first core award', () => {
     const s = use(); s.emit({ type: 'runStarted', seed: 1 }); s.emit({ type: 'coreAwarded' });
     expect(s.panel.hidden).toBe(true);
-    s.emit(offer); s.emit(offer); s.emit(spread); s.emit(spread); s.emit({ type: 'spreadFinished' });
+    s.emit(offer); expect(s.panel.dataset.line).toBe('biomes');
+    s.emit(offer); expect(s.panel.dataset.line).toBe('biomes');
+    s.emit(spread); expect(s.panel.dataset.line).toBe('spread');
+    s.emit(spread); expect(s.panel.dataset.line).toBe('spread');
+    s.emit({ type: 'spreadFinished' }); expect(s.panel.dataset.line).toBe('buildings');
     s.emit({ type: 'payouts', events: [{ kind: 'base', hexId: 0, amount: { wood: 1 } }] });
-    s.emit({ type: 'payouts', events: [{ kind: 'pair', hexId: 0, amount: { wood: 1 } }] });
-    s.emit({ type: 'coreAwarded' });
-    for (const id of ['biomes', 'spread', 'buildings', 'combos', 'progression']) {
-      expect(s.panel.dataset.line).toBe(id); expect(s.panel.hidden).toBe(false); s.click('.assistant-next');
-    }
+    expect(s.panel.dataset.line).toBe('buildings');
+    s.emit({ type: 'payouts', events: [{ kind: 'pair', hexId: 0, amount: { wood: 1 } }] }); expect(s.panel.dataset.line).toBe('combos');
+    s.emit({ type: 'coreAwarded' }); expect(s.panel.dataset.line).toBe('progression');
+    s.emit(offer); expect(s.panel.dataset.line).toBe('progression');
+    s.click('.assistant-next');
     expect(s.panel.hidden).toBe(true); expect(s.command).not.toHaveBeenCalled();
     s.emit(offer); expect(s.panel.hidden).toBe(true);
     s.emit({ type: 'runStarted', seed: 2 }); s.emit(offer); expect(s.panel.hidden).toBe(false);
+  });
+  it('keeps tracking events while collapsed, stops speaking, and expands the latest step', () => {
+    vi.useFakeTimers(); const s = use(); s.emit(offer); s.click('.assistant-collapse');
+    const collapse = s.root.querySelector<HTMLButtonElement>('.assistant-collapse')!;
+    expect(s.panel.dataset.collapsed).toBe('true'); expect(collapse.getAttribute('aria-expanded')).toBe('false');
+    expect(s.panel.classList.contains('assistant-speaking')).toBe(false); expect(vi.getTimerCount()).toBe(0);
+    s.emit(spread); s.emit({ type: 'spreadFinished' });
+    expect(s.panel.dataset.line).toBe('buildings'); expect(s.panel.dataset.collapsed).toBe('true');
+    expect(s.panel.classList.contains('assistant-speaking')).toBe(false);
+    s.click('.assistant-collapse');
+    expect(s.panel.dataset.collapsed).toBe('false'); expect(collapse.getAttribute('aria-expanded')).toBe('true');
+    expect(s.root.querySelector('h2')!.textContent).toBe('Three slots, one growing world');
+    expect(s.panel.classList.contains('assistant-speaking')).toBe(true); expect(s.command).not.toHaveBeenCalled();
   });
   it('skips the rest of a run and enables steps again on a new run', () => {
     const s = use(); s.emit(offer); s.click('.assistant-skip'); s.emit(spread);
