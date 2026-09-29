@@ -5,12 +5,14 @@ import { createHex } from '../../core/state';
 import type { Hex, MapConfig } from '../../core/types';
 import { generateRelief } from './relief';
 import { carveWater } from './water';
+import { plantNaturalTerrain } from './vegetation';
 
 export function generateMap(seed: number, map: MapConfig): Hex[] {
   const cfg: MapConfig = { ...map, params: { ...MAP.params, ...map.params } };
   const rng = createRng(seed);
   const relief = generateRelief(rng, cfg);
   carveWater(relief, rng, cfg);
+  plantNaturalTerrain(relief, rng, cfg);
   const { elevations, terrain } = relief;
   const hexes: Hex[] = [];
   for (let id = 0; id < map.cols * map.rows; id++) {

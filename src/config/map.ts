@@ -15,5 +15,10 @@ export const MAP: MapConfig = {
     riverSourceMinElevation: 1,
     riverSourceChance: 100,
     basinChance: 100,
+    woodsChance: 120,
+    woodsMidBonus: 150,
+    marshChance: 20,
+    marshLowBonus: 60,
+    marshWaterBonus: 200,
   },
 };

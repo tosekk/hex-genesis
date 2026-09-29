@@ -51,8 +51,7 @@ function twoHeldCores() {
 }
 
 describe('C3 real-session progression acceptance (sonnet session, astra offers)', () => {
-  // Expected failure: sonnet session unlocks at 4650 ms, before the last 350 ms flip (C3-FLIP).
-  it.fails('P5: held cores stay unusable until the active spread, including the last flip, finishes', () => {
+  it('P5: held cores stay unusable until the active spread, including the last flip, finishes', () => {
     const session = twoHeldCores();
     const nextSite = legalCoreSites(session.state).at(-1)!;
     expect(session.placeCore(nextSite).ok).toBe(true);

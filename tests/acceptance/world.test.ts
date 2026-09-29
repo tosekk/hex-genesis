@@ -58,8 +58,7 @@ describe('C3 terrain acceptance: seeds 1–50 (owner astra, reassigned D1; opus 
     }
     expect(hills, 'suite must exercise generated hills').toBeGreaterThan(0);
   });
-  // Expected failure: astra D1 steps 2–3 still need riverbeds, basins, woods and marsh.
-  it.fails('T4: natural terrain is unplaceable from generation and terraforming preserves terrain/placeability', () => {
+  it('T4: natural terrain is unplaceable from generation and terraforming preserves terrain/placeability', () => {
     const seen = new Set<string>();
     for (const { seed, hexes } of maps) {
       expect(hexes).toHaveLength(cols * rows);

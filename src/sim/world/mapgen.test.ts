@@ -89,5 +89,20 @@ describe('D1 deterministic map generation, seeds 1–200', () => {
       return performance.now() - start;
     });
     expect(Math.max(...timings)).toBeLessThan(20);
+    console.info(`D1 generation timing: mean ${(timings.reduce((a, b) => a + b, 0) / timings.length).toFixed(3)} ms; max ${Math.max(...timings).toFixed(3)} ms over 200 seeds`);
   });
+  it('reports seed 1–10 terrain mix and keeps typical maps mostly placeable', () => {
+    const rows = Array.from({ length: 10 }, (_, i) => {
+      const board = generateMap(i + 1, MAP);
+      const count = (terrain: string) => board.filter(h => h.terrain === terrain).length;
+      return { seed: i + 1, placeable: board.filter(h => h.placeable).length,
+        plain: count('plain'), hill: count('hill'), mountain: count('mountain'),
+        riverbed: count('riverbed'), basin: count('basin'), woods: count('woods'), marsh: count('marsh') };
+    });
+    console.info('D1 seeds 1–10 terrain mix:', JSON.stringify(rows));
+    const proportion = rows.reduce((n, row) => n + row.placeable, 0) / (10 * MAP.cols * MAP.rows);
+    expect(proportion).toBeGreaterThanOrEqual(0.65);
+    expect(proportion).toBeLessThanOrEqual(0.80);
+  });
+
 });

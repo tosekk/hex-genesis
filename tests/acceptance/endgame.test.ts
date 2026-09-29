@@ -57,8 +57,7 @@ describe('C3 win/end acceptance (owner sonnet, reassigned D3)', () => {
     expect(isProvablySoftLocked(s)).toBe(false);
     expect(s).toEqual(before);
   });
-  // Expected failure: sonnet D3 counts only one demolition refund (C3-REFUNDS in astra status).
-  it.fails('§44: two demolition refunds can fund a productive unpaid slot without automatic loss', () => {
+  it('§44: two demolition refunds can fund a productive unpaid slot without automatic loss', () => {
     const s = makeTestState({ config, cols: 3, rows: 1, resources: {}, hex: () => ({ biome: 'forest' }) });
     s.hexes[0].slots[0] = { building: 'fixture', yieldPaid: true };
     s.hexes[0].slots[1] = { building: 'fixture', yieldPaid: true };
