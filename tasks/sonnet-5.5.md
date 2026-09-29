@@ -6,7 +6,7 @@ You own the **game-flow state machine** (the only place where actions are sequen
 **Read-only for you:** everything else. Call other modules' exported functions; never edit them.
 **Wait for** the `[opus] M0` commit before creating any files. Until then, read GAME_DESIGN §9, §11, §15, §29, §36, §39–§44 and plan.
 
-Task order: **S1 → S2 → S3**.
+Task order: **S1 → S2 → S4 → S5 → S3**. S4 and S5 were added by the designer and come before the remaining S3 polish.
 
 ---
 
@@ -73,6 +73,49 @@ Task order: **S1 → S2 → S3**.
 5. End screen shows lifetime per resource, time, and seed.
 
 **Definition of done:** tests green. With O3 integration you can play a full loop using only the mouse and see all P0 components working. No console errors.
+
+## S4 — Quick build: "repeat last building" (P1, designer-approved) — `src/ui/**`
+
+**Why:** the win condition (§41) fills every slot on every terraformed placeable hex, about 600 placements per run. To fit the 30–45 minute target, a repeated placement must take about 1 second. This is a **UI convenience only**. It goes through `session.placeBuilding` like any other placement, so every rule, cost, and payout is unchanged.
+
+**Behavior**
+- Track `lastBuilt: BuildingId | null`. Set it on **every successful** placement, from the hex panel or from quick build. Reset it on `runStarted`.
+- **Triggers** (idle mode only, never in core-placement mode):
+  - **Shift + left-click** on a hex. `BoardView` doesn't report modifier keys, so track Shift yourself with `keydown`/`keyup` on `document`, and clear it on `blur`;
+  - **R** while hovering a hex. Ignore keys while focus is in an input, textarea, or select (e.g. the seed field).
+- **Target slot:** `pick.slot` if it's non-null and empty, otherwise the lowest-index empty slot of that hex.
+- **No smart substitution:** always try exactly `lastBuilt`. On failure (hex full, not in the current biome's roster, locked by a spread, can't afford, offer pending), flash the `'invalid'` highlight on that hex and show a short reason near the cursor or as a small toast. Place nothing else.
+- **Repeat chip** in the HUD: "Repeat: <name> · <cost> · [R / Shift+click]". Grey it out when unaffordable; clicking it clears `lastBuilt`. Hide it when `lastBuilt` is null.
+- **Shift-hover preview (nice-to-have):** while Shift is held over a hex, show `session.preview(hex, targetSlot, lastBuilt)` in the existing preview style. Render only what the preview returns (§32, §38).
+- **Toast backlog:** rapid quick-building can queue many payout toasts. Keep them **sequential** (§29, §30), but when more than 3 are queued, shorten each (e.g. to ~250 ms) so the queue never lags far behind play.
+- If the targeted hex is currently selected, the hex panel re-renders after a quick build.
+
+**Required tests** (`src/ui/quickBuild.test.ts`, happy-dom, fake session and board)
+1. No `lastBuilt` → Shift+click and R do nothing.
+2. After a panel placement, Shift+click on a hex with `pick.slot` empty → `placeBuilding(hex, pick.slot, last)`.
+3. `pick.slot` occupied → the lowest empty slot is used. Hex full → no call, invalid highlight.
+4. R uses the currently hovered hex. R with focus in an `<input>` does nothing.
+5. In core-placement mode, Shift+click places the core (normal behavior), not a building.
+6. A failed placement (fake session returns `{ok:false}`) → invalid highlight, `lastBuilt` unchanged.
+7. `runStarted` resets `lastBuilt` and hides the chip.
+8. With 6 toasts queued, they still show one at a time and the per-toast duration shrinks.
+
+**DoD:** tests green. In the browser, holding a hover and tapping R fills a hex's 3 slots in about 1 second each, with correct payouts and no console errors. Record the new controls in your status file (Notes for others) so opus can put them in `README.md` and sol can mention them in the tutorial.
+
+## S5 — First-time-player UX pass + controls help (P1, designer-added) — `src/ui/**`
+
+The loop is now playable on the flat stub map (real terrain arrives with astra's D1).
+- **Dev server port:** opus uses port 5173 (`.claude/launch.json`). Run yours on **5174** (`npx vite --port 5174`) so you don't collide.
+- **Play 2 runs as a first-time player** and fix what's unclear **in `src/ui/**` only**:
+  - The resource bar reads cleanly with **4 resources** (current, lifetime, and each required target of the next threshold).
+  - The hex panel lists up to 9 buildings with 4-resource costs without overflowing. Unaffordable entries are obvious.
+  - The preview is readable. Toasts don't cover the board where you click.
+  - The repeat chip and core chips are discoverable. The end screen is clear.
+- **Controls help overlay:** open with `?` or `H` and a small "?" button. It lists: camera (right-drag or Q/E rotate, wheel zoom, middle-drag or WASD pan), left-click select/build, **Shift+click / R** repeat last building, **1/2** pick an offer, **Esc** cancel. Read the actual camera bindings from `src/render/boardView.ts` rather than trusting this list. Show it once automatically on the first run of a session. Esc closes it.
+- **Don't change game rules or timing.** Anything that isn't UI (a render glitch, a session or economy bug) → report it under "Bugs found in others' modules" in your status file.
+- **Icons:** when sol's R8 icons land in `public/assets/icons/`, use them in the resource bar, costs, and offer cards (text fallback if missing).
+
+**DoD:** 2 full runs played, fixes committed as `[sonnet] S5: …`, help overlay tested (open, close, auto-show once), findings for other agents filed in your status.
 
 ## S3 — UI polish (P2, only after M3)
 Combo codex styling, end-screen presentation, offer card presentation (biome color/icon), keyboard shortcuts (1/2 pick offer, Esc cancel), tooltip on locked tiles. Cut order: AGENT_TASKS §55.

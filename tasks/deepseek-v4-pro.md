@@ -1,12 +1,16 @@
+> **RETIRED — deepseek was dropped from the team.** This file is kept only as the **specification for D1 (map generation) and D4 (tuning)**, which now belong to **astra** (see `tasks/gpt-6-astra.md` → D1). D2 (offers, astra) and D3 (endgame, sonnet) are already implemented. Ownership lines below are historical.
+
 # Tasks — `deepseek` (DeepSeek V4 Pro 0813 · OpenCode) — World: Map Generation, Offers, Endgame
 
-You own the **deterministic world**: the seeded map generator, the biome offer stream, and the win and soft-lock detectors.
+You own the **deterministic world**: the seeded map generator.
 
-**You own:** `src/sim/world/**`, `src/config/map.ts`, `src/sim/offers.ts`, `src/sim/offers.test.ts`, `src/sim/endgame.ts`, `src/sim/endgame.test.ts`, `tasks/status/deepseek.md`.
+**You own:** `src/sim/world/**`, `src/config/map.ts`, `tasks/status/deepseek.md`.
 **Read-only for you:** everything else.
 **Wait for** the `[opus] M0` commit before creating any files. Until then, read GAME_DESIGN §4–§9, §41–§45, §53 and AGENT_TASKS §51, §57 (Terrain generation, Win/end), and plan.
 
-Task order: **D1 → D2 → D3 → D4**.
+Task order: **D1 → D4**.
+
+> **Scope change (designer):** D2 (offers) now belongs to **astra** and D3 (endgame) to **sonnet**. Both are already implemented. **Don't create or edit** `src/sim/offers.ts`, `src/sim/endgame.ts`, or their tests. You own only D1 and D4: `src/sim/world/**` and `src/config/map.ts`. D1 is now the only missing gameplay module, so commit it as soon as its required tests pass.
 
 **Determinism is the whole job here.** Use only `src/core/rng.ts`. Integer arithmetic wherever it affects output. **No** `Math.random`, `Date`, `Math.sin/cos/exp/pow/log/sqrt` in anything that decides terrain or offers (engine-dependent rounding). Iterate arrays by ascending `HexId`. Never rely on object key order or `Set` iteration for decisions.
 

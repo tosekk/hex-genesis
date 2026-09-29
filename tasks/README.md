@@ -14,7 +14,7 @@
 | `opus` | Opus 5.5 | Claude Code | **Lead**: foundation and contracts, spread engine, integration, release | `tasks/opus-5.5.md` |
 | `sonnet` | Sonnet 5.5 | Claude Code | **Game flow and UI**: session state machine, HUD, interaction | `tasks/sonnet-5.5.md` |
 | `astra` | GPT-6 Astra | Codex | **Economy**: buildings, payouts, combos, adjacency, progression, acceptance tests | `tasks/gpt-6-astra.md` |
-| `deepseek` | DeepSeek V4 Pro 0813 | OpenCode | **World**: map generation, biome offers, win and soft-lock | `tasks/deepseek-v4-pro.md` |
+| ~~`deepseek`~~ | DeepSeek V4 Pro 0813 | OpenCode | **Dropped** (too slow). Map generation → astra, offers → astra, endgame → sonnet | ~~`tasks/deepseek-v4-pro.md`~~ (kept as the D1/D4 spec) |
 | `sol` | GPT-6.1 Sol | Zed | **Presentation**: Three.js board, camera, picking, animation, tutorial | `tasks/gpt-6.1-sol.md` |
 
 **Kickoff prompt** (paste into each tool and replace the tag):
@@ -69,11 +69,12 @@ A path's owner is the **only** agent that may create, edit, or delete files unde
 | `src/game/**` | sonnet |
 | `src/ui/**` | sonnet |
 | `src/sim/economy/**`, `src/config/economy.ts` | astra |
-| `tests/acceptance/**` | astra |
-| `src/sim/world/**`, `src/config/map.ts` | deepseek |
-| `src/sim/offers.ts`, `src/sim/offers.test.ts`, `src/sim/endgame.ts`, `src/sim/endgame.test.ts` | deepseek |
+| `tests/acceptance/**`, `tests/balance/**` | astra |
+| `src/sim/world/**`, `src/config/map.ts` | astra (reassigned from deepseek) |
+| `src/sim/offers.ts`, `src/sim/offers.test.ts` | astra (reassigned from deepseek) |
+| `src/sim/endgame.ts`, `src/sim/endgame.test.ts` | sonnet (reassigned from deepseek) |
 | `src/render/**`, `render-sandbox.html` | sol |
-| `src/tutorial/**`, `public/audio/**`, `public/assets/**` | sol |
+| `src/tutorial/**`, `src/audio/**`, `public/audio/**`, `public/assets/**`, `release-kit/**` | sol |
 | `tasks/status/<tag>.md` | that agent |
 | `GAME_DESIGN.md`, `AGENT_TASKS.md`, `AGENTS.md`, `CLAUDE.md`, `tasks/*.md` | human only |
 

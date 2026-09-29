@@ -6,7 +6,7 @@ You own **everything the player sees in 3D** plus the **tutorial assistant**. Yo
 **Read-only for you:** everything else. `src/render` must never mutate `GameState` or call session commands.
 **Wait for** the `[opus] M0` commit before creating any files. Until then, read GAME_DESIGN §2–§8, §15, §19, §24, §46 and AGENT_TASKS §55, and plan the scene.
 
-Task order: **R1 → R2 → R3 → R4**.
+Task order: **R1 → R2 → R3 → R4**, then the designer-added **R6 → R5 → R7 → R8**.
 
 **Visual target:** low-poly physical board game on a table: stacked hex tiles (one prism per elevation level), soft warm lighting, a rotatable camera. Desktop only (§3).
 
@@ -58,3 +58,110 @@ Task order: **R1 → R2 → R3 → R4**.
 - Cut order (AGENT_TASKS §55 #1): voice and animated face go first. Plain tutorial text must still work.
 
 **DoD:** a new run walks through all steps with text. Skip works. Missing audio files don't cause errors.
+
+---
+
+# Follow-up tasks (added by the designer after R1–R4)
+
+The economy is now final for v1: see `tasks/ECONOMY_SPEC.md` (4 resources: wood, stone, water, food; 24 named buildings). Read it first.
+
+## R6 — Tutorial copy fixes (P1, ~20 min) — `src/tutorial/**`
+
+- **Bug:** the `progression` line says the run ends when you "restore all reachable natural terrain". That's wrong. The win condition (§41) is: **no legal core site remains, no spread is active, and every slot on every terraformed placeable tile is filled.** Natural tiles never need buildings, and leftover unreachable dead land doesn't matter. Rewrite the line to say that plainly.
+- Mention the resource identities once, briefly, e.g. in `buildings`: Forest gives wood and food, Desert gives stone and water, Arctic gives water and a little food, and mixed biomes are rich in food. Mention that stone mines next to mountains yield extra. Describe only what ECONOMY_SPEC.md says. No numbers.
+- Keep the quick-build hint (Shift+click / R). It's correct.
+- Update `src/tutorial/VO_SCRIPT.md` to match the new text exactly.
+- **DoD:** tutorial tests green. The text matches GAME_DESIGN §41 and ECONOMY_SPEC.md. Commit `[sol] R6: tutorial copy matches win rule and economy v1`.
+
+## R5 — Distinct building models (P1 visual) — `src/render/**`
+
+Replace the hash-based placeholder shapes with a **recognizable low-poly model per building id** from ECONOMY_SPEC.md (24 ids), built procedurally from Three.js primitives. No external model files.
+
+- A model's style comes from the building's **home biome**: its main biome, or its mixed biome for the 9 uniques. Not the tile's current biome. A Sawmill looks like a Sawmill on Forest or Steppe, and stays the same when its tile converts (§19).
+- Suggested silhouettes (adjust freely): Lumber Camp = log pile + small hut; Hillside Mine / Quarry / Scree Quarry = stepped pit or cart with rocks (a different color each); Sawmill = hut + saw wheel; Gatherer's Hut = round hut + basket; Farm = small barn + crop rows; Palm Grove = 2–3 palms; Stonemason = block stack; Oasis Well = ring well + water disc; Glass Kiln = dome with a glow; Driftwood Camp = tent + logs; Ice Drill = derrick; Glacier Pump = pump house + pipe; Ice Fishery = hut + hole in the ice; Grain Fields = golden rows; Windmill = tower + sails; Caravanserai = walled courtyard; Trapper Lodge = A-frame; Resin Works = vats; Hot Spring = steaming pool; Lichen Farm = green terraces; Salt Mine = white mounds; Frost Kiln = icy dome.
+- **Unknown ids** (e.g. a future config change) fall back to the current generic shape. Never crash.
+- **Performance:** up to 840 buildings on screen. Use one `InstancedMesh` per model part (as now) or merge each model's parts into one geometry, then instance it. Hold 60 fps on a full board. Dispose everything on `setBoard`.
+- Models must fit inside a slot anchor (they must not overlap neighbors at the current slot spacing) and read clearly from the default camera distance.
+- **Sandbox:** add a key that fills a few tiles with every building id so they can be reviewed side by side.
+- **Tests:** every ECONOMY building id maps to a model, and an unknown id maps to the fallback.
+- **DoD:** all 24 are visually distinct in the sandbox, frame rate holds, no console errors. Commit `[sol] R5: per-building low-poly models`.
+
+## R7 — Floating payout numbers over the board (P2)
+
+Show small "+4 wood" style numbers rising from the hex when payouts resolve, in resolution order, a little staggered. This is presentation only; the HUD toasts remain the authoritative sequential display.
+- `BoardView` has no method for this. **First** add a Contract request in `tasks/status/sol.md` for an additive optional method, e.g. `showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void`. Opus decides and wires it in `src/app/bindBoard.ts` on the `payouts` event.
+- **If opus declines or hasn't answered, skip R7.** Don't work around the contract.
+
+## R8 — Resource and biome icons (P2) — `public/assets/icons/**`
+
+Simple flat SVG icons, one per resource (wood, stone, water, food) and one per biome (6), in one consistent style that reads at 16–24 px. Record the file list in your status "Notes for others" so sonnet can use them in the HUD. Don't edit `src/ui`.
+
+---
+
+# Overnight queue (designer-assigned; ~3 hours, unattended)
+
+The designer is asleep. **Opus and Sonnet are not running.** **Astra is running** in parallel on economy and balance (`src/sim/**`, `src/config/economy.ts`, `src/config/map.ts`, `tests/**`). Nobody will answer questions. Rules for this block:
+- **Decide and keep going.** Log judgment calls under "Decisions" in `tasks/status/sol.md`.
+- **Never edit outside your paths.** Your paths now also include **`src/audio/**`** and **`release-kit/**`** (new). Things only other agents can do (e.g. wiring in `src/main.ts`, HUD changes) → write a precise request under "Notes for others" and continue.
+- **Commit after every item,** staging only your own paths. Never leave work uncommitted when you move on. Never use `git add -A` or `git add .`.
+- **Time-box:** if stuck more than 25 minutes, commit what works, log it, and move on.
+- Astra's commits may change maps and economy numbers under you. That's expected. Run your scoped tests (`npx vitest run src/render src/tutorial src/audio`).
+
+Order: **V1 → V2 → V3 → V4 → V5 → V6.**
+
+## V1 — Visual QA on the new maps (P1, ~30 min)
+Astra's D4 (`0b7f609`) changed map generation: 1–4 mountain clusters of varying size, fewer hills, longer rivers. In the sandbox, review seeds 1–20 and fix render problems in `src/render/**`: waterfalls on long or branching rivers, peaks on differently sized clusters, decorations overlapping mountains or water, z-fighting, anything that looks broken. Also check that mixed biomes (steppe, taiga, polar desert) are clearly distinguishable from their parents at the default camera distance. Commit `[sol] V1: …`.
+
+## V2 — Bigger-world render readiness (P1, ~40 min)
+The designer plans a larger world after playtesting. **Don't change `MAP` in config.** In the sandbox, allow a size override (e.g. `?cols=30&rows=20`) and make the renderer handle 26×18 and 30×20:
+- instance buffers sized from the board, not fixed;
+- camera start framing, zoom limits and pan bounds scale with board size;
+- picking stays correct at the edges;
+- the table/frame scales.
+
+Target **60 fps at 30×20 with every slot filled** (use the sandbox fill key). Log the measured fps and draw calls for 20×14, 26×18 and 30×20 in your status. Commit `[sol] V2: …`.
+
+## V3 — Audio module (P1, ~45 min) — `src/audio/**`
+The designer will generate sound effects and a soundtrack themselves (ElevenLabs/Suno) and drop the files into `public/audio/`. Build the playback so it works as soon as the files appear, **and silently does nothing when they're missing**.
+- Export `createAudio(root: HTMLElement, session: GameSession): { dispose(): void }`. It subscribes to `SessionEvent`s and renders its own small **mute + volume control** inside `root` (bottom-right corner, doesn't cover the HUD). Settings persist in `localStorage` inside try/catch.
+- Use `HTMLAudioElement` or WebAudio. Start only after the first user gesture (browser autoplay rules). Missing file or decode error → log once at debug level, then ignore.
+- Event → file mapping (these exact names; add the list to `public/audio/AUDIO_LIST.md` with a suggested length and a one-line generation prompt for each):
+
+  | file | trigger | length |
+  |---|---|---|
+  | `music/main_loop.mp3` | loops during a run, ducked while an offer is open | 1–3 min loop |
+  | `sfx/offer_open.mp3` | `offerShown` | ~1 s |
+  | `sfx/offer_pick.mp3` | `offerResolved` | ~0.5 s |
+  | `sfx/core_place.mp3` | `spreadStarted` | ~1.5 s |
+  | `sfx/tile_flip.mp3` | each `tilesRevealed` batch (throttle to ≤ 12/s, slight random pitch) | ~0.2 s |
+  | `sfx/spread_done.mp3` | `spreadFinished` | ~1 s |
+  | `sfx/build.mp3` | `hexChanged` after a placement | ~0.4 s |
+  | `sfx/demolish.mp3` | `hexChanged` after a demolition (detect via the slot becoming empty) | ~0.5 s |
+  | `sfx/payout_base.mp3` | `payouts` containing only base yields | ~0.3 s |
+  | `sfx/payout_combo.mp3` | `payouts` containing a pair or triple | ~0.8 s |
+  | `sfx/discover.mp3` | `combosDiscovered` | ~1.2 s |
+  | `sfx/core_awarded.mp3` | `coreAwarded` | ~1 s |
+  | `sfx/win.mp3` / `sfx/end.mp3` | `runEnded` (won / other) | ~3 s |
+
+- Tests (happy-dom, fake session): the right file for each event, the tile_flip throttle, mute persists, missing files don't throw.
+- **Wiring is opus's job** (`src/main.ts`). Write the exact one-line call under "Notes for others", for example `createAudio(document.getElementById('ui')!, session)`. Also add a line to the sandbox so you can hear it without main.ts.
+
+Commit `[sol] V3: audio module`.
+
+## V4 — Presentation polish (P2, ~40 min) — `src/render/**`
+Presentation only. Never read future spread claims (§15, §24).
+- A core placement effect: a short beam or pulse at the core hex.
+- A completion flourish when a hex first becomes `everCompleted` (detect the flip in `refreshHex`).
+- Softer ambient lighting and shadows if affordable within the V2 fps budget.
+- Board payout numbers (R7) readable against every biome color.
+
+Commit `[sol] V4: …`.
+
+## V5 — itch.io release kit (P2, ~20 min) — `release-kit/**`
+Only if you can capture from a browser. Otherwise skip and log it.
+- 5 screenshots at 1280×720 from interesting seeds (mixed biomes, rivers, filled hexes, a spread mid-wave);
+- a cover image at 630×500 with **no title text** (the game has no name yet);
+- `release-kit/README.md` listing which seed and camera each came from.
+
+## V6 — Morning summary
+At the top of `tasks/status/sol.md`, at most 12 lines: commits with hashes, fps table, the main.ts wiring request for opus, anything the designer should look at first.
