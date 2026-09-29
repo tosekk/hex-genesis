@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: D2 — biome offers. Designer explicitly reassigned `src/sim/offers.ts` and `src/sim/offers.test.ts` to astra; implement GAME_DESIGN §9 and D2, then rerun C3.
+IDLE — available. D2 complete (`0daa072`); C3 rerun and updated. 30 acceptance cases pass; six reported expected failures remain (four terrain stub cases, two sonnet behavior bugs).
 
 ## Done
 - C0 — labelled placeholder economy, 3 config tests green, typecheck green — `da92228`.
@@ -12,8 +12,10 @@ IN PROGRESS: D2 — biome offers. Designer explicitly reassigned `src/sim/offers
 - C3 — independent public-contract acceptance suite: 20 spread cases, 5 world cases across seeds 1–50, 8 win/soft-lock cases, 3 real-session progression cases. 21 pass, 15 reported expected failures; under 0.5 s (DoD <10 s). Tests — `f20f916`; tuning-independent endgame fixture follow-up — `7144980`.
 - C0b — exact designer-approved economy v1, literal tables and 7 data-integrity tests; 43 economy + 21 acceptance tests pass, 15 reported expected failures; typecheck green — `7144980`.
 
+- D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
+
 ## Blockers
-- No outstanding astra implementation blocker. Full acceptance verification awaits deepseek D1/D2/D3; these are expected failures, not verified successes. Rechecked after C0b: all three dependencies remain stubs.
+- No outstanding astra implementation blocker. C3 now awaits deepseek D1 terrain plus the two sonnet fixes described below. D2 offers and D3 endgame are implemented; their old missing-dependency reports are resolved.
 
 ## Decisions
 - §9 / D2: designer reassigned the two offers files to astra in this session. Offers draw two independent main biomes; when the first-offer or repeated-pair rule rejects a duplicate, keep option 0 and choose option 1 uniformly from the other two main biomes with one bounded extra offer-RNG draw.
@@ -29,13 +31,15 @@ IN PROGRESS: D2 — biome offers. Designer explicitly reassigned `src/sim/offers
 
 ## Bugs found in others' modules
 - C3-WORLD · owner deepseek · `generateMap(seed, DEFAULT_CONFIG.map)`, seeds 1–50 · expected generated hills/mountains/natural terrain satisfying §6–§7 · actual all 14,000 tiles are plain/elevation 0, so terrain scenarios T1–T4 cannot exercise their subjects. Four `it.fails` cases retained in `tests/acceptance/world.test.ts`; deterministic replay passes.
-- C3-END · owner deepseek · developed 3×1 boards, unreachable dead tile, unusable held core, and five §44 progression-action fixtures · expected boolean win/soft-lock decisions under §41–§44 · actual `NOT_IMPLEMENTED: checkWin` / `NOT_IMPLEMENTED: isProvablySoftLocked`. Eight `it.fails` cases retained in `tests/acceptance/endgame.test.ts`.
-- C3-SESSION · dependency owner deepseek (D2/D3), session owner sonnet · real `createGameSession` with seed 1 and fixture thresholds, then `newRun(1)` · expected immediate offer and progression §57 cases 5–7 · actual `NOT_IMPLEMENTED: awardCore`. Three `it.fails` retained in `tests/acceptance/progression.test.ts`. P5 also checks the final tile flip interval; cannot reach that assertion until dependencies land.
+- RESOLVED C3-END / C3-SESSION missing implementations: D2 `0daa072` and sonnet D3 `c23be27` unblock real-module checks. Seven endgame cases and progression P6/P7 now pass normally; removed their old `it.fails` markers.
+- C3-REFUNDS · owner sonnet (reassigned D3) · 3×1 restored forest board, empty stock, two occupied/paid slots containing fixture buildings costing `{wood:2,stone:2}`, remaining fresh empty slots, no cores/offers/spread · expected `isProvablySoftLocked === false` (§43–§44) · actual `true`. Concrete escape verified with real economy: demolish both buildings → `{wood:2,stone:2}` → build in unpaid slot 2 → `{wood:3,stone:3}` lifetime payout. One-refund lookahead incorrectly proves loss; a conservative fallback can avoid a full solver. Retained `it.fails` in `tests/acceptance/endgame.test.ts`.
+- C3-FLIP · owner sonnet · real session seed 1, fixture thresholds yield two held cores, deploy one, call `advance(4650)` with `spreadMaxMs=5000`, `tileFlipMs=350` · expected `activeSpread !== null` and second core blocked through final tile flip (§11, §15; §57 Progression 5) · actual `activeSpread === null` at 4650 ms when last flip has just started. Retained P5 `it.fails` in `tests/acceptance/progression.test.ts`.
+
 
 ## Notes for others
-- D2 implementation ready: 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity are covered. Typecheck green. Committing D2 before rerunning C3 per designer instruction.
-- Final verification: `npx vitest run src/sim/economy tests/acceptance` → 64 passed + 15 expected failures (79 cases), ~400 ms; `npm run typecheck` → green. All new/edited code is within astra ownership; no contracts or dependencies changed.
-- After D2/D3 land, remove `it.fails` from passing session/endgame cases. P5 deliberately retains the spread lock through the final tile flip; inspect any remaining timing failure separately from missing dependencies.
+- D2 committed as requested (`0daa072`): 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity covered. Opus/sonnet: offers no longer block real session or autoplay tests.
+- Latest verification after D2: `npx vitest run src/sim/offers.test.ts src/sim/economy tests/acceptance` → 92 passed + 6 expected failures (98 cases), 380 ms. Breakdown: 19 offers + 43 economy + 30 acceptance pass. `npm run typecheck` and owned-path `git diff --check` green. Only astra-owned/reassigned files changed; no contracts or dependencies changed.
+- D2/D3 are now real. Nine old expected-failure markers removed; remaining C3 failures: four flat-map terrain coverage cases (deepseek), two proven behavior bugs (sonnet).
 - C0b: approved literal tables copied exactly. One-time independent Markdown-table comparison verified all 24 buildings, 6 ordered rosters, 21 recipes, 5 terrain rules, 6 zone modifiers, 8 thresholds and all scalar/resource fields. No retuning.
 - C0b old-id search (`forest_a|_pair|_triple|_double` plus all generated roster ids) found no remaining hits in `src` or `tests`; no other owner migration needed. Endgame acceptance fixtures now define their own building/cost/yield data.
 - C0b validation: 43 economy tests + 21 acceptance tests pass; 15 previously reported expected failures remain; typecheck green. Opus O4 should measure placements per threshold against the approved spec before any retuning.

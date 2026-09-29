@@ -50,8 +50,8 @@ function twoHeldCores() {
   return session;
 }
 
-describe('C3 real-session progression acceptance (sonnet + deepseek dependencies)', () => {
-  // Expected failure: deepseek D2 awardCore still throws; recheck sonnet after D2/D3 land (C3-SESSION).
+describe('C3 real-session progression acceptance (sonnet session, astra offers)', () => {
+  // Expected failure: sonnet session unlocks at 4650 ms, before the last 350 ms flip (C3-FLIP).
   it.fails('P5: held cores stay unusable until the active spread, including the last flip, finishes', () => {
     const session = twoHeldCores();
     const nextSite = legalCoreSites(session.state).at(-1)!;
@@ -67,8 +67,7 @@ describe('C3 real-session progression acceptance (sonnet + deepseek dependencies
     expect(session.state.activeSpread).toBe(null);
     expect(session.placeCore(followingSite!).ok).toBe(true);
   });
-  // Expected failure: deepseek D2 awardCore still throws; recheck sonnet after D2/D3 land (C3-SESSION).
-  it.fails('P6: reaching a threshold with a held core adds the chosen second core to the stack', () => {
+  it('P6: reaching a threshold with a held core adds the chosen second core to the stack', () => {
     const session = ready();
     buildNext(session);
     expect(session.state.pendingOffer).not.toBe(null);
@@ -82,8 +81,7 @@ describe('C3 real-session progression acceptance (sonnet + deepseek dependencies
     expect(session.chooseOffer(0).ok).toBe(true);
     expect(session.state.coreStack).toEqual([...held, chosen]);
   });
-  // Expected failure: deepseek D2 awardCore still throws; recheck sonnet after D2/D3 land (C3-SESSION).
-  it.fails('P7: award immediately shows a modal offer after full payouts and gates further commands', () => {
+  it('P7: award immediately shows a modal offer after full payouts and gates further commands', () => {
     const session = ready();
     const events: SessionEvent[] = [];
     const lifetimeAtAward: number[] = [];
