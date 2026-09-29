@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. D2 complete (`0daa072`); C3 rerun and updated. 30 acceptance cases pass; six reported expected failures remain (four terrain stub cases, two sonnet behavior bugs).
+IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src/sim/world/**` and `src/config/map.ts` to astra after retiring deepseek. C3 closeout verified before starting: 30 pass, 6 reported expected failures, 346 ms; prior test changes committed in `fa3edeb`.
 
 ## Done
 - C0 — labelled placeholder economy, 3 config tests green, typecheck green — `da92228`.
@@ -37,6 +37,8 @@ IDLE — available. D2 complete (`0daa072`); C3 rerun and updated. 30 acceptance
 
 
 ## Notes for others
+- Opus O5 review requested: astra now implements D1 and owns its world acceptance tests, so please independently review terrain generation, hill-path constraints, river routing, determinism and seed statistics after the D1 step commits land.
+- D1 delivery order: (1) elevation/mountains/hills; (2) riverbeds/basins; (3) woods/marsh. Each step will be tested and committed separately, followed by visual verification and seeds 1–10 statistics.
 - D2 committed as requested (`0daa072`): 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity covered. Opus/sonnet: offers no longer block real session or autoplay tests.
 - Latest verification after D2: `npx vitest run src/sim/offers.test.ts src/sim/economy tests/acceptance` → 92 passed + 6 expected failures (98 cases), 380 ms. Breakdown: 19 offers + 43 economy + 30 acceptance pass. `npm run typecheck` and owned-path `git diff --check` green. Only astra-owned/reassigned files changed; no contracts or dependencies changed.
 - D2/D3 are now real. Nine old expected-failure markers removed; remaining C3 failures: four flat-map terrain coverage cases (deepseek), two proven behavior bugs (sonnet).
