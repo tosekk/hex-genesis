@@ -1,5 +1,5 @@
 // O4 end-to-end autoplay against the REAL modules only. Self-skips while any sim module the
-// session calls is still a NOT_IMPLEMENTED stub (see autoplay.fallback.test.ts meanwhile).
+// session calls is still a NOT_IMPLEMENTED stub.
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG } from '../../src/config';
 import { createInitialState } from '../../src/core/state';

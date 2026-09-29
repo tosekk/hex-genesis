@@ -19,8 +19,8 @@ export type Action =
 export interface BotReport {
   seed: number;
   status: GameState['status'];
-  /** 'terminal' | 'stuck' (no legal action → bot ended the run) | 'cap' */
-  stop: 'terminal' | 'stuck' | 'cap';
+  /** terminal: run over · stuck: no legal action, bot ended the run · cap: action cap · time: wall-clock budget */
+  stop: 'terminal' | 'stuck' | 'cap' | 'time';
   actions: Action[];
   placements: number;
   coresPlaced: number;
@@ -111,7 +111,11 @@ function chooseBuild(session: GameSession): Action | null {
 }
 
 /** Plays one run. Asserts invariants after every action. */
-export function runBot(session: GameSession, seed: number, maxActions = 3000): BotReport {
+/** A spread that needs more advance() calls than this never finishes: a session bug, not a slow run. */
+const MAX_ADVANCES_PER_SPREAD = 1000;
+
+export function runBot(session: GameSession, seed: number, maxActions = 3000, timeBudgetMs = 30_000): BotReport {
+  const deadline = performance.now() + timeBudgetMs;
   const actions: Action[] = [];
   let placements = 0;
   let coresPlaced = 0;
@@ -137,6 +141,7 @@ export function runBot(session: GameSession, seed: number, maxActions = 3000): B
   };
 
   for (let n = 0; n < maxActions; n++) {
+    if (performance.now() > deadline) { stop = 'time'; break; }
     const s = session.state;
     if (s.status !== 'playing') { stop = 'terminal'; break; }
     if (s.pendingOffer) { act(chooseOffer(s)); continue; }
@@ -149,7 +154,10 @@ export function runBot(session: GameSession, seed: number, maxActions = 3000): B
       }
       const site = legalCoreSites(s)[0];
       if (s.coreStack.length > 0 && site !== undefined) act({ t: 'core', hexId: site, stackIndex: 0 }, false);
-      while (session.state.activeSpread && session.state.status === 'playing') act({ t: 'advance', dtMs: 250 });
+      for (let i = 0; session.state.activeSpread && session.state.status === 'playing'; i++) {
+        if (i >= MAX_ADVANCES_PER_SPREAD) throw new Error(`spread did not finish after ${i} advance(250) calls`);
+        act({ t: 'advance', dtMs: 250 });
+      }
       continue;
     }
     const core = s.coreStack.length > 0 ? chooseCoreSite(s) : null;
@@ -174,12 +182,15 @@ export function runBot(session: GameSession, seed: number, maxActions = 3000): B
   };
 }
 
+export const cumulative = (xs: number[]): number[] => xs.map((_, i) => xs.slice(0, i + 1).reduce((a, b) => a + b, 0));
+
 /** Human-readable tuning line for one run. */
 export function formatReport(r: BotReport): string {
   const fmt = (x: Resources) => Object.entries(x).map(([k, v]) => `${k}=${v}`).join(' ');
   return [
     `seed ${r.seed}: ${r.status} (${r.stop}) · ${r.placements} placements · ${r.coresPlaced} cores · thresholds ${r.thresholdsReached}`,
     `  placements per threshold: [${r.placementsPerThreshold.join(', ')}] (+${r.placementsSinceLastThreshold} toward next)`,
+    `  cumulative at each threshold: [${cumulative(r.placementsPerThreshold).join(', ')}]`,
     `  filled ${r.filledHexes}/${r.livingPlaceableHexes} living hexes · lifetime ${fmt(r.lifetime)} · stock ${fmt(r.resources)}`,
   ].join('\n');
 }

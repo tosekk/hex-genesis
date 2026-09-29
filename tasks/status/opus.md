@@ -3,16 +3,21 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O3 integration (waiting on deepseek D2 offers for a playable loop) + O4 autoplay (built; real-module run waits on deepseek D2/D3). O5 ongoing.
+IN PROGRESS: O4 packaging (`scripts/package.mjs`, README) and release checklist. O5 ongoing (D1 reviewed, see Integration log).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
 - O1: M0 DONE `4e877b6` (foundation, contracts, stubs). Committed by the human.
 - O2: spread engine (`src/sim/spread/spread.ts`) with 26 tests in `spread.test.ts`, all green. Covers every O2 required test plus min-depth conversion, discard-and-continue, and a perf check (< 5 ms on 20×14). Shipped in `4e877b6`.
-- O3 (partial, `823728d`): `bindBoard` wires runStarted/spreadStarted/tilesRevealed/spreadFinished/hexChanged to the real BoardView, incl. the `locked` highlight for the active claim set (§11). `main.ts` starts the frame loop BEFORE `newRun`, so a throw can't blank the board. The dev error overlay dedupes repeats. Browser-verified against the real board + HUD: board and HUD render; the run stops at `awardCore` NOT_IMPLEMENTED (deepseek).
-- O4 (partial, `823728d`): `tests/e2e/` has `assertInvariants` (§52), a greedy bot driving only the GameSession API, and threshold tuning output.
-  - `autoplay.test.ts` uses the real modules and self-skips until offers/endgame stop throwing.
-  - `autoplay.fallback.test.ts` swaps in minimal fakes ONLY for functions that still throw NOT_IMPLEMENTED. It passes today: seeds 1–5, invariants checked after every action, and a replay-determinism check.
+- O3 / **M2 DONE** (wiring `823728d`; playthrough on the build of `86038a9`, real D1 map, seed 7).
+  - Full run through the real UI: offer → Desert core → spread → builds → 8 thresholds → 7 cores (Arctic/Desert/Forest, with mixed borders) → 10 combos discovered → **"Planet terraformed!" win screen** (§41) with lifetime totals, time, and seed.
+  - Then New Run (seed 8) → offer → End Run → confirm → "Run ended" screen.
+  - Zero console errors across both runs. Bugs found are listed under "Bugs routed".
+- O4 (autoplay part, `823728d` + this commit): `tests/e2e/autoplay.test.ts` now runs on the REAL modules (the fallback fakes are deleted).
+  - Seeds 1–5 all win. `assertInvariants` (§52) is checked after every action, and a replay-determinism check passes.
+  - Bounded runtime: per-run action cap (3000), wall-clock budget (30 s → `stop: 'time'`), max 1000 `advance()` calls per spread (→ throws), and per-test timeouts. Full `npm test` finishes in ~34 s.
+  - `npm run pacing`: opt-in flat-map baseline (pins a flat map via `vi.mock`, so economy changes compare against a fixed board).
+  - `npm run preview:head`: builds committed HEAD in a temp dir and serves it on :4199 for playtesting. The dev server reloads (losing the run) whenever any agent saves a file.
 
 ## Blockers
 <!-- none -->
@@ -26,6 +31,7 @@ IN PROGRESS: O3 integration (waiting on deepseek D2 offers for a playable loop) 
 - §17 depth is the SHALLOWEST depth the spread reaches a foreign tile at. If a converted tile is first reached deep (a cheaper path through the foreign region) and later reached shallower, it expands again at the shallower depth without spending pool again. Without this, a cheap depth-2 claim could block a legitimate depth-1 route and cut conversion short.
 - §17 inside a foreign region, the spread continues only into tiles of the SAME foreign biome (snapshot biome). It never enters dead land, a different main biome, the spread's own biome, or mixed tiles from a converted tile.
 - §16 same-biome and §18 mixed neighbours are never queued (no claim, no cost, no expansion).
+- Earlier `npm test` "hangs" were a slow bot (fixed in `823728d`) plus scratch profiling files I ran and deleted. A NEW hang cause I hit: a `vi.mock` factory that imports a module which imports the mocked module deadlocks silently (0% CPU). `pacing.test.ts` builds hexes inline to avoid this.
 - O4 bot = "sensible greedy player". It fills the fullest unlocked hex first and scores buildings by weighted yield, where a resource the next threshold still needs weighs 2, otherwise 0.5, +1 if stock < 6, net of 0.5 × weighted cost. It picks the offer biome covering fewer tiles, places the core with the most non-mountain claims, and never demolishes. A naive "max total yield" bot soft-locked on seeds 2–4, so the weighting matters for the tuning numbers.
 - .gitignore: `.claude/` (local Claude Code launch config/settings) is ignored, not committed. All agents share one checkout, so the file already exists for everyone, and `.claude/` isn't in the ownership map.
 - `revealSpread` never clears `activeSpread`, even when every claim is revealed. The session must call `finishSpread` to end it.
@@ -38,25 +44,47 @@ IN PROGRESS: O3 integration (waiting on deepseek D2 offers for a playable loop) 
 
 ## Notes for others
 - M0 is in (`4e877b6`). The stubs in your paths are yours (header `// OWNER: <tag> — stub from O1`). Replace freely.
-- Extra `src/core/state.ts` helpers (additive, not in CONTRACTS): `createHex(id, col, row, elevation, terrain, decoration)` builds a fresh dead empty hex with `placeable` derived from terrain (deepseek: use it in mapgen). `stateFromHexes(seed, config, cols, rows, hexes, nowMs)` wraps a board in an empty run state.
+- Extra `src/core/state.ts` helpers (additive, not in CONTRACTS): `createHex(id, col, row, elevation, terrain, decoration)` builds a fresh dead empty hex with `placeable` derived from terrain (astra: use it in mapgen). `stateFromHexes(seed, config, cols, rows, hexes, nowMs)` wraps a board in an empty run state.
 - `makeTestState(opts = {})`: every option is optional. Defaults: 20×14, flat, `'plain'`, dead. A `'mountain'` with no explicit elevation gets `levels-1`. `seed = 0`, `runStartMs = 0`.
 - `src/sim/spread/spread.ts`: `isLegalCoreSite`, `legalCoreSites`, and `isHexLocked` are already real. The whole spread API is now real (O2 done). `spreadPool(cfg)` and `stepCost(cfg, fromElev, toElev)` are also exported.
 - Vitest env is `node` by default. For DOM tests, add `// @vitest-environment happy-dom` at the top of the test file.
 - `RngState.s` is a uint32. `nextInt(n)` is unbiased (rejection sampling), so it may consume more than one `nextU32()`.
 
+## Process notes (all agents)
+- The git index is shared. Anything you stage but don't commit immediately gets swept into the next agent's `git commit`. (My staged `git rm` of the e2e fallback files landed in astra's `cc0e8e9`; harmless here.) Stage and commit in ONE command: `git add <your paths> && git commit -m …`, or use `git commit <paths> -m …`.
+
 ## Contract changelog
 <!-- - <commit> · <change> · requested by <tag> -->
 
 ## Integration log
-- Autoplay tuning, economy v1 (`7144980`), **stub flat map** (all 280 hexes placeable, so 6 cores cover the board). Placements needed per threshold:
-  - seed 1: [6, 12, 12, 52, 16, 13, 63, 25] → won at 840 placements
-  - seed 2: [6, 7, 10, 20, 33, 31, 36, 45] → won
-  - seed 3: [6, 10, 50, 11, 22, 27, 28, 46] → won
-  - seed 4: [6, 10, 39, 32, 112, 31, 40, 33] → won
-  - seed 5: [6, 12, 12, 52, 68, 28, 35, 54] → won
-  - Observations (astra, for tuning, not bugs): all 8 thresholds fall within the first ~200–350 of 840 placements, and then ~550–650 placements earn nothing progression-wise. Spikes (52, 112, 50) come from a single resource bottleneck (usually water or stone) when the placed biomes don't produce it. Leftover stock at the end is lopsided (e.g. wood 1052 / stone 4). Re-run once deepseek's real map lands: fewer placeable hexes will shift everything. Run: `npx vitest run tests/e2e`.
+- **Pacing report** (economy v1 `7144980`; bot = sensible greedy player, never demolishes). Cumulative placements when each threshold is reached, vs `tasks/ECONOMY_SPEC.md` estimates:
+
+  | T | spec est. | flat map median (min–max) | real D1 map median (min–max) |
+  |---|---|---|---|
+  | 1 | 8 | 6 (6–6) | 6 (6–6) |
+  | 2 | 20 | 16 (13–18) | 16 (12–18) |
+  | 3 | 40 | 30 (23–55) | 35 (22–37) |
+  | 4 | 70 | 82 (43–87) | 58 (41–80) |
+  | 5 | 110 | 150 (76–199) | 88 (66–107) |
+  | 6 | 160 | 178 (107–230) | 119 (98–138) |
+  | 7 | 220 | 213 (143–270) | 149 (132–166) |
+  | 8 | 300 | 267 (188–303) | 178 (165–218) |
+
+  - **Flat map** (`npm run pacing`): no terrain bonuses (no mountains, water, woods, or marsh), all 280 hexes placeable. It tracks the estimates within ±25% except T4–T5, where single-resource bottlenecks (water/stone) cause spikes (T5 range 76–199). 6 cores cover the whole board, and the run wins at 840 placements.
+  - **Real D1 map** (`npx vitest run tests/e2e/autoplay.test.ts`, `86038a9`): terrain bonuses make it FASTER. T5–T8 are reached at ~60–80% of the estimate. 177–199 living hexes, won at 531–597 placements. After T8, **~340–420 placements (60–70% of the run) award nothing new**, while design intent says thresholds should run until about half the board is filled. At T8 the board is ~32% filled.
+  - Only 5–6 cores fit (legal sites run out), but 9 are awarded, so 3–4 are held uselessly at the end. For astra (tuning, not bugs): consider steeper T6–T8, or fewer thresholds.
+  - The UI playthrough (seed 7, real map, different heuristic) matched: T8 at ~250 builds, 7 cores, 2 held without a legal site.
+- **D1 review (O5, independent check of astra `cc0e8e9`…`86038a9`)**: PASS.
+  - Code read: deterministic (integer lattice noise, ascending-id ties, no floats in state), hills built outward from mountains in distance bands (so the §6 rules hold by construction), rivers strictly descend and stop at an edge or local minimum, natural terrain replaces only plains, no reject/regenerate loop (§53).
+  - Independent test, seeds 1–200: 0 violations of ids, placeability (§7), biome null, elevation range, mountain ⇔ top level, hill within 1–3 of a mountain, hill elevation rule, or non-hill land below adjacent hills. Max 2.8 ms/map.
+  - Placeable: median 70%, max 80%, **14/200 seeds below 65% (min 63%)**. Seeds 1–10: largest open region 132–202 tiles, greedy core capacity 10–12.
+  - Advisory (P2 tuning, astra): every map has exactly 2 mountain clusters × 7 tiles and ~100 hills (36% of the board) in two concentric cones, so maps look alike run to run. Riverbeds are sometimes very short (5 tiles).
 
 ## Bugs routed
 <!-- - to <tag>: <report> -->
-- to astra (perf FYI, not a rule bug): `previewPlacement` `structuredClone`s the whole GameState per call (~1 ms each in vitest workers, sometimes far worse). Fine for HUD hover (≤ 9 calls). Avoid calling it in loops over the whole board.
-- to deepseek (blocker): `awardCore` NOT_IMPLEMENTED stops `session.newRun` in the browser, so there's no playable loop until D2 lands. `checkWin`/`isProvablySoftLocked` (D3) are needed right after that.
+- **to sol (P1 usability):** clicks in the thin gaps between tile tops are silently ignored. `pick()` raycasts only `tops` (radius 0.95 vs spacing 1.0), so a ray through a gap hits nothing. Repro: HEAD build, `?seed=7`, default camera, 1024×768; a synthetic pointerdown/up at client (454,454) returns null, while (450,450) → tile 8,11 and (458,458) → tile 9,11. A 20 px grid scan finds ~5% of on-board points are dead, mostly tile corners, which is where players naturally click. Suggestion: raycast an invisible full-size (radius 1.0) pick mesh, or fall back to the nearest hex centre at the hit plane.
+- to sonnet (cosmetic): after a win, the hex panel stays open behind the end screen with live "Demolish" buttons (the session rejects them, since the run is over). Close/hide the panel on `runEnded`.
+- to sonnet (minor): "New Run" with a typed seed on the end screen doesn't update `?seed=` in the URL, so a reload replays the previous seed.
+- to sol (UX nit): the first tutorial card ("Choose Forest, Desert, or Arctic…") stays up for the whole run unless the player clicks Next. Consider auto-advancing when the next queued event arrives.
+- to astra (perf FYI, not a rule bug): `previewPlacement` `structuredClone`s the whole GameState per call (~1 ms each). Fine for HUD hover. Avoid calling it in loops over the whole board.
+- ~~to deepseek (blocker): `awardCore` NOT_IMPLEMENTED stops `session.newRun`.~~ Resolved: deepseek dropped, D2 by astra (`0daa072`), D3 by sonnet (`c23be27`).
