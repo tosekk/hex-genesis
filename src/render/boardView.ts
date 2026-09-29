@@ -9,6 +9,7 @@ import { HIGHLIGHT_COLORS, LAYER_COLOR, tileColor } from './palette';
 import { NaturalTerrain } from './terrain';
 import { Buildings, Cores } from './buildings';
 import { sampleReveal } from './reveal';
+import { addTable, Decorations } from './decorations';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -37,6 +38,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let natural: NaturalTerrain | null = null;
   let buildings: Buildings | null = null;
   let cores: Cores | null = null;
+  let decorations: Decorations | null = null;
+  let framingDistance = 0;
   const reveals = new Map<HexId, { hex: Hex; elapsed: number; swapped: boolean }>();
   const positions = new Map<HexId, { x: number; z: number }>();
   const highlights = new Map<HighlightStyle, Instances>();
@@ -56,6 +59,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     tops.color(id, tileColor(hex.biome));
     natural?.refresh(hex, p.x, p.z);
     buildings?.refresh(hex, p.x, p.z);
+    decorations?.refresh(hex, p.x, p.z);
+    decorations?.refreshFalls(current, id);
   }
   function playReveal(current: Readonly<GameState>, ids: HexId[]): void {
     for (const id of ids) {
@@ -87,6 +92,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     natural = new NaturalTerrain(board, count);
     buildings = new Buildings(board, count);
     cores = new Cores(board, count);
+    decorations = new Decorations(board, count);
     let layer = 0;
     for (const hex of current.hexes) {
       const p = hexToWorld(hex.col, hex.row, HEX_SIZE); positions.set(hex.id, p);
@@ -103,14 +109,11 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       highlights.set(style, ring);
     }
     const far = hexToWorld(current.cols - 1, current.rows - 1, HEX_SIZE);
+    addTable(board, far.x + 2, far.z + 2, far.x / 2, far.z / 2);
+    framingDistance = 0;
     resize();
     controls.target.set(far.x / 2, 0.6, far.z / 2);
-    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
-    const radius = Math.hypot(far.x + 2, far.z + 2) / 2 + 1;
-    const distance = radius / Math.sin(Math.min(verticalFov, horizontalFov) / 2) * 1.05;
-    controls.maxDistance = Math.max(65, distance * 1.5);
-    camera.position.copy(controls.target).add(new THREE.Vector3(0.35, 0.9, 0.95).normalize().multiplyScalar(distance));
+    camera.position.copy(controls.target).add(new THREE.Vector3(0.35, 0.9, 0.95).normalize().multiplyScalar(framingDistance));
     controls.update();
   }
   function pick(event: PointerEvent): BoardPick | null {
@@ -164,6 +167,19 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     if (disposed) return;
     const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
     renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
+    if (state) {
+      const far = hexToWorld(state.cols - 1, state.rows - 1, HEX_SIZE);
+      const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+      const radius = Math.hypot(far.x + 4, far.z + 4) / 2 + 1;
+      const distance = radius / Math.sin(Math.min(verticalFov, horizontalFov) / 2) * 1.05;
+      if (framingDistance > 0) {
+        const offset = camera.position.clone().sub(controls.target).multiplyScalar(distance / framingDistance);
+        camera.position.copy(controls.target).add(offset);
+      }
+      framingDistance = distance;
+      controls.maxDistance = Math.max(65, distance * 1.5);
+    }
   }
   function update(dtMs: number): void {
     if (disposed) return;
@@ -177,6 +193,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
         tops!.color(id, tileColor(reveal.hex.biome));
         natural?.refresh(reveal.hex, p.x, p.z);
         buildings?.refresh(reveal.hex, p.x, p.z);
+        decorations?.refresh(reveal.hex, p.x, p.z);
+        if (state) decorations?.refreshFalls(state, id);
       }
       if (tween.finished) reveals.delete(id);
     }
