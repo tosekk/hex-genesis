@@ -3,9 +3,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: D1 step 3 — woods and marsh; then visual/performance/statistics verification. Steps 1 and 2 committed as `cc0e8e9`, `3950a22`. Designer reassigned `src/sim/world/**` and `src/config/map.ts` to astra after retiring deepseek. C3 closeout verified before starting: 30 pass, 6 reported expected failures, 346 ms; prior test changes committed in `fa3edeb`.
+IDLE — available. D1 complete in three ordered implementation commits; final browser/performance/statistics handoff prepared. All 110 scoped tests pass, including all 36 C3 cases; no expected-failure markers remain. Opus O5 independent D1 review requested below. D4 tuning awaits playtest feedback.
 
 ## Done
+- D1 step 3 — woods/marsh, all world/C3 acceptance passing, 200-seed checks and terrain statistics — `d978f14`.
 - D1 step 1 — integer relief, mountain clusters, outward hill bands, seeds 1–200 tests and T1–T3 — `cc0e8e9`.
 - D1 step 2 — deterministic downhill riverbeds/local-minimum basins, route/tie-break tests — `3950a22`.
 - C0 — labelled placeholder economy, 3 config tests green, typecheck green — `da92228`.
@@ -17,7 +18,7 @@ IN PROGRESS: D1 step 3 — woods and marsh; then visual/performance/statistics v
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
-- No outstanding astra implementation blocker. C3 now awaits deepseek D1 terrain plus the two sonnet fixes described below. D2 offers and D3 endgame are implemented; their old missing-dependency reports are resolved.
+- None for astra implementation. Independent D1 review and full-run balance/playability checks belong to opus O5/O4; requested explicitly below.
 
 ## Decisions
 - D1 §6/§53 vegetation: only remaining plains can become marsh/woods. Configured per-thousand marsh chance increases on low ground and beside riverbeds/basins; woods chance increases at mid elevations. Water, hill and mountain terrain/elevations stay untouched.
@@ -36,25 +37,33 @@ IN PROGRESS: D1 step 3 — woods and marsh; then visual/performance/statistics v
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
-- C3-WORLD · owner deepseek · `generateMap(seed, DEFAULT_CONFIG.map)`, seeds 1–50 · expected generated hills/mountains/natural terrain satisfying §6–§7 · actual all 14,000 tiles are plain/elevation 0, so terrain scenarios T1–T4 cannot exercise their subjects. Four `it.fails` cases retained in `tests/acceptance/world.test.ts`; deterministic replay passes.
-- RESOLVED C3-END / C3-SESSION missing implementations: D2 `0daa072` and sonnet D3 `c23be27` unblock real-module checks. Seven endgame cases and progression P6/P7 now pass normally; removed their old `it.fails` markers.
-- C3-REFUNDS · owner sonnet (reassigned D3) · 3×1 restored forest board, empty stock, two occupied/paid slots containing fixture buildings costing `{wood:2,stone:2}`, remaining fresh empty slots, no cores/offers/spread · expected `isProvablySoftLocked === false` (§43–§44) · actual `true`. Concrete escape verified with real economy: demolish both buildings → `{wood:2,stone:2}` → build in unpaid slot 2 → `{wood:3,stone:3}` lifetime payout. One-refund lookahead incorrectly proves loss; a conservative fallback can avoid a full solver. Retained `it.fails` in `tests/acceptance/endgame.test.ts`.
-- C3-FLIP · owner sonnet · real session seed 1, fixture thresholds yield two held cores, deploy one, call `advance(4650)` with `spreadMaxMs=5000`, `tileFlipMs=350` · expected `activeSpread !== null` and second core blocked through final tile flip (§11, §15; §57 Progression 5) · actual `activeSpread === null` at 4650 ms when last flip has just started. Retained P5 `it.fails` in `tests/acceptance/progression.test.ts`.
-
+- RESOLVED C3-WORLD: all-plain stub replaced by astra D1; T1–T4 now pass normally (`cc0e8e9`, `3950a22`, `d978f14`).
+- RESOLVED C3-END / C3-SESSION stubs: astra D2 `0daa072` and sonnet D3 `c23be27` enabled real-module acceptance.
+- RESOLVED C3-REFUNDS: sonnet `4909942` now handles the conservative two-demolition escape fixture; test passes with no expected-failure marker.
+- RESOLVED C3-FLIP: sonnet `4909942` holds spread locks through the final tile flip; real-session P5 passes with no expected-failure marker.
 
 ## Notes for others
-- D1 step 3: all world acceptance T1–T4 pass and their markers are removed. Sonnet fixes `4909942` resolve C3-REFUNDS/C3-FLIP; both acceptance tests now pass normally and markers are removed. No expected failures remain in C3.
-- D1 initial knob selection: reduced woods/marsh probabilities after initial seed statistics to target the requested ~65–80% placeable range. No economy or structural rules changed; no rejected maps. Seeds 1–10 now average ~70% placeable. Full table and browser evidence follow in final D1 handoff.
-- Shared-index note for opus: `cc0e8e9` also included two pre-staged opus-owned deletions (`tests/e2e/autoplay.fallback.test.ts`, `tests/e2e/fallbacks.ts`). Astra did not edit those files. Leaving shared history intact; subsequent commits use `git commit --only` with exact owned paths to avoid collecting other staged work.
-- D1 step 1 verified: seeds 1–200 deterministic terrain/decorations, complete initial state, positive hill approaches and hill-path depth, four-level maps, generation <20 ms. World acceptance T1–T3 now pass normally; T4 still awaits natural terrain in steps 2–3.
-- Opus O5 review requested: astra now implements D1 and owns its world acceptance tests, so please independently review terrain generation, hill-path constraints, river routing, determinism and seed statistics after the D1 step commits land.
-- D1 delivery order: (1) elevation/mountains/hills; (2) riverbeds/basins; (3) woods/marsh. Each step will be tested and committed separately, followed by visual verification and seeds 1–10 statistics.
-- D2 committed as requested (`0daa072`): 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity covered. Opus/sonnet: offers no longer block real session or autoplay tests.
-- Latest verification after D2: `npx vitest run src/sim/offers.test.ts src/sim/economy tests/acceptance` → 92 passed + 6 expected failures (98 cases), 380 ms. Breakdown: 19 offers + 43 economy + 30 acceptance pass. `npm run typecheck` and owned-path `git diff --check` green. Only astra-owned/reassigned files changed; no contracts or dependencies changed.
-- D2/D3 are now real. Nine old expected-failure markers removed; remaining C3 failures: four flat-map terrain coverage cases (deepseek), two proven behavior bugs (sonnet).
-- C0b: approved literal tables copied exactly. One-time independent Markdown-table comparison verified all 24 buildings, 6 ordered rosters, 21 recipes, 5 terrain rules, 6 zone modifiers, 8 thresholds and all scalar/resource fields. No retuning.
-- C0b old-id search (`forest_a|_pair|_triple|_double` plus all generated roster ids) found no remaining hits in `src` or `tests`; no other owner migration needed. Endgame acceptance fixtures now define their own building/cost/yield data.
-- C0b validation: 43 economy tests + 21 acceptance tests pass; 15 previously reported expected failures remain; typecheck green. Opus O4 should measure placements per threshold against the approved spec before any retuning.
-- All economy contracts implemented; 43 scoped tests pass. Affordability rejection is `Insufficient resources`.
-- Preview runs the placement transaction on a clone with sufficient projected funds, filters against ORIGINAL discoveries, and omits adjacency. Invalid placements return an empty payout projection. Paid slots return an empty base breakdown.
-- Thresholds remain session-owned sequencing: call `advanceThreshold` only after the placement result is fully committed, then award the offer.
+- **Opus O5: please independently review D1 now**, especially hill-path depth/elevation construction, source/minimum river routing, ascending-HexId ties, integer determinism, and below-listed seed statistics. Implementation is in `src/sim/world/{mapgen,relief,water,vegetation}.ts`, knobs in `src/config/map.ts`; commits `cc0e8e9` → `3950a22` → `d978f14`. Astra now owns the world acceptance tests, so your independent check is important. Re-run O4 autoplay/pacing with the real map before proposing D4 knob tuning; no economy values changed.
+- Final validation: `npx vitest run src/sim/world src/sim/economy src/sim/offers.test.ts tests/acceptance` → **110 passed**, 11 files, 2.40 s. Includes seeds 1–200 world invariants, same-seed replay, different-seed variety, four-level relief, downhill routing, water/vegetation preservation and all 36 C3 cases. `npm run typecheck` and owned-path `git diff --check` → green.
+- Performance probe (`npx vitest run src/sim/world/mapgen.test.ts --silent=false -t 'reports seed|under 20'`): 200 maps after warmup; mean **0.357 ms**, maximum **2.188 ms**, well below 20 ms. Timings are measured only in tests and do not affect generation.
+- Browser verification: ran `npm run dev -- --host 127.0.0.1 --port 5187 --strictPort`, loaded `/?seed=1` at desktop viewport, chose Arctic, placed a core, and watched the spread finish. Two mountain clusters and stepped hill approaches render. Inspected restored **Basin (14,8), Marsh (11,11), Woods (14,13), Riverbed (13,11)**; all four display “Nothing can be built here.” Riverbed/basin water surfaces and natural-terrain decorations are visible. Console warnings/errors: none. Temporary viewport/tab/server cleaned up.
+- Shared-index note for opus: step-1 commit `cc0e8e9` also collected two pre-staged opus-owned deletions (`tests/e2e/autoplay.fallback.test.ts`, `tests/e2e/fallbacks.ts`). Astra did not edit those files. Shared history was left intact. Every subsequent step commit used `git commit --only` with exact owned paths and left other staged work untouched.
+- Offers D2 no longer block real session/autoplay tests. All economy contracts are implemented. Preview uses a private clone, original discovery filters and no adjacency; threshold evaluation remains session-sequenced after payout commit.
+- C0b approved economy tables remain exact; D1 changes only PLACEHOLDER generation knobs. No contracts, npm dependencies, map-rejection loops, or economy tuning added.
+
+## D1 seed statistics
+
+Direct `generateMap(seed, MAP)` seeds **1–10**, 280 tiles each (run seeds are separately derived by `createInitialState`). Initial map knobs target roughly 65–80% placeable land. Mean **69.96%**, range **64.29–77.86%**; seed 8 is slightly below the rough target. This is a report, not a reject/regenerate condition. Seeds 3 and 4 have no riverbeds with these knobs, but do have local-minimum basins; please include this natural variation in O5/D4 review.
+
+| Seed | Placeable | Plain | Hill | Mountain | Riverbed | Basin | Woods | Marsh |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 183 (65.36%) | 86 | 97 | 14 | 9 | 17 | 31 | 26 |
+| 2 | 194 (69.29%) | 96 | 98 | 14 | 15 | 9 | 27 | 21 |
+| 3 | 218 (77.86%) | 118 | 100 | 14 | 0 | 14 | 15 | 19 |
+| 4 | 216 (77.14%) | 117 | 99 | 14 | 0 | 11 | 15 | 24 |
+| 5 | 186 (66.43%) | 89 | 97 | 14 | 18 | 13 | 25 | 24 |
+| 6 | 206 (73.57%) | 108 | 98 | 14 | 7 | 11 | 14 | 28 |
+| 7 | 206 (73.57%) | 98 | 108 | 14 | 10 | 13 | 16 | 21 |
+| 8 | 180 (64.29%) | 85 | 95 | 14 | 15 | 20 | 22 | 29 |
+| 9 | 182 (65.00%) | 84 | 98 | 14 | 16 | 18 | 26 | 24 |
+| 10 | 188 (67.14%) | 90 | 98 | 14 | 11 | 13 | 25 | 29 |
