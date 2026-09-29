@@ -3,6 +3,9 @@ import type { PayoutEvent } from '../core/types';
 import { buildingName, cap, el, fmtResources } from './format';
 
 export const TOAST_MS = 700;
+/** Per-toast time once more than BACKLOG toasts are waiting, so the queue never lags far behind play. */
+export const TOAST_FAST_MS = 250;
+export const BACKLOG = 3;
 
 export function toastText(session: GameSession, e: PayoutEvent): string {
   const cfg = session.state.config;
@@ -31,7 +34,7 @@ export function createToasts(root: HTMLElement, session: GameSession) {
     const text = queue.shift();
     if (text === undefined) { timer = null; return; }
     host.appendChild(el('div', 'toast', text));
-    timer = setTimeout(next, TOAST_MS);
+    timer = setTimeout(next, queue.length > BACKLOG ? TOAST_FAST_MS : TOAST_MS);
   }
 
   return {

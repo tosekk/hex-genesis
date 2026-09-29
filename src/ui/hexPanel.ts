@@ -51,7 +51,7 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
           const btn = el('button', 'btn build', `${def.name} — ${fmtResources(def.cost)}`);
           btn.dataset.building = b;
           btn.disabled = !affordable;
-          btn.addEventListener('click', () => session.placeBuilding(id, slot, b));
+          btn.addEventListener('click', () => ui.build(id, slot, b));
           btn.addEventListener('mouseenter', () => renderPreview(pv, session.preview(id, slot, b), cfg));
           btn.addEventListener('mouseleave', () => renderPreview(pv, null, cfg));
           cell.appendChild(btn);

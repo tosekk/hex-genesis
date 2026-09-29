@@ -59,3 +59,8 @@
 .card { border-width:3px; box-shadow:inset 0 -8px 0 rgba(0,0,0,.12); }
 .card.biome-forest { border-color:#3f7a2a; } .card.biome-desert { border-color:#b8862a; } .card.biome-arctic { border-color:#4a8fb0; }
 .card:focus-visible { outline:3px solid var(--accent); }
+
+.repeat-chip { position:absolute; bottom:60px; left:10px; font-weight:700; }
+.repeat-chip.unaffordable { opacity:.5; }
+.shift-preview { position:absolute; bottom:110px; left:10px; max-width:320px; font-size:13px; }
+.notice { position:fixed; background:var(--bad); color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; pointer-events:none !important; z-index:5; }

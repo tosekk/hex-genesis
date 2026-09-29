@@ -9,6 +9,7 @@ import { createInteraction } from './interaction';
 import { createOfferModal } from './offerModal';
 import { createResourceBar } from './resourceBar';
 import './styles.css';
+import { createQuickBuild } from './quickBuild';
 import { createToasts } from './toasts';
 import { createLockedTooltip } from './tooltip';
 
@@ -22,6 +23,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   const hexPanel = createHexPanel(host, session, ui);
   const codex = createCodex(host, session);
   const toasts = createToasts(host, session);
+  const quick = createQuickBuild(host, session, ui);
   const tooltip = createLockedTooltip(host, session, ui);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
@@ -39,8 +41,8 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   yes.addEventListener('click', () => { confirm.hidden = true; session.endRun(); });
   host.append(endBtn, confirm);
 
-  const renderAll = () => { resources.render(); cores.render(); hexPanel.render(); codex.render(); };
-  ui.onChange(() => { cores.render(); hexPanel.render(); });
+  const renderAll = () => { quick.render(); resources.render(); cores.render(); hexPanel.render(); codex.render(); };
+  ui.onChange(() => { cores.render(); hexPanel.render(); quick.render(); });
 
   const off = session.subscribe((e) => {
     ui.handleEvent(e);
@@ -61,7 +63,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   return {
     dispose() {
       off(); ui.dispose();
-      for (const c of [resources, cores, hexPanel, codex, toasts, tooltip, offer, end]) c.dispose();
+      for (const c of [resources, cores, hexPanel, codex, toasts, quick, tooltip, offer, end]) c.dispose();
       host.remove();
     },
   };
