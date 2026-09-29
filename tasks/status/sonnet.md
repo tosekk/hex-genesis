@@ -14,7 +14,7 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 
 ## S4 — Quick build (done)
 - `lastBuilt` lives in `src/ui/interaction.ts` (`build()` wraps `session.placeBuilding`; hex panel uses it). Chip/notice/Shift-preview in `src/ui/quickBuild.ts`. Toasts shrink to 250 ms when >3 are queued. Tests: `src/ui/quickBuild.test.ts` (8 required + chip-clear).
-- Commit: HASH_S4
+- Commit: 49e99ae
 
 ## Blockers
 - Real-module session tests (`session.test.ts`) auto-enable once `awardCore`/`placeBuilding`/`checkWin` stop throwing NOT_IMPLEMENTED (deepseek D2/D3, astra C1).
