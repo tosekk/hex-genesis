@@ -119,6 +119,14 @@ describe('isProvablySoftLocked (§43, §44)', () => {
     expect(isProvablySoftLocked(s2)).toBe(false);
   });
 
+  it('false when demolishing TWO buildings would fund an unpaid slot', () => {
+    const s = locked();
+    emptySlot(s, 5, 0, false);
+    s.resources = {};
+    // Every other slot is a built forest building whose refund is > 0: sum of refunds funds anything.
+    expect(isProvablySoftLocked(s)).toBe(false);
+  });
+
   it('fast on a full board (< 10 ms)', () => {
     const s = locked();
     const t = performance.now();

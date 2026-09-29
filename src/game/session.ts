@@ -160,7 +160,8 @@ export function createGameSession(opts?: { config?: GameConfig; now?: () => numb
         const ids: HexId[] = claims.map((c) => c.hexId);
         if (ids.length > 0) emit({ type: 'tilesRevealed', hexIds: ids });
       }
-      if (active.revealed >= n) {
+      // §11/§15: the spread stays locked until the last tile's flip has finished.
+      if (active.revealed >= n && spreadElapsedMs >= config.animation.spreadMaxMs) {
         finishSpread(state);
         emit({ type: 'spreadFinished' });
         endCheck();

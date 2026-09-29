@@ -47,16 +47,13 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
   if (checkWin(state)) return false;
 
   const cfg = state.config;
-  // Wallets reachable by one demolition anywhere (refund counted, §26).
-  const wallets: Resources[] = [state.resources];
-  const seen = new Set<BuildingId>();
+  // Most optimistic wallet for an unpaid slot: resources plus the refund of EVERY demolishable
+  // building (§26). Over-counts on purpose: a multi-step demolition may free an unpaid slot (§43).
+  let optimistic: Resources = state.resources;
   for (const h of state.hexes) {
     if (!h.placeable || h.biome === null) continue;
     for (const s of h.slots) {
-      if (s.building !== null && !seen.has(s.building)) {
-        seen.add(s.building);
-        wallets.push(plus(state.resources, demolishRefund(state, s.building)));
-      }
+      if (s.building !== null) optimistic = plus(optimistic, demolishRefund(state, s.building));
     }
   }
 
@@ -71,8 +68,8 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
         if (!def) return false; // unknown data: unsure
         if (cur.building === null) {
           if (!cur.yieldPaid) {
-            // A base yield is still owed here. Assume it pays if any single demolition (or nothing) funds it.
-            if (wallets.some((w) => covers(w, def.cost))) return false;
+            // A base yield is still owed here. Assume it pays if demolishing anything could fund it.
+            if (covers(optimistic, def.cost)) return false;
           } else if (covers(state.resources, def.cost)) {
             if (++sims > MAX_SIMULATIONS) return false;
             if (paysAfter(state, h.id, slot, b, false)) return false;

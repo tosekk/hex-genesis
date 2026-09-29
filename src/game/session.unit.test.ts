@@ -119,6 +119,22 @@ describe('GameSession (fakes)', () => {
     expect(session.state.activeSpread).toBeNull();
   });
 
+  it('4c: spread stays active until the last flip finishes (spreadMaxMs)', () => {
+    const { session, events } = boot();
+    session.newRun(1);
+    startSpreadAt(session);
+    const a = session.state.config.animation;
+    session.advance(a.spreadMaxMs - a.tileFlipMs);
+    const st = session.state.activeSpread!;
+    expect(st.revealed).toBe(st.result.claims.length);
+    expect(types(events)).not.toContain('spreadFinished');
+    session.state.coreStack.push('desert');
+    expect(session.placeCore(13 * 20 + 19).ok).toBe(false);
+    session.advance(a.tileFlipMs);
+    expect(session.state.activeSpread).toBeNull();
+    expect(types(events).at(-1)).toBe('spreadFinished');
+  });
+
   it('4b: reveal is paced, origin first', () => {
     const { session, events } = boot();
     session.newRun(1);
