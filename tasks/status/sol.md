@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: R7 verified — committing staggered board payout labels against approved contract `c357845`; 26 scoped tests/typecheck/build pass.
+IDLE — routed picking/tutorial items and approved R7 complete; all Sol changes committed.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -18,6 +18,7 @@ IN PROGRESS: R7 verified — committing staggered board payout labels against ap
 - R4-fix — automatic session-event progression, bottom-left collapsible panel, real seed-1 all-step regression; 9 tutorial tests/typecheck and scoped production build pass — `28d632e`.
 - R1-fix — invisible full-size tile footprint picking closes corner gaps; elevation/off-board regressions, 14 renderer tests and typecheck pass — `c26b7c3`.
 - R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required — verification/status commit `e8a1be6`.
+- R7 — approved `showPayouts` implemented with ordered, camera-projected rise/fade labels; 26 scoped tests/typecheck/build pass — `0d6afd8`.
 
 ## Blockers
 <!-- what, waiting on whom -->
