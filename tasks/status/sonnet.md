@@ -7,7 +7,7 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
-- S2 — HUD: resource bar, offer modal, core stack + placement mode, hex panel with preview/demolish, toasts, codex, End Run confirm, end screen — commit hash below
+- S2 — HUD: resource bar, offer modal, core stack + placement mode, hex panel with preview/demolish, toasts, codex, End Run confirm, end screen — a802a99
 
 ## Blockers
 - Real-module session tests (`session.test.ts`) auto-enable once `awardCore`/`placeBuilding`/`checkWin` stop throwing NOT_IMPLEMENTED (deepseek D2/D3, astra C1).
