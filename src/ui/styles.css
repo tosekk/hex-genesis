@@ -1,3 +1,4 @@
+#ui > .hud { pointer-events:none; } /* index.html's `#ui > *` would otherwise make the full-screen HUD swallow board clicks */
 .hud { --ink:#3a2b1c; --paper:#f4e9d3; --paper2:#e8d8b8; --accent:#c8702a; --good:#4d8a3a; --bad:#a83a2a;
   position:absolute; inset:0; pointer-events:none; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--ink); }
 .hud > * { pointer-events:auto; }
