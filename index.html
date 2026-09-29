@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terraform</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #1b1d22; color: #eee; font-family: system-ui, sans-serif; }
+      #board { position: fixed; inset: 0; }
+      #ui { position: fixed; inset: 0; pointer-events: none; }
+      #ui > * { pointer-events: auto; }
+      #tutorial { position: fixed; inset: 0; pointer-events: none; }
+      #tutorial > * { pointer-events: auto; }
+    </style>
+  </head>
+  <body>
+    <div id="board"></div>
+    <div id="ui"></div>
+    <div id="tutorial"></div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
