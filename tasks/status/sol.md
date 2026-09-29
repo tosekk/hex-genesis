@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-R5 verified; preparing its commit, then R7 contract request → R8 icons.
+R7 — contract request filed; implementation skipped pending Opus approval. Next: R8 icons.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -12,6 +12,7 @@ R5 verified; preparing its commit, then R7 contract request → R8 icons.
 - R3 — biome decorations, waterfall sides, tray/frame/table and resize framing; 9 tests/typecheck green and browser terrain demo verified — `c02fcd6`.
 - R4 — event-driven tutorial, animated face, optional prerecorded voice, VO script and sandbox harness; 16 render/tutorial tests/typecheck green, scoped production build/browser checks pass — `43ca21b`.
 - R6 — win conditions match §41; biome resource identities/mountain mine bonus from economy v1, quick-build hint retained, all VO text synchronized; 7 tutorial tests/typecheck green — `5f627e0`.
+- R5 — 24 home-biome procedural models, packed instancing, labeled gallery and 840-building/five-layer load test; 12 renderer tests/typecheck/build green, browser observed 120 fps/clean console — `e8f1624`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -27,6 +28,11 @@ R5 verified; preparing its commit, then R7 contract request → R8 icons.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
+- R7 — PENDING Opus approval: additive optional member in `src/core/contracts.ts` → `BoardView`:
+  ```ts
+  showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void;
+  ```
+  Purpose: presentation-only staggered floating numbers over hexes, preserving event resolution order. Opus would call `board.showPayouts?.(state, e.events)` in `src/app/bindBoard.ts` for `payouts`. HUD toasts remain authoritative. No contract, app binding, or payout implementation is changed by Sol before approval. Per designer task R7, skipped while unanswered.
 
 ## Bugs found in others' modules
 <!-- - owner: <tag> · input · expected · actual · §ref -->
