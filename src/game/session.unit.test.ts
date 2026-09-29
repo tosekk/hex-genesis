@@ -51,9 +51,18 @@ vi.mock('../sim/endgame', () => ({
   isProvablySoftLocked: () => flags.lock,
 }));
 
+import { legalCoreSites } from '../sim/spread/spread';
 import { createGameSession } from './session';
 
-const ORIGIN = 3 * 20 + 3;
+type Session = ReturnType<typeof boot>['session'];
+/** Map terrain is generated, so never hard-code hex ids: pick from the legal core sites. */
+const origins = new WeakMap<Session, number>();
+const origin = (s: Session): number => {
+  if (!origins.has(s)) origins.set(s, legalCoreSites(s.state)[0]); // first call is before any core is placed
+  return origins.get(s)!;
+};
+/** A legal site outside any active spread's claim set (and ≥ minCoreDistance from placed cores). */
+const far = (s: Session) => legalCoreSites(s.state).filter((id) => !s.state.activeSpread?.locked[id]).at(-1)!;
 function boot() {
   let t = 1000;
   const session = createGameSession({ now: () => t });
@@ -62,7 +71,7 @@ function boot() {
   return { session, events, setNow: (v: number) => { t = v; } };
 }
 const types = (ev: SessionEvent[]) => ev.map((e) => e.type);
-function startSpreadAt(session: ReturnType<typeof boot>['session'], id = ORIGIN) {
+function startSpreadAt(session: Session, id = origin(session)) {
   session.chooseOffer(0);
   const r = session.placeCore(id);
   expect(r.ok).toBe(true);
@@ -76,12 +85,12 @@ describe('GameSession (fakes)', () => {
     session.newRun(7);
     expect(types(events)).toEqual(['runStarted', 'coreAwarded', 'offerShown']);
     expect(session.state.pendingOffer).not.toBeNull();
-    expect(session.placeCore(ORIGIN).ok).toBe(false);
-    expect(session.placeBuilding(ORIGIN, 0, 'x').ok).toBe(false);
-    expect(session.demolish(ORIGIN, 0).ok).toBe(false);
+    expect(session.placeCore(origin(session)).ok).toBe(false);
+    expect(session.placeBuilding(origin(session), 0, 'x').ok).toBe(false);
+    expect(session.demolish(origin(session), 0).ok).toBe(false);
     expect(session.chooseOffer(0).ok).toBe(true);
     expect(session.state.coreStack).toEqual(['forest']);
-    expect(session.placeCore(ORIGIN).ok).toBe(true);
+    expect(session.placeCore(origin(session)).ok).toBe(true);
   });
 
   it('2: second placeCore rejected while animating, accepted after finishing', () => {
@@ -89,10 +98,10 @@ describe('GameSession (fakes)', () => {
     session.newRun(1);
     startSpreadAt(session);
     session.state.coreStack.push('desert');
-    expect(session.placeCore(ORIGIN + 10 * 20 - 40).ok).toBe(false);
+    expect(session.placeCore(far(session)).ok).toBe(false);
     session.advance(5000);
     expect(session.state.activeSpread).toBeNull();
-    expect(session.placeCore(13 * 20 + 19).ok).toBe(true);
+    expect(session.placeCore(far(session)).ok).toBe(true);
   });
 
   it('3: building on the active claim set is rejected; outside it is fine', () => {
@@ -102,8 +111,9 @@ describe('GameSession (fakes)', () => {
     const claimed = session.state.activeSpread!.result.claims[0].hexId;
     expect(session.placeBuilding(claimed, 0, 'x').ok).toBe(false);
     expect(session.demolish(claimed, 0).ok).toBe(false);
-    session.state.hexes[13 * 20 + 19].biome = 'forest';
-    expect(session.placeBuilding(13 * 20 + 19, 0, 'x').ok).toBe(true);
+    const outside = far(session);
+    session.state.hexes[outside].biome = 'forest';
+    expect(session.placeBuilding(outside, 0, 'x').ok).toBe(true);
   });
 
   it('4: advance(5000) reveals everything; event count matches claims', () => {
@@ -129,7 +139,7 @@ describe('GameSession (fakes)', () => {
     expect(st.revealed).toBe(st.result.claims.length);
     expect(types(events)).not.toContain('spreadFinished');
     session.state.coreStack.push('desert');
-    expect(session.placeCore(13 * 20 + 19).ok).toBe(false);
+    expect(session.placeCore(far(session)).ok).toBe(false);
     session.advance(a.tileFlipMs);
     expect(session.state.activeSpread).toBeNull();
     expect(types(events).at(-1)).toBe('spreadFinished');
@@ -141,7 +151,7 @@ describe('GameSession (fakes)', () => {
     startSpreadAt(session);
     session.advance(0);
     const first = events.find((e) => e.type === 'tilesRevealed') as { hexIds: number[] };
-    expect(first.hexIds).toEqual([ORIGIN]);
+    expect(first.hexIds).toEqual([origin(session)]);
     session.advance(500);
     expect(session.state.activeSpread!.revealed).toBeLessThan(session.state.activeSpread!.result.claims.length);
   });
@@ -151,10 +161,10 @@ describe('GameSession (fakes)', () => {
     session.newRun(1);
     startSpreadAt(session);
     session.advance(5000);
-    for (const id of [ORIGIN, ORIGIN + 1]) session.state.hexes[id].biome = 'forest';
+    for (const id of [origin(session), origin(session) + 1]) session.state.hexes[id].biome = 'forest';
     events.length = 0;
-    session.placeBuilding(ORIGIN, 0, 'x');
-    session.placeBuilding(ORIGIN, 1, 'x'); // lifetime 10 → threshold
+    session.placeBuilding(origin(session), 0, 'x');
+    session.placeBuilding(origin(session), 1, 'x'); // lifetime 10 → threshold
     const t = types(events);
     const lastPayout = t.lastIndexOf('payouts');
     expect(lastPayout).toBeLessThan(t.lastIndexOf('coreAwarded'));
@@ -167,9 +177,9 @@ describe('GameSession (fakes)', () => {
     const { session } = boot();
     session.newRun(1);
     session.chooseOffer(0); // holds one core, unplaced
-    session.state.hexes[ORIGIN].biome = 'forest';
-    session.placeBuilding(ORIGIN, 0, 'x');
-    session.placeBuilding(ORIGIN, 1, 'x');
+    session.state.hexes[origin(session)].biome = 'forest';
+    session.placeBuilding(origin(session), 0, 'x');
+    session.placeBuilding(origin(session), 1, 'x');
     expect(session.state.pendingOffer).not.toBeNull();
     session.chooseOffer(1);
     expect(session.state.coreStack.length).toBe(2);
@@ -185,17 +195,17 @@ describe('GameSession (fakes)', () => {
     expect(e.status).toBe('ended');
     expect(e.stats).toEqual({ status: 'ended', lifetime: { wood: 3 }, elapsedMs: 5000, seed: 42 });
     expect(session.chooseOffer(0).ok).toBe(false);
-    expect(session.placeCore(ORIGIN).ok).toBe(false);
+    expect(session.placeCore(origin(session)).ok).toBe(false);
   });
 
   it('win takes precedence over a just-awarded core and clears the offer', () => {
     const { session, events } = boot();
     session.newRun(1);
     session.chooseOffer(0);
-    session.state.hexes[ORIGIN].biome = 'forest';
-    session.placeBuilding(ORIGIN, 0, 'x');
+    session.state.hexes[origin(session)].biome = 'forest';
+    session.placeBuilding(origin(session), 0, 'x');
     flags.win = true;
-    session.placeBuilding(ORIGIN, 1, 'x');
+    session.placeBuilding(origin(session), 1, 'x');
     expect(session.state.status).toBe('won');
     expect(session.state.pendingOffer).toBeNull();
     expect(types(events).at(-1)).toBe('runEnded');
@@ -214,7 +224,7 @@ describe('GameSession (fakes)', () => {
     session.newRun(1);
     session.chooseOffer(0);
     (session.state as GameState).resources = {};
-    expect(session.preview(ORIGIN, 0, 'x')).not.toBeNull();
+    expect(session.preview(origin(session), 0, 'x')).not.toBeNull();
     expect(session.preview(999, 0, 'x')).toBeNull();
     expect(session.state.resources).toEqual({});
   });
@@ -232,10 +242,10 @@ describe('GameSession (fakes)', () => {
       const { session } = boot();
       session.newRun(9);
       session.chooseOffer(0);
-      session.placeCore(ORIGIN);
+      session.placeCore(origin(session));
       session.advance(1234);
       session.advance(5000);
-      session.placeBuilding(ORIGIN, 0, 'x');
+      session.placeBuilding(origin(session), 0, 'x');
       const s = structuredClone({ ...session.state, runStartMs: 0, runEndMs: 0 });
       return s;
     };
