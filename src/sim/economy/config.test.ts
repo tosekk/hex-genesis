@@ -4,8 +4,9 @@ import { parentsOf } from '../../core/biomes';
 import { canAfford } from '../../core/resources';
 import { MAIN_BIOMES, MIXED_BIOMES } from '../../core/types';
 import type { Resources } from '../../core/types';
+import v2 from './__fixtures__/economy-v2.json';
 
-describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v1)', () => {
+describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v2)', () => {
   it('starting stock affords the cheapest building in every main biome', () => {
     for (const biome of MAIN_BIOMES) {
       const buildings = ECONOMY.rosters[biome].map(id => ECONOMY.buildings[id]);
@@ -75,4 +76,44 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v1)', ()
       previous = threshold;
     }
   });
+  it('v2 pairs use different buildings and combo totals stay inside guardrails', () => {
+    for (const combo of ECONOMY.combos) {
+      const total = Object.values(combo.amount).reduce((sum, n) => sum + n, 0);
+      if (combo.buildings.length === 2) {
+        expect(combo.buildings[0]).not.toBe(combo.buildings[1]);
+        expect(total).toBeGreaterThanOrEqual(4);
+        expect(total).toBeLessThanOrEqual(7);
+      } else {
+        expect(total).toBeGreaterThanOrEqual(11);
+        expect(total).toBeLessThanOrEqual(15);
+      }
+    }
+  });
+  it('has six thresholds with water first at T3 and food first at T4', () => {
+    expect(ECONOMY.thresholds).toHaveLength(6);
+    expect(ECONOMY.thresholds.findIndex(t => (t.water ?? 0) > 0)).toBe(2);
+    expect(ECONOMY.thresholds.findIndex(t => (t.food ?? 0) > 0)).toBe(3);
+  });
+  it('preserves frozen v2 data and keeps base yields and adjacency inside tuning guardrails', () => {
+    for (const key of ['resources', 'startingResources', 'rosters', 'terrainBonuses', 'zoneModifiers', 'demolishRefundRatio', 'reshufflesPerRun'] as const) {
+      expect(ECONOMY[key], key).toEqual(v2[key]);
+    }
+    expect(Object.keys(ECONOMY.buildings)).toEqual(Object.keys(v2.buildings));
+    for (const [id, original] of Object.entries(v2.buildings)) {
+      const actual = ECONOMY.buildings[id];
+      expect({ id: actual.id, name: actual.name, cost: actual.cost }).toEqual({ id, name: original.name, cost: original.cost });
+      expect(Object.keys(actual.baseYield).sort()).toEqual(Object.keys(original.baseYield).sort());
+      for (const [resource, amount] of Object.entries(original.baseYield)) {
+        expect(Number.isInteger(actual.baseYield[resource])).toBe(true);
+        expect(Math.abs(actual.baseYield[resource] - amount), `${id}/${resource}`).toBeLessThanOrEqual(1);
+      }
+    }
+    expect(ECONOMY.combos.map(({ amount: _, ...recipe }) => recipe))
+      .toEqual(v2.combos.map(({ amount: _, ...recipe }) => recipe));
+    for (const resource of ECONOMY.resources) {
+      expect(ECONOMY.adjacencyAmount[resource]).toBeGreaterThanOrEqual(1);
+      expect(ECONOMY.adjacencyAmount[resource]).toBeLessThanOrEqual(3);
+    }
+  });
+
 });

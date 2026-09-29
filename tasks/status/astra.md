@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. D4 complete — `0b7f609`. Seed-varying clusters, smaller hill patches and longer rivers verified across 200 seeds; all 115 scoped tests and typecheck pass. Before/after seeds 1–10 below; opus follow-up review/pacing requested. Ready for the designer's next assignment.
+IN PROGRESS: N1 — economy v2 exact tables and guardrail tests; then N2–N5 in order and N6 if time remains. Overnight start 2026-09-30 04:50 Asia/Almaty.
 
 ## Done
 - D4 — 1–4 connected mountain clusters of 3–10 tiles, 15–25% hill coverage, draining plateau rivers, tuned natural-terrain probabilities and before/after statistics — `0b7f609`.
@@ -22,6 +22,7 @@ IDLE — available. D4 complete — `0b7f609`. Seed-varying clusters, smaller hi
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- Overnight: follow N1–N5 sequentially, commit each item/round using explicit owned paths, and report outside-owner failures without edits. N0 already complete. Treat v2 table sparse yield keys as the permitted yield channels (±1 on listed resources); keep missing resources at zero unless a later designer decision authorizes a new channel.
 - D4 §6/§53 (designer feedback): the old fixed-radius/count algorithm cannot express the requested variety through knobs alone. Add min/max cluster count/size and hill-budget knobs, grow connected irregular mountain/hill patches, and shape hill elevations from their outer boundary while retaining mountain distance ≤3. Rivers may cross an equal-height plateau only along a shortest route to a strictly lower outlet; enclosed plateaus remain local minima. All decisions use integer RNG and ascending HexId ties, with one construction pass and no map rejection/regeneration.
 - D1 §6/§53 vegetation: only remaining plains can become marsh/woods. Configured per-thousand marsh chance increases on low ground and beside riverbeds/basins; woods chance increases at mid elevations. Water, hill and mountain terrain/elevations stay untouched.
 - D1 §6 water: river sources are elevated plain tiles (threshold is a PLACEHOLDER knob). Each route selects the lowest neighbor, ties by HexId, and stops at the board edge or any local minimum, including a plateau. Because plain approaches are lower than adjacent hills, descending river walks cannot remove hills or mountains. Basin candidates have no strictly lower neighbor. All water chances are integer parts per thousand in MAP.params.
@@ -39,6 +40,7 @@ IDLE — available. D4 complete — `0b7f609`. Seed-varying clusters, smaller hi
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- **N1 → sol:** `npx vitest run src/tutorial/tutorial.session.test.ts` fails at line 39 on seed 1. The real-session fixture uses Desert `quarry + quarry` / Arctic `ice_drill + ice_drill` and expects a pair payout; v2 deliberately removes both duplicate recipes. Use `quarry + palm_grove` / `ice_drill + scree_quarry`, or derive an affordable pair from config. Tutorial source/tests untouched.
 - RESOLVED C3-WORLD: all-plain stub replaced by astra D1; T1–T4 now pass normally (`cc0e8e9`, `3950a22`, `d978f14`).
 - RESOLVED C3-END / C3-SESSION stubs: astra D2 `0daa072` and sonnet D3 `c23be27` enabled real-module acceptance.
 - RESOLVED C3-REFUNDS: sonnet `4909942` now handles the conservative two-demolition escape fixture; test passes with no expected-failure marker.
@@ -108,3 +110,57 @@ Full after mix (full before mix is retained in the D1 table):
 Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 occur; hills **42–69 tiles (15.00–24.64%, mean 19.09%)**. Placeable mean **73.53%**, range **63.93–83.57%**; **194/200 maps** fall inside 65–80%. These six mild outliers are reported, never rejected/regenerated. **65/200 maps** have a river route longer than five tiles; maximum **12**. All seeds 1–10 now have riverbeds. Mountain count and hill budget are seeded draws, followed by connected construction; no map validation loop, retry, dependency, contract change, or economy rebalance was added.
 
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
+
+## Balance log
+
+### N1 — exact designer v2 baseline
+
+Reason: designer v1 playtest found spam dominating and T8 at ~32% fill. This item copies v2 exactly; independent measurements begin in N2. Frozen costs, names, rosters, terrain/zone bonuses and starting stock are unchanged. V2 snapshot in `src/sim/economy/__fixtures__/economy-v2.json` anchors automated guardrail checks.
+
+| Value | v1 → v2 |
+|---|---|
+| `sawmill` yield | wood 6 → wood 5 |
+| `stonemason` yield | stone 6 → stone 5 |
+| `glass_kiln` yield | stone 5, water 3 → stone 3, water 3 |
+| `ice_drill` yield | water 4 → water 3 |
+| `glacier_pump` yield | water 6 → water 5 |
+| `grain_fields` yield | food 5 → food 4 |
+| `resin_works` yield | wood 6 → wood 5 |
+| `lichen_farm` yield | food 5 → food 4 |
+| `frost_kiln` yield | stone 3, water 3 → stone 2, water 3 |
+| `timber_line` payout | wood 3 → wood 5 |
+| `homestead` payout | wood 2, food 2 → wood 3, food 3 |
+| `forest_camp` new recipe | lumber_camp + gatherers_hut; wood 3, food 3 |
+| `woodland_village` payout | wood 6, food 4 → wood 7, food 6 |
+| `cut_stone` payout | stone 3 → stone 5 |
+| `oasis_town` payout | water 2, wood 2 → water 3, wood 3 |
+| `desert_outpost` new recipe | quarry + palm_grove; stone 3, wood 2 |
+| `sun_citadel` payout | stone 6, water 3 → stone 8, water 5 |
+| `ice_mine` new recipe | ice_drill + scree_quarry; water 3, stone 3 |
+| `harbor` payout | food 2, water 2 → food 3, water 3 |
+| `frontier_outpost` payout | wood 2, stone 2 → wood 3, stone 3 |
+| `polar_base` payout | water 6, food 2 → water 8, food 4 |
+| `bread_road` payout | food 4 → food 6 |
+| `frontier_farm` payout | food 3, wood 1 → food 4, wood 2 |
+| `market_town` payout | wood 4, stone 4, food 2 → wood 5, stone 5, food 4 |
+| `fur_trade` payout | food 4 → food 6 |
+| `resin_mill` payout | wood 4 → wood 6 |
+| `spa_village` payout | water 4, food 4 → water 6, food 7 |
+| `salt_cure` payout | food 3, stone 2 → food 4, stone 2 |
+| `frost_glass` payout | water 3, stone 2 → water 4, stone 2 |
+| `lichen_terraces` payout | food 5, water 3 → food 7, water 6 |
+| `lichen_terraces` recipe | lichen_farm + lichen_farm + oasis_well → lichen_farm + oasis_well + frost_kiln |
+| `foragers_circle` | removed duplicate-building pair |
+| `twin_quarries` | removed duplicate-building pair |
+| `meltwater` | removed duplicate-building pair |
+| adjacency | wood 1, stone 1, water 1, food 1 → wood 2, stone 2, water 2, food 2 |
+| T1 | wood 12, stone 12 → wood 15, stone 15 |
+| T2 | wood 35, stone 30 → wood 60, stone 50 |
+| T3 | wood 65, stone 55, water 15 → wood 130, stone 110, water 45 |
+| T4 | wood 110, stone 95, water 40, food 20 → wood 300, stone 250, water 140, food 110 |
+| T5 | wood 170, stone 145, water 70, food 50 → wood 560, stone 470, water 260, food 210 |
+| T6 | wood 240, stone 210, water 110, food 90 → wood 950, stone 800, water 450, food 370 |
+| T7 | wood 330, stone 285, water 160, food 135 → removed |
+| T8 | wood 440, stone 380, water 225, food 190 → removed |
+
+N1 scoped check: `npx vitest run src/sim src/config tests/acceptance tests/balance` — **158 passed**, 14 files, 3.36 s. Typecheck passes. Full `npm test`: 250 passed, 1 failed (sol tutorial fixture), 1 skipped; 114.06 s. Full run began before the final guardrail case was added; the later scoped 158-test run includes it. Tutorial failure reproduced and routed above.
