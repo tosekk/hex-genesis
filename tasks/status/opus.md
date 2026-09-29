@@ -9,8 +9,8 @@ IN PROGRESS: O3 integration (waiting on deepseek D2 offers for a playable loop) 
 <!-- - <task id> — <one line> — <commit hash> -->
 - O1: M0 DONE `4e877b6` (foundation, contracts, stubs). Committed by the human.
 - O2: spread engine (`src/sim/spread/spread.ts`) with 26 tests in `spread.test.ts`, all green. Covers every O2 required test plus min-depth conversion, discard-and-continue, and a perf check (< 5 ms on 20×14). Shipped in `4e877b6`.
-- O3 (partial): `bindBoard` wires runStarted/spreadStarted/tilesRevealed/spreadFinished/hexChanged to the real BoardView, incl. the `locked` highlight for the active claim set (§11). `main.ts` starts the frame loop BEFORE `newRun`, so a throw can't blank the board. The dev error overlay dedupes repeats. Browser-verified against the real board + HUD: board and HUD render; the run stops at `awardCore` NOT_IMPLEMENTED (deepseek).
-- O4 (partial): `tests/e2e/` has `assertInvariants` (§52), a greedy bot driving only the GameSession API, and threshold tuning output.
+- O3 (partial, `823728d`): `bindBoard` wires runStarted/spreadStarted/tilesRevealed/spreadFinished/hexChanged to the real BoardView, incl. the `locked` highlight for the active claim set (§11). `main.ts` starts the frame loop BEFORE `newRun`, so a throw can't blank the board. The dev error overlay dedupes repeats. Browser-verified against the real board + HUD: board and HUD render; the run stops at `awardCore` NOT_IMPLEMENTED (deepseek).
+- O4 (partial, `823728d`): `tests/e2e/` has `assertInvariants` (§52), a greedy bot driving only the GameSession API, and threshold tuning output.
   - `autoplay.test.ts` uses the real modules and self-skips until offers/endgame stop throwing.
   - `autoplay.fallback.test.ts` swaps in minimal fakes ONLY for functions that still throw NOT_IMPLEMENTED. It passes today: seeds 1–5, invariants checked after every action, and a replay-determinism check.
 
