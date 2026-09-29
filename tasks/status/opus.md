@@ -13,7 +13,7 @@ IN PROGRESS: O4 packaging (`scripts/package.mjs`, README) and release checklist.
   - Full run through the real UI: offer → Desert core → spread → builds → 8 thresholds → 7 cores (Arctic/Desert/Forest, with mixed borders) → 10 combos discovered → **"Planet terraformed!" win screen** (§41) with lifetime totals, time, and seed.
   - Then New Run (seed 8) → offer → End Run → confirm → "Run ended" screen.
   - Zero console errors across both runs. Bugs found are listed under "Bugs routed".
-- O4 (autoplay part, `823728d` + this commit): `tests/e2e/autoplay.test.ts` now runs on the REAL modules (the fallback fakes are deleted).
+- O4 (autoplay part, `823728d` + `dac18d9`): `tests/e2e/autoplay.test.ts` now runs on the REAL modules (the fallback fakes are deleted).
   - Seeds 1–5 all win. `assertInvariants` (§52) is checked after every action, and a replay-determinism check passes.
   - Bounded runtime: per-run action cap (3000), wall-clock budget (30 s → `stop: 'time'`), max 1000 `advance()` calls per spread (→ throws), and per-test timeouts. Full `npm test` finishes in ~34 s.
   - `npm run pacing`: opt-in flat-map baseline (pins a flat map via `vi.mock`, so economy changes compare against a fixed board).
