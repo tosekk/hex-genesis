@@ -16,10 +16,15 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 - `lastBuilt` lives in `src/ui/interaction.ts` (`build()` wraps `session.placeBuilding`; hex panel uses it). Chip/notice/Shift-preview in `src/ui/quickBuild.ts`. Toasts shrink to 250 ms when >3 are queued. Tests: `src/ui/quickBuild.test.ts` (8 required + chip-clear).
 - Commit: 49e99ae
 
+## D3 — win + conservative soft-lock (reassigned from deepseek) (done)
+- `src/sim/endgame.ts` + `endgame.test.ts` (13 tests). Commit: HASH_D3
+- Real-module `session.test.ts` still skipped: `src/sim/offers.ts` (D2) is still a NOT_IMPLEMENTED stub. Will enable/re-run when it lands.
+
 ## Blockers
 - Real-module session tests (`session.test.ts`) auto-enable once `awardCore`/`placeBuilding`/`checkWin` stop throwing NOT_IMPLEMENTED (deepseek D2/D3, astra C1).
 
 ## Decisions
+- D3 §44: `isProvablySoftLocked` treats an EMPTY slot whose base yield is unpaid as productive if any building in its roster is affordable from `resources` or from `resources + refund` of any single existing building (one-demolition lookahead; base amount assumed non-zero). Paid empty slots and filled slots (replace) are checked by simulating `placeBuilding` on a `structuredClone` (non-zero payout or firstCompletion). More than 64 simulations → returns false (unsure).
 - §9/S1: `placeCore` origin claim is revealed on the first `advance()` call (target count = 1 at t=0), not inside `placeCore`.
 - S1 `preview`: probes `canPlaceBuilding` on a shallow state copy with 1e9 of every resource; null if it still fails (no dependence on reason text). Unaffordable still previews.
 - S1: after a win/loss, `advance` does nothing (spread animation stops); the end screen shows the state as-is.
