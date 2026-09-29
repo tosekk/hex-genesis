@@ -17,7 +17,7 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 - Commit: 49e99ae
 
 ## D3 — win + conservative soft-lock (reassigned from deepseek) (done)
-- `src/sim/endgame.ts` + `endgame.test.ts` (13 tests). Commit: HASH_D3
+- `src/sim/endgame.ts` + `endgame.test.ts` (13 tests). Commit: c23be27
 - Real-module `session.test.ts` still skipped: `src/sim/offers.ts` (D2) is still a NOT_IMPLEMENTED stub. Will enable/re-run when it lands.
 
 ## Blockers
