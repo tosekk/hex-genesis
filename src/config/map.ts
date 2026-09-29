@@ -11,5 +11,9 @@ export const MAP: MapConfig = {
     mountainRadius: 1,
     mountainInset: 3,
     mountainSeparation: 8,
+    // PLACEHOLDER chances are integer parts per thousand.
+    riverSourceMinElevation: 1,
+    riverSourceChance: 100,
+    basinChance: 100,
   },
 };

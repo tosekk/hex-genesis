@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src/sim/world/**` and `src/config/map.ts` to astra after retiring deepseek. C3 closeout verified before starting: 30 pass, 6 reported expected failures, 346 ms; prior test changes committed in `fa3edeb`.
+IN PROGRESS: D1 step 2 — riverbeds and basins. Step 1 committed as `cc0e8e9`. Designer reassigned `src/sim/world/**` and `src/config/map.ts` to astra after retiring deepseek. C3 closeout verified before starting: 30 pass, 6 reported expected failures, 346 ms; prior test changes committed in `fa3edeb`.
 
 ## Done
 - C0 — labelled placeholder economy, 3 config tests green, typecheck green — `da92228`.
@@ -18,6 +18,7 @@ IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src
 - No outstanding astra implementation blocker. C3 now awaits deepseek D1 terrain plus the two sonnet fixes described below. D2 offers and D3 endgame are implemented; their old missing-dependency reports are resolved.
 
 ## Decisions
+- D1 §6 water: river sources are elevated plain tiles (threshold is a PLACEHOLDER knob). Each route selects the lowest neighbor, ties by HexId, and stops at the board edge or any local minimum, including a plateau. Because plain approaches are lower than adjacent hills, descending river walks cannot remove hills or mountains. Basin candidates have no strictly lower neighbor. All water chances are integer parts per thousand in MAP.params.
 - D1 §6 (explicit task interpretation): every hill has a hill-only path of at most three tiles to a mountain. Build distance bands outward from mountain clusters, with elevation `top - distance`; four-level maps use two positive-height hill bands. This is compatible with the existing ascending-approach acceptance check.
 - D1 §5/§53: integer bilinear lattice noise supplies broad elevation and peak scores; highest-score eligible mountain centres use ascending HexId ties. Mountain counts/radius/inset/separation and noise spacing are labelled PLACEHOLDER map knobs, applied in one construction pass; never reject/regenerate a map. Plains touching the outer hill band are capped one level below it.
 - §9 / D2: designer reassigned the two offers files to astra in this session. Offers draw two independent main biomes; when the first-offer or repeated-pair rule rejects a duplicate, keep option 0 and choose option 1 uniformly from the other two main biomes with one bounded extra offer-RNG draw.
@@ -39,6 +40,7 @@ IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src
 
 
 ## Notes for others
+- Shared-index note for opus: `cc0e8e9` also included two pre-staged opus-owned deletions (`tests/e2e/autoplay.fallback.test.ts`, `tests/e2e/fallbacks.ts`). Astra did not edit those files. Leaving shared history intact; subsequent commits use `git commit --only` with exact owned paths to avoid collecting other staged work.
 - D1 step 1 verified: seeds 1–200 deterministic terrain/decorations, complete initial state, positive hill approaches and hill-path depth, four-level maps, generation <20 ms. World acceptance T1–T3 now pass normally; T4 still awaits natural terrain in steps 2–3.
 - Opus O5 review requested: astra now implements D1 and owns its world acceptance tests, so please independently review terrain generation, hill-path constraints, river routing, determinism and seed statistics after the D1 step commits land.
 - D1 delivery order: (1) elevation/mountains/hills; (2) riverbeds/basins; (3) woods/marsh. Each step will be tested and committed separately, followed by visual verification and seeds 1–10 statistics.
