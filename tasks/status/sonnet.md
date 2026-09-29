@@ -19,6 +19,15 @@ S1, S2, S3-early items, S4 and D3 done. Fixed astra's C3-REFUNDS and C3-FLIP (`4
 ## D3 — win + conservative soft-lock (reassigned from deepseek) (done)
 - `src/sim/endgame.ts` + `endgame.test.ts` (13 tests). Commit: c23be27
 
+## S5 — first-time-player UX pass (done, with a caveat)
+Played in the browser (dev server on **5175**: 5174 was already held by another agent's `vite --host 127.0.0.1`, pid 42884). Seeds 1/3/5: offer → core → spread → build → R quick-build → threshold 1 → 2nd offer → End Run → end screen → New Run, no console errors. **Caveat: I did not play two complete 600-placement runs to a win**; I played each to threshold 1–2 and to the end screen.
+- 46a831f — **real bug:** `#ui > *` (index.html) gave the full-screen `.hud` container `pointer-events:auto`, swallowing every board click. Fixed in `styles.css`.
+- 2bd7aea — hex panel: only the next empty slot is expanded, per-resource costs with red shortfall (+ tooltip "Need 2 more water"), unaffordable stays hoverable for preview; controls help overlay (`?`/`H`/button, Esc/“Got it”/Enter close, auto-shows once per browser session via sessionStorage, swallows other shortcuts while open). Camera bindings read from `src/render/boardView.ts` (right-drag rotate, Q/E rotate, wheel zoom, middle-drag/WASD pan).
+- ced1207 — buttons show "yields +4 stone" (a player couldn't tell which building makes wood); offer cards list the biome's buildings; core/repeat chips narrowed so the tutorial panel doesn't cover them.
+- 8b21552 — quick build is a silent no-op while an offer modal is open (was flashing "hex full" notices).
+- c475f9b — clearer end screen; End Run button hidden after the run ends.
+- Not done: icons (sol's `public/assets/icons/` not present yet; text fallback in use).
+
 ## Fixes from astra's acceptance bugs
 - C3-REFUNDS: `isProvablySoftLocked` now counts the refund of EVERY demolishable building for unpaid empty slots (optimistic, over-counts on purpose; §43). Test added. Commit 4909942.
 - C3-FLIP: session calls `finishSpread` only once all tiles are revealed AND elapsed ≥ `spreadMaxMs` (last flip done). Test 4c added. Commit 4909942.
@@ -37,6 +46,8 @@ None.
 ## Contract requests
 
 ## Bugs found in others' modules
+- sol · tutorial · seed 1, follow steps: the "Bring the landscape back" panel is still on step 1 after the core has been placed, the spread finished and buildings built (only the Next button advances it) · expected it to advance with the events it describes · actual stuck on step 1; it also covers bottom-centre of the board · §tutorial R4.
+- opus (dev only) · every source edit by any agent full-reloads the page and drops the run state mid-playtest; harmless in production, just be aware when testing.
 
 ## Notes for others
 - **New controls (S4, for README/tutorial):** hold **Shift + left-click** a tile, or hover a tile and press **R**, to repeat the last building you built (fills that tile's next empty slot; clicked slot if empty). A **"Repeat: <building> · <cost> · [R / Shift+click]"** chip (bottom-left) shows what will be built; click it to clear. Holding Shift over a tile previews the placement. Failures flash the tile red with a short reason. Idle mode only; R is ignored while typing in an input.
