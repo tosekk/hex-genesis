@@ -50,7 +50,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
     ui.handleEvent(e);
     switch (e.type) {
       case 'runStarted':
-        toasts.clear(); offer.hide(); end.hide(); confirm.hidden = true; renderAll();
+        toasts.clear(); offer.hide(); end.hide(); endBtn.hidden = false; confirm.hidden = true; renderAll();
         help.maybeAutoShow();
         break;
       case 'offerShown': offer.show(e.offer); renderAll(); break;
@@ -58,7 +58,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
       case 'payouts': toasts.push(e.events); break;
       case 'combosDiscovered': codex.render(); break;
       case 'spreadFinished': tooltip.hide(); renderAll(); break;
-      case 'runEnded': offer.hide(); confirm.hidden = true; renderAll(); end.show(e.stats); break;
+      case 'runEnded': endBtn.hidden = true; offer.hide(); confirm.hidden = true; renderAll(); end.show(e.stats); break;
       default: renderAll();
     }
   });

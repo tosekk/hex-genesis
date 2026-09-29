@@ -17,16 +17,16 @@ export function createEndScreen(root: HTMLElement, session: GameSession) {
     overlay.replaceChildren();
     const box = el('div', 'panel modal end-screen');
     box.appendChild(el('h2', undefined, TITLE[stats.status]));
-    box.appendChild(el('div', 'end-status', `Result: ${cap(stats.status)}`));
     const life = el('div', 'end-lifetime');
+    life.appendChild(el('div', 'hint', 'Resources produced this run'));
     for (const r of session.state.config.resources) {
-      const row = el('div', 'end-row', `${cap(r)}: ${stats.lifetime[r] ?? 0} lifetime`);
+      const row = el('div', 'end-row', `${cap(r)}: ${stats.lifetime[r] ?? 0}`);
       row.dataset.resource = r;
       life.appendChild(row);
     }
     box.appendChild(life);
     box.appendChild(el('div', 'end-time', `Time: ${fmtTime(stats.elapsedMs)}`));
-    box.appendChild(el('div', 'end-seed', `Seed: ${stats.seed}`));
+    box.appendChild(el('div', 'end-seed', `Seed: ${stats.seed} (type it below to replay this world)`));
     const input = el('input', 'seed-input');
     input.type = 'text';
     input.placeholder = 'seed (blank = random)';
