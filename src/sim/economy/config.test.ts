@@ -3,56 +3,76 @@ import { ECONOMY } from '../../config/economy';
 import { parentsOf } from '../../core/biomes';
 import { canAfford } from '../../core/resources';
 import { MAIN_BIOMES, MIXED_BIOMES } from '../../core/types';
+import type { Resources } from '../../core/types';
 
-describe('C0 placeholder economy (§21, §22, §45, §53)', () => {
-  it('uses only Wood and Stone and affords a building in every main biome', () => {
-    expect(ECONOMY.resources).toEqual(['wood', 'stone']);
+describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v1)', () => {
+  it('starting stock affords the cheapest building in every main biome', () => {
     for (const biome of MAIN_BIOMES) {
-      const roster = ECONOMY.rosters[biome];
-      expect(roster).toHaveLength(5);
-      expect(roster.some(id => canAfford(ECONOMY.startingResources, ECONOMY.buildings[id].cost))).toBe(true);
+      const buildings = ECONOMY.rosters[biome].map(id => ECONOMY.buildings[id]);
+      const total = (cost: Resources) => Object.values(cost).reduce((a, b) => a + b, 0);
+      const cheapest = Math.min(...buildings.map(b => total(b.cost)));
+      expect(buildings.filter(b => total(b.cost) === cheapest)
+        .some(b => canAfford(ECONOMY.startingResources, b.cost)), biome).toBe(true);
     }
   });
-  it('has three buildings from each parent and three unique mixed buildings', () => {
+  it('main rosters have five; mixed have three from each parent plus three unique', () => {
+    for (const biome of MAIN_BIOMES) expect(ECONOMY.rosters[biome]).toHaveLength(5);
+    const mainIds = MAIN_BIOMES.flatMap(b => ECONOMY.rosters[b]);
     for (const biome of MIXED_BIOMES) {
       const [a, b] = parentsOf(biome);
       const roster = ECONOMY.rosters[biome];
       expect(roster).toHaveLength(9);
       expect(new Set(roster).size).toBe(9);
-      expect(roster.slice(0, 3)).toEqual(ECONOMY.rosters[a].slice(0, 3));
-      expect(roster.slice(3, 6)).toEqual(ECONOMY.rosters[b].slice(0, 3));
-      expect(roster.slice(6).every(id => id.startsWith(`${biome}_`))).toBe(true);
+      expect(roster.filter(id => ECONOMY.rosters[a].includes(id))).toHaveLength(3);
+      expect(roster.filter(id => ECONOMY.rosters[b].includes(id))).toHaveLength(3);
+      const own = roster.filter(id => !mainIds.includes(id));
+      expect(own).toHaveLength(3);
+      for (const other of MIXED_BIOMES.filter(b => b !== biome)) {
+        expect(own.some(id => ECONOMY.rosters[other].includes(id))).toBe(false);
+      }
     }
   });
-  it('labels all content and supplies viable yields, recipes, and spaced thresholds', () => {
-    for (const building of Object.values(ECONOMY.buildings)) {
-      expect(building.name).toContain('(placeholder)');
-      expect(Object.values(building.baseYield).reduce((a, b) => a + b, 0))
-        .toBeGreaterThanOrEqual(Object.values(building.cost).reduce((a, b) => a + b, 0));
+  it('all roster ids exist and every building is reachable in a roster', () => {
+    const rosterIds = new Set(Object.values(ECONOMY.rosters).flat());
+    expect([...rosterIds].sort()).toEqual(Object.keys(ECONOMY.buildings).sort());
+    for (const [id, b] of Object.entries(ECONOMY.buildings)) expect(b.id).toBe(id);
+  });
+  it('all recipes have 2–3 known buildings that coexist in at least one roster', () => {
+    const ids = ECONOMY.combos.map(c => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    const recipes = ECONOMY.combos.map(c => [...c.buildings].sort().join('|'));
+    expect(new Set(recipes).size).toBe(recipes.length);
+    for (const combo of ECONOMY.combos) {
+      expect([2, 3]).toContain(combo.buildings.length);
+      for (const id of combo.buildings) expect(ECONOMY.buildings[id], combo.id).toBeDefined();
+      expect(Object.values(ECONOMY.rosters).some(roster => combo.buildings.every(id => roster.includes(id))), combo.id).toBe(true);
     }
-    for (const biome of [...MAIN_BIOMES, ...MIXED_BIOMES]) {
-      const recipes = ECONOMY.combos.filter(c => c.id.startsWith(`${biome}_`));
-      expect(recipes.filter(c => c.buildings.length === 2).length).toBeGreaterThanOrEqual(MAIN_BIOMES.includes(biome as typeof MAIN_BIOMES[number]) ? 2 : 1);
-      expect(recipes.filter(c => c.buildings.length === 3)).toHaveLength(1);
-      for (const combo of recipes) expect(combo.buildings.every(id => ECONOMY.rosters[biome].includes(id))).toBe(true);
+  });
+  it('terrain and zone modifiers refer only to known buildings', () => {
+    const modifiers = [...ECONOMY.terrainBonuses, ...Object.values(ECONOMY.zoneModifiers).flat()];
+    for (const modifier of modifiers) {
+      if (modifier.buildings === 'any') continue;
+      for (const id of modifier.buildings) expect(ECONOMY.buildings[id], id).toBeDefined();
     }
-    expect(ECONOMY.thresholds.length).toBeGreaterThanOrEqual(8);
-    expect(ECONOMY.thresholds.length).toBeLessThanOrEqual(12);
-    // Conservative per-resource upper bound: base + 6 of each terrain rule +
-    // all positive zone modifiers + 3 largest pairs + largest triple + 6 adjacencies.
-    for (const resource of ECONOMY.resources) {
-      const max = (values: number[]) => Math.max(0, ...values);
-      const bound = max(Object.values(ECONOMY.buildings).map(b => b.baseYield[resource] ?? 0))
-        + 6 * ECONOMY.terrainBonuses.reduce((n, b) => n + (b.bonus[resource] ?? 0), 0)
-        + max(Object.values(ECONOMY.zoneModifiers).map(ms => ms.reduce((n, m) => n + Math.max(0, m.delta[resource] ?? 0), 0)))
-        + 3 * max(ECONOMY.combos.filter(c => c.buildings.length === 2).map(c => c.amount[resource] ?? 0))
-        + max(ECONOMY.combos.filter(c => c.buildings.length === 3).map(c => c.amount[resource] ?? 0))
-        + 6 * (ECONOMY.adjacencyAmount[resource] ?? 0);
-      let previous = 0;
-      for (const threshold of ECONOMY.thresholds) {
-        expect(threshold[resource] - previous).toBeGreaterThan(bound);
-        previous = threshold[resource];
-      }
+  });
+  it('every resource key in all tables is declared', () => {
+    const resources: Resources[] = [
+      ECONOMY.startingResources, ECONOMY.adjacencyAmount, ...ECONOMY.thresholds,
+      ...Object.values(ECONOMY.buildings).flatMap(b => [b.cost, b.baseYield]),
+      ...ECONOMY.combos.map(c => c.amount), ...ECONOMY.terrainBonuses.map(b => b.bonus),
+      ...Object.values(ECONOMY.zoneModifiers).flat().map(m => m.delta),
+    ];
+    for (const values of resources) for (const [resource, amount] of Object.entries(values)) {
+      expect(ECONOMY.resources).toContain(resource);
+      expect(Number.isFinite(amount)).toBe(true);
+    }
+  });
+  it('thresholds never decrease per resource and each new threshold increases at least one target', () => {
+    let previous: Resources = {};
+    for (const threshold of ECONOMY.thresholds) {
+      for (const resource of ECONOMY.resources) expect(threshold[resource] ?? 0).toBeGreaterThanOrEqual(previous[resource] ?? 0);
+      expect(ECONOMY.resources.some(r => (threshold[r] ?? 0) > (previous[r] ?? 0))).toBe(true);
+      previous = threshold;
     }
   });
 });

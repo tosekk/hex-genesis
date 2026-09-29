@@ -1,63 +1,100 @@
-import { parentsOf } from '../core/biomes';
-import { MAIN_BIOMES, MIXED_BIOMES } from '../core/types';
-import type { Biome, BuildingDef, ComboDef, GameConfig, ZoneModifierDef } from '../core/types';
+import type { GameConfig } from '../core/types';
 
-// PLACEHOLDER — not design decisions (GAME_DESIGN §53). Tune freely; do not treat as spec.
-const buildings: Record<string, BuildingDef> = {};
-const rosters = {} as Record<Biome, string[]>;
-const combos: ComboDef[] = [];
-const zoneModifiers: Partial<Record<Biome, ZoneModifierDef[]>> = {};
-const labels: Record<Biome, string> = {
-  forest: 'Forest', desert: 'Desert', arctic: 'Arctic',
-  steppe: 'Steppe', taiga: 'Taiga', polarDesert: 'Polar Desert',
-};
-
-// PLACEHOLDER: each new slot is resource-positive in both resources, in every biome.
-for (const biome of [...MAIN_BIOMES, ...MIXED_BIOMES]) {
-  const main = MAIN_BIOMES.some(b => b === biome);
-  const suffixes = main ? ['a', 'b', 'c', 'd', 'e'] : ['x', 'y', 'z'];
-  const own = suffixes.map((suffix, index) => {
-    const id = `${biome}_${suffix}`;
-    buildings[id] = {
-      id, name: `${labels[biome]} ${suffix.toUpperCase()} (placeholder)`,
-      cost: { wood: 2 + index, stone: 2 },
-      baseYield: { wood: 4 + index, stone: 4 },
-    };
-    return id;
-  });
-  if (main) rosters[biome] = own;
-  else {
-    const [a, b] = parentsOf(biome as typeof MIXED_BIOMES[number]);
-    rosters[biome] = [...rosters[a].slice(0, 3), ...rosters[b].slice(0, 3), ...own];
-  }
-  const [a, b] = own;
-  combos.push(
-    { id: `${biome}_pair`, name: `${labels[biome]} Pair (placeholder)`, buildings: [a, b], amount: { wood: 2, stone: 2 } },
-    { id: `${biome}_triple`, name: `${labels[biome]} Triple (placeholder)`, buildings: [a, b, a], amount: { wood: 3, stone: 3 } },
-  );
-  if (main) combos.push({
-    id: `${biome}_double`, name: `${labels[biome]} Double (placeholder)`, buildings: [a, a], amount: { wood: 2, stone: 2 },
-  });
-  zoneModifiers[biome] = [
-    { buildings: [a, b], delta: { wood: 1, stone: -1 } },
-  ];
-}
-
+// PLACEHOLDER v1 (ECONOMY_SPEC.md) — designer-approved, tunable
 export const ECONOMY: Pick<GameConfig,
   'resources' | 'startingResources' | 'buildings' | 'rosters' | 'combos' | 'terrainBonuses' |
   'zoneModifiers' | 'adjacencyAmount' | 'thresholds' | 'demolishRefundRatio' | 'reshufflesPerRun'> = {
-  resources: ['wood', 'stone'],
-  startingResources: { wood: 12, stone: 12 }, // PLACEHOLDER
-  buildings, rosters, combos, zoneModifiers,
-  terrainBonuses: [ // PLACEHOLDER: add once per visible adjacent qualifying tile.
-    { adjacentTerrain: ['mountain'], buildings: 'any', bonus: { stone: 1 } },
-    { adjacentTerrain: ['riverbed', 'basin'], buildings: 'any', bonus: { wood: 1 } },
-    { adjacentTerrain: ['woods'], buildings: 'any', bonus: { wood: 1 } },
-    { adjacentTerrain: ['marsh'], buildings: 'any', bonus: { stone: 1 } },
+  resources: ['wood', 'stone', 'water', 'food'],
+  startingResources: { wood: 6, stone: 6 },
+  buildings: {
+    lumber_camp: { id: 'lumber_camp', name: 'Lumber Camp', cost: { wood: 2 }, baseYield: { wood: 4 } },
+    hillside_mine: { id: 'hillside_mine', name: 'Hillside Mine', cost: { wood: 2 }, baseYield: { stone: 3 } },
+    sawmill: { id: 'sawmill', name: 'Sawmill', cost: { wood: 2, stone: 2 }, baseYield: { wood: 6 } },
+    gatherers_hut: { id: 'gatherers_hut', name: "Gatherer's Hut", cost: { wood: 2 }, baseYield: { food: 2, wood: 1 } },
+    farm: { id: 'farm', name: 'Farm', cost: { wood: 3, stone: 1 }, baseYield: { food: 4 } },
+    quarry: { id: 'quarry', name: 'Quarry', cost: { stone: 2 }, baseYield: { stone: 4 } },
+    palm_grove: { id: 'palm_grove', name: 'Palm Grove', cost: { stone: 2 }, baseYield: { wood: 3 } },
+    stonemason: { id: 'stonemason', name: 'Stonemason', cost: { wood: 2, stone: 2 }, baseYield: { stone: 6 } },
+    oasis_well: { id: 'oasis_well', name: 'Oasis Well', cost: { stone: 3 }, baseYield: { water: 3, stone: 1 } },
+    glass_kiln: { id: 'glass_kiln', name: 'Glass Kiln', cost: { stone: 4, water: 2 }, baseYield: { stone: 5, water: 3 } },
+    driftwood_camp: { id: 'driftwood_camp', name: 'Driftwood Camp', cost: { stone: 2 }, baseYield: { wood: 3 } },
+    scree_quarry: { id: 'scree_quarry', name: 'Scree Quarry', cost: { wood: 2 }, baseYield: { stone: 3 } },
+    ice_drill: { id: 'ice_drill', name: 'Ice Drill', cost: { wood: 1, stone: 1 }, baseYield: { water: 4 } },
+    glacier_pump: { id: 'glacier_pump', name: 'Glacier Pump', cost: { wood: 2, stone: 2 }, baseYield: { water: 6 } },
+    ice_fishery: { id: 'ice_fishery', name: 'Ice Fishery', cost: { wood: 2, stone: 1 }, baseYield: { food: 2, water: 1 } },
+    grain_fields: { id: 'grain_fields', name: 'Grain Fields', cost: { wood: 2, stone: 1 }, baseYield: { food: 5 } },
+    windmill: { id: 'windmill', name: 'Windmill', cost: { wood: 3, stone: 1 }, baseYield: { food: 3, stone: 2 } },
+    caravanserai: { id: 'caravanserai', name: 'Caravanserai', cost: { wood: 2, stone: 2, food: 1 }, baseYield: { wood: 3, stone: 3 } },
+    trapper_lodge: { id: 'trapper_lodge', name: 'Trapper Lodge', cost: { wood: 2 }, baseYield: { food: 3, wood: 1 } },
+    resin_works: { id: 'resin_works', name: 'Resin Works', cost: { stone: 2, water: 1 }, baseYield: { wood: 6 } },
+    hot_spring: { id: 'hot_spring', name: 'Hot Spring', cost: { stone: 3 }, baseYield: { water: 3, food: 2 } },
+    lichen_farm: { id: 'lichen_farm', name: 'Lichen Farm', cost: { stone: 2, water: 1 }, baseYield: { food: 5 } },
+    salt_mine: { id: 'salt_mine', name: 'Salt Mine', cost: { wood: 3 }, baseYield: { stone: 4, food: 1 } },
+    frost_kiln: { id: 'frost_kiln', name: 'Frost Kiln', cost: { wood: 2, stone: 2 }, baseYield: { stone: 3, water: 3 } },
+  },
+  rosters: {
+    forest: ['lumber_camp', 'hillside_mine', 'sawmill', 'gatherers_hut', 'farm'],
+    desert: ['quarry', 'palm_grove', 'stonemason', 'oasis_well', 'glass_kiln'],
+    arctic: ['driftwood_camp', 'scree_quarry', 'ice_drill', 'glacier_pump', 'ice_fishery'],
+    steppe: ['lumber_camp', 'sawmill', 'farm', 'quarry', 'stonemason', 'oasis_well', 'grain_fields', 'windmill', 'caravanserai'],
+    taiga: ['lumber_camp', 'sawmill', 'gatherers_hut', 'ice_drill', 'glacier_pump', 'scree_quarry', 'trapper_lodge', 'resin_works', 'hot_spring'],
+    polarDesert: ['quarry', 'stonemason', 'oasis_well', 'ice_drill', 'glacier_pump', 'driftwood_camp', 'lichen_farm', 'salt_mine', 'frost_kiln'],
+  },
+  combos: [
+    { id: 'timber_line', name: 'Timber Line', buildings: ['lumber_camp', 'sawmill'], amount: { wood: 3 } },
+    { id: 'homestead', name: 'Homestead', buildings: ['sawmill', 'farm'], amount: { wood: 2, food: 2 } },
+    { id: 'foragers_circle', name: "Forager's Circle", buildings: ['gatherers_hut', 'gatherers_hut'], amount: { food: 3 } },
+    { id: 'woodland_village', name: 'Woodland Village', buildings: ['lumber_camp', 'sawmill', 'farm'], amount: { wood: 6, food: 4 } },
+    { id: 'cut_stone', name: 'Cut Stone', buildings: ['quarry', 'stonemason'], amount: { stone: 3 } },
+    { id: 'oasis_town', name: 'Oasis Town', buildings: ['oasis_well', 'palm_grove'], amount: { water: 2, wood: 2 } },
+    { id: 'twin_quarries', name: 'Twin Quarries', buildings: ['quarry', 'quarry'], amount: { stone: 2, wood: 1 } },
+    { id: 'sun_citadel', name: 'Sun Citadel', buildings: ['quarry', 'stonemason', 'glass_kiln'], amount: { stone: 6, water: 3 } },
+    { id: 'meltwater', name: 'Meltwater', buildings: ['ice_drill', 'ice_drill'], amount: { water: 3 } },
+    { id: 'harbor', name: 'Harbor', buildings: ['ice_fishery', 'ice_drill'], amount: { food: 2, water: 2 } },
+    { id: 'frontier_outpost', name: 'Frontier Outpost', buildings: ['driftwood_camp', 'scree_quarry'], amount: { wood: 2, stone: 2 } },
+    { id: 'polar_base', name: 'Polar Base', buildings: ['ice_drill', 'glacier_pump', 'ice_fishery'], amount: { water: 6, food: 2 } },
+    { id: 'bread_road', name: 'Bread Road', buildings: ['grain_fields', 'windmill'], amount: { food: 4 } },
+    { id: 'frontier_farm', name: 'Frontier Farm', buildings: ['farm', 'grain_fields'], amount: { food: 3, wood: 1 } },
+    { id: 'market_town', name: 'Market Town', buildings: ['caravanserai', 'sawmill', 'quarry'], amount: { wood: 4, stone: 4, food: 2 } },
+    { id: 'fur_trade', name: 'Fur Trade', buildings: ['trapper_lodge', 'gatherers_hut'], amount: { food: 4 } },
+    { id: 'resin_mill', name: 'Resin Mill', buildings: ['resin_works', 'sawmill'], amount: { wood: 4 } },
+    { id: 'spa_village', name: 'Spa Village', buildings: ['hot_spring', 'ice_drill', 'gatherers_hut'], amount: { water: 4, food: 4 } },
+    { id: 'salt_cure', name: 'Salt Cure', buildings: ['salt_mine', 'lichen_farm'], amount: { food: 3, stone: 2 } },
+    { id: 'frost_glass', name: 'Frost Glass', buildings: ['frost_kiln', 'oasis_well'], amount: { water: 3, stone: 2 } },
+    { id: 'lichen_terraces', name: 'Lichen Terraces', buildings: ['lichen_farm', 'lichen_farm', 'oasis_well'], amount: { food: 5, water: 3 } },
   ],
-  adjacencyAmount: { wood: 1, stone: 1 }, // PLACEHOLDER
-  // PLACEHOLDER: 10 thresholds, gaps greater than a maximum placement transaction.
-  thresholds: Array.from({ length: 10 }, (_, i) => ({ wood: (i + 1) * 80, stone: (i + 1) * 80 })),
-  demolishRefundRatio: 0.5, // §26
-  reshufflesPerRun: 1, // §9
+  terrainBonuses: [
+    { adjacentTerrain: ['mountain'], buildings: ['hillside_mine', 'quarry', 'scree_quarry', 'salt_mine'], bonus: { stone: 2 } },
+    { adjacentTerrain: ['riverbed', 'basin'], buildings: ['oasis_well', 'ice_drill', 'glacier_pump', 'hot_spring'], bonus: { water: 2 } },
+    { adjacentTerrain: ['riverbed', 'basin'], buildings: ['farm', 'grain_fields', 'lichen_farm', 'ice_fishery'], bonus: { food: 1 } },
+    { adjacentTerrain: ['woods'], buildings: ['lumber_camp', 'sawmill', 'driftwood_camp', 'resin_works'], bonus: { wood: 1 } },
+    { adjacentTerrain: ['marsh'], buildings: 'any', bonus: { food: 1 } },
+  ],
+  zoneModifiers: {
+    steppe: [
+      { buildings: ['grain_fields'], delta: { food: 1 } },
+      { buildings: ['sawmill'], delta: { wood: -1 } },
+    ],
+    taiga: [
+      { buildings: ['lumber_camp'], delta: { wood: 1 } },
+      { buildings: ['ice_drill'], delta: { water: -1 } },
+    ],
+    polarDesert: [
+      { buildings: ['salt_mine'], delta: { stone: 1 } },
+      { buildings: ['oasis_well'], delta: { water: -1 } },
+    ],
+  },
+  adjacencyAmount: { wood: 1, stone: 1, water: 1, food: 1 },
+  thresholds: [
+    { wood: 12, stone: 12 },
+    { wood: 35, stone: 30 },
+    { wood: 65, stone: 55, water: 15 },
+    { wood: 110, stone: 95, water: 40, food: 20 },
+    { wood: 170, stone: 145, water: 70, food: 50 },
+    { wood: 240, stone: 210, water: 110, food: 90 },
+    { wood: 330, stone: 285, water: 160, food: 135 },
+    { wood: 440, stone: 380, water: 225, food: 190 },
+  ],
+  demolishRefundRatio: 0.5,
+  reshufflesPerRun: 1,
 };
