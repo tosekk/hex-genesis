@@ -8,9 +8,8 @@ import { generateMap } from '../../src/sim/world/mapgen';
 const maps = Array.from({ length: 50 }, (_, i) => ({ seed: i + 1, hexes: generateMap(i + 1, DEFAULT_CONFIG.map) }));
 const { cols, rows, levels } = DEFAULT_CONFIG.map;
 
-describe('C3 terrain acceptance: seeds 1–50 (owner deepseek)', () => {
-  // Expected failure: deepseek D1 is still a flat-map stub (astra status C3-WORLD).
-  it.fails('T1: hills have a mountain within one to three flat hexes', () => {
+describe('C3 terrain acceptance: seeds 1–50 (owner astra, reassigned D1; opus review requested)', () => {
+  it('T1: hills have a mountain within one to three flat hexes', () => {
     let hills = 0;
     for (const { seed, hexes } of maps) {
       const mountains = hexes.filter(h => h.terrain === 'mountain');
@@ -23,8 +22,7 @@ describe('C3 terrain acceptance: seeds 1–50 (owner deepseek)', () => {
     }
     expect(hills, 'suite must exercise generated hills, not a flat-map stub').toBeGreaterThan(0);
   });
-  // Expected failure: deepseek D1 is still a flat-map stub (astra status C3-WORLD).
-  it.fails('T2: a three-hill ascending approach ends next to a mountain, not a fourth higher hill', () => {
+  it('T2: a three-hill ascending approach ends next to a mountain, not a fourth higher hill', () => {
     let hills = 0;
     for (const { seed, hexes } of maps) {
       for (const first of hexes.filter(h => h.terrain === 'hill')) {
@@ -41,8 +39,7 @@ describe('C3 terrain acceptance: seeds 1–50 (owner deepseek)', () => {
     }
     expect(hills, 'suite must exercise generated hills').toBeGreaterThan(0);
   });
-  // Expected failure: deepseek D1 is still a flat-map stub (astra status C3-WORLD).
-  it.fails('T3: hill approaches rise one level from lower neighbors; mountains use the highest level', () => {
+  it('T3: hill approaches rise one level from lower neighbors; mountains use the highest level', () => {
     let hills = 0;
     for (const { seed, hexes } of maps) {
       for (const h of hexes) {
@@ -61,7 +58,7 @@ describe('C3 terrain acceptance: seeds 1–50 (owner deepseek)', () => {
     }
     expect(hills, 'suite must exercise generated hills').toBeGreaterThan(0);
   });
-  // Expected failure: deepseek D1 is still a flat-map stub (astra status C3-WORLD).
+  // Expected failure: astra D1 steps 2–3 still need riverbeds, basins, woods and marsh.
   it.fails('T4: natural terrain is unplaceable from generation and terraforming preserves terrain/placeability', () => {
     const seen = new Set<string>();
     for (const { seed, hexes } of maps) {

@@ -18,6 +18,8 @@ IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src
 - No outstanding astra implementation blocker. C3 now awaits deepseek D1 terrain plus the two sonnet fixes described below. D2 offers and D3 endgame are implemented; their old missing-dependency reports are resolved.
 
 ## Decisions
+- D1 §6 (explicit task interpretation): every hill has a hill-only path of at most three tiles to a mountain. Build distance bands outward from mountain clusters, with elevation `top - distance`; four-level maps use two positive-height hill bands. This is compatible with the existing ascending-approach acceptance check.
+- D1 §5/§53: integer bilinear lattice noise supplies broad elevation and peak scores; highest-score eligible mountain centres use ascending HexId ties. Mountain counts/radius/inset/separation and noise spacing are labelled PLACEHOLDER map knobs, applied in one construction pass; never reject/regenerate a map. Plains touching the outer hill band are capped one level below it.
 - §9 / D2: designer reassigned the two offers files to astra in this session. Offers draw two independent main biomes; when the first-offer or repeated-pair rule rejects a duplicate, keep option 0 and choose option 1 uniformly from the other two main biomes with one bounded extra offer-RNG draw.
 - §9 / D2: `awardCore` throws before mutation if an offer is pending (its frozen signature has no Result). Reshuffle/resolve validate before mutation; resolved history copies the final pair. Session remains responsible for run-status/modal command gating.
 - §27–§31: recipe multiset collisions use the first matching config recipe per pair/triple. Placeholder recipes are unique; config order breaks any accidental duplicate deterministically.
@@ -37,6 +39,7 @@ IN PROGRESS: D1 step 1 — elevation, mountains, hills. Designer reassigned `src
 
 
 ## Notes for others
+- D1 step 1 verified: seeds 1–200 deterministic terrain/decorations, complete initial state, positive hill approaches and hill-path depth, four-level maps, generation <20 ms. World acceptance T1–T3 now pass normally; T4 still awaits natural terrain in steps 2–3.
 - Opus O5 review requested: astra now implements D1 and owns its world acceptance tests, so please independently review terrain generation, hill-path constraints, river routing, determinism and seed statistics after the D1 step commits land.
 - D1 delivery order: (1) elevation/mountains/hills; (2) riverbeds/basins; (3) woods/marsh. Each step will be tested and committed separately, followed by visual verification and seeds 1–10 statistics.
 - D2 committed as requested (`0daa072`): 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity covered. Opus/sonnet: offers no longer block real session or autoplay tests.
