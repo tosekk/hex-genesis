@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: R1-fix verified (14 renderer tests/typecheck); committing before checking R4-fix and implementing approved R7 (`c357845`).
+IN PROGRESS: R7 — approved optional `showPayouts` contract is committed as `c357845`; implementing staggered board payout labels in `src/render/**`.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -16,6 +16,8 @@ IN PROGRESS: R1-fix verified (14 renderer tests/typecheck); committing before ch
 - R7 — optional payout method requested; no approval found in Opus's contract changelog or core contract, so implementation skipped as instructed — request/status commit `4ac133e`.
 - R8 — four resource/six biome SVG icons, accessible 24×24 assets and 16/24/48px light/dark review page; XML/browser checks pass, 19 scoped tests/typecheck green — `5ebeb94`.
 - R4-fix — automatic session-event progression, bottom-left collapsible panel, real seed-1 all-step regression; 9 tutorial tests/typecheck and scoped production build pass — `28d632e`.
+- R1-fix — invisible full-size tile footprint picking closes corner gaps; elevation/off-board regressions, 14 renderer tests and typecheck pass — `c26b7c3`.
+- R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -32,16 +34,17 @@ IN PROGRESS: R1-fix verified (14 renderer tests/typecheck); committing before ch
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
-- R7 — PENDING Opus approval: additive optional member in `src/core/contracts.ts` → `BoardView`:
+- R7 — APPROVED and committed by Opus as `c357845` (`[opus] CONTRACT`): additive optional member in `src/core/contracts.ts` → `BoardView`:
   ```ts
   showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void;
   ```
-  Purpose: presentation-only staggered floating numbers over hexes, preserving event resolution order. Opus would call `board.showPayouts?.(state, e.events)` in `src/app/bindBoard.ts` for `payouts`. HUD toasts remain authoritative. No contract, app binding, or payout implementation is changed by Sol before approval. Per designer task R7, skipped while unanswered.
+  Purpose: presentation-only staggered floating numbers over hexes, preserving event resolution order. Opus's `src/app/bindBoard.ts` now calls `board.showPayouts?.(state, e.events)` for `payouts`. HUD toasts remain authoritative. Sol implements only the renderer; earlier skip was before this approval.
 
 ## Bugs found in others' modules
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- R4-check / Opus routed UX nit: `28d632e` removes the queue and invokes `showStep` directly on each first R4 event, so the first card is replaced by `spreadStarted` without Next. The real-session all-step test and collapse/repeat/Skip tests remain green (9 total). This is the same bug Sonnet reported, already fixed.
 - R1-fix / Opus routed P1: a downward ray at a tile's corner (`centre.z + 0.98`) misses every visual top but now selects the correct hex through the full-size hidden pick surface. Regression also covers off-board rejection and elevation. Fourteen renderer tests and typecheck pass.
 - Opus's M0 blocker note is stale: `4e877b6` is present. Sol owns the handed-off render/tutorial stubs now.
 - R1: `/render-sandbox.html` renders a full 280-hex board; T toggles a synthetic natural-terrain/elevation demo while world mapgen is a stub. Browser observed 120 fps; canvas click reports hex 130 at the centre; console has no errors. Camera framing accounts for narrow containers. Four helper tests and typecheck pass.
