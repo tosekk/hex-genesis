@@ -11,6 +11,7 @@ import { Buildings, Cores } from './buildings';
 import { sampleReveal } from './reveal';
 import { addTable, Decorations } from './decorations';
 import { createPickSurface } from './picking';
+import { PayoutLabels } from './payouts';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -23,6 +24,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   container.append(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 250);
+  const payouts = new PayoutLabels(container, camera, renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.dampingFactor = 0.12;
   controls.minPolarAngle = 0.18; controls.maxPolarAngle = Math.PI / 2 - 0.12;
@@ -84,6 +86,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     }
   }
   function setBoard(current: Readonly<GameState>): void {
+    payouts.clear();
     scene.remove(board); disposeGroup(board);
     board = new THREE.Group(); scene.add(board); state = current;
     positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
@@ -212,17 +215,18 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     const shift = forward.multiplyScalar((Number(keys.has('w')) - Number(keys.has('s'))) * dt * 9)
       .add(right.multiplyScalar((Number(keys.has('d')) - Number(keys.has('a'))) * dt * 9));
     camera.position.add(shift); controls.target.add(shift);
-    controls.update(); renderer.render(scene, camera);
+    controls.update(); payouts.update(dtMs); renderer.render(scene, camera);
   }
   resize();
   return {
     setBoard, refreshHex, setHighlights, playReveal,
+    showPayouts(current, events) { payouts.show(current, events); },
     setCores(ids) { if (state) cores?.set(ids, state.hexes, positions); },
     onPointer(cb) { listeners.add(cb); return () => { listeners.delete(cb); }; },
     update, resize,
     dispose() {
       if (disposed) return; disposed = true;
-      observer.disconnect(); controls.dispose(); disposeGroup(board); renderer.dispose();
+      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); renderer.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move);
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);

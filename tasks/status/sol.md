@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: R7 — approved optional `showPayouts` contract is committed as `c357845`; implementing staggered board payout labels in `src/render/**`.
+IN PROGRESS: R7 verified — committing staggered board payout labels against approved contract `c357845`; 26 scoped tests/typecheck/build pass.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -17,7 +17,7 @@ IN PROGRESS: R7 — approved optional `showPayouts` contract is committed as `c3
 - R8 — four resource/six biome SVG icons, accessible 24×24 assets and 16/24/48px light/dark review page; XML/browser checks pass, 19 scoped tests/typecheck green — `5ebeb94`.
 - R4-fix — automatic session-event progression, bottom-left collapsible panel, real seed-1 all-step regression; 9 tutorial tests/typecheck and scoped production build pass — `28d632e`.
 - R1-fix — invisible full-size tile footprint picking closes corner gaps; elevation/off-board regressions, 14 renderer tests and typecheck pass — `c26b7c3`.
-- R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required.
+- R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required — verification/status commit `e8a1be6`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -31,6 +31,7 @@ IN PROGRESS: R7 — approved optional `showPayouts` contract is committed as `c3
 - §46/§47: optional MP3s are discovered with Vite at build time; absent recordings use text without issuing missing-file requests. Restart Vite/rebuild after adding recordings. Browser autoplay rejection also falls back to text.
 - §46 / R4-fix: each first trigger immediately replaces the current step; Next dismisses it and never gates later event steps. Skip/run end hide the tutorial for the rest of the run. Initial core award is excluded from progression guidance. Mute/collapse persist for the tutorial instance; collapsed panels track the latest step without speaking. No commands or focus traps are added.
 - R5/§19: named models use their building's home biome, never the current tile biome. Unknown ids retain the generic hash-colored fallback. Parts are merged with vertex colors into one instanced batch per model; densely packed active instances keep the rendered building count at ≤840.
+- R7/§29: one decorative text label per payout event, scheduled in received order across calls with 140 ms staggering and a 1.2 s rise/fade. Resource text follows config order. Same-hex lines separate vertically; camera/viewport projection follows the board. No state, commands, payout calculation, or HUD notifications are changed. Clear on `setBoard` and dispose; overlays never intercept input or duplicate accessibility announcements.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
@@ -44,6 +45,7 @@ IN PROGRESS: R7 — approved optional `showPayouts` contract is committed as `c3
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- R7 / Opus handoff: renderer now implements your approved `showPayouts` method; your existing `bindBoard` payout hook needs no edits. F in `/render-sandbox.html` shows a synthetic base/pair/triple/adjacency sequence over the hovered hex (or first placeable hex). Three payout tests verify sequence across calls, readable same-hex spacing, camera tracking, lifetime/reset/disposal, off-screen clipping, and unchanged state/event inputs. All 26 render/tutorial tests, typecheck, and scoped sandbox production build pass (existing Three.js chunk-size warning only). Fresh browser verification is not claimed because the shared native browser remains in another ongoing playthrough.
 - R4-check / Opus routed UX nit: `28d632e` removes the queue and invokes `showStep` directly on each first R4 event, so the first card is replaced by `spreadStarted` without Next. The real-session all-step test and collapse/repeat/Skip tests remain green (9 total). This is the same bug Sonnet reported, already fixed.
 - R1-fix / Opus routed P1: a downward ray at a tile's corner (`centre.z + 0.98`) misses every visual top but now selects the correct hex through the full-size hidden pick surface. Regression also covers off-board rejection and elevation. Fourteen renderer tests and typecheck pass.
 - Opus's M0 blocker note is stale: `4e877b6` is present. Sol owns the handed-off render/tutorial stubs now.

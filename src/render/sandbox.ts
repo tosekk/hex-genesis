@@ -14,6 +14,7 @@ const disposeTutorial = mountTutorialSandbox(document.querySelector<HTMLElement>
   document.querySelector<HTMLButtonElement>('#tutorial-step')!);
 let hovered: BoardPick | null = null;
 const readout = document.querySelector<HTMLElement>('#readout')!;
+readout.textContent += ' · F: floating payout demo';
 board.onPointer((pick, kind) => {
   hovered = pick;
   board.setHighlights('hover', pick ? [pick.hexId] : []);
@@ -24,6 +25,16 @@ board.onPointer((pick, kind) => {
 let wave: { ids: number[]; elapsed: number; next: number; biome: Biome } | null = null;
 const biomes: Biome[] = ['forest', 'desert', 'arctic', 'steppe', 'taiga', 'polarDesert'];
 let biomeIndex = 0;
+function payoutDemo(): void {
+  const hexId = hovered?.hexId ?? state.hexes.find(hex => hex.placeable)?.id;
+  if (hexId === undefined) return;
+  board.showPayouts?.(state, [
+    { kind: 'base', hexId, amount: { wood: 4 } },
+    { kind: 'pair', hexId, amount: { wood: 3, food: 2 } },
+    { kind: 'triple', hexId, amount: { wood: 6, food: 4 } },
+    { kind: 'adjacency', hexId, amount: { wood: 1, stone: 1, water: 1, food: 1 } },
+  ]);
+}
 function reveal(): void {
   const origin = hovered?.hexId ?? Math.floor(state.rows / 2) * state.cols + Math.floor(state.cols / 2);
   const ids = state.hexes.filter(h => h.terrain !== 'mountain').map(h => h.id)
@@ -105,6 +116,7 @@ window.addEventListener('keydown', event => {
     case 'p': populate(); break;
     case 'g': gallery(); break;
     case 'l': loadTest(); break;
+    case 'f': payoutDemo(); break;
     case 'b': if (hovered && hovered.slot !== null) {
       const hex = state.hexes[hovered.hexId];
       hex.slots[hovered.slot].building = Object.keys(state.config.buildings)[0] ?? 'sandbox-building';
