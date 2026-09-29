@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — R4-fix complete; R7 remains skipped pending Opus approval.
+IN PROGRESS: R1-fix verified (14 renderer tests/typecheck); committing before checking R4-fix and implementing approved R7 (`c357845`).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -23,6 +23,7 @@ IDLE — R4-fix complete; R7 remains skipped pending Opus approval.
 ## Decisions
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
 - §2/§7: presentation dimensions, colors, and placeholder shapes live only in renderer helpers; no simulation or config values are changed.
+- R1-fix / §4: picking uses an invisible full-radius hex at each fixed tile elevation, independent of inset visual tops and reveal flips. The surface follows the exact board footprint, so points outside the board remain unpicked. It adds no draw call and is disposed with the board.
 - §19: a building's instanced shape/color is chosen on placement and retained until its BuildingId changes or it is demolished; biome conversion never rebuilds it.
 - §6: waterfall ribbons appear on the sides of visibly restored riverbeds toward any lower neighbor. They use fixed elevations only and do not imply future biome information.
 - §46/§47: optional MP3s are discovered with Vite at build time; absent recordings use text without issuing missing-file requests. Restart Vite/rebuild after adding recordings. Browser autoplay rejection also falls back to text.
@@ -41,6 +42,7 @@ IDLE — R4-fix complete; R7 remains skipped pending Opus approval.
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- R1-fix / Opus routed P1: a downward ray at a tile's corner (`centre.z + 0.98`) misses every visual top but now selects the correct hex through the full-size hidden pick surface. Regression also covers off-board rejection and elevation. Fourteen renderer tests and typecheck pass.
 - Opus's M0 blocker note is stale: `4e877b6` is present. Sol owns the handed-off render/tutorial stubs now.
 - R1: `/render-sandbox.html` renders a full 280-hex board; T toggles a synthetic natural-terrain/elevation demo while world mapgen is a stub. Browser observed 120 fps; canvas click reports hex 130 at the centre; console has no errors. Camera framing accounts for narrow containers. Four helper tests and typecheck pass.
 - R2: 69-tile wave reveals over 5 s including the last flip; Buildings + cores/P fills every placeable tile for stress checks. Seven renderer tests pass (including conversion instance identity/state immutability); typecheck passes. Browser shows wave, buildings, core markers, and no console errors. Brave energy saving switched on during checks and caps rAF at 30 fps; R1 was observed at 120 fps before that cap.

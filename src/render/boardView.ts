@@ -10,6 +10,7 @@ import { NaturalTerrain } from './terrain';
 import { Buildings, Cores } from './buildings';
 import { sampleReveal } from './reveal';
 import { addTable, Decorations } from './decorations';
+import { createPickSurface } from './picking';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -35,6 +36,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let board = new THREE.Group(); scene.add(board);
   let state: Readonly<GameState> | null = null;
   let tops: Instances | null = null;
+  let pickSurface: THREE.InstancedMesh | null = null;
   let natural: NaturalTerrain | null = null;
   let buildings: Buildings | null = null;
   let cores: Cores | null = null;
@@ -89,6 +91,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     const layers = new Instances(board, new THREE.CylinderGeometry(0.97, 0.97, LAYER_HEIGHT - 0.025, 6),
       LAYER_COLOR, current.hexes.reduce((n, h) => n + h.elevation + 1, 0));
     tops = new Instances(board, new THREE.CylinderGeometry(0.95, 0.95, 0.05, 6), 0xffffff, count);
+    pickSurface = createPickSurface(board, current.hexes);
     natural = new NaturalTerrain(board, count);
     buildings = new Buildings(board, count);
     cores = new Cores(board, count);
@@ -117,11 +120,11 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     controls.update();
   }
   function pick(event: PointerEvent): BoardPick | null {
-    if (!tops || !state) return null;
+    if (!pickSurface || !state) return null;
     const rect = renderer.domElement.getBoundingClientRect();
     ndc.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
-    const hit = raycaster.intersectObject(tops.mesh, false)[0];
+    const hit = raycaster.intersectObject(pickSurface, false)[0];
     if (!hit || hit.instanceId === undefined) return null;
     const hexId = hit.instanceId;
     const centre = positions.get(hexId)!;
