@@ -3,13 +3,14 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-R4 verified; preparing final task commit and handoff.
+IDLE — available. R1 → R2 → R3 → R4 complete; all Sol changes committed.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
 - R3 — biome decorations, waterfall sides, tray/frame/table and resize framing; 9 tests/typecheck green and browser terrain demo verified — `c02fcd6`.
+- R4 — event-driven tutorial, animated face, optional prerecorded voice, VO script and sandbox harness; 16 render/tutorial tests/typecheck green, scoped production build/browser checks pass — `43ca21b`.
 
 ## Blockers
 <!-- what, waiting on whom -->
