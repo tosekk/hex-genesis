@@ -174,3 +174,52 @@ describe('HUD', () => {
     expect(f.session.endRun).toHaveBeenCalled();
   });
 });
+
+describe('controls help', () => {
+  const key = (k: string) => document.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
+  const help = () => root.querySelector<HTMLElement>('.help-overlay')!;
+
+  it('auto-shows once on the first run only; ? / H / button / Esc toggle it', () => {
+    try { sessionStorage.clear(); } catch { /* ignore */ }
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    expect(help().hidden).toBe(true);
+    f.emit({ type: 'runStarted', seed: 1 });
+    expect(help().hidden).toBe(false);
+    expect(help().textContent).toContain('Shift + click');
+    key('Escape');
+    expect(help().hidden).toBe(true);
+    f.emit({ type: 'runStarted', seed: 2 }); // second run: no auto-show
+    expect(help().hidden).toBe(true);
+    key('?'); expect(help().hidden).toBe(false);
+    key('h'); expect(help().hidden).toBe(true);
+    root.querySelector<HTMLButtonElement>('.help-btn')!.click();
+    expect(help().hidden).toBe(false);
+    root.querySelector<HTMLButtonElement>('.help-overlay .primary')!.click();
+    expect(help().hidden).toBe(true);
+  });
+
+  it('does not auto-show again on a new HUD in the same browser session', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'runStarted', seed: 1 });
+    expect(help().hidden).toBe(true);
+  });
+
+  it('while open it swallows 1/2 so nothing happens behind it; ignores typing in inputs', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.state.pendingOffer = { options: ['desert', 'arctic'], reshuffled: false };
+    f.emit({ type: 'offerShown', offer: f.state.pendingOffer });
+    key('?');
+    key('1');
+    expect(f.session.chooseOffer).not.toHaveBeenCalled();
+    key('Escape');
+    key('1');
+    expect(f.session.chooseOffer).toHaveBeenCalledWith(0);
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'h', bubbles: true }));
+    expect(help().hidden).toBe(true);
+  });
+});

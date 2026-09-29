@@ -4,6 +4,7 @@ import { createCodex } from './codex';
 import { createCoreStack } from './coreStack';
 import { createEndScreen } from './endScreen';
 import { el } from './format';
+import { createHelpOverlay } from './helpOverlay';
 import { createHexPanel } from './hexPanel';
 import { createInteraction } from './interaction';
 import { createOfferModal } from './offerModal';
@@ -27,6 +28,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   const tooltip = createLockedTooltip(host, session, ui);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
+  const help = createHelpOverlay(host);
 
   const endBtn = el('button', 'btn end-run', 'End Run');
   const confirm = el('div', 'overlay confirm-overlay');
@@ -49,6 +51,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
     switch (e.type) {
       case 'runStarted':
         toasts.clear(); offer.hide(); end.hide(); confirm.hidden = true; renderAll();
+        help.maybeAutoShow();
         break;
       case 'offerShown': offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
@@ -63,7 +66,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   return {
     dispose() {
       off(); ui.dispose();
-      for (const c of [resources, cores, hexPanel, codex, toasts, quick, tooltip, offer, end]) c.dispose();
+      for (const c of [resources, cores, hexPanel, codex, toasts, quick, tooltip, offer, end, help]) c.dispose();
       host.remove();
     },
   };

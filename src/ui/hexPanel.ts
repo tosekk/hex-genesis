@@ -33,10 +33,14 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
 
     const pv = el('div', 'preview');
     const roster = rosterFor(s, id);
+    const firstEmpty = hex.slots.findIndex((sl) => sl.building === null);
     for (let i = 0; i < 3; i++) {
       const slot = i as SlotIndex;
-      const cell = el('div', 'slot');
-      cell.appendChild(el('div', 'slot-title', `Slot ${i + 1}`));
+      // Only the next empty slot is expanded, so 9-building rosters don't overflow the panel.
+      const cell = hex.slots[slot].building === null ? el('details', 'slot') : el('div', 'slot');
+      if (cell instanceof HTMLDetailsElement) cell.open = i === firstEmpty;
+      const title = hex.slots[slot].building === null ? el('summary', 'slot-title', `Slot ${i + 1} · empty`) : el('div', 'slot-title', `Slot ${i + 1}`);
+      cell.appendChild(title);
       const bId = hex.slots[slot].building;
       if (bId) {
         cell.appendChild(el('div', 'slot-building', buildingName(cfg, bId)));
@@ -48,10 +52,21 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
         for (const b of roster) {
           const def = cfg.buildings[b];
           const affordable = Object.entries(def.cost).every(([r, v]) => (s.resources[r] ?? 0) >= v);
-          const btn = el('button', 'btn build', `${def.name} — ${fmtResources(def.cost)}`);
+          const btn = el('button', 'btn build');
           btn.dataset.building = b;
-          btn.disabled = !affordable;
-          btn.addEventListener('click', () => ui.build(id, slot, b));
+          btn.appendChild(el('span', 'b-name', def.name));
+          const costs = el('span', 'b-cost');
+          const missing: string[] = [];
+          for (const [r, v] of Object.entries(def.cost)) {
+            const short = (s.resources[r] ?? 0) < v;
+            if (short) missing.push(`${v - (s.resources[r] ?? 0)} more ${r}`);
+            costs.appendChild(el('span', short ? 'c short' : 'c', `${v} ${r}`));
+          }
+          btn.appendChild(costs);
+          if (missing.length) btn.title = `Need ${missing.join(', ')}`;
+          // aria-disabled (not `disabled`) so hovering still shows the preview for things you can't afford yet.
+          if (!affordable) { btn.classList.add('unaffordable'); btn.setAttribute('aria-disabled', 'true'); }
+          btn.addEventListener('click', () => { if (affordable) ui.build(id, slot, b); });
           btn.addEventListener('mouseenter', () => renderPreview(pv, session.preview(id, slot, b), cfg));
           btn.addEventListener('mouseleave', () => renderPreview(pv, null, cfg));
           cell.appendChild(btn);
