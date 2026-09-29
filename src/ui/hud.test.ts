@@ -1,0 +1,153 @@
+// @vitest-environment happy-dom
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { BoardPick, BoardView, GameSession, PointerKind, SessionEvent } from '../core/contracts';
+import { ok } from '../core/result';
+import { makeTestState } from '../core/testing';
+import type { GameState, PlacementPreview } from '../core/types';
+import { createHud } from './hud';
+import { renderPreview } from './preview';
+import { TOAST_MS } from './toasts';
+
+function fakes() {
+  const state: GameState = makeTestState();
+  const listeners: ((e: SessionEvent) => void)[] = [];
+  const session = {
+    get state() { return state; },
+    newRun: vi.fn(),
+    subscribe: (l: (e: SessionEvent) => void) => { listeners.push(l); return () => undefined; },
+    chooseOffer: vi.fn(() => ok('forest' as const)),
+    reshuffleOffer: vi.fn(),
+    placeCore: vi.fn((): ReturnType<GameSession['placeCore']> => ok({ origin: 0, biome: 'forest', claims: [], poolUsed: 0 })),
+    placeBuilding: vi.fn(), demolish: vi.fn(), preview: vi.fn(() => null), endRun: vi.fn(), advance: vi.fn(),
+  };
+  let pointer: ((p: BoardPick | null, k: PointerKind) => void) | null = null;
+  const board = {
+    setBoard: vi.fn(), refreshHex: vi.fn(), playReveal: vi.fn(), setCores: vi.fn(),
+    setHighlights: vi.fn(), update: vi.fn(), resize: vi.fn(), dispose: vi.fn(),
+    onPointer: (cb: typeof pointer) => { pointer = cb; return () => undefined; },
+  };
+  const emit = (e: SessionEvent) => listeners.forEach((l) => l(e));
+  const click = (hexId: number) => pointer!({ hexId, slot: null }, 'click');
+  return { state, session: session as unknown as GameSession & typeof session, board: board as unknown as BoardView & typeof board, emit, click };
+}
+
+let root: HTMLElement;
+beforeEach(() => { document.body.innerHTML = '<div id="r"></div>'; root = document.getElementById('r')!; });
+afterEach(() => { vi.useRealTimers(); });
+
+describe('HUD', () => {
+  it('1: offer modal on offerShown; card click chooses the right index', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    expect(root.querySelector('.offer-overlay')!.hasAttribute('hidden')).toBe(true);
+    f.state.pendingOffer = { options: ['desert', 'arctic'], reshuffled: false };
+    f.emit({ type: 'offerShown', offer: f.state.pendingOffer });
+    const cards = root.querySelectorAll<HTMLButtonElement>('.card');
+    expect(cards.length).toBe(2);
+    expect(cards[1].textContent).toContain('Arctic');
+    cards[1].click();
+    expect(f.session.chooseOffer).toHaveBeenCalledWith(1);
+    cards[0].click();
+    expect(f.session.chooseOffer).toHaveBeenLastCalledWith(0);
+  });
+
+  it('reshuffle is disabled once used up', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.state.reshufflesUsed = f.state.config.reshufflesPerRun;
+    f.state.pendingOffer = { options: ['desert', 'arctic'], reshuffled: true };
+    f.emit({ type: 'offerShown', offer: f.state.pendingOffer });
+    expect(root.querySelector<HTMLButtonElement>('.reshuffle')!.disabled).toBe(true);
+  });
+
+  it('2: three payouts render one toast at a time, in order', () => {
+    vi.useFakeTimers();
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'payouts', events: [
+      { kind: 'pair', hexId: 0, amount: { wood: 1 }, comboId: 'hutPair' },
+      { kind: 'adjacency', hexId: 0, amount: { wood: 2 } },
+      { kind: 'triple', hexId: 0, amount: { stone: 3 }, comboId: 'hutPair' },
+    ] });
+    const texts: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const toasts = root.querySelectorAll('.toast');
+      expect(toasts.length).toBe(1);
+      texts.push(toasts[0].textContent!);
+      vi.advanceTimersByTime(TOAST_MS);
+    }
+    expect(texts[0]).toMatch(/^Pair combo/);
+    expect(texts[1]).toMatch(/^Adjacency/);
+    expect(texts[2]).toMatch(/^Triple combo/);
+    expect(root.querySelectorAll('.toast').length).toBe(0);
+  });
+
+  it('3: preview renders only the combos in the object', () => {
+    const f = fakes();
+    const box = document.createElement('div');
+    const p: PlacementPreview = {
+      cost: { wood: 2 }, affordable: true, slotAlreadyPaid: false, base: { wood: 3 },
+      baseBreakdown: { raw: { wood: 3 }, terrain: {}, zone: {} },
+      combos: [{ match: { comboId: 'hutPair', pair: 0 }, amount: { wood: 2 } }],
+    };
+    const combo = f.state.config.combos[0];
+    p.combos[0].match.comboId = combo.id;
+    renderPreview(box, p, f.state.config);
+    expect(box.querySelectorAll('.pv-combo').length).toBe(1);
+    expect(box.textContent).toContain(combo.name);
+    renderPreview(box, { ...p, combos: [] }, f.state.config);
+    expect(box.querySelectorAll('.pv-combo').length).toBe(0);
+    expect(box.textContent).not.toContain(combo.name);
+  });
+
+  it('4: core placement highlights legal sites, places on click, Esc cancels', () => {
+    const f = fakes();
+    f.state.coreStack.push('forest');
+    createHud(root, f.session, f.board);
+    root.querySelector<HTMLButtonElement>('.chip')!.click();
+    const legal = f.board.setHighlights.mock.calls.filter((c) => c[0] === 'legalCore').at(-1)![1] as number[];
+    expect(legal.length).toBe(20 * 14);
+    f.click(45);
+    expect(f.session.placeCore).toHaveBeenCalledWith(45, 0);
+    expect(f.board.setHighlights).toHaveBeenLastCalledWith('selected', []);
+
+    root.querySelector<HTMLButtonElement>('.chip')!.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(f.board.setHighlights).toHaveBeenLastCalledWith('legalCore', []);
+    f.session.placeCore.mockClear();
+    f.click(46);
+    expect(f.session.placeCore).not.toHaveBeenCalled();
+  });
+
+  it('5: end screen shows lifetime, time, seed', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'runEnded', status: 'won', stats: { status: 'won', lifetime: { wood: 12, stone: 4 }, elapsedMs: 125000, seed: 777 } });
+    const t = root.querySelector('.end-screen')!.textContent!;
+    expect(t).toContain('Wood: 12');
+    expect(t).toContain('Stone: 4');
+    expect(t).toContain('2:05');
+    expect(t).toContain('777');
+    root.querySelector<HTMLInputElement>('.seed-input')!.value = '42';
+    root.querySelector<HTMLButtonElement>('.new-run')!.click();
+    expect(f.session.newRun).toHaveBeenCalledWith(42);
+  });
+
+  it('resource bar shows per-resource lifetime progress toward the threshold', () => {
+    const f = fakes();
+    const [res, need] = Object.entries(f.state.config.thresholds[0])[0];
+    f.state.lifetime = { [res]: 4 };
+    createHud(root, f.session, f.board);
+    const row = root.querySelector(`[data-resource="${res}"]`)!;
+    expect(row.textContent).toContain(`4 / ${need}`);
+  });
+
+  it('End Run asks for confirmation first', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    root.querySelector<HTMLButtonElement>('.end-run')!.click();
+    expect(f.session.endRun).not.toHaveBeenCalled();
+    root.querySelector<HTMLButtonElement>('.confirm-overlay .danger')!.click();
+    expect(f.session.endRun).toHaveBeenCalled();
+  });
+});
