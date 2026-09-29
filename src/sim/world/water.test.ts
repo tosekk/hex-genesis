@@ -21,6 +21,26 @@ describe('D1 step 2 downhill water', () => {
     elevations[1] = 0;
     expect(downhillWalk(elevations, 0, map)).toEqual([0]);
   });
+  it('crosses a draining plateau to a lower outlet without exceeding the configured lookahead', () => {
+    const wide = { ...MAP, cols: 7, rows: 7 };
+    const elevations = Array<number>(49).fill(4);
+    for (let id = 22; id <= 25; id++) elevations[id] = 2;
+    elevations[26] = 1; elevations[27] = 0;
+    const route = downhillWalk(elevations, 22, wide);
+    expect(route).toEqual([22, 23, 24, 25, 26, 27]);
+    for (let i = 0; i < route.length; i++) {
+      expect(downhillWalk(elevations, route[i], wide)).toEqual(route.slice(i));
+    }
+    expect(downhillWalk(elevations, 22, { ...wide, params: { ...wide.params, riverPlateauSteps: 1 } })).toEqual([22]);
+    expect(downhillWalk(elevations, 22, { ...wide, params: { ...wide.params, riverPlateauSteps: 0 } })).toEqual([22]);
+  });
+  it('breaks equal-distance plateau outlet ties by ascending HexId', () => {
+    const wide = { ...MAP, cols: 7, rows: 7 };
+    const elevations = Array<number>(49).fill(4);
+    for (let id = 22; id <= 26; id++) elevations[id] = 2;
+    elevations[21] = 1; elevations[27] = 1;
+    expect(downhillWalk(elevations, 24, wide)).toEqual([24, 23, 22, 21]);
+  });
   it('seeds 1–200 have downhill river continuations and basins only at local minima', () => {
     let rivers = 0, basins = 0;
     for (let seed = 1; seed <= 200; seed++) {

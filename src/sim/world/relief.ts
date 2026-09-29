@@ -22,55 +22,89 @@ function valueNoise(rng: Rng, map: MapConfig): number[] {
   return values;
 }
 
-/** Mountain clusters and their outward hill bands establish §6 before natural terrain. */
+/** Connected clusters and bounded outward hill patches establish §6 before natural terrain. */
 export function generateRelief(rng: Rng, map: MapConfig): Relief {
   const noise = valueNoise(rng, map);
   const top = map.levels - 1;
-  const elevations = noise.map(value => Math.floor(value * Math.max(0, top - 1) / 256));
+  const elevations = noise.map(value => Math.floor(value * Math.max(0, top) / 256));
   const terrain: Terrain[] = noise.map(() => 'plain');
   const peaks: number[] = [];
-  // Clamp the optional inset for small fixture boards; this constructs one map, never retries it.
+  const between = (min: number, max: number) => min + rng.nextInt(max - min + 1);
+  const clusterCount = between(map.params.mountainClustersMin, map.params.mountainClustersMax);
+  // Clamp the optional inset for small fixture boards; construct once, never retry.
   const insetX = Math.min(map.params.mountainInset, Math.floor((map.cols - 1) / 2));
   const insetY = Math.min(map.params.mountainInset, Math.floor((map.rows - 1) / 2));
-  for (let cluster = 0; cluster < map.params.mountainClusters && top > 0; cluster++) {
+  const adjacency = noise.map((_, id) => neighbors(id, map.cols, map.rows));
+  for (let cluster = 0; cluster < clusterCount && top > 0; cluster++) {
     let best = -1;
     for (let id = 0; id < noise.length; id++) {
       const col = id % map.cols, row = Math.floor(id / map.cols);
       if (col < insetX || col >= map.cols - insetX || row < insetY || row >= map.rows - insetY) continue;
       if (peaks.some(peak => hexDistance(peak, id, map.cols) < map.params.mountainSeparation)) continue;
-      if (best === -1 || noise[id] > noise[best]) best = id; // Ascending id breaks equal-noise ties.
+      if (best === -1 || noise[id] > noise[best]) best = id;
     }
     if (best === -1) break;
-    peaks.push(best);
+    const peak = best;
+    const size = between(map.params.mountainSizeMin, map.params.mountainSizeMax);
+    const members = noise.map(() => false);
+    // Compact but asymmetric patches: distance before seeded shape score, then HexId.
+    const shape = noise.map(() => rng.nextInt(256));
+    for (let tile = 0; tile < size; tile++) {
+      best = -1;
+      for (let id = 0; id < noise.length; id++) {
+        if (terrain[id] === 'mountain') continue;
+        if (hexDistance(peak, id, map.cols) > map.params.mountainRadius) continue;
+        if (tile === 0 ? id !== peak : !adjacency[id].some(n => members[n])) continue;
+        if (adjacency[id].some(n => terrain[n] === 'mountain' && !members[n])) continue;
+        const score = (candidate: number) => hexDistance(peak, candidate, map.cols) * 256 - shape[candidate];
+        if (best === -1 || score(id) < score(best)) best = id;
+      }
+      if (best === -1) break;
+      members[best] = true;
+      terrain[best] = 'mountain';
+      elevations[best] = top;
+    }
+    peaks.push(peak);
     peaks.sort((a, b) => a - b);
   }
-  const distance = noise.map(() => -1);
-  for (let id = 0; id < noise.length; id++) {
-    if (peaks.some(peak => hexDistance(peak, id, map.cols) <= map.params.mountainRadius)) {
-      terrain[id] = 'mountain';
-      elevations[id] = top;
-      distance[id] = 0;
-    }
-  }
-  // §6/D1 interpretation: hill-path distance to a mountain is at most three.
-  const maxDepth = Math.min(3, Math.max(0, top - 1));
-  for (let depth = 1; depth <= maxDepth; depth++) {
+  const distance: number[] = terrain.map(t => t === 'mountain' ? 0 : -1);
+  const hillTarget = Math.floor(noise.length * between(map.params.hillShareMin, map.params.hillShareMax) / 1000);
+  const shape = noise.map(() => rng.nextInt(256));
+  // Grow from existing mountain/hill tiles: every added hill has a hill-only path ≤3.
+  for (let tile = 0; tile < hillTarget && top > 1; tile++) {
+    let best = -1, bestDepth = 4;
     for (let id = 0; id < noise.length; id++) {
       if (distance[id] !== -1) continue;
-      if (neighbors(id, map.cols, map.rows).some(n => distance[n] === depth - 1)) {
-        distance[id] = depth;
-        terrain[id] = 'hill';
-        elevations[id] = top - depth;
+      if (adjacency[id].every(n => terrain[n] === 'mountain')) continue;
+      const depth = Math.min(...adjacency[id].filter(n => distance[n] >= 0).map(n => distance[n] + 1), 4);
+      if (depth > Math.min(3, top - 1)) continue;
+      if (best === -1 || depth < bestDepth || (depth === bestDepth && shape[id] > shape[best])) {
+        best = id; bestDepth = depth;
       }
     }
+    if (best === -1) break;
+    distance[best] = bestDepth;
+    terrain[best] = 'hill';
   }
-  // Outside approaches sit one level below the outer hill band. Interior bands
-  // already differ by at most one because distance changes by at most one per edge.
+  // The edge of each irregular patch is level 1. Raise only fully supported interiors.
+  // Level 3 is reserved for mountain-adjacent tiles, ending any three-hill ascent there.
   for (let id = 0; id < noise.length; id++) {
-    if (terrain[id] !== 'plain') continue;
-    for (const n of neighbors(id, map.cols, map.rows)) {
-      if (terrain[n] === 'hill') elevations[id] = Math.min(elevations[id], elevations[n] - 1);
+    if (terrain[id] === 'hill') elevations[id] = 1;
+    else if (terrain[id] === 'plain' && adjacency[id].some(n => terrain[n] === 'hill')) elevations[id] = 0;
+  }
+  for (let level = 2; level < top; level++) {
+    const supported = elevations.map((_, id) => terrain[id] === 'hill'
+      && (level < 3 || adjacency[id].some(n => terrain[n] === 'mountain'))
+      && adjacency[id].every(n => terrain[n] === 'mountain' || elevations[n] >= level - 1));
+    // Retain an equal-height neighbor for any terrace pocket that cannot rise itself.
+    for (let id = 0; id < noise.length; id++) {
+      if (terrain[id] !== 'hill' || supported[id] || elevations[id] !== level - 1) continue;
+      if (adjacency[id].every(n => terrain[n] === 'mountain' || supported[n])) {
+        const support = adjacency[id].find(n => terrain[n] === 'hill');
+        if (support !== undefined) supported[support] = false;
+      }
     }
+    for (let id = 0; id < noise.length; id++) if (supported[id]) elevations[id] = level;
   }
   return { elevations, terrain };
 }

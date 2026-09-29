@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. D1 complete in three ordered implementation commits; final browser/performance/statistics handoff prepared. All 110 scoped tests pass, including all 36 C3 cases; no expected-failure markers remain. Opus O5 independent D1 review requested below. D4 tuning awaits playtest feedback.
+IN PROGRESS: D4 — designer-requested seed-varying mountain clusters, 15–25% hills and longer rivers, preserving §6 and roughly 65–80% placeable land. Recording before/after seeds 1–10; economy unchanged.
 
 ## Done
 - D1 step 3 — woods/marsh, all world/C3 acceptance passing, 200-seed checks and terrain statistics — `d978f14`.
@@ -18,9 +18,10 @@ IDLE — available. D1 complete in three ordered implementation commits; final b
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
-- None for astra implementation. Independent D1 review and full-run balance/playability checks belong to opus O5/O4; requested explicitly below.
+- None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- D4 §6/§53 (designer feedback): the old fixed-radius/count algorithm cannot express the requested variety through knobs alone. Add min/max cluster count/size and hill-budget knobs, grow connected irregular mountain/hill patches, and shape hill elevations from their outer boundary while retaining mountain distance ≤3. Rivers may cross an equal-height plateau only along a shortest route to a strictly lower outlet; enclosed plateaus remain local minima. All decisions use integer RNG and ascending HexId ties, with one construction pass and no map rejection/regeneration.
 - D1 §6/§53 vegetation: only remaining plains can become marsh/woods. Configured per-thousand marsh chance increases on low ground and beside riverbeds/basins; woods chance increases at mid elevations. Water, hill and mountain terrain/elevations stay untouched.
 - D1 §6 water: river sources are elevated plain tiles (threshold is a PLACEHOLDER knob). Each route selects the lowest neighbor, ties by HexId, and stops at the board edge or any local minimum, including a plateau. Because plain approaches are lower than adjacent hills, descending river walks cannot remove hills or mountains. Basin candidates have no strictly lower neighbor. All water chances are integer parts per thousand in MAP.params.
 - D1 §6 (explicit task interpretation): every hill has a hill-only path of at most three tiles to a mountain. Build distance bands outward from mountain clusters, with elevation `top - distance`; four-level maps use two positive-height hill bands. This is compatible with the existing ascending-approach acceptance check.
@@ -43,6 +44,7 @@ IDLE — available. D1 complete in three ordered implementation commits; final b
 - RESOLVED C3-FLIP: sonnet `4909942` holds spread locks through the final tile flip; real-session P5 passes with no expected-failure marker.
 
 ## Notes for others
+- **Opus O5/O4: please review D4**, particularly irregular hill boundary support and plateau drainage, then rerun real-map autoplay/pacing. D1 review PASS acknowledged. D4 retains the §6 invariants with smaller hill patches; lower-outlet plateau traversal is the explicit structural decision above. No contracts or economy values changed. All 115 astra-scoped tests pass (12 files, 3.35 s), including all C3 cases and unchanged D1 tests; typecheck and owned diff checks pass. Generation mean 0.881 ms, max 1.233 ms over 200 seeds. This D4 pass is headless; the browser evidence below describes D1 only.
 - **Opus O5: please independently review D1 now**, especially hill-path depth/elevation construction, source/minimum river routing, ascending-HexId ties, integer determinism, and below-listed seed statistics. Implementation is in `src/sim/world/{mapgen,relief,water,vegetation}.ts`, knobs in `src/config/map.ts`; commits `cc0e8e9` → `3950a22` → `d978f14`. Astra now owns the world acceptance tests, so your independent check is important. Re-run O4 autoplay/pacing with the real map before proposing D4 knob tuning; no economy values changed.
 - Final validation: `npx vitest run src/sim/world src/sim/economy src/sim/offers.test.ts tests/acceptance` → **110 passed**, 11 files, 2.40 s. Includes seeds 1–200 world invariants, same-seed replay, different-seed variety, four-level relief, downhill routing, water/vegetation preservation and all 36 C3 cases. `npm run typecheck` and owned-path `git diff --check` → green.
 - Performance probe (`npx vitest run src/sim/world/mapgen.test.ts --silent=false -t 'reports seed|under 20'`): 200 maps after warmup; mean **0.357 ms**, maximum **2.188 ms**, well below 20 ms. Timings are measured only in tests and do not affect generation.
@@ -67,3 +69,41 @@ Direct `generateMap(seed, MAP)` seeds **1–10**, 280 tiles each (run seeds are 
 | 8 | 180 (64.29%) | 85 | 95 | 14 | 15 | 20 | 22 | 29 |
 | 9 | 182 (65.00%) | 84 | 98 | 14 | 16 | 18 | 26 | 24 |
 | 10 | 188 (67.14%) | 90 | 98 | 14 | 11 | 13 | 25 | 29 |
+
+## D4 before/after statistics
+
+Direct `generateMap(seed, MAP)` seeds **1–10**, the same inputs as the D1 table above. Run seeds are derived separately by `createInitialState`. Baseline measured before editing; after measured with `npx vitest run src/sim/world/tuning.test.ts --silent=false`. “Longest river” counts tiles in the longest generated riverbed's downhill route (including a terminal basin), not all branches in a connected water region.
+
+Seeds 1–10: mean hills **35.29% → 19.14%**, mean placeable **69.96% → 73.18%**. Maximum river route **3 → 10 tiles**; mean longest route **1.60 → 5.30 tiles**.
+
+| Seed | Cluster sizes before → after | Hills before → after | Placeable before → after | Longest river before → after |
+|---|---|---|---|---|
+| 1 | 7 + 7 → 9 | 97 (34.64%) → 50 (17.86%) | 183 (65.36%) → 196 (70.00%) | 2 → 8 |
+| 2 | 7 + 7 → 4 | 98 (35.00%) → 51 (18.21%) | 194 (69.29%) → 206 (73.57%) | 2 → 7 |
+| 3 | 7 + 7 → 4 | 100 (35.71%) → 51 (18.21%) | 218 (77.86%) → 211 (75.36%) | 0 → 2 |
+| 4 | 7 + 7 → 8 + 7 + 5 | 99 (35.36%) → 60 (21.43%) | 216 (77.14%) → 206 (73.57%) | 0 → 3 |
+| 5 | 7 + 7 → 5 + 9 + 5 + 6 | 97 (34.64%) → 47 (16.79%) | 186 (66.43%) → 188 (67.14%) | 2 → 6 |
+| 6 | 7 + 7 → 8 + 10 | 98 (35.00%) → 53 (18.93%) | 206 (73.57%) → 212 (75.71%) | 1 → 3 |
+| 7 | 7 + 7 → 7 + 7 + 10 | 108 (38.57%) → 53 (18.93%) | 206 (73.57%) → 210 (75.00%) | 2 → 2 |
+| 8 | 7 + 7 → 3 + 7 + 3 | 95 (33.93%) → 45 (16.07%) | 180 (64.29%) → 215 (76.79%) | 2 → 4 |
+| 9 | 7 + 7 → 6 + 6 + 3 | 98 (35.00%) → 60 (21.43%) | 182 (65.00%) → 201 (71.79%) | 3 → 8 |
+| 10 | 7 + 7 → 9 + 8 | 98 (35.00%) → 66 (23.57%) | 188 (67.14%) → 204 (72.86%) | 2 → 10 |
+
+Full after mix (full before mix is retained in the D1 table):
+
+| Seed | Plain | Hill | Mountain | Riverbed | Basin | Woods | Marsh |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 146 | 50 | 9 | 41 | 5 | 19 | 10 |
+| 2 | 155 | 51 | 4 | 33 | 7 | 16 | 14 |
+| 3 | 160 | 51 | 4 | 5 | 11 | 24 | 25 |
+| 4 | 146 | 60 | 20 | 13 | 11 | 13 | 17 |
+| 5 | 141 | 47 | 25 | 16 | 12 | 13 | 26 |
+| 6 | 159 | 53 | 18 | 16 | 6 | 14 | 14 |
+| 7 | 157 | 53 | 24 | 10 | 6 | 19 | 11 |
+| 8 | 170 | 45 | 13 | 13 | 3 | 23 | 13 |
+| 9 | 141 | 60 | 15 | 25 | 2 | 16 | 21 |
+| 10 | 138 | 66 | 17 | 26 | 5 | 14 | 14 |
+
+Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 occur; hills **42–69 tiles (15.00–24.64%, mean 19.09%)**. Placeable mean **73.53%**, range **63.93–83.57%**; **194/200 maps** fall inside 65–80%. These six mild outliers are reported, never rejected/regenerated. **65/200 maps** have a river route longer than five tiles; maximum **12**. All seeds 1–10 now have riverbeds. Mountain count and hill budget are seeded draws, followed by connected construction; no map validation loop, retry, dependency, contract change, or economy rebalance was added.
+
+D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
