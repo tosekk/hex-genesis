@@ -89,3 +89,10 @@ details.slot[open] > summary::before { content:'▾ '; }
 .btn.build { align-items:center; }
 .card-roster { font-size:11px; opacity:.8; line-height:1.3; }
 .card { width:170px; }
+
+.codex { max-height:40vh; overflow:auto; }
+.codex-row { border-top:1px dashed rgba(0,0,0,.3); padding:6px 0; }
+.codex-name { font-weight:800; }
+.codex-recipe { display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:12px; margin-top:2px; }
+.codex-chip { background:var(--paper2); border:1px solid var(--ink); border-radius:10px; padding:1px 8px; }
+.codex-reward { color:var(--good); font-weight:800; }

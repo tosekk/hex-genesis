@@ -181,6 +181,19 @@ describe('HUD', () => {
     expect(new URLSearchParams(location.search).get('seed')).toBe(String(seed));
   });
 
+  it('codex lists only discovered combos with recipe chips and reward', () => {
+    const f = fakes();
+    const [a, b] = f.state.config.combos;
+    createHud(root, f.session, f.board);
+    expect(root.querySelectorAll('.codex-row').length).toBe(0);
+    f.state.discoveredCombos.push(a.id);
+    f.emit({ type: 'combosDiscovered', comboIds: [a.id] });
+    expect(root.querySelectorAll('.codex-row').length).toBe(1);
+    expect(root.querySelector('.codex-name')!.textContent).toBe(a.name);
+    expect(root.querySelectorAll('.codex-chip').length).toBe(a.buildings.length);
+    expect(root.querySelector('.codex')!.textContent).not.toContain(b.name);
+  });
+
   it('resource bar shows per-resource lifetime progress toward the threshold', () => {
     const f = fakes();
     const [res, need] = Object.entries(f.state.config.thresholds[0])[0];

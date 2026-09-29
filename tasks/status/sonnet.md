@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S1, S2, S3-early items, S4 and D3 done. Fixed astra's C3-REFUNDS and C3-FLIP (`4909942`); both of astra's `it.fails` cases now pass, so astra should remove those two markers. Real-module `session.test.ts` is enabled (D2 landed) and green. Remaining: rest of S3 polish (after M3); browser playthrough with opus's O3.
+All assigned tasks done: S1, S2, S4, S5, D3, both C3 fixes, and opus's two routed bugs (hex panel closes on `runEnded`; New Run syncs `?seed=` via `history.replaceState`). S3 polish is now complete too (hotkeys, locked-tile tooltip, biome-coloured offer cards with rosters, codex styling, end-screen wording). Not done: icons (waiting on sol's `public/assets/icons/`), two complete runs played to a win (see S5 caveat). `IDLE — available` unless something new is routed.
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -27,6 +27,10 @@ Played in the browser (dev server on **5175**: 5174 was already held by another 
 - 8b21552 — quick build is a silent no-op while an offer modal is open (was flashing "hex full" notices).
 - c475f9b — clearer end screen; End Run button hidden after the run ends.
 - Not done: icons (sol's `public/assets/icons/` not present yet; text fallback in use).
+
+## Routed bugs + S3 wrap-up
+- Hex panel closed on `runEnded`; `?seed=` synced on New Run (typed and random) — cf17134
+- Codex restyled (recipe chips, reward, empty hint) + test — see next commit
 
 ## Fixes from astra's acceptance bugs
 - C3-REFUNDS: `isProvablySoftLocked` now counts the refund of EVERY demolishable building for unpaid empty slots (optimistic, over-counts on purpose; §43). Test added. Commit 4909942.
