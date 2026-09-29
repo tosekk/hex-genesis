@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: R6 — correct win-rule tutorial copy and describe economy v1; then R5 → R7 → R8.
+R5 verified; preparing its commit, then R7 contract request → R8 icons.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -11,6 +11,7 @@ IN PROGRESS: R6 — correct win-rule tutorial copy and describe economy v1; then
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
 - R3 — biome decorations, waterfall sides, tray/frame/table and resize framing; 9 tests/typecheck green and browser terrain demo verified — `c02fcd6`.
 - R4 — event-driven tutorial, animated face, optional prerecorded voice, VO script and sandbox harness; 16 render/tutorial tests/typecheck green, scoped production build/browser checks pass — `43ca21b`.
+- R6 — win conditions match §41; biome resource identities/mountain mine bonus from economy v1, quick-build hint retained, all VO text synchronized; 7 tutorial tests/typecheck green — `5f627e0`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -22,6 +23,7 @@ IN PROGRESS: R6 — correct win-rule tutorial copy and describe economy v1; then
 - §6: waterfall ribbons appear on the sides of visibly restored riverbeds toward any lower neighbor. They use fixed elevations only and do not imply future biome information.
 - §46/§47: optional MP3s are discovered with Vite at build time; absent recordings use text without issuing missing-file requests. Restart Vite/rebuild after adding recordings. Browser autoplay rejection also falls back to text.
 - §46: tutorial steps queue once per run, require Next to dismiss, and are cleared on Skip/run end. Initial core award is excluded from progression guidance; mute persists for the lifetime of the tutorial instance. No commands or focus traps are added.
+- R5/§19: named models use their building's home biome, never the current tile biome. Unknown ids retain the generic hash-colored fallback. Parts are merged with vertex colors into one instanced batch per model; densely packed active instances keep the rendered building count at ≤840.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
@@ -36,3 +38,4 @@ IN PROGRESS: R6 — correct win-rule tutorial copy and describe economy v1; then
 - R3: nine renderer tests/typecheck green; browser terrain demo shows dry/wet terrain, biome decorations, waterfall sides, tray/frame/table. Decorations avoid all slot anchors. Camera resizes preserve the board's framing and current zoom ratio.
 - R4: 16 render/tutorial tests and typecheck pass. Browser event harness walks all five tutorial steps, verifies Next/Mute/Skip, and shows zero console messages with missing VO. Scoped production build of `render-sandbox.html` succeeds to `/private/tmp/sol-render-build` (including an optional-asset discovery probe, removed afterward); Three.js bundle size warning only.
 - Handoff: factories retain the frozen signatures. App binding already calls setBoard/playReveal/refreshHex/setCores; tutorial self-subscribes. `/render-sandbox.html` has a Tutorial event demo button for exercising steps without WIP session dependencies. VO copy and export paths are in `src/tutorial/VO_SCRIPT.md`. Full session walkthrough awaits deepseek's world/offers/endgame implementation; Sol's standalone checks do not claim that integrated loop is complete.
+- R5: G / 24-building gallery shows all named models on eight labeled tiles, deliberately using differing tile biomes. L / 840-building load test renders 280 synthetic placeable tiles at five layers with all 840 slots filled: observed 120 fps in Brave on this machine, clean console. Named model parts use merged vertex-colored geometries and packed instancing; model footprint radius ≤0.23. Twelve renderer tests (19 render/tutorial combined), typecheck, and scoped sandbox production build pass.

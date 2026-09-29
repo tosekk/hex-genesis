@@ -22,20 +22,20 @@ describe('visible reveal animation', () => {
   });
   it('retains building meshes and their transforms through biome conversion without touching state', () => {
     const state = makeTestState({ cols: 1, rows: 1, hex: () => ({ biome: 'forest' }) });
-    state.hexes[0].slots[0].building = 'forest-hut';
+    state.hexes[0].slots[0].building = 'sawmill';
     const parent = new THREE.Group(), visuals = new Buildings(parent, 1);
     const before = JSON.stringify(state);
     visuals.refresh(state.hexes[0], 0, 0);
     expect(JSON.stringify(state)).toBe(before);
-    const meshes = parent.children.slice(0, 6) as THREE.InstancedMesh[];
+    const meshes = parent.children.filter(child => child.name.startsWith('building:')) as THREE.InstancedMesh[];
     const transforms = meshes.map(mesh => Array.from(mesh.instanceMatrix.array));
     state.hexes[0].biome = 'polarDesert';
     visuals.refresh(state.hexes[0], 0, 0);
-    expect(parent.children.slice(0, 6)).toEqual(meshes);
+    expect(parent.children.filter(child => child.name.startsWith('building:'))).toEqual(meshes);
     expect(meshes.map(mesh => Array.from(mesh.instanceMatrix.array))).toEqual(transforms);
     state.hexes[0].slots[0].building = null;
     visuals.refresh(state.hexes[0], 0, 0);
-    expect(Array.from(meshes[0].instanceMatrix.array)).not.toEqual(transforms[0]);
+    expect(meshes[0].count).toBe(0);
     disposeGroup(parent);
   });
 });
