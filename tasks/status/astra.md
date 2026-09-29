@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. C0/C1/C2/C0b complete; C3 acceptance suite delivered with all known dependency failures reported. Recheck C3 when deepseek D1/D2/D3 land.
+IN PROGRESS: D2 — biome offers. Designer explicitly reassigned `src/sim/offers.ts` and `src/sim/offers.test.ts` to astra; implement GAME_DESIGN §9 and D2, then rerun C3.
 
 ## Done
 - C0 — labelled placeholder economy, 3 config tests green, typecheck green — `da92228`.
@@ -16,6 +16,8 @@ IDLE — available. C0/C1/C2/C0b complete; C3 acceptance suite delivered with al
 - No outstanding astra implementation blocker. Full acceptance verification awaits deepseek D1/D2/D3; these are expected failures, not verified successes. Rechecked after C0b: all three dependencies remain stubs.
 
 ## Decisions
+- §9 / D2: designer reassigned the two offers files to astra in this session. Offers draw two independent main biomes; when the first-offer or repeated-pair rule rejects a duplicate, keep option 0 and choose option 1 uniformly from the other two main biomes with one bounded extra offer-RNG draw.
+- §9 / D2: `awardCore` throws before mutation if an offer is pending (its frozen signature has no Result). Reshuffle/resolve validate before mutation; resolved history copies the final pair. Session remains responsible for run-status/modal command gating.
 - §27–§31: recipe multiset collisions use the first matching config recipe per pair/triple. Placeholder recipes are unique; config order breaks any accidental duplicate deterministically.
 - §35/§53: adjacency qualification is isolated in `adjacencyQualifies`; any current neighboring combo qualifies, even on two occupied slots or previously paid slots.
 - §9: pending-offer modal gating belongs to GameSession; economy validates its explicit placement contract.
@@ -31,6 +33,7 @@ IDLE — available. C0/C1/C2/C0b complete; C3 acceptance suite delivered with al
 - C3-SESSION · dependency owner deepseek (D2/D3), session owner sonnet · real `createGameSession` with seed 1 and fixture thresholds, then `newRun(1)` · expected immediate offer and progression §57 cases 5–7 · actual `NOT_IMPLEMENTED: awardCore`. Three `it.fails` retained in `tests/acceptance/progression.test.ts`. P5 also checks the final tile flip interval; cannot reach that assertion until dependencies land.
 
 ## Notes for others
+- D2 implementation ready: 19 offers tests pass, including seeds 1–500 for first offers/reshuffles and all three repeated duplicate pairs; deterministic replay, terrain-stream isolation, stack/history handling, budget and failure atomicity are covered. Typecheck green. Committing D2 before rerunning C3 per designer instruction.
 - Final verification: `npx vitest run src/sim/economy tests/acceptance` → 64 passed + 15 expected failures (79 cases), ~400 ms; `npm run typecheck` → green. All new/edited code is within astra ownership; no contracts or dependencies changed.
 - After D2/D3 land, remove `it.fails` from passing session/endgame cases. P5 deliberately retains the spread lock through the final tile flip; inspect any remaining timing failure separately from missing dependencies.
 - C0b: approved literal tables copied exactly. One-time independent Markdown-table comparison verified all 24 buildings, 6 ordered rosters, 21 recipes, 5 terrain rules, 6 zone modifiers, 8 thresholds and all scalar/resource fields. No retuning.
