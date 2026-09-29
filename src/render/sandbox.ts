@@ -4,11 +4,14 @@ import { DEFAULT_CONFIG } from '../config';
 import { hexDistance } from '../core/hex';
 import type { BoardPick } from '../core/contracts';
 import type { Biome, Terrain } from '../core/types';
+import { mountTutorialSandbox } from '../tutorial/sandbox';
 
 const seed = Number(new URLSearchParams(location.search).get('seed') ?? 42);
 let state = createInitialState(seed, DEFAULT_CONFIG, 0);
 const board = createBoardView(document.querySelector<HTMLElement>('#board')!, DEFAULT_CONFIG);
 board.setBoard(state);
+const disposeTutorial = mountTutorialSandbox(document.querySelector<HTMLElement>('#tutorial')!,
+  document.querySelector<HTMLButtonElement>('#tutorial-step')!);
 let hovered: BoardPick | null = null;
 const readout = document.querySelector<HTMLElement>('#readout')!;
 board.onPointer((pick, kind) => {
@@ -85,4 +88,4 @@ function frame(now: number): void {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.addEventListener('pagehide', () => board.dispose(), { once: true });
+window.addEventListener('pagehide', () => { disposeTutorial(); board.dispose(); }, { once: true });
