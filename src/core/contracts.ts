@@ -49,6 +49,8 @@ export interface BoardView {
   setHighlights(style: HighlightStyle, hexIds: HexId[]): void;
   /** pick is null when the pointer is off the board. Returns an unsubscribe function. */
   onPointer(cb: (pick: BoardPick | null, kind: PointerKind) => void): () => void;
+  /** Optional, presentation only: floating payout numbers over hexes, in event order. Never mutates state. */
+  showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void;
   update(dtMs: number): void;
   resize(): void;
   dispose(): void;

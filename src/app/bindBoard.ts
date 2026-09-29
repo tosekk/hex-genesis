@@ -24,6 +24,9 @@ export function bindBoard(session: GameSession, board: BoardView): () => void {
       case 'hexChanged':
         board.refreshHex(state, e.hexId);
         break;
+      case 'payouts':
+        board.showPayouts?.(state, e.events);
+        break;
     }
   });
 }
