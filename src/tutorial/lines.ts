@@ -9,7 +9,7 @@ export const LINES = {
   },
   buildings: {
     title: 'Three slots, one growing world',
-    text: 'Select a restored, placeable tile and choose a building for one of its three slots. Each physical slot pays its base yield only once, even after demolition. Visible natural neighbors can improve that yield. After building, hold Shift and click or press R over a tile to repeat your last building.',
+    text: 'Select a restored, placeable tile and choose a building for one of its three slots. Each physical slot pays its base yield only once, even after demolition. Forest supplies wood and food, Desert stone and water, Arctic water and a little food; mixed biomes are rich in food. Stone mines beside mountains yield extra. After building, hold Shift and click or press R over a tile to repeat your last building.',
   },
   combos: {
     title: 'You found a combination',
@@ -17,7 +17,7 @@ export const LINES = {
   },
   progression: {
     title: 'Keep restoring',
-    text: 'Your lifetime yield reached a new resource threshold and earned another core. Spending resources does not reduce lifetime yield. Choose its biome and keep restoring the world. Finish every placeable tile and restore all reachable natural terrain to complete the run.',
+    text: 'Your lifetime yield reached a new resource threshold and earned another core. Spending resources does not reduce lifetime yield. You win when no legal core site remains, no spread is active, and every slot on every restored, placeable tile is filled. Natural tiles need no buildings, and unreachable dead land does not block a win.',
   },
 } as const;
 export type LineId = keyof typeof LINES;

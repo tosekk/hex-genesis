@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. R1 → R2 → R3 → R4 complete; all Sol changes committed.
+IN PROGRESS: R6 — correct win-rule tutorial copy and describe economy v1; then R5 → R7 → R8.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
