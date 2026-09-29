@@ -21,7 +21,7 @@ let wave: { ids: number[]; elapsed: number; next: number; biome: Biome } | null 
 const biomes: Biome[] = ['forest', 'desert', 'arctic', 'steppe', 'taiga', 'polarDesert'];
 let biomeIndex = 0;
 function reveal(): void {
-  const origin = hovered?.hexId ?? Math.floor(state.hexes.length / 2);
+  const origin = hovered?.hexId ?? Math.floor(state.rows / 2) * state.cols + Math.floor(state.cols / 2);
   const ids = state.hexes.filter(h => h.terrain !== 'mountain').map(h => h.id)
     .sort((a, b) => hexDistance(a, origin, state.cols) - hexDistance(b, origin, state.cols) || a - b).slice(0, 69);
   wave = { ids, elapsed: 0, next: 0, biome: biomes[biomeIndex++ % biomes.length] };
@@ -39,15 +39,28 @@ function terrainDemo(): void {
   });
   board.setBoard(state);
 }
+function populate(): void {
+  const ids = Object.keys(state.config.buildings);
+  for (const hex of state.hexes) {
+    if (!hex.placeable) continue;
+    hex.biome ??= biomes[hex.col % biomes.length];
+    hex.slots.forEach((slot, index) => { slot.building = ids[(hex.id + index) % ids.length] ?? `sandbox-${index}`; });
+    board.refreshHex(state, hex.id);
+  }
+  state.cores = state.hexes.filter(hex => hex.placeable && hex.id % 43 === 0).map(hex => hex.id);
+  board.setCores(state.cores);
+}
 document.querySelector('#reveal')!.addEventListener('click', reveal);
 document.querySelector('#new')!.addEventListener('click', reset);
 document.querySelector('#terrain')!.addEventListener('click', terrainDemo);
+document.querySelector('#populate')!.addEventListener('click', populate);
 window.addEventListener('keydown', event => {
   if (event.repeat) return;
   switch (event.key.toLowerCase()) {
     case 'r': reveal(); break;
     case 'n': reset(); break;
     case 't': terrainDemo(); break;
+    case 'p': populate(); break;
     case 'b': if (hovered && hovered.slot !== null) {
       const hex = state.hexes[hovered.hexId];
       hex.slots[hovered.slot].building = Object.keys(state.config.buildings)[0] ?? 'sandbox-building';

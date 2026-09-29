@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { BoardPick, BoardView, HighlightStyle, PointerKind } from '../core/contracts';
-import type { GameConfig, GameState, HexId } from '../core/types';
+import type { GameConfig, GameState, Hex, HexId } from '../core/types';
 import { hexToWorld } from '../core/hex';
 import { disposeGroup, Instances } from './instances';
 import { HEX_SIZE, LAYER_HEIGHT, pickSlot, topHeight } from './layout';
 import { HIGHLIGHT_COLORS, LAYER_COLOR, tileColor } from './palette';
 import { NaturalTerrain } from './terrain';
+import { Buildings, Cores } from './buildings';
+import { sampleReveal } from './reveal';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -33,6 +35,9 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let state: Readonly<GameState> | null = null;
   let tops: Instances | null = null;
   let natural: NaturalTerrain | null = null;
+  let buildings: Buildings | null = null;
+  let cores: Cores | null = null;
+  const reveals = new Map<HexId, { hex: Hex; elapsed: number; swapped: boolean }>();
   const positions = new Map<HexId, { x: number; z: number }>();
   const highlights = new Map<HighlightStyle, Instances>();
   const highlightIds = new Map<HighlightStyle, HexId[]>();
@@ -46,9 +51,19 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   function refreshHex(current: Readonly<GameState>, id: HexId): void {
     const hex = current.hexes[id], p = positions.get(id);
     if (!hex || !p || !tops) return;
+    reveals.delete(id);
     tops.set(id, p.x, topHeight(hex.elevation) - 0.025, p.z);
     tops.color(id, tileColor(hex.biome));
     natural?.refresh(hex, p.x, p.z);
+    buildings?.refresh(hex, p.x, p.z);
+  }
+  function playReveal(current: Readonly<GameState>, ids: HexId[]): void {
+    for (const id of ids) {
+      const hex = current.hexes[id];
+      if (!hex || !positions.has(id)) continue;
+      // Snapshot ONLY the visible biome provided now. Never inspect planned spread claims.
+      reveals.set(id, { hex: { ...hex }, elapsed: 0, swapped: false });
+    }
   }
   function setHighlights(style: HighlightStyle, ids: HexId[]): void {
     highlightIds.set(style, [...new Set(ids)]);
@@ -64,12 +79,14 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   function setBoard(current: Readonly<GameState>): void {
     scene.remove(board); disposeGroup(board);
     board = new THREE.Group(); scene.add(board); state = current;
-    positions.clear(); highlights.clear(); highlightIds.clear();
+    positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
     const count = current.hexes.length;
     const layers = new Instances(board, new THREE.CylinderGeometry(0.97, 0.97, LAYER_HEIGHT - 0.025, 6),
       LAYER_COLOR, current.hexes.reduce((n, h) => n + h.elevation + 1, 0));
     tops = new Instances(board, new THREE.CylinderGeometry(0.95, 0.95, 0.05, 6), 0xffffff, count);
     natural = new NaturalTerrain(board, count);
+    buildings = new Buildings(board, count);
+    cores = new Cores(board, count);
     let layer = 0;
     for (const hex of current.hexes) {
       const p = hexToWorld(hex.col, hex.row, HEX_SIZE); positions.set(hex.id, p);
@@ -150,6 +167,19 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   }
   function update(dtMs: number): void {
     if (disposed) return;
+    for (const [id, reveal] of reveals) {
+      reveal.elapsed += Math.max(0, dtMs);
+      const tween = sampleReveal(reveal.elapsed, config.animation.tileFlipMs);
+      const p = positions.get(id)!;
+      tops!.set(id, p.x, topHeight(reveal.hex.elevation) - 0.025 + tween.lift, p.z, 1, 1, 1, tween.angle);
+      if (tween.showTarget && !reveal.swapped) {
+        reveal.swapped = true;
+        tops!.color(id, tileColor(reveal.hex.biome));
+        natural?.refresh(reveal.hex, p.x, p.z);
+        buildings?.refresh(reveal.hex, p.x, p.z);
+      }
+      if (tween.finished) reveals.delete(id);
+    }
     const dt = Math.min(Math.max(dtMs, 0), 100) / 1000;
     if (keys.has('q') || keys.has('e')) {
       const offset = camera.position.clone().sub(controls.target);
@@ -165,9 +195,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   }
   resize();
   return {
-    setBoard, refreshHex, setHighlights,
-    playReveal(current, ids) { for (const id of ids) refreshHex(current, id); },
-    setCores() {},
+    setBoard, refreshHex, setHighlights, playReveal,
+    setCores(ids) { if (state) cores?.set(ids, state.hexes, positions); },
     onPointer(cb) { listeners.add(cb); return () => { listeners.delete(cb); }; },
     update, resize,
     dispose() {
@@ -177,7 +206,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);
       window.removeEventListener('keydown', keydown); window.removeEventListener('keyup', keyup); window.removeEventListener('blur', blur);
-      listeners.clear(); keys.clear(); renderer.domElement.remove();
+      listeners.clear(); keys.clear(); reveals.clear(); renderer.domElement.remove();
     },
   };
 }
