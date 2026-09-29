@@ -28,7 +28,8 @@ function fakes() {
   };
   const emit = (e: SessionEvent) => listeners.forEach((l) => l(e));
   const click = (hexId: number) => pointer!({ hexId, slot: null }, 'click');
-  return { state, session: session as unknown as GameSession & typeof session, board: board as unknown as BoardView & typeof board, emit, click };
+  const move = (hexId: number) => pointer!({ hexId, slot: null }, 'move');
+  return { move, state, session: session as unknown as GameSession & typeof session, board: board as unknown as BoardView & typeof board, emit, click };
 }
 
 let root: HTMLElement;
@@ -49,6 +50,28 @@ describe('HUD', () => {
     expect(f.session.chooseOffer).toHaveBeenCalledWith(1);
     cards[0].click();
     expect(f.session.chooseOffer).toHaveBeenLastCalledWith(0);
+  });
+
+  it('keys 1/2 pick an offer only while the modal is open', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '1' }));
+    expect(f.session.chooseOffer).not.toHaveBeenCalled();
+    f.state.pendingOffer = { options: ['desert', 'arctic'], reshuffled: false };
+    f.emit({ type: 'offerShown', offer: f.state.pendingOffer });
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '2' }));
+    expect(f.session.chooseOffer).toHaveBeenCalledWith(1);
+  });
+
+  it('tooltip shows only when hovering a locked tile', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    const tip = root.querySelector<HTMLElement>('.tooltip')!;
+    f.state.activeSpread = { result: { origin: 5, biome: 'forest', claims: [], poolUsed: 0 }, revealed: 0, locked: { 5: true } };
+    f.move(5);
+    expect(tip.hidden).toBe(false);
+    f.move(6);
+    expect(tip.hidden).toBe(true);
   });
 
   it('reshuffle is disabled once used up', () => {

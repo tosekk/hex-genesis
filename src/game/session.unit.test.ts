@@ -26,7 +26,10 @@ vi.mock('../sim/offers', () => ({
   },
 }));
 vi.mock('../sim/economy', () => ({
-  canPlaceBuilding: () => ok(undefined),
+  canPlaceBuilding: (s: GameState, id: number) => {
+    if (id === 999) return err('Building is not in the current biome roster');
+    return (s.resources.wood ?? 0) >= 1e6 ? ok(undefined) : err('anything at all');
+  },
   previewPlacement: () => ({ cost: {}, affordable: true, slotAlreadyPaid: false, base: {}, baseBreakdown: { raw: {}, terrain: {}, zone: {} }, combos: [] }),
   placeBuilding: (s: GameState, id: number, slot: 0 | 1 | 2, b: string) => {
     if (s.hexes[id].biome === null) return err('dead');
@@ -188,6 +191,16 @@ describe('GameSession (fakes)', () => {
     flags.lock = true;
     session.chooseOffer(0);
     expect(session.state.status).toBe('lost');
+  });
+
+  it('preview: unaffordable still previews (whatever the message); other failures return null', () => {
+    const { session } = boot();
+    session.newRun(1);
+    session.chooseOffer(0);
+    (session.state as GameState).resources = {};
+    expect(session.preview(ORIGIN, 0, 'x')).not.toBeNull();
+    expect(session.preview(999, 0, 'x')).toBeNull();
+    expect(session.state.resources).toEqual({});
   });
 
   it('reshuffle emits a new offerShown', () => {

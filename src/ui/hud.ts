@@ -10,6 +10,7 @@ import { createOfferModal } from './offerModal';
 import { createResourceBar } from './resourceBar';
 import './styles.css';
 import { createToasts } from './toasts';
+import { createLockedTooltip } from './tooltip';
 
 export function createHud(root: HTMLElement, session: GameSession, board: BoardView): Hud {
   const host = el('div', 'hud');
@@ -21,6 +22,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   const hexPanel = createHexPanel(host, session, ui);
   const codex = createCodex(host, session);
   const toasts = createToasts(host, session);
+  const tooltip = createLockedTooltip(host, session, ui);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
 
@@ -50,6 +52,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
       case 'offerResolved': offer.hide(); renderAll(); break;
       case 'payouts': toasts.push(e.events); break;
       case 'combosDiscovered': codex.render(); break;
+      case 'spreadFinished': tooltip.hide(); renderAll(); break;
       case 'runEnded': offer.hide(); confirm.hidden = true; renderAll(); end.show(e.stats); break;
       default: renderAll();
     }
@@ -58,7 +61,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   return {
     dispose() {
       off(); ui.dispose();
-      for (const c of [resources, cores, hexPanel, codex, toasts, offer, end]) c.dispose();
+      for (const c of [resources, cores, hexPanel, codex, toasts, tooltip, offer, end]) c.dispose();
       host.remove();
     },
   };

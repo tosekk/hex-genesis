@@ -133,9 +133,10 @@ export function createGameSession(opts?: { config?: GameConfig; now?: () => numb
 
     preview(hexId, slot, building) {
       if (state.status !== 'playing' || state.pendingOffer || isHexLocked(state, hexId)) return null;
-      const can = canPlaceBuilding(state, hexId, slot, building);
-      // Unaffordable is still previewable (the panel shows the cost); any other failure is not.
-      if (!can.ok && !/afford|insufficient|not enough|resource/i.test(can.reason)) return null;
+      // Unaffordable is still previewable: probe with unlimited resources so only
+      // non-cost failures (wrong roster, occupied, dead tile…) reject.
+      const rich = Object.fromEntries(config.resources.map((r) => [r, 1e9]));
+      if (!canPlaceBuilding({ ...state, resources: rich }, hexId, slot, building).ok) return null;
       return previewPlacement(state, hexId, slot, building);
     },
 

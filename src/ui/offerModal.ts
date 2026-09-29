@@ -31,6 +31,13 @@ export function createOfferModal(root: HTMLElement, session: GameSession) {
     overlay.hidden = false;
   }
 
+  // S3: keyboard shortcuts 1/2 pick a card while the modal is open.
+  const onKey = (ev: KeyboardEvent) => {
+    if (overlay.hidden || (ev.key !== '1' && ev.key !== '2')) return;
+    session.chooseOffer(ev.key === '1' ? 0 : 1);
+  };
+  document.addEventListener('keydown', onKey);
+
   function hide(): void { overlay.hidden = true; overlay.replaceChildren(); }
-  return { show, hide, isOpen: () => !overlay.hidden, dispose: () => overlay.remove() };
+  return { show, hide, isOpen: () => !overlay.hidden, dispose: () => { document.removeEventListener('keydown', onKey); overlay.remove(); } };
 }

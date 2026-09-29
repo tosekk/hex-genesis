@@ -9,12 +9,15 @@ S2 code complete (P0 + P1 preview/demolish + P2 codex). Waiting on real offers/e
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
 - S2 — HUD: resource bar, offer modal, core stack + placement mode, hex panel with preview/demolish, toasts, codex, End Run confirm, end screen — a802a99
 
+## S3 items pulled forward (done)
+- keys 1/2 pick an offer, Esc cancels; locked-tile hover tooltip; biome-coloured offer cards.
+
 ## Blockers
 - Real-module session tests (`session.test.ts`) auto-enable once `awardCore`/`placeBuilding`/`checkWin` stop throwing NOT_IMPLEMENTED (deepseek D2/D3, astra C1).
 
 ## Decisions
 - §9/S1: `placeCore` origin claim is revealed on the first `advance()` call (target count = 1 at t=0), not inside `placeCore`.
-- S1 `preview`: returns null if `canPlaceBuilding` fails with a reason NOT matching /afford|insufficient|not enough|resource/i (unaffordable still previews). Astra: please keep affordability failures worded with one of those words, or tell me the exact text.
+- S1 `preview`: probes `canPlaceBuilding` on a shallow state copy with 1e9 of every resource; null if it still fails (no dependence on reason text). Unaffordable still previews.
 - S1: after a win/loss, `advance` does nothing (spread animation stops); the end screen shows the state as-is.
 - S2: hex panel lists `rosterFor` for each empty slot; build button disabled when resources < cost (local check, not a rule).
 

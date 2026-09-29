@@ -12,6 +12,8 @@ export interface Interaction {
   cancel(): void;
   select(hexId: HexId | null): void;
   onChange(cb: () => void): void;
+  /** Called on every pointer move with the hovered hex (null off-board). */
+  onHover(cb: (hexId: HexId | null) => void): void;
   handleEvent(e: SessionEvent): void;
   dispose(): void;
 }
@@ -20,6 +22,7 @@ export function createInteraction(session: GameSession, board: BoardView): Inter
   let mode: Mode = { kind: 'idle' };
   let selected: HexId | null = null;
   const listeners: (() => void)[] = [];
+  const hoverListeners: ((id: HexId | null) => void)[] = [];
   const changed = () => { for (const l of listeners) l(); };
 
   const canPlaceCore = () => {
@@ -45,7 +48,11 @@ export function createInteraction(session: GameSession, board: BoardView): Inter
   };
 
   const offPointer = board.onPointer((pick, kind) => {
-    if (kind === 'move') { board.setHighlights('hover', pick ? [pick.hexId] : []); return; }
+    if (kind === 'move') {
+      board.setHighlights('hover', pick ? [pick.hexId] : []);
+      for (const l of hoverListeners) l(pick ? pick.hexId : null);
+      return;
+    }
     if (kind === 'secondary') { cancel(); return; }
     if (!pick) return;
     if (mode.kind === 'placeCore') {
@@ -74,6 +81,7 @@ export function createInteraction(session: GameSession, board: BoardView): Inter
     cancel,
     select,
     onChange(cb) { listeners.push(cb); },
+    onHover(cb) { hoverListeners.push(cb); },
     handleEvent(e) {
       switch (e.type) {
         case 'runStarted':
