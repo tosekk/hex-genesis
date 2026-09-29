@@ -121,21 +121,61 @@ export function placeBuilding(state: GameState, hexId: HexId, slot: SlotIndex, b
 }
 
 export function demolishBuilding(state: GameState, hexId: HexId, slot: SlotIndex): Result<DemolishOutcome> {
-  void state; void hexId; void slot;
-  throw new Error('NOT_IMPLEMENTED: demolishBuilding (owner: astra, C2)');
+  if (state.status !== 'playing') return err('Run is not playing');
+  const hex = state.hexes[hexId];
+  if (!hex) return err('Hex does not exist');
+  if (isHexLocked(state, hexId)) return err('Hex is locked by an active spread');
+  if (slot !== 0 && slot !== 1 && slot !== 2) return err('Invalid slot');
+  const building = hex.slots[slot].building;
+  if (building === null) return err('Slot is empty');
+  if (!state.config.buildings[building]) return err('Unknown building');
+  const refund = demolishRefund(state, building);
+  hex.slots[slot].building = null;
+  state.resources = addRes(state.resources, refund);
+  return ok({ building, refund });
 }
 
 export function previewPlacement(state: Readonly<GameState>, hexId: HexId, slot: SlotIndex, building: BuildingId): PlacementPreview {
-  void state; void hexId; void slot; void building;
-  throw new Error('NOT_IMPLEMENTED: previewPlacement (owner: astra, C2)');
+  const def = state.config.buildings[building];
+  const preview: PlacementPreview = {
+    cost: { ...def?.cost }, affordable: !!def && canAfford(state.resources, def.cost),
+    slotAlreadyPaid: state.hexes[hexId]?.slots[slot]?.yieldPaid ?? false,
+    base: {}, baseBreakdown: { raw: {}, terrain: {}, zone: {} }, combos: [],
+  };
+  if (!def) return preview;
+  // Quote the same transaction even when the real wallet cannot afford it.
+  // The clone keeps hypothetical discoveries and payout histories private.
+  const projected: GameState = structuredClone(state);
+  projected.resources = addRes(projected.resources, def.cost);
+  const result = placeBuilding(projected, hexId, slot, building);
+  if (!result.ok) return preview;
+  for (const payout of result.value.payouts) {
+    if (payout.kind === 'base') {
+      preview.base = payout.amount;
+      preview.baseBreakdown = payout.breakdown!;
+    } else if ((payout.kind === 'pair' || payout.kind === 'triple')
+      && payout.comboId && state.discoveredCombos.includes(payout.comboId)) {
+      preview.combos.push({
+        match: payout.kind === 'pair'
+          ? { comboId: payout.comboId, pair: payout.pair! }
+          : { comboId: payout.comboId, triple: true },
+        amount: payout.amount,
+      });
+    }
+  }
+  return preview;
 }
 
 export function demolishRefund(state: Readonly<GameState>, building: BuildingId): Resources {
-  void state; void building;
-  throw new Error('NOT_IMPLEMENTED: demolishRefund (owner: astra, C2)');
+  const refund: Resources = {};
+  const cost = state.config.buildings[building]?.cost ?? {};
+  for (const resource of Object.keys(cost)) refund[resource] = Math.ceil(cost[resource] * state.config.demolishRefundRatio);
+  return refund;
 }
 
 export function advanceThreshold(state: GameState): boolean {
-  void state;
-  throw new Error('NOT_IMPLEMENTED: advanceThreshold (owner: astra, C2)');
+  const target = state.config.thresholds[state.thresholdIndex];
+  if (!target || !canAfford(state.lifetime, target)) return false;
+  state.thresholdIndex++;
+  return true;
 }
