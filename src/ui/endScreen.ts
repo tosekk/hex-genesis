@@ -33,7 +33,14 @@ export function createEndScreen(root: HTMLElement, session: GameSession) {
     const btn = el('button', 'btn primary new-run', 'New Run');
     btn.addEventListener('click', () => {
       const v = input.value.trim();
-      session.newRun(/^\d+$/.test(v) ? Number(v) >>> 0 : randomSeed());
+      const seed = /^\d+$/.test(v) ? Number(v) >>> 0 : randomSeed();
+      // Keep the URL in sync so a reload/share reproduces this world.
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('seed', String(seed));
+        history.replaceState(null, '', url);
+      } catch { /* non-browser or sandboxed history: ignore */ }
+      session.newRun(seed);
     });
     box.append(input, btn);
     overlay.appendChild(box);

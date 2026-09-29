@@ -58,7 +58,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
       case 'payouts': toasts.push(e.events); break;
       case 'combosDiscovered': codex.render(); break;
       case 'spreadFinished': tooltip.hide(); renderAll(); break;
-      case 'runEnded': endBtn.hidden = true; offer.hide(); confirm.hidden = true; renderAll(); end.show(e.stats); break;
+      case 'runEnded': endBtn.hidden = true; ui.select(null); offer.hide(); confirm.hidden = true; renderAll(); end.show(e.stats); break;
       default: renderAll();
     }
   });

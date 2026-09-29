@@ -156,6 +156,31 @@ describe('HUD', () => {
     expect(f.session.newRun).toHaveBeenCalledWith(42);
   });
 
+  it('runEnded closes the hex panel so no live Demolish buttons remain behind the end screen', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.click(5);
+    expect(root.querySelector<HTMLElement>('.hex-panel')!.hidden).toBe(false);
+    f.emit({ type: 'runEnded', status: 'won', stats: { status: 'won', lifetime: {}, elapsedMs: 0, seed: 1 } });
+    expect(root.querySelector<HTMLElement>('.hex-panel')!.hidden).toBe(true);
+    expect(root.querySelectorAll('.demolish').length).toBe(0);
+    expect(f.board.setHighlights).toHaveBeenCalledWith('selected', []);
+  });
+
+  it('New Run updates ?seed= in the URL (typed and random seeds)', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'runEnded', status: 'ended', stats: { status: 'ended', lifetime: {}, elapsedMs: 0, seed: 1 } });
+    const input = root.querySelector<HTMLInputElement>('.seed-input')!;
+    input.value = '4242';
+    root.querySelector<HTMLButtonElement>('.new-run')!.click();
+    expect(new URLSearchParams(location.search).get('seed')).toBe('4242');
+    input.value = '';
+    root.querySelector<HTMLButtonElement>('.new-run')!.click();
+    const seed = f.session.newRun.mock.calls.at(-1)![0] as number;
+    expect(new URLSearchParams(location.search).get('seed')).toBe(String(seed));
+  });
+
   it('resource bar shows per-resource lifetime progress toward the threshold', () => {
     const f = fakes();
     const [res, need] = Object.entries(f.state.config.thresholds[0])[0];
