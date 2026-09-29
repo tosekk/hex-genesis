@@ -137,6 +137,18 @@ describe('quick build', () => {
     expect(t.session.placeBuilding).not.toHaveBeenCalled();
   });
 
+  it('quick build is a silent no-op while an offer is pending', () => {
+    const t = setup();
+    panelBuild(t, 7);
+    t.state.pendingOffer = { options: ['forest', 'desert'], reshuffled: false };
+    t.key('Shift');
+    t.click(9);
+    t.hover(9);
+    t.key('r');
+    expect(t.session.placeBuilding).not.toHaveBeenCalled();
+    expect(t.root.querySelector<HTMLElement>('.notice')!.hidden).toBe(true);
+  });
+
   it('chip click clears lastBuilt', () => {
     const t = setup();
     panelBuild(t, 7);

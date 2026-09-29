@@ -59,7 +59,8 @@ export function createInteraction(session: GameSession, board: BoardView): Inter
   };
 
   const quickBuild = (pick: BoardPick) => {
-    if (lastBuilt === null || mode.kind !== 'idle') return;
+    // Silent no-op while a modal/end state blocks all placement (the offer modal is up, run is over).
+    if (lastBuilt === null || mode.kind !== 'idle' || session.state.pendingOffer || session.state.status !== 'playing') return;
     const slot = quickSlot(pick);
     let reason: string | null = null;
     if (slot === null) reason = 'All slots on this tile are full.';
