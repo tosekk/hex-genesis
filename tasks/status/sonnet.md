@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-NOT STARTED
+IN PROGRESS: S1 — session.ts written; tests in progress (real-module tests self-skip until offers/economy/endgame stubs are replaced).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
