@@ -12,9 +12,11 @@ export function preventScrollKeys(): () => void {
   const onKey = (e: KeyboardEvent) => {
     if (SCROLL_KEYS.has(e.key) && !ownsKey(e.target)) e.preventDefault();
   };
-  // Bubble phase: game handlers still see the key; only the browser's default scroll is cancelled.
-  window.addEventListener('keydown', onKey);
-  return () => window.removeEventListener('keydown', onKey);
+  // Window CAPTURE phase runs before every other handler, so a UI handler that stops propagation
+  // (e.g. the help overlay swallowing keys) can't bypass it. It only cancels the browser's default
+  // scroll; propagation continues, so game handlers still see every key.
+  window.addEventListener('keydown', onKey, true);
+  return () => window.removeEventListener('keydown', onKey, true);
 }
 
 /**
