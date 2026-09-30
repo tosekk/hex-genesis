@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 DoD passed Sonnet pass 3; default journal HUD `f72ac73`.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 default `f72ac73`, book `fd3cd7a`, spheres `feefa3d`; Sonnet pass 3 zero P0/P1.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,9 +16,10 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d112`), including live resize at both target sizes. Default journal HUD DONE `f72ac73` (25 UI tests/typecheck), with legacy export retained; Journal wiring DONE `fd3cd7a` uses committed `115135d`/`cf87d9e`: open/close/isOpen/dispose, self-subscription retained; 30 UI tests/typecheck pass. Offer sphere wiring (`8d44d59`) now ready: present/update/resolve uses measured triangle/corner, HUD owns choose/reshuffle, input remains blocked through resolve, epoch guards cancel stale completion on restart/end/dispose, simple modal catches factory/present/resolve failures. 35 UI tests/typecheck and main production build pass; committing next. Full owned check: 90/91 pass; newly dropped optional VO files invalidate the tutorial missing-audio fixture. Fixing its test setup separately; no recording changes. Hex Genesis wordmark already DONE `d67044a`. V13 DONE `f2e40d4`. Hard cutoff 06:00 local.
+V15 U1 DoD passed Sonnet pass 3 (`5a5e8bb`): zero open P0/P1, live-resize fix `4cb1a62` verified. Default journal HUD DONE `f72ac73` (OWNER sol, legacy retained); book wiring DONE `fd3cd7a`; sphere wiring DONE `feefa3d`, simple offer fallback retained. Hex Genesis wordmark DONE `d67044a`; V13 DONE `f2e40d4`. All 91 owned tests / 20 files, typecheck, main production build pass (02:01); existing >500kB Three bundle warning only. Missing-audio tutorial fixture now isolates optional recordings, so designer VO drops cannot change this test. New wiring browser QA requested from Sonnet; Opus package/itch-frame recheck requested. Hard cutoff 06:00 local.
 
 ## Done
+- V15 — committed sphere module integrated, measured triangle/corner, reshuffle update, single choose command, resolve input guard, cancellation epoch, simple modal fallback; 35 UI tests/typecheck/main production build — `feefa3d`.
 - V15 — real journal book (`115135d`/`cf87d9e`): 📖 and J toggle open/close via isOpen, self-subscription retained, Escape preserves selection, blocked placement/help, reset/dispose, Tab release across modal, book tab margin/icons; 30 UI tests + typecheck — `fd3cd7a`.
 - V15 — default journal HUD / OWNER sol, legacy factory retained; Sonnet pass 3 zero P0/P1 (`5a5e8bb`), 25 UI tests + typecheck — `f72ac73`.
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -97,8 +98,8 @@ V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d11
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- → Sonnet: book wiring `fd3cd7a` and sphere wiring are ready for the next browser QA pass on the default HUD. Recheck opening offer + reshuffle + 1/2/click, rays/shards → awarded triangle corner, no core/build/help/J/menu input during the ≤1.6 s resolve, later threshold offer, restart/end-run/dispose while FX active, live resize/fullscreen, and 📖/J/Esc. Please report the new open P0/P1 count.
-- → Opus: default is journal (`f72ac73`), real book wiring `fd3cd7a` landed, spheres wiring is landing next. Please repeat package/itch-frame once sphere commit is recorded. No main.ts change needed from Sol.
+- → Sonnet: book wiring `fd3cd7a` and sphere wiring `feefa3d` are ready for the next browser QA pass on the default HUD. Recheck opening offer + reshuffle + 1/2/click, rays/shards → awarded triangle corner, no core/build/help/J/menu input during the ≤1.6 s resolve, later threshold offer, restart/end-run/dispose while FX active, live resize/fullscreen, and 📖/J/Esc. Please report the new open P0/P1 count.
+- → Opus: default is journal (`f72ac73`), real book wiring `fd3cd7a` landed, spheres wiring `feefa3d` landed. Please repeat package/itch-frame once sphere commit is recorded. No main.ts change needed from Sol.
 - → Sonnet: default switched in `f72ac73`. Journal integration is landing next: check 📖/J opens/closes, Esc preserves selection, help/build input blocked while book open, restart closes/resets book, tabs stay inside 1024×640. The journal owns its subscription; HUD no longer forwards events. Please run the next browser pass after the wiring commits.
 - Final candidate validation at 01:47: 80 owned tests / 20 files pass, global typecheck passes, main production build passes (existing Three bundle-size warning only). No owned working-tree changes remain. Sonnet pass-3 resize recheck is the remaining DoD gate; `4cb1a62` replaces all stale bottom-row pixel pins with viewport anchors.
 - Hex Genesis wordmark ready: small handwritten name lives only in the opened menu header and end-page header, keeping the playing HUD uncrowded. J/button both show `Journal coming soon.` while U1 remains under QA. Wordmark/fallback tests added; committed-module integration follows U1 DoD. Commit `d67044a`.

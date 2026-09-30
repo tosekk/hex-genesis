@@ -4,6 +4,13 @@ import type { GameSession, SessionEvent } from '../core/contracts';
 import { makeTestState } from '../core/testing';
 import { createTutorial } from './tutorial';
 
+// Tutorial behavior tests use text fallback regardless of designer audio drops.
+// voice.test.ts separately exercises explicit missing/present recordings and playback failures.
+vi.mock('./voice', async importOriginal => {
+  const { createVoicePlayback } = await importOriginal<typeof import('./voice')>();
+  return { createVoicePlayback: () => createVoicePlayback({}) };
+});
+
 function setup(pending = false) {
   const state = makeTestState();
   if (pending) state.pendingOffer = { options: ['forest', 'desert'], reshuffled: false };
