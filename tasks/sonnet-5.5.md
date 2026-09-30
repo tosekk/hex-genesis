@@ -223,3 +223,7 @@ GAME_DESIGN §10/§20: a core's hex holds no buildings and never counts as a slo
 - `src/sim/endgame.ts`: the board-full / soft-lock logic uses `slotCounts` or `isCoreHex`, so core hexes never count as empty slots. Add a test (board full except the core hexes → loss when T8 is unmet).
 - Legacy HUD (`src/ui/winProgress.ts`, help text): "Slots left" uses `slotCounts`. The legacy hex panel shows "A terraformer core occupies this tile" instead of the building list on a core hex.
 Commit `[sonnet] S11: …`. Keep doing QA passes for sol as before.
+
+## S12 — Journal material pass (designer, 2026-10-01 03:00; do this when you're back)
+Implement `tasks/UI_SPEC.md` **§9** on the journal book (`src/ui/journal/**`). References are in `tasks/refs/journal/`. You have a browser, so compare your screenshots against the references side by side at 1280×720 and 1024×640, and iterate until it clearly reads as a physical field journal. Then the stretch goal: the same paper material on the journal HUD panels (`src/ui/v2/**` is sol's; coordinate through the status files, or ask the designer to hand the panel CSS to you). Commit `[sonnet] S12: …` with screenshots described in your status.
+*If sonnet is unavailable, sol does S12 instead; the designer sends sol screenshots for feedback, since sol has no browser.*

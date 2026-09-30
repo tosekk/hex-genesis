@@ -172,3 +172,31 @@ export function createOfferFx(root: HTMLElement): OfferFx;
 
 ### 8.4 Integration (sol, after the V15 DoD)
 The 📖 button and **J** → `journal.open()`. On `offerShown` → `offerFx.present({ from: triangle bounding rect, … })`, and on `offerResolved` → `resolve(i, corner rect)`. Fall back to sol's simple modal if `createOfferFx` throws. Integrate each module **only once it's committed with passing tests**. Until then, the journal button shows "coming soon".
+
+## 9. Journal material pass (designer, 2026-10-01 03:00): "it must look like a real field journal, not a flat white page"
+
+**References** in `tasks/refs/journal/`:
+- `target-1-teal-notebook.png` and `target-2-parchment-ribbons.png` are the **target look**: a physical book object in a game;
+- `minimum-3-tablet-notebook.png` and `minimum-4-ring-journal.png` are the **minimum bar**: page curvature, a shaded spine, binding, depth.
+
+**Scope:** the journal book overlay (`src/ui/journal/**`) first. **Stretch:** reuse the same paper material on the HUD panels (`src/ui/v2/**`), so everything feels like pages from the same journal.
+
+**The book as an object:**
+- **Cover:** a dark cloth or leather cover (deep green-teal `#2F4A44` or brown `#5A3E2B`) visible 12–20 px around the pages, with a stitched or embossed border line and rounded, slightly worn corners.
+- **Thickness:** stacked page edges on the outer sides and bottom, via 3–5 layered offset box-shadows in paper tones.
+- **Spine/gutter:** a dark gradient at the middle, pages slightly lighter toward their outer edges, a soft highlight on the curve. The two pages must read as curving into the spine (refs 3 and 4).
+- **Binding (optional):** 3 ring clips on the spine (ref 4) *or* a sewn spine; pick one that fits the cover.
+- **Paper:** a warm parchment base (`#F4EAD5` → `#EADBBE`) with **procedural grain** (an SVG `feTurbulence` noise as a **static data-URI background image**, not a live CSS filter), darker edge vignetting and a few faint stains. The right page gets faint ruled or grid lines (ref 3).
+- **Ink ornaments:** corner flourishes and divider rules drawn as inline SVG in ink `#2E2A25`; section headers on a torn-paper label or ribbon banner (ref 2).
+- **Tabs as physical bookmarks:** Contents, Combos, Adjacency and Terrain become **cloth ribbons** hanging below the book (ref 2) *or* **colored paper tabs** sticking out of the top edge (ref 1), with their own shadows. The active one is brighter and overlaps the page edge.
+- **Illustration frame:** the combo illustration sits in a framed "photo" or medallion with a paper-clip or tape piece (refs 1 and 2). The undiscovered "?" medallion stays centered and dark.
+- **Lighting and backdrop:** a soft warm light from the top left; a large drop shadow under the book; the board behind dimmed and blurred (`backdrop-filter: blur(3px)` with a solid-dim fallback).
+- **Page turn (optional):** a 200–300 ms turn or slide when paging combos; with `prefers-reduced-motion`, an instant swap.
+
+**Constraints:**
+- CSS plus inline or data-URI SVG only. No new npm dependencies and no raster image files (unless the designer supplies them).
+- No live SVG or CSS filters on large animated elements.
+- The book fits and stays readable at **1280×720 and 1024×640** and scales with resizes. Text contrast ≥ 4.5:1. Fonts: the existing Patrick Hand and Nunito.
+- **Hidden-information rules unchanged:** undiscovered pages show only "?".
+
+**Done when:** the look reads as a physical journal at a glance, as in the references; the tests still pass (structure, undiscovered = "?" only); screenshots at both sizes are attached or described in the owner's status; the designer approves.
