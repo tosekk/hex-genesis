@@ -3,11 +3,9 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-**GO/NO-GO (O11.3, 01:55): GO for the journal HUD.** Trigger met: sonnet "Open P0/P1 on journal HUD: 0" (QA pass 3 at `4cb1a62`), and sol's V15 code + 80 tests pass. I pre-verified `?ui=journal` from a clean export of `5a5e8bb` in the itch frame (see Integration log): all checks pass.
+O11 ✅ (items 1–4). **GO executed.** Next per O11.3: repeat the package + itch-frame check once sol integrates the journal book and the offer spheres (UI_SPEC §8.4).
 
-> **sol: please flip the default now** (`src/ui/hud.ts`: `createHud` → `createJournalHud`; `main.ts` needs no change, `?ui=legacy` keeps the old HUD). As soon as that commit lands I package `release/hex-genesis-<date>.zip` from it, re-verify in the itch frame without `?ui`, and post the name here.
-
-> **Designer:** until that zip is posted, the safe upload is still `release/terraform-jam-2026-09-30.zip` (legacy HUD).
+> **Designer: upload `release/hex-genesis-2026-10-01.zip`** (journal HUD default). Built 01:54 from clean `f72ac73` (sol's default switch after sonnet QA pass 3: 0 open P0/P1), 48 files, 0.25 MB, sha256 `ff908edc2c47dfe3…`. Verified in the itch frame (Integration log). The old HUD stays reachable with `?ui=legacy`. Fallback if anything looks wrong on itch: `release/terraform-jam-2026-09-30.zip` (legacy HUD, verified).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -70,6 +68,11 @@ Only `opus` edits this file. Everyone else reads it.
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O11.3 GO: `release/hex-genesis-2026-10-01.zip`** (from clean `f72ac73`, `node scripts/package.mjs`): `unzip -t` OK, 48 files (`assets/fonts` ×4, `assets/icons/{buildings,terrain}` included), relative paths only. The unzipped zip + `scripts/itch-frame.html` were served on 127.0.0.1:4197 (page) and :4196 (game), and checked WITHOUT `?ui` (default HUD = journal):
+  - **Default cross-origin mode:** frame loaded and rendered, the click focuses the game, real ↓×5/Space/PgDn/End/`1` → **parent scrollY 0**, `1` resolved the offer (Desert). ✅
+  - **Same-origin:** `.jhud` mounted, tab "Hex Genesis", 0 errors. Menu → End Run → confirm → journal end screen "Hex Genesis · Run ended · Thresholds reached 0/8 · Board used · resources · time · seed 41". ✅
+  - **Live resize** (checked on the identical code via `?ui=journal` pre-verification): all panels stay inside 1024×640 … 1600×900. ✅
+  - **Not re-done by me in the zip:** a build loop through the journal's board clicks (my scripted board clicks didn't place the core in the hidden pane). That flow is covered by sonnet's QA passes 2–3 on this code (offer → core → sticky-card builds → threshold → End Run → end screen, no console errors).
 - **O11.3 pre-verification, journal HUD** (`?ui=journal`, clean export `5a5e8bb`, `node scripts/itch-test.mjs`, frame page 1440×1000 with a 1280×720 game, same-origin for inspection): `.jhud` mounted, tab "Hex Genesis", 0 audio-module controls (the journal has its own). Click into the game → focus in frame; real ↓×5/Space/PgDn/`2` → **parent scrollY 0**, `2` resolved the offer (Arctic deck shown); 0 errors. **Live resize** (sonnet's P2-pass P1): frame at 1024×640 / 1600×900 / 1100×660 / 1280×720 → all 8 journal panels inside the frame, triangle 16 px from the right edge every time. ✅
 - **O11.1 offer spheres** `8d44d59`: `src/fx/offerSpheres.ts` + 7 happy-dom tests (present/backdrop blocks pointer input, keys 1/2 owned + single choice, click, reshuffle/update/disabled, resolve settles ≤ 1.6 s and removes itself, reduced-motion fade, hide/dispose) + `src/fx/demo.html`. Browser (dev server demo): spheres render with biome colours, icons, key badges and Reshuffle; a real `1` → chosen Forest, and the resolve took **1165 ms** and removed the FX.
 - **O11.2 sonnet's P2 (itch-frame)** `0f050ae`: the default mode is now cross-origin via a second port on the same host (4197 page ↔ 4196 game; `itch-test` serves both). The old localhost↔127.0.0.1 swap was cross-SITE (separate renderer process, black in hidden panes, possible name mismatch) and stays available as `?site=1`. The page shows the frame load state. Verified from a clean HEAD export: frame loaded and rendered, focus in game, ↓×5/Space/PgDn → parent scrollY 0, `1` picks the offer. (`npm run itch-test` in the shared tree currently fails on astra's uncommitted `journal.test.ts`, not mine.)
