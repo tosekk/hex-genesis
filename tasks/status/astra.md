@@ -79,6 +79,7 @@ IN PROGRESS: N9 stockpile pressure. Started 2026-09-30 14:31 UTC; deadline 16:01
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N9 round3: costs have been tried first (two rounds). Trim only Glass Kiln raw stone3→2, total yield6→5, to reduce its standalone spam attractiveness after round2 missed target2 by one seed. Leave all combo rewards and every other number fixed; assess actual stock and all five constraints again, rather than assuming lower yield must improve balance.
 - N9 round2: baseline final combo placements most often use Glass Kiln (3,526 across50 runs), which charges neither wood nor food despite adjacency paying both. Add moderate wood/food costs specifically there; its base payout retains at least3 stone, enough for the unchanged basic Quarry/Palm recovery costs. No general cross-resource tax on fragile opening buildings.
 - N9 / ECONOMY_SPEC v4: preserve baseline thresholds, starting resources, terrain/zone modifiers, adjacency and combo rewards/recipes; tune costs first, yields second. Never count an unproven empty-slot stall as a loss. Keep the established all-map denominator, checkpoint sampling and strict all-completer T7 check unchanged. Baseline `e4448fd` matches archived `v4-round-4.json`.
 - N9 selection: a candidate must pass targets1/2/3/4/6 on all50 seeds under the existing definitions, and show a clear raw-stock reduction, not merely a larger cost denominator. Aim for at least50% reduction in the median per-run total held stock at T7, with all four resource medians and T3–T7 checkpoints reported individually; do not hide a resource regression behind the total. If no candidate clearly qualifies after four rounds, restore the baseline exactly.
@@ -198,6 +199,11 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N9 round 3 — trim Glass Kiln raw stone
+- Round2 committed `66648c4`. Glass Kiln base stone **3→2** (water3 unchanged, total6→5). All round2 costs and all other config data unchanged. Round2 cut T7 stock47.42% but yielded only44 spam losses; this single raw-yield trim tests recovery of the required spam gap without reducing recipe rewards.
+
+- Results: **50 combo wins, 44 spam bot losses**, zero combo opening stalls/false declarations; target2 still MISS. Median win board use65.03% (barely above the lower bound), maxT7 use55.71%. T7 stock **542/226.5/262/339.5**, median total **1435.5 (−26.25% vs baseline, worse than round2)**; worst pressure92.5×. Lower Glass Kiln yield changes choices toward other production and increases stock; it does not monotonically improve pressure. Reject this trim. All10 harness checks pass (35.21s with replay).
 
 ### N9 round 2 — Glass Kiln wood/food sink
 - Round1 `51344a9` preserves all five required targets and cuts T7 median total34%. Starting from it, **Glass Kiln wood0→6, food0→4** (stone4/water6 unchanged). Every other number unchanged. Wood548 and food323 remain high; this targets the most frequent advanced building instead of again increasing opening costs.
