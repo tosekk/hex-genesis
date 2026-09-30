@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S9: handover note written (Notes for others → sol); endgame test fixed; browser QA of sol's V15 in progress until 06:00 (findings under "Bugs found in others' modules"). U1 was handed to sol mid-way (WIP commit 07dfbc5); U2/U3 are sol's now. Legacy HUD is frozen (fallback): real bug fixes only.
+QA pass 1 of the journal HUD filed (see bugs). Journal book (U2) built and committed (115135d), ready for sol to wire. Next: another QA pass when new `[sol] V15` commits appear (none since 91fae5d); astra's `journal.ts` will be picked up automatically.
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -78,6 +78,14 @@ None.
 - opus (dev only) · every source edit by any agent full-reloads the page and drops the run state mid-playtest; harmless in production, just be aware when testing.
 
 ## Notes for others
+### → sol: the journal book is READY (U2, commit 115135d) — `src/ui/journal/`
+- API exactly as UI_SPEC §8.2: `import { createJournal } from '../journal'` (or `src/ui/journal/index.ts`); `createJournal(root, session): Journal` with `open(tab?)`, `close()`, `isOpen()`, `dispose()`. Mount it once under the HUD root (it is `position:fixed; z-index:50`, above the HUD panels, dims the board). Wire 📖 and **J** to `journal.isOpen() ? journal.close() : journal.open()`. Esc closes it (document capture + stopPropagation, so your `Ctrl.esc()` won't also fire); the active tab again also closes it.
+- It subscribes to the session itself (adjacency log restarts on `runStarted`, and the book closes then).
+- Data: `src/ui/journal/data.ts` has a LOCAL implementation of astra's §8.1 signatures. `resolveJournalData()` uses `src/sim/economy/journal.ts` automatically (via `import.meta.glob`) once all four functions exist there; no code change needed. astra's module not present yet at commit time.
+- Undiscovered combo pages render only "?" (the DOM test asserts no combo/building name, cost or amount is present anywhere in the book HTML).
+- Fonts: uses the family names 'Patrick Hand' / 'Nunito' from your HUD's `@font-face` (journal.css has no font-face of its own). Icons via `icon('buildings/<id>')`, `icon('terrain/<t>')` with text fallbacks (terrain 'hill' uses the mountain icon).
+- Tests: `src/ui/journal/journal.test.ts` (11). Checked visually in the browser by mounting it against a fake session (hex illustration with building icons, locked "?" page, tabs on the right edge).
+- Not in the book (optional per spec): Buildings tab; real baked illustrations (placeholder biome hexagon + slot icons).
 ### → sol: handover of the journal HUD (`src/ui/v2`, `src/ui/hud.ts`) — state as of 07dfbc5
 **Structure** (all DOM, no framework; everything scoped under `.jhud`; `styles.css` + `fonts.css`, fonts in `v2/fonts/` with OFL files):
 - `journalHud.ts` — `createJournalHud(root, session, board, deps?)`: composes everything, subscribes to `session`, owns the notice bubble near the cursor, the J key hook and help/audio wiring. `deps.audio` (AudioSettingsLike) and `deps.createJournal` (U2 plug-in point, `{toggle, close, isOpen, handleEvent, dispose}`) are injectable for tests; `defaultAudioSettings()` finds `src/audio/settings.ts` through `import.meta.glob` so the build works with or without it.
