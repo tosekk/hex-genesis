@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 code and 79 owned tests/typecheck/build pass. Sonnet pass 2 verified pass-1 fixes, but found one new P1: stale bottom-row layout on window resize. Native viewport-anchor fix `4cb1a62` is ready for pass 3; default remains legacy until no open P0/P1. Then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) per UI_SPEC §8.4, with simple offer fallback. Hex Genesis wordmark DONE `d67044a` in menu/end page (24 UI tests + typecheck pass). Holding source steady for pass 3. V13 DONE `f2e40d4`. Hard cutoff 06:00 local: ship legacy if DoD unmet.
+V15 U1 code and 80 owned tests/typecheck/main production build pass (01:47). Sonnet pass 2 verified pass-1 fixes, but found one new P1: stale bottom-row layout on window resize. Native viewport-anchor fix `4cb1a62` is ready for pass 3; default remains legacy until no open P0/P1. Then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) per UI_SPEC §8.4, with simple offer fallback. Hex Genesis wordmark DONE `d67044a` in menu/end page (24 UI tests + typecheck pass). Holding source steady for pass 3. V13 DONE `f2e40d4`. Hard cutoff 06:00 local: ship legacy if DoD unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -51,6 +51,7 @@ V15 U1 code and 79 owned tests/typecheck/build pass. Sonnet pass 2 verified pass
 - V9 — `e048346` — tutorial and VO script match §39/§41: T1–T7 award cores, T8 wins, finite slots/combos pay once, plan combos and terrain bonuses; real-session copy assertion updated, 48 owned tests pass. Changed line ids: `combos`, `progression`.
 
 ## Blockers
+- V15 review gate: Sonnet still records one open resize P1 from pass 2. Fix `4cb1a62` and branding `d67044a` are committed and ready for pass 3. UI_SPEC §8.4 integration/default switch waits for that review; simple offer and coming-soon journal remain. Both modules are committed with passing owner tests.
 <!-- what, waiting on whom -->
 - V13 dependency RESOLVED: Opus CONTRACT `72cc74b` adds the optional slot highlighter; implemented in renderer.
 - V14 historical manual layout review (resolved by Sonnet V15 pass 1, both target sizes): Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
@@ -94,6 +95,7 @@ V15 U1 code and 79 owned tests/typecheck/build pass. Sonnet pass 2 verified pass
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- Final candidate validation at 01:47: 80 owned tests / 20 files pass, global typecheck passes, main production build passes (existing Three bundle-size warning only). No owned working-tree changes remain. Sonnet pass-3 resize recheck is the remaining DoD gate; `4cb1a62` replaces all stale bottom-row pixel pins with viewport anchors.
 - Hex Genesis wordmark ready: small handwritten name lives only in the opened menu header and end-page header, keeping the playing HUD uncrowded. J/button both show `Journal coming soon.` while U1 remains under QA. Wordmark/fallback tests added; committed-module integration follows U1 DoD. Commit `d67044a`.
 - **Sonnet QA pass-2 resize P1/P2 fix in progress:** bottom panels use native `bottom:16px`, triangle/menu use `right:16px`, deck uses left/right anchors and automatic width; pills use viewport-relative centering. Fixed panels now follow fullscreen/window changes without waiting for an observer; tutorial placement reads actual window dimensions, not a potentially stale host rect. Regression keeps the host bounds stale while resizing 1280×720/1024×640 → 1100×660 → 1024×640. DoD still awaits Sonnet recheck. Journal `115135d`/`cf87d9e` and spheres `8d44d59` are committed/tested and will integrate only after U1 acceptance, per §8.4. Commit `4cb1a62`.
 - **QA handoff (01:08):** all U1 code committed; main production build passes, CSS asset references/fonts/licenses and all SVG XML verified. Please recheck tutorial below first offer/confirm/end (`5162c4d`), Help/?/H/Esc, Reshuffle/1/2 and keyboard R/Tab/Shift; then close pass-1 P1 if satisfied. `/?ui=journal` forces candidate; `?ui=legacy` remains safety net. Sol will switch the default only after your no-open-P0/P1 review. No browser pass claimed by Sol.
