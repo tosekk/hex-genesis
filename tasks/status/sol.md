@@ -1,3 +1,5 @@
+Designer QA: Item 1 — reload the game, click once, choose a biome and place a core; music, offer/spread sounds and voice should load. Network MP3 URLs should be hashed assets/ paths, never audio/ paths.
+
 ## Morning summary
 
 Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 default `f72ac73`, book `fd3cd7a`, spheres `feefa3d`; Sonnet pass 3 zero P0/P1.
@@ -16,7 +18,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 DoD passed Sonnet pass 3 (`5a5e8bb`): zero open P0/P1, live-resize fix `4cb1a62` verified. Default journal HUD DONE `f72ac73` (OWNER sol, legacy retained); book wiring DONE `fd3cd7a`; sphere wiring DONE `feefa3d`, simple offer fallback retained. Hex Genesis wordmark DONE `d67044a`; V13 DONE `f2e40d4`. All 91 owned tests / 20 files, typecheck, main production build pass (02:01); existing >500kB Three bundle warning only. Missing-audio tutorial fixture DONE `e1457f2` isolates optional recordings, so designer VO drops cannot change this test. New wiring browser QA requested from Sonnet; Opus package/itch-frame recheck requested. Hard cutoff 06:00 local.
+Night item 1 DONE: all 19 MP3s + AUDIO_LIST moved to src/assets/audio; both globs repointed. Dist SHA-256 multiset matches source exactly (19 MP3s, one copy each), 5.88 MB; no public-directory warnings. Discovery regression covers every expected recording. Night queue 1→2→3→4; item 6 only if designer GLBs arrive. Revised ownership read: no main.ts/app/index/sim/tests edits; designer does browser QA.
 
 ## Done
 - V15 verification — missing-audio tutorial test supplies an empty recording map, independent of designer VO file drops; no runtime/audio/asset changes. All 91 owned tests / 20 files, typecheck pass — `e1457f2`.

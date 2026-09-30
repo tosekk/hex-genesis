@@ -15,7 +15,7 @@ describe('optional prerecorded voice', () => {
       pause = pause; load = load; removeAttribute = vi.fn();
       play() { return Promise.reject(new Error('Autoplay denied')); }
     });
-    const voice = createVoicePlayback({ '/public/audio/vo/biomes.mp3': '/audio/vo/biomes.mp3' });
+    const voice = createVoicePlayback({ '/src/assets/audio/vo/biomes.mp3': '/audio/vo/biomes.mp3' });
     expect(voice.play('biomes', finished)).toBe(true);
     await Promise.resolve();
     expect(finished).toHaveBeenCalledOnce(); expect(pause).toHaveBeenCalledOnce(); expect(load).toHaveBeenCalledOnce();

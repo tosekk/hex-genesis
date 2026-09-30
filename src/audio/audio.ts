@@ -29,7 +29,7 @@ export function createAudio(root: HTMLElement, session: GameSession, options: { 
   }
   function urlFor(file: string): string | null {
     if (failed.has(file)) return null;
-    const url = AUDIO_ASSETS[`/public/audio/${file}`];
+    const url = AUDIO_ASSETS[`/src/assets/audio/${file}`];
     if (!url) { debugOnce(file, `Optional file absent: ${file}`); return null; }
     return url;
   }

@@ -1,6 +1,6 @@
 # Optional audio handoff
 
-Drop these exact MP3 paths under `public/audio/`. Restart Vite after adding files, or rebuild the release; asset discovery then picks them up without code changes. Missing assets make no requests. Corrupt media logs once at debug level and stays disabled until reload. All playback waits for a pointer/keyboard gesture. No runtime AI/TTS is used.
+Drop these exact MP3 paths under `src/assets/audio/`. Restart Vite after adding files, or rebuild the release; asset discovery then picks them up without code changes. Missing assets make no requests. Corrupt media logs once at debug level and stays disabled until reload. All playback waits for a pointer/keyboard gesture. No runtime AI/TTS is used.
 
 Keep effects short, with no leading silence or hard clipping. The module handles volume/mute and ducks music during biome offers. Settings persist locally where storage is available. Music should have a seamless loop; keep it gentle enough that repeated build sounds remain clear.
 

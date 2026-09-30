@@ -1,7 +1,7 @@
 import type { LineId } from './lines';
 
 // Discover optional prerecorded files at build time. Missing files cause no 404 requests.
-const VO_ASSETS = import.meta.glob<string>('/public/audio/vo/*.mp3', { eager: true, query: '?url', import: 'default' });
+export const VO_ASSETS = import.meta.glob<string>('/src/assets/audio/vo/*.mp3', { eager: true, query: '?url', import: 'default' });
 
 export function createVoicePlayback(assets: Record<string, string> = VO_ASSETS): {
   play(id: LineId, onFinish: () => void): boolean; stop(): void;
@@ -14,7 +14,7 @@ export function createVoicePlayback(assets: Record<string, string> = VO_ASSETS):
   return {
     play(id, onFinish) {
       stop();
-      const url = assets[`/public/audio/vo/${id}.mp3`];
+      const url = assets[`/src/assets/audio/vo/${id}.mp3`];
       if (!url || typeof Audio === 'undefined') return false;
       try {
         const current = new Audio(url); audio = current;

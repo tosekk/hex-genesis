@@ -24,7 +24,7 @@ beforeEach(() => {
   localStorage.clear(); players.length = 0; clock = 0; rejection = null;
   audioSettings.setMuted(false); audioSettings.setVolume(0.55);
   Object.keys(optional.assets).forEach(key => delete optional.assets[key]);
-  for (const file of files) optional.assets[`/public/audio/${file}`] = `/audio/${file}`;
+  for (const file of files) optional.assets[`/src/assets/audio/${file}`] = `/audio/${file}`;
   vi.stubGlobal('Audio', FakeAudio); vi.spyOn(performance, 'now').mockImplementation(() => clock); vi.spyOn(console, 'debug').mockImplementation(() => {});
 });
 afterEach(() => { disposals.splice(0).forEach(dispose => dispose()); document.body.replaceChildren(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
@@ -119,7 +119,7 @@ describe('optional game audio', () => {
     expect(players.at(-1)!.volume).toBeCloseTo(0.25 * 0.32);
   });
   it('silently skips absent assets, logs once, disables corrupt media and catches rejected playback', async () => {
-    delete optional.assets['/public/audio/music/main_loop.mp3']; delete optional.assets['/public/audio/sfx/build.mp3'];
+    delete optional.assets['/src/assets/audio/music/main_loop.mp3']; delete optional.assets['/src/assets/audio/sfx/build.mp3'];
     const s = setup(); s.state.hexes[0].slots[0].building = 'a'; s.emit({ type: 'hexChanged', hexId: 0 });
     s.state.hexes[0].slots[1].building = 'b'; s.emit({ type: 'hexChanged', hexId: 0 });
     expect(players).toHaveLength(0); expect(console.debug).toHaveBeenCalledTimes(2);
