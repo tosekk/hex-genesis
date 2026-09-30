@@ -47,6 +47,7 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 - No unfinished owned task. Final full-suite green is blocked by the Sonnet-owned zero-target HUD fixture reported below. Balance gaps require designer review; no guardrail was relaxed. Opus O5 passed D1; independent D4/N4 review remains requested.
 
 ## Decisions
+- N7 round 2: a small T6 resource-gate adjustment is permitted by v3; preserve the round-4 progression shape and every other gate while restoring a finite 50-seed spam comparison. T1–T5, T7/T8, stock, costs, yields and recipes stay unchanged.
 - N7 / ECONOMY_SPEC v3: start from exact retained round-4 values; append steeper all-resource T7/T8. Keep starting stock, costs and the known seed-35/37 openings untouched. Count the initial eight-threshold measurement as round 1 of the maximum four. T1 is pacing-exempt. Evaluate target 4 at 96% T6 completion and 90% wins (48/50 and 45/50); finite T4–T6 spam/combo medians are still required for target 2. Zero spam T6 completers passes target 3 under the explicit v3 override. Late threshold medians must precede the finite all-seed median win placement count.
 - N6 §38: preserve transaction-based preview math, including unaffordable projections and hidden discoveries. Copy the state shell, hex array, target hex/slots/pair-history array, resource maps, discovery list and adjacency map; share only data that placement reads. Verify equivalence against the previous full-clone algorithm on frozen seeded states, including demolition/conversion and invalid requests. The larger 50-seed sample is confirmation, not a seventh calibration round.
 - N4 §6/§53: scale mountain cluster min/max by board area relative to the new PLACEHOLDER `mountainReferenceArea: 280`, rounding up. This fixes hill coverage dropping to 8–10% on large maps without changing default dimensions or any of the first 200 default-map outputs (SHA-256 `377692786bd55dc8b02f911dbfcfeec00ddedb6b01ba4884f5884ded1a62ecb1`). No retries or seed filtering. Interpret “roughly 65–80%” as the mean and at least 90% of tested seeds within range, consistent with D4; record all outliers.
@@ -151,6 +152,12 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N7 v3 round 2 — measurable T6 comparison
+
+Round 1 committed `cf27db5`. Change **only T6 food 170→120**, equal to the T5 food gate; preserve all other thresholds/rewards. The prior 50-seed archive has four otherwise-qualified spam runs with final food 136/123/162/130 (seeds 1,6,25,48); this should move T6 completers from 22 to at least 26, enough for a finite all-seed median. Keep T6 wood/stone/water gates and the observed late-core pacing, with no attempt to rescue the two accepted opening stalls. Priority 2 is ahead of the no-coasting target; record any resulting early-fill regression honestly.
+
+Result: every combo run is exactly unchanged from round 1: **48/50 T6 and wins**, medians **2 / 23.5 / 47.5 / 110.5 / 181 / 312.5 / 363 / 433.5**, zero declarations. Spam T6 rises **22→26/50**, giving median **610** and T4–T6 ratios **3.30 / 2.74 / 1.95**. Targets 4 and 2 pass; T4 pacing remains the only target-1 miss, minimum spam fill remains **59.44%**. All 8 harness checks pass; 172.68 s measurement; 16 config/report checks and typecheck pass.
 
 ### N7 v3 round 1 — append-only baseline
 
