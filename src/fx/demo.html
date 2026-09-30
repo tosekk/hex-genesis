@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Standalone demo of the biome-offer spheres (O11). Dev server: http://localhost:5173/src/fx/demo.html -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hex Genesis · offer spheres demo</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #3a4a3f linear-gradient(135deg, #3f5245, #2c3530); font: 14px Nunito, system-ui, sans-serif; color: #F4EAD5; }
+    #bar { position: fixed; top: 12px; left: 12px; display: flex; gap: 8px; align-items: center; z-index: 1; }
+    button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1.5px solid #2E2A25; background: #F4EAD5; color: #2E2A25; cursor: pointer; }
+    #tri { position: fixed; right: 40px; bottom: 40px; width: 150px; height: 130px; clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      background: #F4EAD5; }
+    .corner { position: fixed; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #2E2A25; }
+    #log { position: fixed; left: 12px; bottom: 12px; font: 12px ui-monospace, monospace; white-space: pre; opacity: .8; }
+  </style>
+</head>
+<body>
+  <div id="bar">
+    <button id="show">Show offer</button>
+    <label><input id="rm" type="checkbox" /> reduced motion</label>
+    <span>Keys 1 / 2, or click a sphere.</span>
+  </div>
+  <div id="tri"></div>
+  <div class="corner" id="c-forest" style="right:105px;bottom:160px;background:#5f9a55"></div>
+  <div class="corner" id="c-desert" style="right:180px;bottom:30px;background:#d9b061"></div>
+  <div class="corner" id="c-arctic" style="right:30px;bottom:30px;background:#cfe3ea"></div>
+  <div id="log"></div>
+  <script type="module">
+    import { createOfferFx } from './offerSpheres.ts';
+    const BIOMES = ['forest', 'desert', 'arctic'];
+    const logEl = document.getElementById('log');
+    const log = (m) => { logEl.textContent = (m + '\n' + logEl.textContent).split('\n').slice(0, 8).join('\n'); };
+    let fx = null, reshuffles = 1;
+    const roll = () => ({ options: [BIOMES[Math.floor(Math.random() * 3)], BIOMES[Math.floor(Math.random() * 3)]], reshuffled: false });
+    function show() {
+      fx?.dispose();
+      fx = createOfferFx(document.body, { reducedMotion: document.getElementById('rm').checked || undefined });
+      reshuffles = 1;
+      let offer = roll();
+      fx.present({
+        offer, from: document.getElementById('tri').getBoundingClientRect(), canReshuffle: reshuffles > 0,
+        onChoose(i) {
+          log(`chose ${i + 1}: ${offer.options[i]}`);
+          const t0 = performance.now();
+          // The HUD would call session.chooseOffer here, then resolve on 'offerResolved'.
+          setTimeout(() => fx.resolve(i, document.getElementById('c-' + offer.options[i]).getBoundingClientRect())
+            .then(() => log(`resolved in ${Math.round(performance.now() - t0)} ms`)), 60);
+        },
+        onReshuffle() { reshuffles--; offer = { ...roll(), reshuffled: true }; fx.update(offer, reshuffles > 0); log('reshuffled'); },
+      });
+    }
+    document.getElementById('show').addEventListener('click', show);
+    show();
+  </script>
+</body>
+</html>
