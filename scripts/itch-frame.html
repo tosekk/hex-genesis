@@ -1,7 +1,10 @@
 <!doctype html>
 <!-- Local stand-in for an itch.io game page. Served next to the built dist/ by `npm run itch-test`.
-     Like itch, the game runs in a 1280×720 iframe on a DIFFERENT origin (this page on 127.0.0.1, the game on
-     localhost), inside a page that scrolls. Not part of the release zip. -->
+     Like itch, the game runs in a 1280×720 iframe on a DIFFERENT origin, inside a page that scrolls.
+     Default: same host, the other itch-test port (4197 ↔ 4196), so no localhost/127.0.0.1 name mismatch.
+     ?site=1: cross-SITE (127.0.0.1 ↔ localhost), closest to itch.io but its own renderer process; in a hidden or
+     automated browser pane it may stay black until something forces a paint. ?same=1: same origin (inspectable).
+     ?game=<url>: any other build. Not part of the release zip. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -36,14 +39,18 @@
   <script>
     const frame = document.getElementById('game');
     const params = new URLSearchParams(location.search);
-    // Cross-origin by default: swap localhost ↔ 127.0.0.1. ?same=1 keeps the same origin (for debugging).
-    const host = params.has('same') ? location.hostname : (location.hostname === '127.0.0.1' ? 'localhost' : '127.0.0.1');
     const seed = params.get('seed');
-    // ?game=<url> loads another build (e.g. an older preview server) for A/B comparisons.
-    frame.src = params.get('game') ?? `${location.protocol}//${host}:${location.port}/index.html${seed ? `?seed=${seed}` : ''}`;
+    const ui = params.get('ui');
+    const query = [seed && `seed=${seed}`, ui && `ui=${ui}`].filter(Boolean).join('&');
+    let host = location.hostname, port = location.port;
+    if (params.has('site')) host = location.hostname === '127.0.0.1' ? 'localhost' : '127.0.0.1';
+    else if (!params.has('same')) port = port === '4197' ? '4196' : '4197'; // the other itch-test server
+    frame.src = params.get('game') ?? `${location.protocol}//${host}:${port}/index.html${query ? `?${query}` : ''}`;
     document.getElementById('origin').textContent = `page ${location.origin} · game ${new URL(frame.src).origin}`;
     document.getElementById('fs').addEventListener('click', () => document.getElementById('wrap').requestFullscreen());
     const log = [];
+    let frameLoaded = false;
+    frame.addEventListener('load', () => { frameLoaded = true; log.push('game frame loaded'); });
     let lastY = 0;
     window.addEventListener('scroll', () => { if (scrollY !== lastY) log.push(`parent scrolled to ${scrollY}`); lastY = scrollY; });
     document.addEventListener('fullscreenchange', () => log.push(document.fullscreenElement ? 'entered fullscreen' : 'left fullscreen'));
@@ -51,7 +58,7 @@
     window.__embed = { log };
     setInterval(() => {
       document.getElementById('hud').textContent =
-        `parent scrollY: ${scrollY}\nfocus: ${document.activeElement === frame ? 'IN GAME iframe' : document.activeElement?.tagName}\n` +
+        `frame: ${frameLoaded ? 'loaded' : 'LOADING… (click inside once it shows, before pressing keys)'}\nparent scrollY: ${scrollY}\nfocus: ${document.activeElement === frame ? 'IN GAME iframe' : document.activeElement?.tagName}\n` +
         `fullscreen: ${!!document.fullscreenElement}\n` + log.slice(-5).join('\n');
     }, 200);
   </script>
