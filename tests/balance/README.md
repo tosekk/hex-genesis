@@ -4,9 +4,9 @@ Three policies: combo, spam, and seeded random (uniform eligible empty physical 
 
 Run `BALANCE=1 BALANCE_SEEDS=50 BALANCE_LABEL="V5 round 1" BALANCE_FILE=v5-round-1 BALANCE_APPEND=1 npx vitest run tests/balance`. Each archive captures the exact config and 150 real-session runs. RNG replay and payout scores are checked against actual commands.
 
-# Balance harness
+# Historical v4 methodology (superseded by v5 above)
 
-Run the opt-in real-session measurement (50 seeds × spam/combo, no dependencies added):
+Historical command (the current worker now always measures all three policies; use a v5 label/file for new runs):
 
 ```sh
 BALANCE=1 BALANCE_SEEDS=50 BALANCE_LABEL='v4 round 1' BALANCE_FILE=v4-round-1 npx vitest run tests/balance
@@ -14,9 +14,9 @@ BALANCE=1 BALANCE_SEEDS=50 BALANCE_LABEL='v4 round 1' BALANCE_FILE=v4-round-1 np
 
 `REPORT.md` contains the current human-readable results; the named JSON keeps the full configuration and every run. Retain `baseline.json` and each round file so comparisons are reproducible. `BALANCE_APPEND=1` appends an informational section; `BALANCE_COLS=26 BALANCE_ROWS=18` changes only the measurement map size. `BALANCE_SEEDS=50` expands the seed sample. Default `npm test` skips the suite.
 
-Both bots use real `GameSession` commands, finish spread animations with `advance`, never demolish or reshuffle, and stop at 1500 actions. An additional `stuck` stop means no affordable empty-slot placement and no usable held core; it is **not** a soft-lock declaration. The report never silently drops those seeds. A session loss is counted as a soft-lock declaration because its only automatic-loss path calls `isProvablySoftLocked`; stuck states are queried directly as well.
+The original combo/spam bots use real `GameSession` commands, finish spread animations with `advance`, never demolish or reshuffle, and stop at 1500 actions. An additional `stuck` stop means no affordable empty-slot placement and no usable held core; it is **not** a soft-lock declaration. The report never silently drops those seeds. A session loss is counted as a soft-lock declaration because its only automatic-loss path calls `isProvablySoftLocked`; stuck states are queried directly as well.
 
-Both bots scan all eligible hexes, using the first empty slot (equivalent when no slots have been demolished). Spam scores total visible base yield. Combo adds newly eligible pairs/triples and first-completion adjacency, with partial-hex preference on equal scores. There is no undisclosed resource weighting, cost penalty, or future-recipe bonus. All remaining ties use ascending HexId and roster order. Every chosen candidate's predicted payout is checked against the real placement transaction.
+The original combo/spam bots scan all eligible hexes, using the first empty slot (equivalent when no slots have been demolished). Spam scores total visible base yield. Combo adds newly eligible pairs/triples and first-completion adjacency, with partial-hex preference on equal scores. There is no undisclosed resource weighting, cost penalty, or future-recipe bonus. All remaining ties use ascending HexId and roster order. Every chosen candidate's predicted payout is checked against the real placement transaction.
 
 Core sites maximize dead placeable claims, tied by HexId. Offers prefer a new mixed biome at that option's best core site, then fewer visible main-biome tiles, then option 0. A new mixed biome means a `convert` claim to a mixed biome not currently on the board.
 
