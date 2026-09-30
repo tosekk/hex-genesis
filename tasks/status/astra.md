@@ -47,6 +47,7 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 - No unfinished owned task. Final full-suite green is blocked by the Sonnet-owned zero-target HUD fixture reported below. Balance gaps require designer review; no guardrail was relaxed. Opus O5 passed D1; independent D4/N4 review remains requested.
 
 ## Decisions
+- N7 round 3: interpret “keep round-4 pacing” as retaining its progression shape and target bands, not freezing all six literal gates (v3 explicitly permits retuning). A 7.7% T4 wood correction addresses the sole 50-seed pacing miss; T1–T3 and the known starving openings stay fixed.
 - N7 round 2: a small T6 resource-gate adjustment is permitted by v3; preserve the round-4 progression shape and every other gate while restoring a finite 50-seed spam comparison. T1–T5, T7/T8, stock, costs, yields and recipes stay unchanged.
 - N7 / ECONOMY_SPEC v3: start from exact retained round-4 values; append steeper all-resource T7/T8. Keep starting stock, costs and the known seed-35/37 openings untouched. Count the initial eight-threshold measurement as round 1 of the maximum four. T1 is pacing-exempt. Evaluate target 4 at 96% T6 completion and 90% wins (48/50 and 45/50); finite T4–T6 spam/combo medians are still required for target 2. Zero spam T6 completers passes target 3 under the explicit v3 override. Late threshold medians must precede the finite all-seed median win placement count.
 - N6 §38: preserve transaction-based preview math, including unaffordable projections and hidden discoveries. Copy the state shell, hex array, target hex/slots/pair-history array, resource maps, discovery list and adjacency map; share only data that placement reads. Verify equivalence against the previous full-clone algorithm on frozen seeded states, including demolition/conversion and invalid requests. The larger 50-seed sample is confirmation, not a seventh calibration round.
@@ -152,6 +153,12 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N7 v3 round 3 — preserve pacing on the larger sample
+
+Round 2 committed `1a2c142`. Change **only T4 wood 260→240** (−7.7%), leaving its other resources and all seven other gates fixed. The only pacing miss is median T4 110.5 versus the 108 upper bound; near-median late runs (e.g. seeds 14/47) are wood-bound. This small correction preserves the established progression shape while targeting the approved 50-seed pacing band. No changes to T1–T3/openings, stock, costs, yields, recipes or map.
+
+Result: **targets 4, 2 and 1 pass**. T4 median **110.5→105**; combo medians **2 / 23.5 / 47.5 / 105 / 180.5 / 312 / 362.5 / 433.5**; **48/50 T6 and wins**, zero declarations. T4–T6 spam/combo ratios **3.46 / 2.74 / 1.96**, with 26/50 spam T6 completers. Target 3 still misses: minimum **59.44%**, median **87.15%**. Both late medians precede median win 613.5. Measurement **176.80 s**; 8 harness checks, 16 config/report tests, typecheck pass.
 
 ### N7 v3 round 2 — measurable T6 comparison
 
