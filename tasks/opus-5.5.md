@@ -151,3 +151,14 @@ GAME_DESIGN §41 changed (win = final threshold; loss = out of room). Sonnet imp
    - update `README.md`: how to play, the itch.io page draft, and the goal line "Reach the final threshold before you run out of room".
 2. **After `[sonnet] S8`:** run the e2e suite and a browser run on the seed sonnet or astra used. Check that the win screen appears the moment T8 is reached, even mid-spread, and that a spam-only run ends in a loss screen (use a seed and a quick-build spam).
 3. **After astra's final N8 round:** re-run autoplay, rebuild `npm run package`, verify it in your itch iframe page, and log the results. Route bugs to their owners.
+
+---
+
+## O9 — UI rework support (designer-approved) — see `tasks/UI_SPEC.md`
+
+1. **Contract (now, small):** add the optional `setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void` to `BoardView` in `src/core/contracts.ts`, log it in the Contract changelog, commit `[opus] CONTRACT: optional BoardView.setSlotHighlight`, and note it in your status for sol (V13) and sonnet (U1).
+2. **Wiring in `src/main.ts`** (once sonnet's U1 exports exist):
+   - `?ui=legacy` → `createLegacyHud`, otherwise the new `createHud`;
+   - `createAudio(…, { controls: false })` for the new HUD (keep `true` for legacy);
+   - any new root elements the new HUD needs.
+3. **After U1 lands:** browser check at 1280×720 and 1024×640 (overlaps, click-through to the board, keyboard focus in your itch iframe page), both HUDs working, rebuild `npm run package`. Route issues to their owners.

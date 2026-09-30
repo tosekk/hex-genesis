@@ -160,3 +160,43 @@ GAME_DESIGN **§41 changed**. Read §2, §39, §41, §42 and AGENT_TASKS §57 "W
    - UI: goal line and end-screen stats.
 
    Astra rewrites its own acceptance tests in parallel. **Commit as early as possible:** astra's balance calibration waits for your `[sonnet] S8` commit.
+
+---
+
+# UI rework (designer-approved) — source of truth: `tasks/UI_SPEC.md`
+
+Read `tasks/UI_SPEC.md` fully. `public/assets/fonts/**` is now yours (bundle OFL fonts with their license files). Keep the current HUD reachable via `?ui=legacy` until the jam submission. Opus wires the switch in `main.ts`; export a `createLegacyHud` (the current `createHud`) and a new `createHud` with the same signature.
+
+## U1 — New HUD (P0 for the UI, target ~22:00)
+UI_SPEC §1–§3.7 and §5 (everything except the offer animation):
+- field-journal skin and tokens, bundled fonts;
+- resource pills; threshold stack with pinned T8 goal and "Slots left";
+- biome triangle with mixed edge circles, count badges, grey states, and following the selected tile;
+- deck with the core card first, then roster cards, with the hover pop-up (full `session.preview` when a slot is selected, discovered combos only);
+- detail panel (building / core / tile with slot chips + Demolish);
+- both placement flows (sticky card selection; slot-first with auto-advance to the next empty slot); R, Shift+click and Tab kept;
+- top-right journal (stub button until U2) and ⚙ menu (Help, Sound via sol's `audioSettings`, End Run, New Run);
+- toasts restyled; end screen restyled.
+
+Use the optional `board.setSlotHighlight?.(…)` (opus is adding it). Until it exists, fall back to the `'selected'` hex highlight. Icons fall back to text if sol's building icons haven't landed.
+
+**Tests (happy-dom, fake session/board):**
+- both placement flows, including auto-advance;
+- the core card's grey, badge and disabled reasons;
+- the triangle following the selected tile; mixed circles grey until the biome exists;
+- the pop-up shows only discovered combos;
+- threshold stack: zero targets hidden, T8 pinned;
+- menu: End Run confirm, mute through a fake `audioSettings`.
+
+Play one run in the browser (port 5174). Commit in logical steps (`[sonnet] U1: …`). Update your status with screenshots described in words (what's where).
+
+## U2 — Journal (target ~00:30)
+UI_SPEC §4: a book with Contents / Combos / Adjacency / Terrain tabs.
+- **Combos:** undiscovered → a big "?" on a dark ink circle, no details.
+- **Adjacency:** a "found" log built from `payouts` events.
+- **Terrain:** every rule plus zone effects.
+
+Tests: an undiscovered combo reveals nothing (no name, buildings or amounts in the DOM); the adjacency log entry appears after a fake adjacency payout; J/Esc open and close it. Commit as `[sonnet] U2: …`.
+
+## U3 — Biome offer spheres (target ~02:00)
+UI_SPEC §5 "Biome offer": the simple version first (spheres fly out of the triangle, the chosen one glows and returns, the other fades), commit it, then god-rays and shatter/dissolve (CSS + a small 2D canvas). Input stays blocked until it's resolved; 1/2 and reshuffle still work. Respect `prefers-reduced-motion` (skip to the simple version). Commit as `[sonnet] U3: …`.

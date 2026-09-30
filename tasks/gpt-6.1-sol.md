@@ -188,3 +188,24 @@ GAME_DESIGN **§41 changed**: win = reach the final threshold (T8). Loss = the b
 - In `buildings` or `combos`, one short hint: "Each slot and each combo pays only once. Choose placements that earn the most."
 - Update `VO_SCRIPT.md` to match. The designer is generating voice lines now, so **commit this quickly** and note the changed line ids in your status file.
 Commit `[sol] V9: tutorial text for the new win rule`.
+
+---
+
+# UI rework support (designer-approved) — see `tasks/UI_SPEC.md` §6
+
+Do these in order; sonnet builds the new HUD in parallel and falls back gracefully until each lands.
+## V11 — Icons (P0 for UI, ~1–1.5 h) — `public/assets/icons/**`
+- **24 building icons** `public/assets/icons/buildings/<buildingId>.svg`: ids from `src/config/economy.ts`. Same flat style, palette and stroke weight as your existing biome and resource icons. Each must be recognizable at 32 px and match its 3D model's idea (e.g. sawmill = saw blade + log).
+- **Terrain icons** `public/assets/icons/terrain/{mountain,water,woods,marsh}.svg` and a **core icon** `public/assets/icons/core.svg`.
+- An icon preview page (extend `src/render/iconPreview.html` or add one) showing all icons at 24/32/64 px on paper `#F4EAD5`.
+
+Commit `[sol] V11: building, terrain and core icons`, then **list the file paths in your status** for sonnet.
+
+## V12 — Audio settings API (~20 min) — `src/audio/**`
+`src/audio/settings.ts` exports `audioSettings` (`muted`, `volume`, `setMuted`, `setVolume`, `subscribe`), persisted as today. `createAudio(root, session, { controls?: boolean })`: with `controls: false`, render no controls of your own (sonnet's ⚙ menu uses `audioSettings`). The default stays `true` so nothing breaks before opus rewires it. Add tests. Commit `[sol] V12: …`.
+
+## V13 — Slot highlight (after opus commits the contract) — `src/render/**`
+Implement `setSlotHighlight?(pick | null)`: a highlighter-yellow (`#F5D547`) ring on that slot's anchor, visible on every biome color, updated when the tile flips or the camera moves. Add a test for the ring placement math. Commit `[sol] V13: …`.
+
+## V14 — Tutorial panel in journal style (~40 min) — `src/tutorial/**`
+Per UI_SPEC §6: move it to the left side under sonnet's threshold stack (leave room: top ≈ 300 px from the top at 720 px height; coordinate via "Notes for others" if you need more), restyle it as a journal note (paper `#F4EAD5`, ink `#2E2A25`, handwritten title; fonts from `public/assets/fonts/` once sonnet adds them, with a system fallback), the face as an ink-sketch device screen, and make it collapsible. Commit `[sol] V14: …`.

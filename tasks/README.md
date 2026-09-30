@@ -66,7 +66,7 @@ A path's owner is the **only** agent that may create, edit, or delete files unde
 | `src/config/index.ts`, `src/config/spread.ts` | opus |
 | `src/sim/spread/**` | opus |
 | `src/main.ts`, `src/app/**`, `tests/e2e/**`, `scripts/**` | opus |
-| `src/game/**` | sonnet |
+| `src/game/**`, `public/assets/fonts/**` | sonnet |
 | `src/ui/**` | sonnet |
 | `src/sim/economy/**`, `src/config/economy.ts` | astra |
 | `tests/acceptance/**`, `tests/balance/**` | astra |
