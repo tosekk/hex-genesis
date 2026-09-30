@@ -144,3 +144,14 @@ npm run package      # zip dist/ → release/ (opus, O4)
 - **P0:** required for the playable build. Never cut.
 - **P1:** core game identity. Cut only if M2 is at risk.
 - **P2:** polish, safe to simplify. Cut order: AGENT_TASKS §55.
+
+
+## Night shift 2026-10-01 02:50: opus and sonnet are near their limits
+Until further notice, **only astra and sol work**. Temporary ownership (reverts when opus/sonnet return):
+
+| Path | Temporary owner |
+|---|---|
+| `src/sim/endgame.ts`, `src/sim/endgame.test.ts`, `src/game/**`, `tests/e2e/**`, `scripts/**` | **astra** |
+| `src/ui/journal/**`, legacy HUD `src/ui/*.ts` (fallback, fixes only), `src/main.ts`, `src/app/**`, `index.html` | **sol** |
+
+**Browser QA is done by the designer** (no agent with a browser is running). Agents must cover every fix with DOM/unit tests.

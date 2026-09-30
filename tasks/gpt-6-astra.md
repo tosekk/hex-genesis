@@ -230,3 +230,21 @@ Read the **"v5 changes"** section at the top of `tasks/ECONOMY_SPEC.md`: hard ru
 2. **Add the seeded random bot** to the harness, and targets a–f to `REPORT.md`.
 3. **Calibrate:** max 6 rounds, priority a > b > e > c > d > f, one commit per round. N11's balance re-check (core hexes hold no buildings) is folded into this: measure with core hexes excluded.
 4. Put a "**v5 result**" block at the top of your status: all targets on 50 seeds, 2–3 playtest seeds (one a tight combo win, one where random or spam building clearly stalls mid-game), and any rule conflicts.
+
+---
+
+# Night queue (2026-10-01 02:50): opus and sonnet are paused
+
+Temporary extra ownership: `src/sim/endgame.ts` (+ test), `src/game/**`, `tests/e2e/**`, `scripts/**`. **No browser QA agent is running**; the designer checks the browser. Order:
+
+1. **N11 steps 1–3** (core hex holds no buildings; export `isCoreHex` and `slotCounts`). **Commit first**: sol is waiting on it.
+2. **Endgame** (from sonnet's S11): `src/sim/endgame.ts` board-full/soft-lock uses `slotCounts`/`isCoreHex`, so core hexes never count. Test: full except the core hexes, T8 unmet → loss. Commit.
+3. **e2e** (from opus's O12): `tests/e2e` `assertInvariants` adds "no building on a core hex"; the autoplay bot skips core hexes. Make sure the full `npm test` finishes (the e2e/profile tests must stay bounded). Commit.
+4. **N12 economy v5:** the cost fixes (R1–R4 plus config tests) as **one quick commit** first, then the seeded random bot, then calibration (≤ 6 rounds). The "v5 result" block goes at the top of your status.
+5. **Final package** (from opus), once sol's night items 1–4 and your N12 are committed:
+   - run `npm test` (all green) and `npm run package`;
+   - verify the zip: `index.html` at the root, only relative paths, **each MP3 exactly once**, total about 6 MB (not 11), and no files from `src/`;
+   - record the zip name, size and sha256 at the top of your status as "**FINAL BUILD**";
+   - the designer does the itch-frame browser check (`npm run itch-test`).
+
+   If a later fix lands after that, repackage and update the line.

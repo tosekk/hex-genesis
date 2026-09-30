@@ -255,3 +255,28 @@ Commit small and often (`[sol] V15: …`), and record each hash and what changed
 **(c) Core held but no land of that biome yet:** its deck shows the **core card in full color** and **every building card dimmed and not selectable for placement** (hover still shows cost/yield; the tooltip says "Place a Forest core first to create Forest land"). Once the biome has at least one tile on the map, buildings follow the normal affordability rules.
 
 Tests for each of (a), (b), (c). Commit `[sol] V16: …` (a can be a separate commit after N11). Ask sonnet for a QA pass.
+
+---
+
+# Night queue (2026-10-01 02:50): opus and sonnet are paused. You're the only UI/integration agent.
+
+Temporary extra ownership: `src/ui/journal/**`, the legacy HUD `src/ui/*.ts` (fixes only), `src/main.ts`, `src/app/**`, `index.html`. **No agent with a browser is running: the designer does browser QA.** Every fix needs a DOM/unit test, and after each item write a short "**Designer QA: …**" line in your status saying exactly what to click and look for. Order:
+
+1. **Audio out of `public/`** (see the designer message; build currently 11 MB with duplicate MP3s): `git mv` to `src/assets/audio/{music,sfx,vo}`, repoint both globs, no "public directory" warnings, each MP3 once in `dist/`. Commit.
+2. **Pass-4 fixes:**
+   - **P1:** ⚙ Sound off silences the voice (`voice.ts` honours `audioSettings` live).
+   - **P2:** collapsed notes still speak new lines.
+   - **P2:** queue the first line until the first gesture.
+   - **P2:** sticky card + dead-tile click keeps the card and its deck.
+   - Also: music loops, ducks during offers, respects Sound; no double cues with the spheres.
+3. **V16 (b)(c):** biome circles enabled only with land on the map or a held core; core-only deck state (buildings dimmed).
+4. **V16 (a)** after astra commits N11 (`isCoreHex`, `slotCounts`): core hex in the detail panel, no slot rings, counts via `slotCounts`. Also switch the **legacy HUD's** "Slots left" to `slotCounts`, and show "A terraformer core occupies this tile" on a core hex in the legacy hex panel.
+5. **Adjacency-log integration test** (from sonnet): a real `createGameSession` plus the real `createJournal` in happy-dom, placements driven from config until a `payouts` event with `kind: 'adjacency'`, then assert the log shows both combo names and the amount.
+6. **Optional 3D models from the designer:** if GLB files appear in `src/assets/models/`, follow the "GLB models" section below.
+
+## GLB models (only if the designer adds files)
+- Load `src/assets/models/<buildingId>.glb` or `core.glb` via `GLTFLoader` (from `three/examples`, no new dependency), found with `import.meta.glob` so a missing file means the procedural model is used.
+- Merge each GLB's meshes into one geometry per material, and **instance** them like the procedural ones.
+- Normalize: the pivot at the bottom center, scaled to the slot footprint (the core fills the hex top).
+- Budget: 60 fps on a full 20×14 board; if a model breaks the budget, keep the procedural version and log it.
+- Test: missing files fall back without errors.
