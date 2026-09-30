@@ -675,3 +675,136 @@ spam: win placements median (range) **612 (552–645)**; 27 wins, 23 stuck, 0 so
 | 49 | combo | 2 / 48 / 74 / 144 / 252 / 405 / 480 / 561 | 62.79% | 74.42% | 86.98% | 645 | won | 645 | 0 | stone=1542, wood=3980, food=2196, water=1628 | wood=3008, stone=635, food=2169, water=1519 |
 | 50 | spam | 2 / 37 / 110 / 478 / 561 / — / — / — | — | — | — | 630 | won | 630 | 0 | stone=474, wood=3034, food=438, water=346 | wood=1929, stone=7, food=432, water=334 |
 | 50 | combo | 2 / 20 / 48 / 183 / 285 / 444 / 510 / 579 | 70.48% | 80.95% | 91.9% | 630 | won | 630 | 0 | stone=1425, wood=5388, food=2998, water=1143 | wood=4181, stone=745, food=2992, water=1125 |
+
+## v3 round 4 — conservative late-spam delay
+
+Real GameSession, 20×14, seeds 1–50, 181335 ms for both bots. No demolition, reshuffle, resource weighting, or lookahead. Offers favor a new mixed biome at the best legal site, then the less represented main biome. Core sites maximize dead placeable claims, tied by HexId. Combo ties favor partial hexes.
+
+All-seed medians treat unreached thresholds as infinity. Parenthesized ranges and reached-only medians include completers only; missing runs are never silently excluded from target checks. Ratios require finite all-seed medians for both bots. T6 fill is measured at the threshold transaction before the new core is deployed. V3 exempts T1 from pacing and counts zero spam T6 completers as passing target 3. T7/T8 must precede the finite all-seed median win placement count.
+
+| Threshold | Combo all-seed median | Combo reached median (range), n | Spam all-seed median | Spam reached median (range), n | Spam/combo | Target ±20% |
+|---|---:|---|---:|---|---:|---|
+| T1 | 2 | 2 (2–33), 49/50 | 2 | 2 (2–36), 48/50 | 1 | exempt (stone-only) |
+| T2 | 23.5 | 22 (11–77), 48/50 | 55 | 37 (12–235), 41/50 | 2.34 | 22 (17.6–26.4) |
+| T3 | 47.5 | 46 (24–110), 48/50 | 224 | 105 (31–387), 38/50 | 4.72 | 45 (36–54) |
+| T4 | 105 | 105 (60–183), 48/50 | 363 | 249 (92–556), 34/50 | 3.46 | 90 (72–108) |
+| T5 | 180.5 | 179 (104–302), 48/50 | 495 | 351 (174–583), 32/50 | 2.74 | 160 (128–192) |
+| T6 | 323 | 315 (230–512), 48/50 | unreached | 528 (375–639), 25/50 | unmeasurable | 270 (216–324) |
+| T7 | 362.5 | 359 (270–534), 48/50 | unreached | 509 (452–608), 9/50 | unmeasurable | 360 (288–432) |
+| T8 | 433.5 | 427 (334–579), 48/50 | unreached | 582 (582–582), 1/50 | unmeasurable | 450 (360–540) |
+
+| Target | Result | Evidence |
+|---|---|---|
+| 1. Combo pacing | PASS | 2 / 23.5 / 47.5 / 105 / 180.5 / 323 / 362.5 / 433.5 |
+| 2. T4–T6 ≥1.5× | UNMEASURABLE | 3.46 / 2.74 / unmeasurable |
+| 3. Spam T6 fill ≥70% | MISS | min 61.58%, median 88.25% |
+| 4. ≥96% combo T6, ≥90% wins; zero soft-locks | PASS | T6 48/50; wins 48/50; 0 soft-lock declarations across both bots |
+
+T7/T8 before median win: **PASS**; T7 362.5, T8 433.5, median win 613.5.
+
+combo: win placements median (range) **612 (552–690)**; 48 wins, 2 stuck, 0 soft-lock, 0 action-cap.
+
+spam: win placements median (range) **612 (564–645)**; 26 wins, 24 stuck, 0 soft-lock, 0 action-cap.
+
+| Seed | Bot | T1–T8 placements | T6 fill | T7 fill | T8 fill | Win placements | Stop | Final placements | Legal core sites left | Final lifetime | Final stock |
+|---|---|---|---:|---:|---:|---:|---|---:|---:|---|---|
+| 1 | spam | 2 / 193 / 201 / 372 / 555 / 556 / — / — | 88.25% | — | — | 633 | won | 633 | 0 | stone=1158, water=760, food=136, wood=2005 | wood=1253, stone=10, water=592, food=127 |
+| 1 | combo | 2 / 18 / 42 / 78 / 105 / 256 / 307 / 357 | 40.63% | 48.5% | 56.4% | 633 | won | 633 | 0 | stone=2165, water=1486, wood=3844, food=1634 | wood=2979, stone=1243, water=1369, food=1601 |
+| 2 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 85 | 91 | stone=289, water=275, food=18 | wood=0, stone=1, water=161, food=18 |
+| 2 | combo | 3 / 16 / 42 / 65 / 171 / 306 / 365 / 425 | 48.34% | 57.66% | 67.14% | 633 | won | 633 | 0 | stone=2152, wood=3539, water=1616, food=1770 | wood=2718, stone=1200, water=1464, food=1758 |
+| 3 | spam | 12 / 15 / 52 / 275 / 326 / 406 / 487 / — | 66.67% | 79.97% | — | 609 | won | 609 | 0 | wood=2089, stone=1086, water=838, food=316 | wood=1359, stone=2, water=604, food=307 |
+| 3 | combo | 23 / 29 / 40 / 100 / 167 / 279 / 322 / 399 | 45.81% | 52.87% | 65.52% | 609 | won | 609 | 0 | wood=3385, food=1757, stone=1888, water=1441 | wood=2613, stone=889, food=1751, water=1233 |
+| 4 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 46 | 74 | stone=111, water=209, food=27 | wood=0, stone=1, water=207, food=27 |
+| 4 | combo | 2 / 19 / 57 / 131 / 216 / 390 / 444 / 514 | 67.36% | 76.29% | 88.32% | 582 | won | 582 | 0 | stone=1509, water=2222, food=1634, wood=2967 | wood=2245, stone=597, water=2116, food=1622 |
+| 5 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 63 | 76 | stone=140, water=304, food=26, wood=18 | wood=0, stone=1, water=274, food=26 |
+| 5 | combo | 2 / 44 / 65 / 141 / 249 / 401 / 429 / 483 | 64.26% | 68.42% | 77.03% | 627 | won | 627 | 0 | stone=1807, water=2159, food=1598, wood=2499 | wood=1904, stone=417, water=1782, food=1583 |
+| 6 | spam | 2 / 13 / 47 / 225 / 510 / 511 / — / — | 82.29% | — | — | 630 | won | 630 | 0 | stone=1392, wood=1416, water=963, food=129 | wood=891, stone=9, water=645, food=120 |
+| 6 | combo | 2 / 11 / 45 / 60 / 110 / 237 / 282 / 342 | 38.16% | 44.76% | 54.29% | 630 | won | 630 | 0 | stone=2491, wood=2792, food=1536, water=1710 | wood=2157, stone=1241, food=1527, water=1372 |
+| 7 | spam | 2 / 19 / 53 / 141 / 284 / 538 / — / — | 87.91% | — | — | 612 | won | 612 | 0 | stone=894, wood=1515, food=236, water=1224 | wood=747, stone=1, food=236, water=1122 |
+| 7 | combo | 3 / 13 / 40 / 144 / 238 / 358 / 425 / 495 | 58.5% | 69.44% | 80.88% | 612 | won | 612 | 0 | stone=1721, wood=3444, food=1636, water=2044 | wood=2729, stone=754, food=1624, water=1932 |
+| 8 | spam | 2 / 13 / 102 / 120 / 251 / 390 / 452 / — | 69.15% | 80.14% | — | 564 | won | 564 | 0 | stone=1010, wood=1612, food=311, water=754 | wood=885, stone=42, food=308, water=672 |
+| 8 | combo | 2 / 12 / 39 / 63 / 117 / 294 / 330 / 371 | 52.13% | 58.51% | 65.78% | 564 | won | 564 | 0 | stone=2044, wood=2847, food=2014, water=1583 | wood=2065, stone=1229, food=2011, water=1461 |
+| 9 | spam | 2 / 56 / 63 / 92 / 283 / 514 / — / — | 90.65% | — | — | 567 | won | 567 | 0 | stone=854, water=911, wood=1851, food=276 | wood=1076, stone=8, water=827, food=273 |
+| 9 | combo | 2 / 24 / 29 / 65 / 176 / 330 / 358 / 402 | 58.2% | 63.14% | 70.9% | 567 | won | 567 | 0 | stone=1739, wood=3407, water=1584, food=1925 | wood=2581, stone=951, water=1472, food=1922 |
+| 10 | spam | 2 / 37 / 62 / 191 / 301 / 588 / — / — | 98.99% | — | — | 594 | won | 594 | 0 | stone=771, water=1135, food=218, wood=1652 | wood=916, stone=5, water=977, food=215 |
+| 10 | combo | 2 / 23 / 65 / 122 / 200 / 339 / 411 / 498 | 57.07% | 69.19% | 83.84% | 594 | won | 594 | 0 | stone=1629, water=1770, food=1381, wood=2979 | wood=2264, stone=634, water=1606, food=1339 |
+| 11 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 19 | 77 | stone=46, water=80, food=13 | wood=0, stone=1, water=74, food=13 |
+| 11 | combo | 2 / 29 / 48 / 113 / 179 / 309 / 360 / 438 | 49.76% | 57.42% | 69.86% | 627 | won | 627 | 0 | stone=1851, water=2057, wood=2290, food=1370 | wood=1634, stone=495, water=1696, food=1307 |
+| 12 | spam | — / — / — / — / — / — / — / — | — | — | — | — | stuck | 180 | 138 | wood=1017 | wood=663, stone=0 |
+| 12 | combo | 33 / 36 / 43 / 79 / 140 / 283 / 330 / 389 | 47.88% | 55.28% | 64.83% | 600 | won | 600 | 0 | wood=2825, food=1624, stone=2074, water=1783 | wood=2141, stone=912, food=1600, water=1516 |
+| 13 | spam | 7 / 199 / — / — / — / — / — / — | — | — | — | — | stuck | 303 | 33 | water=948, food=85, stone=898, wood=53 | wood=0, stone=1, water=672, food=85 |
+| 13 | combo | 7 / 44 / 65 / 84 / 144 / 287 / 314 / 354 | 49.31% | 53.95% | 60.82% | 582 | won | 582 | 0 | water=1747, food=1397, stone=2005, wood=2615 | wood=2048, stone=854, water=1484, food=1385 |
+| 14 | spam | 2 / 178 / 191 / 269 / 436 / — / — / — | — | — | — | — | stuck | 546 | 4 | stone=1461, water=1119, wood=888, food=186 | wood=456, stone=300, water=867, food=180 |
+| 14 | combo | 2 / 33 / 45 / 99 / 182 / 242 / 270 / 403 | 44.32% | 48.91% | 73.01% | 552 | won | 552 | 0 | stone=2279, water=1716, food=1385, wood=2238 | wood=1622, stone=1313, water=1506, food=1373 |
+| 15 | spam | 2 / 28 / 48 / — / — / — / — / — | — | — | — | — | stuck | 188 | 11 | stone=347, wood=227, water=542, food=256 | wood=0, stone=0, water=512, food=253 |
+| 15 | combo | 3 / 14 / 30 / 127 / 219 / 345 / 385 / 445 | 59.9% | 66.84% | 77.26% | 576 | won | 576 | 0 | stone=1843, wood=2423, water=1885, food=1476 | wood=1824, stone=883, water=1711, food=1464 |
+| 16 | spam | 2 / 199 / 355 / 392 / 434 / 565 / — / — | 96.58% | — | — | 585 | won | 585 | 0 | stone=1344, food=176, water=1266, wood=983 | wood=570, stone=0, food=176, water=954 |
+| 16 | combo | 2 / 29 / 57 / 84 / 167 / 321 / 429 / 488 | 54.87% | 73.33% | 83.42% | 585 | won | 585 | 0 | stone=2218, food=1339, wood=2017, water=1920 | wood=1411, stone=1099, food=1321, water=1639 |
+| 17 | spam | 2 / 21 / 52 / 196 / 311 / 572 / — / — | 95.81% | — | — | 597 | won | 597 | 0 | stone=812, water=1018, food=330, wood=1921 | wood=1132, stone=10, water=883, food=327 |
+| 17 | combo | 3 / 13 / 47 / 141 / 261 / 402 / 447 / 507 | 67.34% | 74.87% | 84.92% | 597 | won | 597 | 0 | stone=1652, wood=3539, water=1749, food=2010 | wood=2723, stone=751, water=1607, food=1998 |
+| 18 | spam | 2 / 14 / 45 / 108 / 263 / 420 / 468 / 582 | 70.71% | 76.85% | 94.63% | 615 | won | 615 | 0 | stone=1214, wood=1604, food=416, water=1003 | wood=938, stone=13, food=398, water=727 |
+| 18 | combo | 2 / 13 / 26 / 60 / 177 / 305 / 350 / 420 | 51.35% | 57.47% | 68.29% | 615 | won | 615 | 0 | stone=2108, wood=2733, food=1730, water=1593 | wood=2025, stone=1011, food=1712, water=1301 |
+| 19 | spam | 2 / 34 / 60 / 140 / 208 / 497 / 571 / — | 77.41% | 88.94% | — | 642 | won | 642 | 0 | stone=1047, water=768, wood=2231, food=321 | wood=1457, stone=10, water=582, food=301 |
+| 19 | combo | 2 / 33 / 57 / 82 / 154 / 325 / 357 / 425 | 50.62% | 55.61% | 66.2% | 642 | won | 642 | 0 | stone=2081, water=1437, wood=3763, food=1943 | wood=2890, stone=1051, water=1243, food=1910 |
+| 20 | spam | 9 / 12 / 80 / 141 / 174 / 465 / — / — | 74.88% | — | — | 621 | won | 621 | 0 | wood=2058, food=231, stone=1152, water=612 | wood=1335, stone=96, food=222, water=516 |
+| 20 | combo | 8 / 12 / 33 / 98 / 122 / 264 / 321 / 378 | 42.51% | 51.69% | 60.87% | 621 | won | 621 | 0 | wood=3713, food=1853, stone=2385, water=1433 | wood=2874, stone=1494, food=1844, water=1310 |
+| 21 | spam | 18 / 32 / 55 / — / — / — / — / — | — | — | — | — | stuck | 343 | 12 | wood=1564, stone=93, water=149, food=147 | wood=923, stone=0, water=149, food=146 |
+| 21 | combo | 25 / 34 / 59 / 134 / 228 / 387 / 456 / 535 | 68.25% | 80.42% | 94.36% | 567 | won | 567 | 0 | wood=3035, food=1765, stone=1274, water=1563 | wood=2264, stone=275, food=1728, water=1349 |
+| 22 | spam | 2 / 17 / 38 / 167 / 447 / — / — / — | — | — | — | 606 | won | 606 | 0 | stone=704, wood=2665, food=200, water=350 | wood=1753, stone=7, food=200, water=344 |
+| 22 | combo | 3 / 12 / 34 / 122 / 241 / 354 / 420 / 495 | 58.42% | 69.31% | 81.68% | 606 | won | 606 | 0 | stone=1765, wood=4586, food=1995, water=1178 | wood=3645, stone=1079, food=1986, water=1170 |
+| 23 | spam | — / — / — / — / — / — / — / — | — | — | — | — | stuck | 6 | 150 | water=48, food=3 | wood=0, stone=0, water=48, food=3 |
+| 23 | combo | 8 / 15 / 35 / 63 / 123 / 258 / 306 / 351 | 39.63% | 47% | 53.92% | 651 | won | 651 | 0 | water=1732, food=1947, stone=2631, wood=2971 | wood=2200, stone=1592, water=1486, food=1932 |
+| 24 | spam | 2 / 35 / 61 / 169 / 363 / — / — / — | — | — | — | — | stuck | 597 | 1 | stone=660, wood=2726, water=532, food=302 | wood=1805, stone=13, water=532, food=302 |
+| 24 | combo | 2 / 21 / 45 / 128 / 246 / 378 / 426 / 497 | 63.32% | 70.3% | 82.01% | 606 | won | 606 | 0 | stone=1771, wood=4483, water=1395, food=2225 | wood=3493, stone=1123, water=1386, food=2222 |
+| 25 | spam | 21 / 27 / 46 / 153 / 507 / 562 / — / — | 94.61% | — | — | 594 | won | 594 | 0 | wood=1034, food=159, stone=1471, water=1206 | wood=657, stone=6, food=153, water=864 |
+| 25 | combo | 30 / 37 / 52 / 75 / 146 / 230 / 321 / 402 | 38.72% | 54.04% | 67.68% | 594 | won | 594 | 0 | wood=2488, food=1279, stone=2267, water=1832 | wood=1963, stone=955, food=1267, water=1513 |
+| 26 | spam | 2 / 42 / 49 / 141 / 238 / — / — / — | — | — | — | 612 | won | 612 | 0 | stone=939, wood=2311, food=259, water=457 | wood=1484, stone=6, food=235, water=397 |
+| 26 | combo | 2 / 27 / 48 / 105 / 179 / 288 / 339 / 417 | 47.06% | 55.39% | 68.14% | 612 | won | 612 | 0 | stone=2092, wood=3860, water=1205, food=2001 | wood=2926, stone=1307, water=1130, food=1968 |
+| 27 | spam | 2 / 30 / 48 / 184 / 301 / 481 / 570 / — | 80.57% | 95.48% | — | 597 | won | 597 | 0 | stone=961, wood=1707, food=413, water=1090 | wood=1079, stone=0, food=404, water=946 |
+| 27 | combo | 3 / 29 / 51 / 135 / 241 / 368 / 408 / 467 | 61.64% | 68.34% | 78.22% | 597 | won | 597 | 0 | stone=1866, wood=3206, food=1715, water=1772 | wood=2540, stone=901, food=1706, water=1621 |
+| 28 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 37 | 84 | stone=124, water=122, food=39 | wood=0, stone=1, water=68, food=39 |
+| 28 | combo | 2 / 15 / 42 / 87 / 104 / 261 / 303 / 351 | 43.94% | 51.01% | 59.09% | 594 | won | 594 | 0 | stone=2385, wood=2703, water=1515, food=1594 | wood=2030, stone=1433, water=1332, food=1573 |
+| 29 | spam | 12 / 15 / 108 / 250 / 392 / 563 / 595 / — | 90.22% | 94.9% | — | 627 | won | 627 | 0 | wood=1198, food=259, stone=1342, water=1343 | wood=643, stone=8, food=247, water=1013 |
+| 29 | combo | 12 / 15 / 24 / 147 / 194 / 386 / 410 / 461 | 61.86% | 65.39% | 73.52% | 627 | won | 627 | 0 | wood=2348, food=1491, stone=2249, water=2034 | wood=1696, stone=1037, food=1479, water=1695 |
+| 30 | spam | 2 / 37 / — / — / — / — / — / — | — | — | — | — | stuck | 151 | 40 | stone=453, wood=53, food=75, water=410 | wood=0, stone=1, food=75, water=230 |
+| 30 | combo | 3 / 12 / 26 / 78 / 153 / 285 / 351 / 423 | 50.8% | 61.58% | 73.82% | 576 | won | 576 | 0 | stone=1864, wood=2802, food=1259, water=1871 | wood=2231, stone=862, food=1253, water=1709 |
+| 31 | spam | 2 / 57 / 238 / 436 / 515 / 606 / — / — | 100% | — | — | 609 | won | 609 | 0 | stone=1437, food=252, wood=915, water=1150 | wood=571, stone=134, food=252, water=814 |
+| 31 | combo | 2 / 33 / 57 / 114 / 222 / 404 / 419 / 464 | 66.67% | 68.8% | 76.19% | 609 | won | 609 | 0 | stone=2709, wood=2283, food=1299, water=1851 | wood=1764, stone=1556, food=1290, water=1549 |
+| 32 | spam | 2 / 205 / 387 / 556 / 583 / — / — / — | — | — | — | 624 | won | 624 | 0 | stone=1887, water=1295, food=126, wood=724 | wood=365, stone=294, water=821, food=126 |
+| 32 | combo | 3 / 21 / 54 / 170 / 191 / 236 / 285 / 334 | 37.82% | 45.67% | 53.53% | 624 | won | 624 | 0 | stone=2627, wood=2171, water=1845, food=1340 | wood=1596, stone=1232, water=1418, food=1310 |
+| 33 | spam | 2 / 17 / 286 / 310 / 322 / 528 / — / — | 90.26% | — | — | 585 | won | 585 | 0 | stone=862, water=777, food=396, wood=2065 | wood=1255, stone=13, water=717, food=390 |
+| 33 | combo | 3 / 12 / 84 / 108 / 192 / 375 / 416 / 455 | 64.1% | 71.11% | 77.78% | 585 | won | 585 | 0 | stone=1874, wood=3466, food=1860, water=1689 | wood=2666, stone=1059, food=1854, water=1609 |
+| 34 | spam | 2 / 112 / 261 / 380 / 470 / 574 / 608 / — | 93.79% | 98.86% | — | 615 | won | 615 | 0 | stone=1407, water=1024, food=226, wood=1079 | wood=732, stone=255, water=820, food=226 |
+| 34 | combo | 2 / 32 / 60 / 167 / 243 / 405 / 427 / 456 | 66.18% | 69.43% | 74.15% | 615 | won | 615 | 0 | stone=3048, water=1978, food=1560, wood=2386 | wood=1750, stone=2143, water=1810, food=1560 |
+| 35 | spam | 2 / 21 / 31 / 138 / 217 / — / — / — | — | — | — | — | stuck | 544 | 2 | stone=782, wood=2184, food=317, water=512 | wood=1343, stone=1, food=308, water=444 |
+| 35 | combo | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 3 | 77 | stone=24 | wood=0, stone=30 |
+| 36 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 76 | 78 | stone=238, water=314, food=21 | wood=0, stone=1, water=248, food=21 |
+| 36 | combo | 3 / 18 / 35 / 92 / 168 / 299 / 357 / 400 | 50.59% | 60.41% | 67.68% | 591 | won | 591 | 0 | stone=2164, wood=2704, water=1978, food=1486 | wood=2145, stone=1101, water=1794, food=1483 |
+| 37 | spam | 5 / 213 / 224 / 248 / 282 / 375 / 509 / — | 61.58% | 82.36% | — | 618 | won | 618 | 0 | water=798, stone=1060, food=384, wood=2035 | wood=1236, stone=0, water=660, food=381 |
+| 37 | combo | — / — / — / — / — / — / — / — | — | — | — | — | stuck | 3 | 149 | water=28, stone=2, wood=10 | wood=16, stone=0, water=28 |
+| 38 | spam | 36 / 40 / 310 / 513 / — / — / — / — | — | — | — | — | stuck | 663 | 9 | wood=1899, food=117, stone=1419, water=417 | wood=1146, stone=234, food=105, water=219 |
+| 38 | combo | 21 / 24 / 33 / 83 / 124 / 285 / 333 / 411 | 42.22% | 48.68% | 59.83% | 690 | won | 690 | 0 | wood=3488, food=1670, stone=2834, water=1459 | wood=2688, stone=1642, food=1646, water=1144 |
+| 39 | spam | 12 / 16 / 97 / — / — / — / — / — | — | — | — | — | stuck | 522 | 23 | wood=1696, stone=1010, water=432, food=63 | wood=1101, stone=3, water=324, food=39 |
+| 39 | combo | 17 / 21 / 44 / 74 / 151 / 285 / 336 / 429 | 47.98% | 54.9% | 68.42% | 627 | won | 627 | 0 | wood=4147, food=1892, stone=2048, water=1502 | wood=3152, stone=1224, food=1862, water=1409 |
+| 40 | spam | 2 / 235 / 277 / 358 / 427 / 522 / — / — | 80.18% | — | — | — | stuck | 654 | 1 | stone=1351, food=215, wood=1554, water=1049 | wood=1274, stone=8, food=215, water=749 |
+| 40 | combo | 2 / 72 / 110 / 180 / 280 / 402 / 416 / 443 | 61.75% | 63.61% | 67.43% | 657 | won | 657 | 0 | stone=3159, wood=2796, water=1867, food=1271 | wood=2236, stone=2013, water=1581, food=1271 |
+| 41 | spam | 2 / 190 / 364 / 484 / — / — / — / — | — | — | — | — | stuck | 579 | 5 | stone=1586, water=1524, food=171, wood=434 | wood=238, stone=143, water=1170, food=171 |
+| 41 | combo | 2 / 24 / 59 / 141 / 302 / 512 / 534 / 571 | 85.76% | 89.45% | 95.64% | 597 | won | 597 | 0 | stone=2771, wood=1500, water=2414, food=1249 | wood=1054, stone=1566, water=2112, food=1249 |
+| 42 | spam | 2 / 213 / 224 / 294 / 483 / 578 / — / — | 96.33% | — | — | 603 | won | 603 | 0 | stone=1722, food=210, water=1008, wood=1003 | wood=481, stone=426, food=198, water=720 |
+| 42 | combo | 2 / 50 / 62 / 102 / 150 / 269 / 303 / 366 | 44.83% | 50.25% | 60.7% | 603 | won | 603 | 0 | stone=2632, food=1496, wood=2633, water=1699 | wood=1901, stone=1549, food=1436, water=1493 |
+| 43 | spam | 2 / — / — / — / — / — / — / — | — | — | — | — | stuck | 25 | 80 | stone=76, water=80, food=21 | wood=0, stone=1, water=50, food=21 |
+| 43 | combo | 2 / 14 / 41 / 102 / 188 / 344 / 411 / 488 | 55.13% | 65.87% | 78.21% | 624 | won | 624 | 0 | stone=1764, water=2023, food=1536, wood=3180 | wood=2511, stone=631, water=1776, food=1530 |
+| 44 | spam | 2 / 54 / 234 / — / — / — / — / — | — | — | — | — | stuck | 585 | 17 | stone=1155, food=42, wood=1752, water=495 | wood=1218, stone=21, food=30, water=261 |
+| 44 | combo | 3 / 20 / 42 / 105 / 122 / 273 / 348 / 408 | 42.52% | 53.7% | 62.96% | 648 | won | 648 | 0 | stone=2730, wood=2989, food=1633, water=1540 | wood=2208, stone=1639, food=1597, water=1272 |
+| 45 | spam | 2 / 214 / 226 / 252 / 333 / 430 / 478 / — | 69.58% | 76.24% | — | — | stuck | 630 | 1 | stone=1184, water=888, food=269, wood=1743 | wood=1071, stone=10, water=618, food=263 |
+| 45 | combo | 3 / 24 / 41 / 63 / 135 / 285 / 330 / 384 | 46.12% | 52.63% | 60.95% | 633 | won | 633 | 0 | stone=2050, wood=3370, water=1598, food=1636 | wood=2586, stone=994, water=1408, food=1615 |
+| 46 | spam | 2 / 20 / — / — / — / — / — / — | — | — | — | — | stuck | 492 | 43 | stone=1182, wood=1533, food=42 | wood=813, stone=342, food=42 |
+| 46 | combo | 2 / 18 / 87 / 164 / 192 / 386 / 411 / 472 | 61.56% | 64.02% | 72.84% | 648 | won | 648 | 0 | stone=2202, wood=4077, food=1996, water=1261 | wood=3151, stone=1232, food=1981, water=1068 |
+| 47 | spam | 2 / 212 / 251 / 303 / 339 / 421 / — / — | 66.19% | — | — | 642 | won | 642 | 0 | stone=1299, food=183, water=849, wood=1653 | wood=1093, stone=53, food=183, water=639 |
+| 47 | combo | 3 / 44 / 59 / 105 / 139 / 288 / 336 / 400 | 45.28% | 52.34% | 62.31% | 642 | won | 642 | 0 | stone=2509, wood=3232, food=1522, water=1471 | wood=2476, stone=1470, food=1504, water=1296 |
+| 48 | spam | 2 / 204 / 267 / 368 / 576 / 577 / — / — | 94.28% | — | — | — | stuck | 627 | 1 | stone=1294, water=1090, food=133, wood=1411 | wood=1109, stone=51, water=868, food=133 |
+| 48 | combo | 2 / 77 / 104 / 171 / 192 / 421 / 444 / 469 | 68.79% | 70.81% | 74.44% | 630 | won | 630 | 0 | stone=2997, water=2062, wood=2469, food=1263 | wood=1879, stone=1889, water=1789, food=1263 |
+| 49 | spam | 2 / 97 / 141 / 215 / 402 / 639 / — / — | 99.07% | — | — | 645 | won | 645 | 0 | stone=775, wood=2811, food=431, water=1012 | wood=1884, stone=6, food=422, water=910 |
+| 49 | combo | 2 / 48 / 74 / 144 / 252 / 411 / 480 / 561 | 63.72% | 74.42% | 86.98% | 645 | won | 645 | 0 | stone=1542, wood=3980, food=2196, water=1628 | wood=3008, stone=635, food=2169, water=1519 |
+| 50 | spam | 2 / 37 / 110 / 478 / 561 / — / — / — | — | — | — | 630 | won | 630 | 0 | stone=474, wood=3034, food=438, water=346 | wood=1929, stone=7, food=432, water=334 |
+| 50 | combo | 2 / 20 / 48 / 183 / 285 / 453 / 510 / 579 | 71.9% | 80.95% | 91.9% | 630 | won | 630 | 0 | stone=1425, wood=5388, food=2998, water=1143 | wood=4181, stone=745, food=2992, water=1125 |
