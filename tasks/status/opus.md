@@ -2,15 +2,10 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
-## Current
-**IN PROGRESS: O13 (cloud, branch `opus/night`), on `main` `a752b06`.**
+> **RELEASE READY at `988875f`** (`opus/night` = `main` + night-2 plan; this status commit changes no build input). `npm test`: 57 files, 410 passed, 0 failed (29 s). `npm run package` + `npm run verify-zip`: 67 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,239,864 bytes (5.00 MB). Content sha256 `af3370c222cc59103bb239a2a902d9f49e0492df8eaccb465724ee91b07254d5`** (identical on a rebuild). The zip's own sha256 here is `bfe6ed3a…c9bd86` (Node 22.22.0); a local zip may differ byte-wise because of deflate. The content sha256 must match.
 
-- O13.1 follow-up DONE (`8249711`): endgame + e2e use astra's `isCoreHex` / `slotCounts`.
-- O13.4 review DONE for everything since `9c3434b` (sol `206e815`, `1a502c6`, `4980e85`; astra `6e8c7f9`, `a15915b`, `559f482`, `e075831`): **0 P0, 2 P1, 3 P2**, see "Bugs routed" → "O13.4 night review". Blocking the release gate: **astra P1-A** (W3 `it.fails` → `it`, `npm test` is red by one test until then) and **sol P1-B** (core hexes still counted in 4 UI places; expected in V16 (a)).
-- **Package on `a752b06` (O13 step 3): PASS.** `npm run package` → `hex-genesis-<date>.zip`: 67 files, **19 MP3s, each exactly once** (19 sources, matched by content), **5.00 MB zipped** (5,239,550 bytes; 5.59 MB unpacked; was ~11 MB), `index.html` at root, relative URLs only, no `src/`. zip sha256 `b66c147b…850b929`, content sha256 `4479bfb6…3f5d71ce` (Node 22.22.0). Not a release candidate: P1-A/P1-B are open and V16 (a) / the v5 result are pending.
-- verify-zip now also prints a **content sha256** (hash of every entry's name + bytes, independent of compression and order). The zip's own sha256 depends on the local Node/zlib deflate output, so the designer's local zip may differ byte-wise from the cloud one; the content hash must match.
-- **Docs (O13 step 4) DONE:** README controls rewritten for the journal HUD, each row checked against the code (`ui/v2/ctrl.ts` keys, `help.ts`, `topRight.ts`, `journalHud.ts` J, `fx/offerSpheres.ts` + `ui/offerModal.ts` 1/2, `render/boardView.ts` OrbitControls + Q/E/WASD). README's duplicate itch draft was replaced by a link to `itch/PAGE.md`; the credits now say ElevenLabs made the voice, SFX and music. `itch/PAGE.md`: resolved the journal-HUD `[CHECK]`s (controls, fonts, tutorial note) and the audio ones (ElevenLabs credit, 5 VO + 13 SFX + 1 music). Every `[CHECK]` left is a designer-only fact (jam name/tag, designer name, release status, session length, cover/screenshots, browsers tested, AI design review, generated art, Three.js licence, and the v4-era slow-opening seeds).
-- Next: the release gate, after astra's "v5 result" and sol's V16 (a) (+ P1-A, P1-B).
+## Current
+**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock audit: waiting for astra's stuck-state audit (`tests/balance/stuck/` not on `main` yet) · 4 production error handler: next · 5 sol's flagged work (V18 shader, GLB, `?journal=paper`): review as it lands · 6 morning summary by 06:15.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -185,11 +180,18 @@ Only `opus` edits this file. Everyone else reads it.
 
 ## Bugs routed
 <!-- - to <tag>: <report> -->
+### Night 2 re-review (commits `f8e53fb`..`988875f`)
+- **P1-A CLOSED** by astra `f8e53fb` (W3 is `it` now and passes).
+- **P1-B CLOSED** by sol `8d13729`: `slotSummary` / `emptySlotSummary` take their numbers from `slotCounts` and skip core hexes in the finder list; the end screen uses `slotCounts`; the Tab finder never marks a core hex; the journal detail panel and legacy hex panel say the core occupies the tile; the renderer hides slot anchors and buildings on core hexes, and slot picks and slot highlights skip them. Tests cover the journal HUD, `winProgress` and `render/slots`. `src/render` imports `isCoreHex` from `src/sim/economy`. That's read-only and allowed (render → sim; never sim → render).
+- **v5 economy (rounds 2–6, `b76c051` final) + result `e2ce6b1`:** I re-checked R1–R4 independently on the final config: **0 violations** (every cost 1–10, no water/food producer charges its own output, no cost above its own yield, starting stock affords each main biome's cheapest building). `config.test.ts` still enforces R1–R3, and round 6 also freezes the terrain/zone modifiers at v3 exactly (stricter than before, fine). T8 food rose to 1200 (thresholds stay non-decreasing).
+- **Random bot:** `tests/balance/bot.ts` is unchanged since `559f482` and still seeded (`deriveSeed(seed, 'balance-random')`). There is no `Math.random`, `Date` or `performance.now` in core/sim/game/balance (the session's wall-clock stat is the known exception).
+- No new findings in these commits.
+
 ### O13.4 night review (2026-10-01, commits since `9c3434b`)
 Checked: correctness, determinism, layering, hidden info (§32, §38), v5 R1–R4, core-hex handling (§10). **No P0.**
 
-- **P1-A → astra (blocks the release gate):** `tests/acceptance/endgame.test.ts:58` W3 is `it.fails(...)` "waiting for the opus night endgame". That landed (`105fab2`, `8249711`); W3 now passes, so vitest reports the `it.fails` as a failure and `npm test` is red (1 of 415). Fix: `it.fails` → `it`. Nothing else needed; I checked that W3 passes for the right reason (the empty core hex 0 is no longer counted as room).
-- **P1-B → sol (V16 (a) scope; list it so nothing is missed):** four UI counts still include core hexes, because they filter only `placeable && biome !== null`:
+- ~~**P1-A → astra**~~ CLOSED `f8e53fb`: `tests/acceptance/endgame.test.ts:58` W3 is `it.fails(...)` "waiting for the opus night endgame". That landed (`105fab2`, `8249711`); W3 now passes, so vitest reports the `it.fails` as a failure and `npm test` is red (1 of 415). Fix: `it.fails` → `it`. Nothing else needed; I checked that W3 passes for the right reason (the empty core hex 0 is no longer counted as room).
+- ~~**P1-B → sol**~~ CLOSED `8d13729`: four UI counts still include core hexes, because they filter only `placeable && biome !== null`:
   1. journal HUD "Slots left N of M": `slotSummary` in `src/ui/v2/ctrl.ts:8` (used by `thresholds.ts:75`);
   2. the **Tab / "Slots left" finder highlight**: the same `slotSummary(...).hexes` (`ctrl.ts:297`) highlights every core hex as "has empty slots", and it always will, since a core hex can never be filled;
   3. legacy HUD "Slots left": `emptySlotSummary` in `src/ui/winProgress.ts:8`;
