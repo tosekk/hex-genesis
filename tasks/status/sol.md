@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`).
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -45,7 +45,7 @@ V9 COMPLETE — tutorial/VO copy matches final-threshold victory and finite one-
 
 - V8 — `323833e` — darker neutral-grey dead land/layers, matching dry channels/woods/marsh/rubble and readable stone-grey peaks; three seeded sandbox reviews with every highlight, 48 owned tests/typecheck/scoped build pass.
 
-- V9 — tutorial and VO script match §39/§41: T1–T7 award cores, T8 wins, finite slots/combos pay once, plan combos and terrain bonuses; real-session copy assertion updated, 48 owned tests pass. Changed line ids: `combos`, `progression`. Hash recorded after commit.
+- V9 — `e048346` — tutorial and VO script match §39/§41: T1–T7 award cores, T8 wins, finite slots/combos pay once, plan combos and terrain bonuses; real-session copy assertion updated, 48 owned tests pass. Changed line ids: `combos`, `progression`.
 
 ## Blockers
 <!-- what, waiting on whom -->
