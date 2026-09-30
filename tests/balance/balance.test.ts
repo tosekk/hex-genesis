@@ -39,7 +39,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     writeFileSync(`tests/balance/${file}.json`, JSON.stringify({ label, config, elapsedMs: elapsed, runs }, null, 2) + '\n');
     const reportPath = 'tests/balance/REPORT.md';
     const prior = process.env.BALANCE_APPEND === '1' && existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '# Economy v2 balance report\n\n';
-    writeFileSync(reportPath, prior + section + '\n');
+    writeFileSync(reportPath, (prior.trimEnd() + '\n\n' + section).trimEnd() + '\n');
     console.info(section.split('| Seed |')[0]);
     expect(runBalance(1, 'combo', config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === 'combo'));
     // Standard-board budget stays two minutes; larger informational previews scale with search area.

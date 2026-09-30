@@ -18,9 +18,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N6 — preview copy-on-write equivalence/performance and 50-seed confirmation; N5 committed `2108880`.
+N1–N6 COMPLETE. Finalizing the morning summary with the 50-seed limits and Sonnet HUD-test report. Economy remains round 4; no seventh calibration.
 
 ## Done
+- N6 preview — bounded private copy, 2,592 exact old/new comparisons and about 25× lower cost — `4eacde4`.
 - N5 — morning summary and designer handoff — `2108880`.
 - N4 — size-aware cluster density, 400 larger-map invariant checks, unchanged default terrain, 26×18 balance preview — `0642114`.
 - N3 — six committed calibration rounds; round 4 selected by priority, targets 4 and 2 pass, remaining misses documented — selection `72ced76` (rounds `922c134`, `f284644`, `9b84564`, `7b2aa4c`, `b9fdfe4`, `fefe6aa`).
@@ -72,7 +73,8 @@ IN PROGRESS: N6 — preview copy-on-write equivalence/performance and 50-seed co
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
-- **N1 → sol:** `npx vitest run src/tutorial/tutorial.session.test.ts` fails at line 39 on seed 1. The real-session fixture uses Desert `quarry + quarry` / Arctic `ice_drill + ice_drill` and expects a pair payout; v2 deliberately removes both duplicate recipes. Use `quarry + palm_grove` / `ice_drill + scree_quarry`, or derive an affordable pair from config. Tutorial source/tests untouched.
+- **N6 → sonnet (test assumption, `src/ui/hud.test.ts:203`):** the “resource bar shows per-resource lifetime progress” fixture selects the first T1 key (`wood`, now target 0), sets lifetime wood 4 and expects `4 / 0`. `resourceBar.ts:22` correctly caps displayed progress at the target, yielding `0 / 0` (row text `Wood6lifetime 40 / 0`). Expected fixture repair: select a positive target such as stone 16 or assert `min(have, need)`; §39 allows already-satisfied/zero requirements. Full suite: 273 pass, this one fails, 6 skip. Source and test untouched; all 164 scoped tests pass.
+- **RESOLVED N1 → sol (`925ad36`, confirmed by final full suite):** `npx vitest run src/tutorial/tutorial.session.test.ts` fails at line 39 on seed 1. The real-session fixture uses Desert `quarry + quarry` / Arctic `ice_drill + ice_drill` and expects a pair payout; v2 deliberately removes both duplicate recipes. Use `quarry + palm_grove` / `ice_drill + scree_quarry`, or derive an affordable pair from config. Tutorial source/tests untouched.
 - RESOLVED C3-WORLD: all-plain stub replaced by astra D1; T1–T4 now pass normally (`cc0e8e9`, `3950a22`, `d978f14`).
 - RESOLVED C3-END / C3-SESSION stubs: astra D2 `0daa072` and sonnet D3 `c23be27` enabled real-module acceptance.
 - RESOLVED C3-REFUNDS: sonnet `4909942` now handles the conservative two-demolition escape fixture; test passes with no expected-failure marker.
@@ -322,3 +324,21 @@ New tests cover replay, indexing, all terrain types, mountain height, integer el
 Preview now copies only mutation targets while reusing the real placement transaction. **2,592** exact comparisons against the previous full-clone implementation pass across 72 seeded boards (6×5, 20×14, 30×20), histories, demolition, conversion, discovery subsets, sparse wallets, locks, invalid input and ended statuses. All inputs are recursively frozen, and mutating returned payout maps leaves them unchanged. Coverage includes 392 nonempty base previews, 56 pair payouts, 15 triple payouts, 537 paid-slot cases and 2,055 unaffordable quotes.
 
 Default-board benchmark (five batches of 200 calls, medians): **0.7286 ms → 0.0286 ms**, **25.4× faster**. Economy suite **48 passed** in 3.42 s; typecheck passes. Timing is test-only; no gameplay decisions use clocks. Fifty-seed confirmation is running with the retained round-4 config; no further calibration will occur.
+
+Fifty-seed confirmation completed in **169.01 s**, all 5 opt-in checks pass. Every seed-1–20 spam/combo record is **exactly identical** to the retained round-4 archive. Extending to 50 shows the tuning sample is not representative of win reliability:
+
+| Metric | Seeds 1–20 | Seeds 1–50 |
+|---|---|---|
+| Combo threshold medians | 2 / 21 / 44 / 93 / 173.5 / 299 | 2 / 23.5 / 47.5 / 110.5 / 181 / 312.5 |
+| T4–T6 spam/combo | 2.94 / 2.51 / 1.90 | 3.30 / 2.74 / unmeasurable |
+| Combo T6 | 20/20 | 48/50 |
+| Combo wins | 18/20 | 39/50 |
+| Spam T6 | 11/20 | 22/50 (all-seed median unreached) |
+| Minimum spam T6 fill | 64.70% | 59.44% |
+| Soft-lock declarations, either bot | 0 | 0 |
+
+T2/T3/T5/T6 medians shift by only 4–12%, but T4 shifts by 18.8% and exceeds its 108-placement upper band. The finite spam T6 comparison and 90% win target **do not generalize**. All four full target checks miss or become unmeasurable at 50 seeds; retain the designer's stated 20-seed calibration result while clearly flagging this larger-sample evidence. No new tuning round was run.
+
+Nine combo routes exhaust seven cores and fill all living slots with legal sites remaining: seeds **12,18,40,48** retain one; **30,38,39,45,46** retain two. This describes these greedy bot routes, not a proof that every possible player route needs extra cores. Seed **35** gets T1, then three Hillside Mines consume all wood (stock wood 0 / stone 30); the second selected biome does not provide an affordable escape. Seed **37** stops after two Oasis Wells and a Palm Grove (stock wood 16 / stone 0 / water 28; lifetime stone 2 < T1 stone 16). Both have empty living slots; no engine soft-lock declaration occurs. Early spam T6 seeds are **3,8,18,19,37,45**, with seed 37 at **59.44%**.
+
+Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **36 passed**, 0.564 s; full suite **273 passed / 1 Sonnet-owned test failure / 6 skipped**, 13.47 s. Sol's v2 tutorial fixture is confirmed fixed. `npm run typecheck`, `npm run build`, and owned-path diff checks pass. Build has only the existing >500 kB bundle advisory. Sol's uncommitted rendering work remains untouched and unstaged.
