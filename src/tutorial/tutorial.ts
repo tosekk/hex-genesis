@@ -22,6 +22,8 @@ export function createTutorial(root: HTMLElement, session: GameSession): Tutoria
   collapse.setAttribute('aria-label', 'Collapse tutorial');
   panel.dataset.collapsed = 'false';
   const voice = createVoicePlayback();
+  const journal = root.ownerDocument.querySelector('.jhud') !== null;
+  let autoCollapsed = false;
   const seen = new Set<LineId>();
   let current: LineId | null = null, skipped = false, muted = false, collapsed = false, disposed = false;
   let awards = session.state.cores.length || session.state.coreStack.length || session.state.pendingOffer ? 1 : 0;
@@ -44,6 +46,10 @@ export function createTutorial(root: HTMLElement, session: GameSession): Tutoria
   function showStep(id: LineId): void {
     if (skipped || disposed || seen.has(id)) return;
     seen.add(id); current = id; panel.hidden = false;
+    if (journal && id !== 'biomes' && !autoCollapsed) {
+      autoCollapsed = true; collapsed = true; panel.dataset.collapsed = 'true';
+      collapse.setAttribute('aria-expanded', 'false'); collapse.setAttribute('aria-label', 'Expand tutorial'); collapse.textContent = 'Expand';
+    }
     panel.dataset.line = id;
     title.textContent = LINES[id].title; text.textContent = LINES[id].text;
     speak();

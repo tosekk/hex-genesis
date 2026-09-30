@@ -2,9 +2,9 @@
 
 .assistant-panel{
   --assistant-top:var(--tutorial-top,300px);
-  position:fixed;top:var(--assistant-top);bottom:auto;left:10px;
-  box-sizing:border-box;width:min(250px,calc(100vw - 20px));
-  max-height:calc(100dvh - var(--assistant-top) - var(--tutorial-bottom-clearance,220px));overflow:auto;
+  position:fixed;top:var(--assistant-top);bottom:auto;left:var(--tutorial-left,10px);
+  box-sizing:border-box;width:min(var(--tutorial-width,250px),calc(100vw - 20px));
+  max-height:var(--tutorial-max-height,calc(100dvh - var(--assistant-top) - var(--tutorial-bottom-clearance,220px)));overflow:var(--tutorial-overflow,auto);
   display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;padding:10px;
   background:radial-gradient(circle at 20% 15%,#fff6,transparent 45%),
     repeating-linear-gradient(0deg,#785a3209 0 2px,transparent 2px 5px),#F4EAD5;

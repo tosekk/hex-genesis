@@ -56,16 +56,18 @@
 @keyframes j-pulse { 0% { transform:scale(1.14); background:var(--marker); } 100% { transform:none; } }
 
 /* --- left: threshold stack --- */
-.j-left { position:absolute; top:10px; left:10px; width:250px; display:flex; flex-direction:column; gap:8px; }
-.j-stack { display:flex; flex-direction:column; gap:6px; }
+.j-left { position:absolute; top:16px; left:16px; width:248px; display:flex; flex-direction:column; gap:8px; }
+.j-stack { display:flex; flex-direction:column; gap:3px; line-height:1.2; }
+.j-future { display:flex; gap:4px; min-width:0; }
+.j-future .j-tcard { flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .j-done { display:flex; gap:4px; }
 .j-check { color:var(--good); font-weight:900; }
-.j-tcard { border:1.5px solid var(--ink); border-radius:6px; padding:5px 8px; background:var(--paper2); }
+.j-tcard { border:1.5px solid var(--ink); border-radius:6px; padding:3px 6px; background:var(--paper2); }
 .j-tcard.current { background:var(--paper); }
 .j-tcard.collapsed { font-size:12px; color:var(--ink2); padding:2px 8px; }
 .j-tcard.goal { background:#f3cfc2; border-color:var(--accent); border-width:2px; }
 .j-tcard-head { font-size:17px; }
-.j-tcard.goal .j-tcard-head { color:#8f3f2a; }
+.j-tcard.goal .j-tcard-head { color:#8f3f2a; font-size:15px; }
 .j-tsmall { font-size:12px; color:var(--ink2); }
 .j-bars { display:grid; gap:3px; margin-top:3px; }
 .j-bar { display:grid; grid-template-columns:48px 1fr auto; gap:6px; align-items:center; font-size:12px; }
@@ -90,7 +92,7 @@
 /* --- bottom --- */
 .j-bottom { position:absolute; left:10px; right:10px; bottom:10px; display:flex; align-items:flex-end; gap:12px; }
 .j-bottom > * { pointer-events:auto; }
-.j-detail { width:250px; flex:none; max-height:190px; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+.j-detail { width:248px; flex:none; max-height:none; overflow:auto; display:flex; flex-direction:column; gap:4px; }
 .j-detail-head { display:flex; gap:10px; align-items:center; }
 .j-portrait { width:52px; height:52px; border-radius:50%; border:2px solid var(--ink); background:var(--paper2); display:flex; align-items:center; justify-content:center; flex:none; }
 .j-portrait .icon { width:34px; height:34px; margin:0; }

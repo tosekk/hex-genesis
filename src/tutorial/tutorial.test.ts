@@ -28,6 +28,14 @@ const spread: SessionEvent = { type: 'spreadStarted', result: { origin: 0, biome
 const offer: SessionEvent = { type: 'offerShown', offer: { options: ['forest', 'desert'], reshuffled: false } };
 
 describe('tutorial assistant', () => {
+  it('keeps the first journal note expanded, then collapses subsequent guidance without gating events', () => {
+    const journal = document.createElement('div'); journal.className = 'jhud'; document.body.append(journal);
+    const s = use(); s.emit(offer); expect(s.panel.dataset.collapsed).toBe('false');
+    s.emit(spread); expect(s.panel.dataset.line).toBe('spread'); expect(s.panel.dataset.collapsed).toBe('true');
+    expect(s.panel.classList.contains('assistant-speaking')).toBe(false);
+    s.click('.assistant-collapse'); s.emit({ type: 'spreadFinished' });
+    expect(s.panel.dataset.line).toBe('buildings'); expect(s.panel.dataset.collapsed).toBe('false');
+  });
   it('advances each first event immediately, ignores repeats, and excludes the first core award', () => {
     const s = use(); s.emit({ type: 'runStarted', seed: 1 }); s.emit({ type: 'coreAwarded' });
     expect(s.panel.hidden).toBe(true);

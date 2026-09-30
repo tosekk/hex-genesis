@@ -94,7 +94,9 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- **V15 bug 3 ready:** explicit stacking layers: panels 10, tutorial root 20, toasts/notices 30, offer/confirm 100, help 110, end 120. Fullscreen HUD remains a pass-through container (no stacking context/z-index); border-box sizing is scoped. Panel non-overlap follows in bug 4. Hash recorded after commit.
+- **V15 bug 4 ready:** compact one-line future-threshold chips/pinned goal; ResizeObserver places tutorial below the measured stack. Later guidance auto-collapses once; explicit expansion uses the free board area (left of triangle, above deck), avoiding long-note scrolling and detail collisions. Fixed 1280×720 / 1024×640 panel reservations tested pairwise; real observer used in browser. No CSS zoom for layout math (triangle cleanup next). First note remains expanded; user expansion persists. Tutorial/VO text unchanged. Hash recorded after commit.
+
+- **V15 bug 3 ready:** explicit stacking layers: panels 10, tutorial root 20, toasts/notices 30, offer/confirm 100, help 110, end 120. Fullscreen HUD remains a pass-through container (no stacking context/z-index); border-box sizing is scoped. Panel non-overlap follows in bug 4. Commit `e982b1a`.
 
 - **V13 ready:** yellow `#F5D547` slot ring with dark backing for every biome, real 3D anchor geometry follows visible flip/lift/camera; null/new board clears, group teardown disposes. Approved contract `72cc74b`; 35 render tests/typecheck pass (2 new placement/flip/clear regressions). HUD calls the optional method directly. Commit `f2e40d4`.
 

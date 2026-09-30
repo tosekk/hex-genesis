@@ -12,6 +12,7 @@ import { createThresholdStack } from './thresholds';
 import { createTopRight, type AudioSettingsLike } from './topRight';
 import { createTriangle } from './triangle';
 import { createJournalHelp } from './help';
+import { installJournalLayout } from './layout';
 import './fonts.css';
 import './styles.css';
 
@@ -111,10 +112,11 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
 
   // Mounting after newRun must recover the current modal, not wait for another event.
   if (session.state.pendingOffer) offer.show(session.state.pendingOffer);
+  const disposeLayout = installJournalLayout(host, stackHost);
 
   return {
     dispose() {
-      off(); ctrl.dispose(); notice.dispose();
+      off(); ctrl.dispose(); notice.dispose(); disposeLayout();
       document.removeEventListener('keydown', onKey);
       for (const c of [pills, stack, triangle, deck, detail, toasts, offer, end, help, topRight]) c.dispose();
       journal?.dispose();

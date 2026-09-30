@@ -31,7 +31,9 @@ export function createThresholdStack(root: HTMLElement, session: GameSession, ct
   const small = (i: number, t: Resources) => {
     const c = el('div', 'j-tcard collapsed');
     c.dataset.threshold = String(i + 1);
-    c.append(el('b', undefined, `T${i + 1}`), el('span', undefined, ` ${fmtResources(Object.fromEntries(positive(t)))}`));
+    const targets = positive(t).map(([r, v]) => `${v}${r === 'water' ? 'wa' : r[0]}`).join(' / ');
+    c.title = `Threshold ${i + 1}: ${fmtResources(Object.fromEntries(positive(t)))}`;
+    c.append(el('b', undefined, `T${i + 1}`), el('span', undefined, ` · ${targets}`));
     return c;
   };
 
@@ -56,7 +58,9 @@ export function createThresholdStack(root: HTMLElement, session: GameSession, ct
       cur.appendChild(bars(th[idx]));
       cur.appendChild(el('div', 'j-award', '→ new core'));
       panel.appendChild(cur);
-      for (let i = idx + 1; i <= Math.min(idx + 2, goal - 2); i++) panel.appendChild(small(i, th[i]));
+      const future = el('div', 'j-future');
+      for (let i = idx + 1; i <= Math.min(idx + 2, goal - 2); i++) future.appendChild(small(i, th[i]));
+      panel.appendChild(future);
     }
     // Pinned goal.
     const g = el('div', 'j-tcard goal');
@@ -64,7 +68,7 @@ export function createThresholdStack(root: HTMLElement, session: GameSession, ct
     g.appendChild(el('div', 'j-tcard-head', `★ T${goal} · GOAL — reach to win`));
     if (idx >= goal) g.appendChild(el('div', 'j-award', 'Reached!'));
     else if (idx === goal - 1) g.appendChild(bars(th[goal - 1]));
-    else g.appendChild(el('div', 'j-tsmall', fmtResources(Object.fromEntries(positive(th[goal - 1])))));
+    else g.title = `Final targets: ${fmtResources(Object.fromEntries(positive(th[goal - 1])))}`;
     panel.appendChild(g);
 
     const { empty, total } = slotSummary(s);
