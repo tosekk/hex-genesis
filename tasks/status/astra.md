@@ -1,26 +1,28 @@
 ## Morning summary
-- Committed: N1 `457a221`; N2 `fd23f08`; N3 selected round 4 `72ced76`; N4 `0642114`; N0/D4 `0b7f609`.
-- Six calibration rounds: `922c134`, `f284644`, `9b84564`, `7b2aa4c`, `b9fdfe4`, `fefe6aa`; priority 4 > 2 > 1 > 3 retained.
+
+- Commits: N1 `457a221`; N2 `fd23f08`; N3 selection `72ced76` (six rounds below); N4 `0642114`; N5 `2108880`; N6 preview `4eacde4` (~25× faster), 50-seed report `6557f14`.
+
 | Target (20 seeds, 20×14) | Final result |
 |---|---|
 | Pacing 7/22/45/90/160/270 ±20% | **MISS T1 only:** 2/21/44/93/173.5/299 |
 | T4–T6 spam/combo ≥1.5× | **PASS:** 2.94× / 2.51× / 1.90× |
 | Every spam T6 fill ≥70% | **MISS:** minimum 64.70%; early seeds 3,8,18,19 |
 | Combo ≥18/20 T6 and wins, zero soft-locks | **PASS:** 20/20 T6, 18/20 wins, zero declarations |
-- Designer choices: later mine-only openings need more starting wood/lower frozen costs for the retained yield channels; seeds 12/18 need an eighth core beyond six frozen thresholds. Six rounds are not an exhaustive impossibility proof; details below.
-- N4: both larger sizes pass §6/determinism/performance; default 200-map hash unchanged. 26×18 preview has 17/20 T6 and 0 wins: seven cores leave 9–32 legal sites in completers. Keep shipping size 20×14.
-- Validation: 162 scoped tests pass, 5 opt-in skipped; typecheck passes. N1 full run found Sol’s obsolete duplicate-pair tutorial fixture; Sol reports fixed in `925ad36`, final rerun pending.
-- Playtest seed **3** for full progression and early spam T6; **13** for Arctic Polar Base recovery and a clear combo-vs-spam difference. Reports: `tests/balance/REPORT.md`; all round inputs/results archived beside it.
-- N5 handoff complete; N6 preview optimization and 50-seed confirmation follow while time remains.
+
+- **50-seed warning:** 48/50 T6, only 39/50 wins; T4 median 110.5, spam T6 median unreached, minimum spam T6 fill 59.44%. The 20-seed success rates do not generalize. No seventh calibration round.
+- Designer decisions: later T1 needs opening-resource funding for retained yields; nine observed bot routes exhaust seven cores with 1–2 legal sites left. Costs/stock/six thresholds stayed frozen. Larger-map generation passes, but 26×18 preview has 0/20 wins; keep 20×14.
+- Validation: 164 scoped tests + 36 C3 cases pass; 2,592 preview comparisons match; typecheck/build pass. Full suite: 273 pass, one Sonnet HUD fixture failure (`hud.test.ts:203`, zero T1 wood target); reported below. Sol's tutorial failure is resolved; rendering edits untouched.
+- Playtest **3** for progression/early spam T6, **13** for Arctic combo recovery; stress-test **35/37** for opening starvation and **12** for core coverage. Full evidence: `tests/balance/REPORT.md` and JSON archives. N1–N6 complete.
 
 # Status — `astra`
 
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-N1–N6 COMPLETE. Finalizing the morning summary with the 50-seed limits and Sonnet HUD-test report. Economy remains round 4; no seventh calibration.
+N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified. Morning summary includes larger-sample limits and the outside-owner HUD fixture failure. No seventh calibration; awaiting designer playtest decisions.
 
 ## Done
+- N6 confirmation — 50 seeds, exact replay of original 20, explicit larger-sample limits and final checks — `6557f14`.
 - N6 preview — bounded private copy, 2,592 exact old/new comparisons and about 25× lower cost — `4eacde4`.
 - N5 — morning summary and designer handoff — `2108880`.
 - N4 — size-aware cluster density, 400 larger-map invariant checks, unchanged default terrain, 26×18 balance preview — `0642114`.
@@ -40,7 +42,7 @@ N1–N6 COMPLETE. Finalizing the morning summary with the 50-seed limits and Son
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
-- None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
+- No unfinished owned task. Final full-suite green is blocked by the Sonnet-owned zero-target HUD fixture reported below. Balance gaps require designer review; no guardrail was relaxed. Opus O5 passed D1; independent D4/N4 review remains requested.
 
 ## Decisions
 - N6 §38: preserve transaction-based preview math, including unaffordable projections and hidden discoveries. Copy the state shell, hex array, target hex/slots/pair-history array, resource maps, discovery list and adjacency map; share only data that placement reads. Verify equivalence against the previous full-clone algorithm on frozen seeded states, including demolition/conversion and invalid requests. The larger 50-seed sample is confirmation, not a seventh calibration round.
@@ -304,7 +306,7 @@ Restore round 4 `7b2aa4c`: T1 **wood 0, stone 16**; T2 **50/45**; T3 **100/85/40
 
 Final combo medians **2 / 21 / 44 / 93 / 173.5 / 299**. Spam/combo T4–T6 ratios **2.94 / 2.51 / 1.90**. T6 combo **20/20**, wins **18/20**, zero soft-lock declarations. Targets **2 and 4 pass**; target 1 misses T1 only, target 3 misses seeds **3/8/18/19** (minimum fill **64.70%**, required 70%). Exact before/after records and all six configurations remain in `tests/balance/round-*.json` and git history.
 
-**Designer decisions / guardrail limits:** six rounds are exhausted, not a proof that every allowed value combination is impossible. Keeping current resource channels, the four mine-only Forest openings can afford only three mines from starting wood 6, so delaying their first core past three actions needs a frozen cost/stock change: mine wood cost **2→1**, or starting wood **6→at least 12** to fund the earliest six-placement T1 target. Those are necessary local funding amounts, not a verified global rebalance; the allowed +1 wood mine experiment failed elsewhere and was rolled back. For seeds **12 and 18**, the observed seven-core ceiling is exact: after all six thresholds, each has **one legal core site**, **zero held cores**, **zero empty living slots**. An **additional seventh threshold / eighth total core** would fund that final site, but exactly six thresholds is frozen, so it is not implemented. Target 3's four early spam completions conflict with keeping eleven finite spam T6 completions in the tested gates (round 5 reduces that to ten). Further refinement needs designer direction/new calibration, not a hidden guardrail relaxation.
+**Designer decisions / guardrail limits:** six rounds are exhausted, not a proof that every allowed value combination is impossible. Keeping current resource channels, the four mine-only Forest openings can afford only three mines from starting wood 6, so delaying their first core past three actions needs a frozen cost/stock change: mine wood cost **2→1**, or starting wood **6→at least 12** to fund the earliest six-placement T1 target. Those are necessary local funding amounts, not a verified global rebalance; the allowed +1 wood mine experiment failed elsewhere and was rolled back. For the measured bot routes on seeds **12 and 18**, the observed seven-core ceiling is exact: after all six thresholds, each has **one legal core site**, **zero held cores**, **zero empty living slots**. An **additional seventh threshold / eighth total core** would fund that final site, but exactly six thresholds is frozen, so it is not implemented. Target 3's four early spam completions conflict with keeping eleven finite spam T6 completions in the tested gates (round 5 reduces that to ten). Further refinement needs designer direction/new calibration, not a hidden guardrail relaxation.
 
 ## N4 world-size readiness
 
