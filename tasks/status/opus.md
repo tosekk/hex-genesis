@@ -3,7 +3,7 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. O6 (O6.1–O6.4) and O7 complete. Final N7 `d5910a1` verified: autoplay + pacing green, full browser run on seed 1 WON. Ready for release packaging (`npm run package`) whenever the designer calls it.
+IN PROGRESS: O8. O8.1 ✅ this commit (e2e + README on the new §41 rule). O8.2: browser win/loss screens on S8 `c63b56d`/`51cef86` (next). O8.3: after astra's final N8 round, re-run autoplay, `npm run package`, verify in the itch iframe page.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -65,6 +65,11 @@ IDLE — available. O6 (O6.1–O6.4) and O7 complete. Final N7 `d5910a1` verifie
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O8.1 (new §41 win rule): tests/e2e + README.**
+  - `assertInvariants` now checks: won ⇒ final threshold reached; lost ⇒ final unmet; final met ⇒ not still playing. Reaching the final threshold must produce `won` in the SAME action with no core or offer. A loss must never happen with an active spread, a held core that has a legal site, or an affordable empty unpaid slot with a positive base yield (§44).
+  - The bot stops on won/lost, reports "board used" (the §41 end-screen stat, plus astra's % of placeable slots), and has a `spam` strategy. New scenario test: crossing T8 mid-spread with a held core and empty slots wins at once (no `coreAwarded`/`offerShown`; the spread and held core stay; later commands are rejected).
+  - Results on S8 (economy still v3 `d5910a1`): greedy seeds 1–5 all **WIN at T8** with 71–81% of placeable slots used (442–519 placements). All 10 e2e tests pass; the suite self-skips if `checkWin` ever reverts to the old rule.
+  - README: goal line "Reach the final threshold before you run out of room" at the top and in the itch draft; how-to-play and tips updated.
 - **O6.4 FINAL: N7 `d5910a1` (astra kept round 3 `f6b6d45`).** All checks ran on a clean `git archive d5910a1` export, so no uncommitted work from others is included.
   - **Autoplay (real map): PASS.** Seeds 1–5 all WIN (591–639 placements, 5–7 cores), `assertInvariants` holds after every action, and replay-determinism passes.
   - **Pacing:** cumulative placements per threshold, median of seeds 1–5, my sensible-greedy bot:
@@ -146,6 +151,13 @@ IDLE — available. O6 (O6.1–O6.4) and O7 complete. Final N7 `d5910a1` verifie
 - to sonnet (cosmetic): after a win, the hex panel stays open behind the end screen with live "Demolish" buttons (the session rejects them, since the run is over). Close/hide the panel on `runEnded`.
 - to sonnet (minor): "New Run" with a typed seed on the end screen doesn't update `?seed=` in the URL, so a reload replays the previous seed.
 - to sol (UX nit): the first tutorial card ("Choose Forest, Desert, or Arctic…") stays up for the whole run unless the player clicks Next. Consider auto-advancing when the next queued event arrives.
+- **to astra + designer (P0 design/balance mismatch, NOT a sonnet bug): a spammer never gets the "Out of room" loss.** Spam bot (cheapest affordable building, first empty slot, never demolishes) on seeds 1/2/3 fills **100% of its terraformed slots** (486/465/192) at T2/T2/T0, and the game does **not** declare a loss. The detector is right per §43/§44: on those end states there are **768 / 721 / 384 affordable demolish+rebuild moves that still pay** (e.g. hex 5 slot 0: Lumber Camp → Sawmill pays `timber_line` on two unpaid pairs), and stock is huge (seed 1: wood 1143).
+  - §42's rationale ("because slots and slot pairs never pay twice, no action can earn more yield") does not hold for a board built without combos, since every unpaid pair can still pay after a rebuild.
+  - Consequences:
+    1. astra's N8 harness counts "board full" as a loss, but the game won't end those runs, so v4 target 2 ("spam loses ≥ 45/50") measures something the player never sees.
+    2. In play, a spammer ends up with a full board, a pile of resources, no end screen, and must discover demolish-to-combo or press End Run.
+  - Options for the designer: (a) accept it; the loss screen then only appears after combos are exhausted too; (b) change §42 so a full board with T8 unmet is a loss even though rebuild combos remain (it conflicts with §44 as written); (c) keep the rule but have astra's harness model demolish+rebuild so target 2 is honest.
+  - Browser loss-screen check (O8.2) will use a genuinely dead state instead of a spam run.
 - **to sol (P2, minor):** R7 floating payout labels queue up during fast building, and the backlog keeps playing long after the actions, including over the win screen. Seed 1 run: 207 `.board-payout` nodes queued at the win, draining at ~7/s with 9 visible, so ~30 s of labels over "Planet terraformed!". Suggest capping the queue (drop or merge the oldest when the backlog exceeds ~20) and clearing it on `runEnded`/`runStarted`. They are pointer-events: none, so this is cosmetic only.
 - **to sonnet (test fixture, not a session bug):** 6 tests in `src/game/session.unit.test.ts` (2, 3, 4, 4b, 4c, 5) fail on HEAD since D1 landed. `ORIGIN = 3*20+3` on seed 1 is now a `basin` (unplaceable), so `startSpreadAt` → `placeCore` is correctly rejected. Pick the origin from `legalCoreSites(session.state)` (or a fixed seed/tile verified to be plain) instead of a hard-coded id. Reproduced on a clean `git archive HEAD` export, so it's unrelated to `c357845`.
 - to astra (perf FYI, not a rule bug): `previewPlacement` `structuredClone`s the whole GameState per call (~1 ms each). Fine for HUD hover. Avoid calling it in loops over the whole board.

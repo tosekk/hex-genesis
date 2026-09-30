@@ -2,8 +2,10 @@
 // `prev` (a deep copy of the state before the last action) enables the history checks.
 import { parentsOf } from '../../src/core/biomes';
 import { hexDistance } from '../../src/core/hex';
-import type { Biome, GameState, MixedBiome } from '../../src/core/types';
+import type { Biome, GameState, MixedBiome, SlotIndex } from '../../src/core/types';
 import { MAIN_BIOMES, MIXED_BIOMES, PLACEABLE_TERRAIN } from '../../src/core/types';
+import { canPlaceBuilding, previewPlacement, rosterFor } from '../../src/sim/economy';
+import { legalCoreSites } from '../../src/sim/spread/spread';
 
 const isMixed = (b: Biome | null): b is MixedBiome => b !== null && (MIXED_BIOMES as readonly string[]).includes(b);
 
@@ -44,6 +46,28 @@ export function assertInvariants(s: Readonly<GameState>, prev?: Readonly<GameSta
     }
   }
   if (s.pendingOffer && s.status !== 'playing') fail('pending offer after the run ended');
+
+  // ---- win / loss (§41 as changed 2026-09-30: win = final threshold; §42: loss = out of room) ----
+  const final = cfg.thresholds.length;
+  if (s.status === 'won' && s.thresholdIndex < final) fail('won before the final threshold (§41)');
+  if (s.status === 'lost' && s.thresholdIndex >= final) fail('lost although the final threshold is met (§41)');
+  if (s.status === 'playing' && s.thresholdIndex >= final) fail('final threshold met but the run is still playing (§41)');
+  if (s.status === 'lost') {
+    // §44: never auto-lose while a progression action exists.
+    if (s.activeSpread) fail('lost during an active spread (§44)');
+    if (s.coreStack.length > 0 && legalCoreSites(s).length > 0) fail('lost while holding a core with a legal site (§44)');
+    for (const h of s.hexes) {
+      if (!h.placeable || h.biome === null) continue;
+      h.slots.forEach((slot, i) => {
+        if (slot.building !== null || slot.yieldPaid) return;
+        for (const b of rosterFor(s, h.id)) {
+          if (!canPlaceBuilding(s, h.id, i as SlotIndex, b).ok) continue;
+          const p = previewPlacement(s, h.id, i as SlotIndex, b);
+          if (Object.values(p.base).some((v) => v > 0)) fail(`lost while ${b} on hex ${h.id} slot ${i} was an affordable yield (§44)`);
+        }
+      });
+    }
+  }
   if (s.reshufflesUsed > cfg.reshufflesPerRun) fail('too many reshuffles (§9)');
   const a = s.activeSpread;
   if (a) {
@@ -64,6 +88,10 @@ export function assertInvariants(s: Readonly<GameState>, prev?: Readonly<GameSta
   if (prev.status !== 'playing' && s.status !== prev.status) fail('terminal status changed');
   if (s.thresholdIndex < prev.thresholdIndex) fail('thresholdIndex decreased');
   if (s.thresholdIndex > prev.thresholdIndex + 1) fail('crossed more than one threshold in one action (§39)');
+  if (prev.thresholdIndex < final && s.thresholdIndex >= final) {
+    if (s.status !== 'won') fail('reaching the final threshold did not win in the same action (§41)');
+    if (s.pendingOffer || s.coreStack.length > prev.coreStack.length) fail('the final threshold awarded a core or an offer (§41)');
+  }
   for (const [k, v] of Object.entries(prev.lifetime)) if ((s.lifetime[k] ?? 0) < v) fail(`lifetime ${k} decreased (§39)`);
   if (s.cores.length < prev.cores.length || prev.cores.some((c, i) => s.cores[i] !== c)) fail('cores history changed');
   if (prev.discoveredCombos.some((c, i) => s.discoveredCombos[i] !== c)) fail('discovery order changed / undiscovered (§33)');

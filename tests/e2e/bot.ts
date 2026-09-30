@@ -19,7 +19,9 @@ export type Action =
 export interface BotReport {
   seed: number;
   status: GameState['status'];
-  /** terminal: run over · stuck: no legal action, bot ended the run · cap: action cap · time: wall-clock budget */
+  strategy: Strategy;
+  /** terminal: the game ended the run (won/lost) · stuck: bot found no action but the game had not
+   *  declared a loss, so the bot pressed End Run · cap: action cap · time: wall-clock budget */
   stop: 'terminal' | 'stuck' | 'cap' | 'time';
   actions: Action[];
   placements: number;
@@ -33,7 +35,17 @@ export interface BotReport {
   resources: Resources;
   filledHexes: number;
   livingPlaceableHexes: number;
+  /** §41 end-screen stat: occupied slots / all slots on terraformed placeable hexes. */
+  occupiedSlots: number;
+  terraformedSlots: number;
+  /** astra's v4 metric: occupied slots / (3 × placeable hexes on the whole map). */
+  placeableSlots: number;
 }
+
+/** greedy: the sensible player (combos, threshold needs). spam: cheapest affordable building, first empty
+ *  slot, lowest HexId; ignores combos and needs (the "out of room" stress case, §42). */
+export type Strategy = 'greedy' | 'spam';
+export interface BotOptions { maxActions?: number; timeBudgetMs?: number; strategy?: Strategy }
 
 /** GameState is plain JSON; JSON cloning is far faster than structuredClone inside vitest workers. */
 export const snapshot = <T>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
@@ -110,11 +122,26 @@ function chooseBuild(session: GameSession): Action | null {
   return best?.a ?? null;
 }
 
+function chooseSpam(session: GameSession): Action | null {
+  const s = session.state;
+  for (const h of s.hexes) {
+    if (!h.placeable || h.biome === null || isHexLocked(s, h.id)) continue;
+    const slot = h.slots.findIndex((x) => x.building === null);
+    if (slot < 0) continue;
+    const affordable = rosterFor(s, h.id)
+      .filter((b) => canAfford(s.resources, s.config.buildings[b].cost))
+      .sort((a, b) => total(s.config.buildings[a].cost) - total(s.config.buildings[b].cost));
+    if (affordable.length) return { t: 'build', hexId: h.id, slot: slot as SlotIndex, building: affordable[0] };
+  }
+  return null;
+}
+
 /** Plays one run. Asserts invariants after every action. */
 /** A spread that needs more advance() calls than this never finishes: a session bug, not a slow run. */
 const MAX_ADVANCES_PER_SPREAD = 1000;
 
-export function runBot(session: GameSession, seed: number, maxActions = 3000, timeBudgetMs = 30_000): BotReport {
+export function runBot(session: GameSession, seed: number, opts: BotOptions = {}): BotReport {
+  const { maxActions = 3000, timeBudgetMs = 30_000, strategy = 'greedy' } = opts;
   const deadline = performance.now() + timeBudgetMs;
   const actions: Action[] = [];
   let placements = 0;
@@ -162,7 +189,7 @@ export function runBot(session: GameSession, seed: number, maxActions = 3000, ti
     }
     const core = s.coreStack.length > 0 ? chooseCoreSite(s) : null;
     if (core) { act(core); continue; }
-    const build = chooseBuild(session);
+    const build = strategy === 'spam' ? chooseSpam(session) : chooseBuild(session);
     if (build) { act(build); continue; }
     act({ t: 'end' });
     stop = 'stuck';
@@ -172,13 +199,16 @@ export function runBot(session: GameSession, seed: number, maxActions = 3000, ti
   const s = session.state;
   const living = s.hexes.filter((h) => h.placeable && h.biome !== null);
   return {
-    seed, status: s.status, stop, actions, placements, coresPlaced,
+    seed, strategy, status: s.status, stop, actions, placements, coresPlaced,
     thresholdsReached: s.thresholdIndex,
     placementsPerThreshold: perThreshold,
     placementsSinceLastThreshold: sinceThreshold,
     lifetime: { ...s.lifetime }, resources: { ...s.resources },
     filledHexes: living.filter((h) => h.slots.every((x) => x.building !== null)).length,
     livingPlaceableHexes: living.length,
+    occupiedSlots: living.reduce((n, h) => n + h.slots.filter((x) => x.building !== null).length, 0),
+    terraformedSlots: 3 * living.length,
+    placeableSlots: 3 * s.hexes.filter((h) => h.placeable).length,
   };
 }
 
@@ -187,8 +217,10 @@ export const cumulative = (xs: number[]): number[] => xs.map((_, i) => xs.slice(
 /** Human-readable tuning line for one run. */
 export function formatReport(r: BotReport): string {
   const fmt = (x: Resources) => Object.entries(x).map(([k, v]) => `${k}=${v}`).join(' ');
+  const pct = (a: number, b: number) => `${b ? Math.round((100 * a) / b) : 0}%`;
   return [
-    `seed ${r.seed}: ${r.status} (${r.stop}) · ${r.placements} placements · ${r.coresPlaced} cores · thresholds ${r.thresholdsReached}`,
+    `seed ${r.seed} [${r.strategy}]: ${r.status.toUpperCase()} (${r.stop}) · ${r.placements} placements · ${r.coresPlaced} cores · thresholds ${r.thresholdsReached}`,
+    `  board used ${r.occupiedSlots}/${r.terraformedSlots} terraformed slots (${pct(r.occupiedSlots, r.terraformedSlots)}) · ${pct(r.occupiedSlots, r.placeableSlots)} of the map's ${r.placeableSlots} placeable slots`,
     `  placements per threshold: [${r.placementsPerThreshold.join(', ')}] (+${r.placementsSinceLastThreshold} toward next)`,
     `  cumulative at each threshold: [${cumulative(r.placementsPerThreshold).join(', ')}]`,
     `  filled ${r.filledHexes}/${r.livingPlaceableHexes} living hexes · lifetime ${fmt(r.lifetime)} · stock ${fmt(r.resources)}`,

@@ -2,6 +2,8 @@
 
 A deterministic hex-board terraforming game for the desktop browser, built with TypeScript, Three.js, and Vite. Choose a biome, drop a terraformer core, watch it spread across a dead planet, then build on the restored land to earn the next core. Where biomes meet, they mix.
 
+**Goal: reach the final threshold before you run out of room.** Every slot and every combo pays only once, so board space is the real budget (GAME_DESIGN §41, §42).
+
 The design lives in `GAME_DESIGN.md`. Team and agent rules live in `AGENTS.md` and `tasks/`.
 
 ## Run it
@@ -57,7 +59,9 @@ itch.io settings: Kind of project **HTML**, upload the zip, tick **"This file wi
 
 ### <GAME NAME>
 
-A dead planet, a handful of terraformer cores, and a hex board full of mountains, dry riverbeds, and empty plains. Choose a biome, drop a core, and watch forest, desert, or arctic life roll across the terrain. Where two biomes meet they blend into steppe, taiga, or polar desert, and every restored tile gives you room to build.
+A dead planet, a handful of terraformer cores, and a hex board full of mountains, dry riverbeds, and empty plains. Choose a biome, drop a core, and watch forest, desert, or arctic life roll across the terrain. Where two biomes meet they blend into steppe, taiga, or polar desert. Every building and every combo pays out only once, so the land you restore is your real budget.
+
+**Reach the final threshold before you run out of room.**
 
 **How to play**
 
@@ -65,7 +69,7 @@ A dead planet, a handful of terraformer cores, and a hex board full of mountains
 - **Place the core** on dead land. It spreads out across the terrain; slopes, rivers, woods, and mountains shape how far it reaches.
 - **Build** up to three buildings on each restored tile. Every building pays out once when you place it.
 - **Discover combos.** The right buildings together on a tile, or finished tiles side by side, pay bonus resources.
-- **Hit the resource targets** to earn the next core. Restore and fill the whole reachable world to win.
+- **Hit the resource targets.** Each threshold earns another core. **Reach the final threshold (8 of 8) to win**, even with empty slots left. If the board runs out of room first, the run is lost.
 
 **Controls**
 
@@ -80,7 +84,7 @@ A dead planet, a handful of terraformer cores, and a hex board full of mountains
 | Middle-drag, or W A S D | Pan the camera |
 | ? or H | Controls help |
 
-Click the game once if the keys don't respond; the browser only sends keys to the game after it has focus. Desktop browsers only; there's no mobile support. Every world comes from a seed shown on the end screen, so you can replay a map or share it.
+Plan your tiles: building the same cheap thing everywhere fills the board fast and pays little. Combos and completed neighbouring tiles are where the big yields are. Click the game once if the keys don't respond; the browser only sends keys to the game after it has focus. Desktop browsers only; there's no mobile support. Every world comes from a seed shown on the end screen, so you can replay a map or share it.
 
 **Credits and AI usage**
 
