@@ -3,9 +3,11 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O10. Steps 1–3 ✅. Waiting for **06:00 go/no-go** (step 4): read sonnet's S9 QA bugs → package with the journal HUD as default if no open P0/P1 on it, else legacy.
+IN PROGRESS: O11. Items 1, 2 and 4 ✅. Item 3 (go/no-go) **waiting for its trigger**: sol's V15 DoD AND no open sonnet P0/P1 on the journal HUD. As of `115135d`: sol "awaiting Sonnet browser review"; sonnet has **1 open P1** (tutorial note over the offer modal). → **NO-GO for the journal HUD so far.**
 
-> **Designer: `release/terraform-jam-2026-09-30.zip` is SAFE TO UPLOAD** (safety RC, legacy HUD). Built at 23:59 from HEAD `7c7d39e` (code = `5cfe4c0`: N9 economy, S8 win rule, legacy HUD default), 44 files, 0.23 MB, sha256 `314dcec421e08444…`. Verified in the itch-style iframe: see Integration log. If the 06:00 call switches to the journal HUD, I'll post a new zip name here; until then this is the one.
+> **Designer: upload `release/terraform-jam-2026-09-30.zip`** (safety RC, legacy HUD, verified; see O10.1). The next zip will be named `release/hex-genesis-<date>.zip` (rename `4c82ec8`). I'll post it here once the go/no-go trigger fires, with the journal HUD as default if it's a GO.
+
+> **sol: the offer spheres are ready to integrate** (`8d44d59`): `import { createOfferFx } from '../../fx/offerSpheres'` (UI_SPEC §8.3 interface; optional 2nd arg `{ reducedMotion }`). The FX owns keys 1/2 while shown (it stops propagation, so the HUD's 1/2 handler won't double-fire) and calls `onChoose(i)`; you call `session.chooseOffer(i)`, then `resolve(i, cornerRect)` on `offerResolved`. On reshuffle call `update(offer, canReshuffle)`. `hide()` settles any pending resolve. Demo: `http://localhost:5173/src/fx/demo.html`.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -68,6 +70,9 @@ IN PROGRESS: O10. Steps 1–3 ✅. Waiting for **06:00 go/no-go** (step 4): read
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O11.1 offer spheres** `8d44d59`: `src/fx/offerSpheres.ts` + 7 happy-dom tests (present/backdrop blocks pointer input, keys 1/2 owned + single choice, click, reshuffle/update/disabled, resolve settles ≤ 1.6 s and removes itself, reduced-motion fade, hide/dispose) + `src/fx/demo.html`. Browser (dev server demo): spheres render with biome colours, icons, key badges and Reshuffle; a real `1` → chosen Forest, and the resolve took **1165 ms** and removed the FX.
+- **O11.2 sonnet's P2 (itch-frame)** `0f050ae`: the default mode is now cross-origin via a second port on the same host (4197 page ↔ 4196 game; `itch-test` serves both). The old localhost↔127.0.0.1 swap was cross-SITE (separate renderer process, black in hidden panes, possible name mismatch) and stays available as `?site=1`. The page shows the frame load state. Verified from a clean HEAD export: frame loaded and rendered, focus in game, ↓×5/Space/PgDn → parent scrollY 0, `1` picks the offer. (`npm run itch-test` in the shared tree currently fails on astra's uncommitted `journal.test.ts`, not mine.)
+- **O11.4 rename** `4c82ec8`: `<title>Hex Genesis`, README heading + itch draft, zip → `release/hex-genesis-<date>.zip`.
 - **O10.1: safety RC verified** (zip above, served unzipped next to `scripts/itch-frame.html`, 1440×1000 page with a 1280×720 frame).
   - **Parent scroll ✅** (both fixes in the build: `1fa5455` capture phase, `f4609b3` key-specific ownership). (A) help overlay open, focus on its "Got it" button: ↓×5, PageDown, End → parent scrollY 0. (B) help closed: ↓×5, Space, PageDown → 0. The earlier RC (`1fa5455`) scrolled 2314 px in case (A), so it's superseded and must not be uploaded.
   - **Focus ✅:** a click into the frame focuses the game; the game takes focus on load once its first frame renders.
