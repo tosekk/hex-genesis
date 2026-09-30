@@ -29,6 +29,8 @@ describe('journal component contract states', () => {
     const deck = createDeck(s.root, s.session, s.ctrl); disposals.push(deck.dispose);
     const core = () => s.root.querySelector<HTMLButtonElement>('[data-card="core"]')!;
     expect(core().querySelector('.j-badge')?.textContent).toBe('2'); expect(core().getAttribute('aria-disabled')).toBe('false');
+    const selected = s.state.hexes.find(h => h.placeable)!; selected.biome = 'forest'; s.ctrl.selectSlot(selected.id, 0); s.ctrl.clickCard({ kind: 'core' });
+    expect(s.ctrl.card?.kind).toBe('core'); expect(s.ctrl.hex).toBeNull(); expect(s.ctrl.slot).toBeNull(); expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null); s.ctrl.esc(); s.ctrl.selectBiome('forest');
     s.state.coreStack = []; deck.render(); expect(core().classList.contains('grey')).toBe(true); expect(core().textContent).toContain('No core held');
     s.state.coreStack = ['forest'];
     s.state.activeSpread = { result: { origin: 0, biome: 'forest', claims: [], poolUsed: 0 }, revealed: 0, locked: {} }; deck.render();

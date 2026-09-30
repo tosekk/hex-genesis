@@ -113,7 +113,7 @@ export class Ctrl {
       if (b !== 'forest' && b !== 'desert' && b !== 'arctic') return;
       const why = this.coreDisabledReason(b);
       if (why) { this.notice(why); return; }
-      this.card = card;
+      this.card = card; this.hex = null; this.slot = null;
       this.sync();
       return;
     }
