@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 6 (final) — test Hillside Mine wood 0→1 with a later 42-stone first gate; restore round-4 late water. Round 5 committed; round 4 `7b2aa4c` remains the priority-ranked fallback.
+IN PROGRESS: N3 final verification — six rounds complete; restore round 4 (`7b2aa4c`) by priority 4 > 2 > 1 > 3. No further tuning rounds. Next N4 world-size readiness.
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,7 @@ IN PROGRESS: N3 round 6 (final) — test Hillside Mine wood 0→1 with a later 4
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 selection: restore round 4 exactly for both config and REPORT. It is the sole round passing targets 4 and 2; T2–T6 also meet pacing. Round 5 loses the finite T6 comparison; round 6 loses reachability despite the permitted new yield channel. Keep the corrected sparse-resource guardrail test, but revert the experimental mine wood yield. Do not claim that six trials exhaust every possible combination inside the guardrails.
 - N3 round 6 revises the initial conservative yield-channel assumption: CONTRACTS explicitly defines missing resource keys as zero, and v2 allows ±1 per resource without freezing yield keys. Therefore Hillside Mine wood 0→1 is inside the literal guardrail. Test it with T1 stone 42 (T2 stone 50 to stay monotone), preserving every frozen cost, starting stock, roster and recipe. The guardrail test now compares all four declared resources against sparse v2 zeros rather than imposing an extra key-freeze rule. This is the sixth and final calibration round; afterward select by the designer's priority order.
 - N3 round 5: 24 stone is the largest safe T1 gate for the four Forest mine-only openings (three 8-stone mines spend all six starting wood). Raise late water 550→625, just below the smallest completed spam final water (seed 20: 627), to delay two of the four early T6 seeds without destroying the finite spam median. Keep other thresholds and rewards fixed.
 - N3 round 4: hold the successful opening yields/Polar Base rescue fixed. Raise T2/T5 toward pacing targets. At T6, reduce food 255→170 (eleven round-3 spam runs earned at least this much) while raising wood/stone/water to slow completion; this makes the spam comparison measurable without counting failed seeds as successes. Leave T1 stone-only because a positive wood requirement reintroduces the four frozen-terrain opening failures.
@@ -273,3 +274,11 @@ Final permitted round tests the literal sparse-resource +1 guardrail. A later fi
 Before: combo T6 20/20, wins 18/20; spam T6 10/20; 0 soft-lock declarations; combo all-seed medians 3.0 / 21.0 / 45.0 / 89.0 / 173.5 / 299.0.
 
 After: combo T6 15/20, wins 13/20; spam T6 8/20; 0 soft-lock declarations; combo all-seed medians 8.5 / 28.5 / 48.0 / 111.0 / 179.0 / 315.0. Measurement 64.24 s. Exact configuration/run archive: `tests/balance/round-6.json`.
+
+### N3 final selection — round 4 retained
+
+Restore round 4 `7b2aa4c`: T1 **wood 0, stone 16**; T2 **50/45**; T3 **100/85/40**; T4 **260/220/120/90**; T5 **450/380/200/120**; T6 **850/740/550/170** (wood/stone/water/food, omitted resources zero). Restore Hillside Mine to **stone 2 only** (experimental wood 1→0). Other round-2 yields and Polar Base **water 8 / food 4 / stone 2** remain.
+
+Final combo medians **2 / 21 / 44 / 93 / 173.5 / 299**. Spam/combo T4–T6 ratios **2.94 / 2.51 / 1.90**. T6 combo **20/20**, wins **18/20**, zero soft-lock declarations. Targets **2 and 4 pass**; target 1 misses T1 only, target 3 misses seeds **3/8/18/19** (minimum fill **64.70%**, required 70%). Exact before/after records and all six configurations remain in `tests/balance/round-*.json` and git history.
+
+**Designer decisions / guardrail limits:** six rounds are exhausted, not a proof that every allowed value combination is impossible. Keeping current resource channels, the four mine-only Forest openings can afford only three mines from starting wood 6, so delaying their first core past three actions needs a frozen cost/stock change: mine wood cost **2→1**, or starting wood **6→at least 12** to fund the earliest six-placement T1 target. Those are necessary local funding amounts, not a verified global rebalance; the allowed +1 wood mine experiment failed elsewhere and was rolled back. For seeds **12 and 18**, the observed seven-core ceiling is exact: after all six thresholds, each has **one legal core site**, **zero held cores**, **zero empty living slots**. An **additional seventh threshold / eighth total core** would fund that final site, but exactly six thresholds is frozen, so it is not implemented. Target 3's four early spam completions conflict with keeping eleven finite spam T6 completions in the tested gates (round 5 reduces that to ten). Further refinement needs designer direction/new calibration, not a hidden guardrail relaxation.
