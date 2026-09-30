@@ -30,18 +30,24 @@ export function createTutorial(root: HTMLElement, session: GameSession): Tutoria
   let speakingTimer: ReturnType<typeof setTimeout> | null = null;
 
   function stopSpeaking(): void {
-    voice.stop();
+    voice.stop(); stopFace();
+  }
+  function stopFace(): void {
     if (speakingTimer !== null) clearTimeout(speakingTimer);
     speakingTimer = null; panel.classList.remove('assistant-speaking');
   }
   function speak(): void {
     stopSpeaking();
-    if (!current || disposed || collapsed) return;
+    if (!current || disposed) return;
+    if (!collapsed) animateFace();
+    if (!muted) voice.play(current, () => stopFace());
+  }
+  function animateFace(): void {
+    if (!current || collapsed || disposed) return;
     panel.classList.add('assistant-speaking');
     // Text still "speaks" visually when optional VO is absent or muted.
     speakingTimer = setTimeout(() => panel.classList.remove('assistant-speaking'),
       Math.min(12000, Math.max(3000, LINES[current].text.split(/\s+/).length * 230)));
-    if (!muted) voice.play(current, () => panel.classList.remove('assistant-speaking'));
   }
   function showStep(id: LineId): void {
     if (skipped || disposed || seen.has(id)) return;
@@ -77,7 +83,7 @@ export function createTutorial(root: HTMLElement, session: GameSession): Tutoria
     collapse.setAttribute('aria-expanded', String(!collapsed));
     collapse.setAttribute('aria-label', collapsed ? 'Expand tutorial' : 'Collapse tutorial');
     collapse.textContent = collapsed ? 'Expand' : 'Collapse';
-    if (collapsed) stopSpeaking(); else speak();
+    if (collapsed) stopFace(); else animateFace();
   };
   const onMute = () => {
     muted = !muted; mute.setAttribute('aria-pressed', String(muted)); mute.textContent = muted ? 'Unmute voice' : 'Mute voice';
@@ -91,7 +97,7 @@ export function createTutorial(root: HTMLElement, session: GameSession): Tutoria
   return {
     dispose() {
       if (disposed) return; disposed = true;
-      unsubscribe(); stopSpeaking(); seen.clear();
+      unsubscribe(); stopSpeaking(); voice.dispose(); seen.clear();
       next.removeEventListener('click', onNext); skip.removeEventListener('click', onSkip); mute.removeEventListener('click', onMute);
       collapse.removeEventListener('click', onCollapse);
       panel.remove();

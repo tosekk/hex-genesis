@@ -21,7 +21,7 @@ Keep effects short, with no leading silence or hard clipping. The module handles
 | `sfx/win.mp3` | `runEnded`, status `won` | ~3 s | A modest hopeful victory cadence, soft orchestral woodwinds and shimmering chimes, calm planet restored, no bombast. |
 | `sfx/end.mp3` | `runEnded`, any other status | ~3 s | A peaceful closing cadence, warm felt piano and airy decay, reflective rather than sad or punitive. |
 
-`vo/*.mp3` is separate optional tutorial narration; its exact scripts are in `src/tutorial/VO_SCRIPT.md`. Game audio mute controls music/SFX only; the tutorial has its own voice mute.
+`vo/*.mp3` is separate optional tutorial narration; its exact scripts are in `src/tutorial/VO_SCRIPT.md`. Sound mute/volume controls music, SFX and tutorial voice; the tutorial also has its own voice mute.
 
 Opus integration, after creating the session and before `session.newRun`:
 

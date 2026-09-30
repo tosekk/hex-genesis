@@ -4,6 +4,10 @@ import type { GameSession, SessionEvent } from '../core/contracts';
 import { makeTestState } from '../core/testing';
 import { createAudio } from './audio';
 import { audioSettings } from './settings';
+import { createGameSession } from '../game/session';
+import { createJournalHud } from '../ui/v2/journalHud';
+import { createOfferFx, FX_TIMING } from '../fx/offerSpheres';
+import type { BoardView } from '../core/contracts';
 
 const optional = vi.hoisted(() => ({ assets: {} as Record<string, string> }));
 vi.mock('./assets', () => ({ AUDIO_ASSETS: optional.assets }));
@@ -141,4 +145,26 @@ describe('optional game audio', () => {
     expect(players.every(player => player.onended === null && player.onerror === null)).toBe(true);
     expect(s.listeners.size).toBe(0); expect(s.root.children).toHaveLength(0);
   });
+});
+
+it('loops and ducks music, respects the Sound menu, and fires one pick cue with real offer spheres', async () => {
+  vi.useFakeTimers();
+  const root = document.createElement('div'); root.id = 'ui'; document.body.append(root);
+  const session = createGameSession({ now: () => 0 });
+  const board: BoardView = { setBoard: vi.fn(), refreshHex: vi.fn(), playReveal: vi.fn(), setCores: vi.fn(),
+    setHighlights: vi.fn(), update: vi.fn(), resize: vi.fn(), dispose: vi.fn(), onPointer: () => () => {} };
+  const hud = createJournalHud(root, session, board, { createJournal: null, createOfferFx: node => createOfferFx(node, { reducedMotion: true }) });
+  const audio = createAudio(root, session, { controls: false }); disposals.push(hud.dispose, audio.dispose, () => vi.useRealTimers());
+  const choose = vi.spyOn(session, 'chooseOffer'); session.newRun(1); expect(players).toHaveLength(0);
+  document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+  const music = players.find(p => p.loop)!; expect(music.loop).toBe(true); expect(music.volume).toBeCloseTo(.55 * .32 * .25);
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: '2', bubbles: true }));
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: '1', bubbles: true }));
+  expect(choose).toHaveBeenCalledTimes(1); expect(players.filter(p => p.source.endsWith('offer_pick.mp3'))).toHaveLength(1);
+  expect(players.filter(p => p.source.endsWith('offer_open.mp3'))).toHaveLength(1); expect(music.volume).toBeCloseTo(.55 * .32);
+  await vi.advanceTimersByTimeAsync(FX_TIMING.fade + 1);
+  root.querySelector<HTMLButtonElement>('.menu-btn')!.click(); root.querySelector<HTMLButtonElement>('.menu-mute')!.click();
+  expect(music.paused).toBe(true); const count = players.length; session.newRun(7); expect(players).toHaveLength(count);
+  root.querySelector<HTMLButtonElement>('.menu-btn')!.click(); root.querySelector<HTMLButtonElement>('.menu-mute')!.click();
+  expect(players.at(-1)!.loop).toBe(true); expect(players.at(-1)!.volume).toBeCloseTo(.55 * .32 * .25);
 });

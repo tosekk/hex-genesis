@@ -1,3 +1,5 @@
+Designer QA: Item 2 — reload without clicking: no voice request until your first click/key. Place a core and let the note collapse: spread/building narration still plays. In ⚙, change Volume during speech, then Sound off: voice/music/SFX stop and new lines stay silent. Select a building card, click dead land: the card/deck stay selected; Esc clears them. Reshuffle/pick spheres: one cue per offer/pick.
+
 Designer QA: Item 1 — reload the game, click once, choose a biome and place a core; music, offer/spread sounds and voice should load. Network MP3 URLs should be hashed assets/ paths, never audio/ paths.
 
 ## Morning summary
@@ -18,9 +20,10 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-Night item 1 DONE: all 19 MP3s + AUDIO_LIST moved to src/assets/audio; both globs repointed. Dist SHA-256 multiset matches source exactly (19 MP3s, one copy each), 5.88 MB; no public-directory warnings. Discovery regression covers every expected recording. Night queue 1→2→3→4; item 6 only if designer GLBs arrive. Revised ownership read: no main.ts/app/index/sim/tests edits; designer does browser QA.
+Night item 2 DONE: live Sound mute/volume for narration; first-gesture queue with latest-line-only/policy retry and disposal; collapsed new steps narrate without replay on expand; sticky dead/natural clicks preserve card/deck. Music loop/duck/mute and single sphere pick cues covered by a real-session DOM integration test. 67 audio/tutorial/v2 tests and typecheck pass. N11 helper commit `6e8c7f9` landed during tests; owned test fixtures now choose non-core building tiles and isolate Free/unaffordable cases from parallel cost tuning. Next: item 3, V16(b)(c). No main/app/index/sim/tests edits.
 
 ## Done
+- Night 1 — source audio relocation (19 MP3s + manifest), both discovery globs, all-file resolution regression; 22 audio/tutorial tests + typecheck; Vite build 5.88 MB, SHA-256 proves one emitted copy per recording, no public-directory warnings — `206e815`.
 - V15 verification — missing-audio tutorial test supplies an empty recording map, independent of designer VO file drops; no runtime/audio/asset changes. All 91 owned tests / 20 files, typecheck pass — `e1457f2`.
 - V15 — committed sphere module integrated, measured triangle/corner, reshuffle update, single choose command, resolve input guard, cancellation epoch, simple modal fallback; 35 UI tests/typecheck/main production build — `feefa3d`.
 - V15 — real journal book (`115135d`/`cf87d9e`): 📖 and J toggle open/close via isOpen, self-subscription retained, Escape preserves selection, blocked placement/help, reset/dispose, Tab release across modal, book tab margin/icons; 30 UI tests + typecheck — `fd3cd7a`.
@@ -64,6 +67,7 @@ Night item 1 DONE: all 19 MP3s + AUDIO_LIST moved to src/assets/audio; both glob
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
+- Night 2 / §46: collapse changes visual expansion only; each new step narrates once, while expanding does not replay it. Global mute or zero volume stops/drops the active/queued line; unmute does not replay stale guidance. Policy rejection keeps only the current line for the next gesture. Next/Skip/run end/dispose cancel it.
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
 - V14 / UI_SPEC §1/§6: reuse Sonnet's already committed `src/ui/v2/fonts.css` (Patrick Hand/Nunito + adjacent OFL licenses); fonts currently live in his bundled UI directory, not `public/assets/fonts/`. CSS imports the existing faces without duplicating assets or changing his paths. System font fallbacks remain. No tutorial copy, VO IDs, commands, triggers, mute/collapse semantics changed.
 - §2/§7: presentation dimensions, colors, and placeholder shapes live only in renderer helpers; no simulation or config values are changed.

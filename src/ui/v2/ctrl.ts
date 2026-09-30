@@ -227,6 +227,11 @@ export class Ctrl {
     if (this.shiftHeld && this.lastBuilt !== null) { this.quickBuild(pick); return; }
     if (pick.slot !== null && s.hexes[pick.hexId]?.slots[pick.slot]?.building !== null) { this.selectSlot(pick.hexId, pick.slot); return; }
     if (this.card?.kind === 'building') {
+      const hex = s.hexes[pick.hexId];
+      if (!hex?.placeable || hex.biome === null) {
+        this.hex = null; this.slot = null;
+        this.fail(pick.hexId, 'Choose terraformed land for this building.'); this.sync(); return;
+      }
       const slot = this.targetSlot(pick);
       if (slot === null) { this.fail(pick.hexId, 'All slots on this tile are full.'); return; }
       this.hex = pick.hexId; this.slot = null;

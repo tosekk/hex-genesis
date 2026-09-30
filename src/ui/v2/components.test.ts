@@ -52,7 +52,7 @@ describe('journal component contract states', () => {
     tile.biome = null; s.ctrl.selectHex(tile.id); tri.render(); expect(s.root.querySelector('.j-biome.selected')).toBeNull();
   });
   it('labels zero-cost buildings Free in detail and hover notes', () => {
-    const s = setup(); s.ctrl.selectBiome('forest'); s.ctrl.clickCard({ kind: 'building', id: 'hillside_mine' });
+    const s = setup(); s.state.config.buildings.hillside_mine.cost = {}; s.ctrl.selectBiome('forest'); s.ctrl.clickCard({ kind: 'building', id: 'hillside_mine' });
     const detail = createDetail(s.root, s.session, s.ctrl), deck = createDeck(s.root, s.session, s.ctrl); disposals.push(detail.dispose, deck.dispose);
     expect(s.root.querySelector('.j-detail')?.textContent).toContain('Cost: Free');
     s.root.querySelector<HTMLButtonElement>('[data-building="hillside_mine"]')!.focus();
@@ -73,7 +73,7 @@ describe('journal component contract states', () => {
     for (let seed = 1; seed <= 20; seed++) { s.session.newRun(seed); if (s.session.state.pendingOffer!.options.includes('forest')) break; }
     const index = s.session.state.pendingOffer!.options.indexOf('forest'); expect(index).toBeGreaterThanOrEqual(0);
     s.session.chooseOffer(index as 0 | 1); s.session.placeCore(legalCoreSites(s.session.state)[0]); s.session.advance(s.session.state.config.animation.spreadMaxMs);
-    const h = s.session.state.hexes.find(h => h.placeable && h.biome === 'forest')!;
+    const h = s.session.state.hexes.find(h => h.placeable && h.biome === 'forest' && !s.session.state.cores.includes(h.id))!;
     expect(s.session.placeBuilding(h.id, 0, 'lumber_camp').ok).toBe(true);
     // Unaffordable building cards remain selectable for preview.
     const ctrl = new Ctrl(s.session, s.board); disposals.push(() => ctrl.dispose()); ctrl.selectSlot(h.id, 1);

@@ -32,9 +32,10 @@ describe('tutorial driven by real session events', () => {
     const roster = session.state.config.rosters[biome];
     const pair = session.state.config.combos.find(recipe => recipe.buildings.length === 2 && recipe.buildings.every(id => roster.includes(id)))!;
     expect(pair).toBeDefined();
-    expect(session.placeBuilding(origin, 0, pair.buildings[0]).ok).toBe(true);
+    const buildingHex = session.state.hexes.find(hex => hex.placeable && hex.biome === biome && !session.state.cores.includes(hex.id))!.id;
+    expect(session.placeBuilding(buildingHex, 0, pair.buildings[0]).ok).toBe(true);
     expect(panel.dataset.line).toBe('buildings');
-    const combo = session.placeBuilding(origin, 1, pair.buildings[1]);
+    const combo = session.placeBuilding(buildingHex, 1, pair.buildings[1]);
     expect(combo.ok).toBe(true);
     if (combo.ok) expect(combo.value.payouts.some(payout => payout.kind === 'pair')).toBe(true);
     expect(panel.dataset.line).toBe('combos');
@@ -44,7 +45,7 @@ describe('tutorial driven by real session events', () => {
       arctic: { wood: 'driftwood_camp', stone: 'scree_quarry' },
     };
     for (let placements = 0; !session.state.pendingOffer && placements < 60; placements++) {
-      const tile = session.state.hexes.find(hex => hex.placeable && hex.biome === biome && hex.slots.some(slot => !slot.building))!;
+      const tile = session.state.hexes.find(hex => hex.placeable && hex.biome === biome && !session.state.cores.includes(hex.id) && hex.slots.some(slot => !slot.building))!;
       expect(tile).toBeDefined();
       const slot = tile.slots.findIndex(slot => !slot.building) as SlotIndex;
       const target = session.state.config.thresholds[0];

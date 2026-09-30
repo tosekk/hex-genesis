@@ -4,6 +4,7 @@ const journalStyles = readFileSync('src/ui/v2/styles.css', 'utf8');
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
 import { createOfferFx, FX_TIMING, type OfferFx } from '../../fx/offerSpheres';
+import { DEFAULT_CONFIG } from '../../config';
 import { createGameSession } from '../../game/session';
 import { legalCoreSites } from '../../sim/spread/spread';
 import { createJournalHud, type JournalDeps } from './journalHud';
@@ -12,7 +13,7 @@ import { createHud, createLegacyHud } from '../hud';
 const disposals: (() => void)[] = [];
 afterEach(() => { disposals.splice(0).forEach(off => off()); document.body.replaceChildren(); vi.useRealTimers(); vi.restoreAllMocks(); });
 export function fixture(startBefore = false, deps: JournalDeps = {}) {
-  const session = createGameSession({ now: () => 0 });
+  const session = createGameSession({ now: () => 0, config: structuredClone(DEFAULT_CONFIG) });
   let pointer: ((pick: BoardPick | null, kind: PointerKind) => void) | null = null;
   const board: BoardView = { setBoard: vi.fn(), refreshHex: vi.fn(), playReveal: vi.fn(), setCores: vi.fn(),
     setHighlights: vi.fn(), setSlotHighlight: vi.fn(), update: vi.fn(), resize: vi.fn(), dispose: vi.fn(),
@@ -114,7 +115,7 @@ function restoredFixture() {
   const s = fixture(); s.click('.offer-overlay [data-index="0"]');
   s.click('[data-card="core"]'); s.pointer({ hexId: legalCoreSites(s.session.state)[0], slot: null });
   s.session.advance(s.session.state.config.animation.spreadMaxMs);
-  const tile = s.session.state.hexes.find(h => h.placeable && h.biome !== null && h.slots.length === 3)!;
+  const tile = s.session.state.hexes.find(h => h.placeable && h.biome !== null && !s.session.state.cores.includes(h.id) && h.slots.length === 3)!;
   const id = s.session.state.config.rosters[tile.biome!][0];
   return { ...s, tile, id };
 }
@@ -144,7 +145,9 @@ describe('journal placement flows through real session commands', () => {
   it('retains the slot and card on failed placements and cancels invalid timers on restart', () => {
     vi.useFakeTimers(); const s = restoredFixture();
     s.pointer({ hexId: s.tile.id, slot: 0 });
-    const id = s.session.state.config.rosters[s.tile.biome!].find(id => Object.entries(s.session.state.config.buildings[id].cost).some(([r, v]) => (s.session.state.resources[r] ?? 0) < v))!;
+    const id = s.session.state.config.rosters[s.tile.biome!][0], resource = s.session.state.config.resources[0];
+    s.session.state.config.buildings[id].cost = { [resource]: (s.session.state.resources[resource] ?? 0) + 1 };
+    s.pointer({ hexId: s.tile.id, slot: 0 });
     expect(id).toBeTruthy(); s.click(`[data-building="${id}"]`);
     expect(s.tile.slots[0].building).toBeNull(); expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith({ hexId: s.tile.id, slot: 0 });
     const notice = s.root.querySelector<HTMLElement>('.j-notice')!; expect(notice.hidden).toBe(false);
@@ -336,4 +339,18 @@ describe('committed offer sphere integration', () => {
     t.click('[data-card="core"]'); expect(t.root.querySelector('.j-card.core.selected')).not.toBeNull();
     t.session.newRun(7); expect(t.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false);
   });
+});
+
+it('keeps a sticky building card and its deck after clicking dead or natural land', () => {
+  const s = restoredFixture(); s.click(`[data-building="${s.id}"]`);
+  const biome = s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome;
+  const build = vi.spyOn(s.session, 'placeBuilding');
+  for (const tile of [s.session.state.hexes.find(h => h.biome === null)!, s.session.state.hexes.find(h => !h.placeable)!]) {
+    s.pointer({ hexId: tile.id, slot: null });
+    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome).toBe(biome);
+    expect(s.root.querySelector(`[data-building="${s.id}"].selected`)).not.toBeNull();
+    expect(s.root.querySelector('.j-deck-prompt')).toBeNull(); expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null);
+  }
+  expect(build).not.toHaveBeenCalled();
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
 });
