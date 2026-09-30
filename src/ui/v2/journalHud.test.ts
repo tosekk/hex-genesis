@@ -74,3 +74,12 @@ describe('journal biome selection', () => {
     expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
   });
 });
+
+it('labels all four fixed-width resource pills and retains full-value tooltips', () => {
+  const s = fixture();
+  const pills = [...s.root.querySelectorAll<HTMLElement>('.j-pill')];
+  expect(pills).toHaveLength(4);
+  expect(pills.map(p => p.querySelector('.j-resource-name')?.textContent)).toEqual(['Wood', 'Stone', 'Water', 'Food']);
+  for (const p of pills) expect(p.title).toContain(`lifetime ${s.session.state.lifetime[p.dataset.resource!] ?? 0}`);
+  expect(s.root.querySelector<HTMLElement>('.j-top')!.style.width).toBe('448px');
+});

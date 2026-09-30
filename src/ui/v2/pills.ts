@@ -15,8 +15,10 @@ export function createPills(root: HTMLElement, session: GameSession) {
       const pill = el('div', 'j-pill');
       pill.dataset.resource = r;
       if (prev[r] !== undefined && prev[r] !== v) pill.classList.add('pulse');
-      pill.append(icon(r, cap(r)), el('span', 'j-amt', String(v)), el('small', 'j-life', `lifetime ${s.lifetime[r] ?? 0}`));
-      pill.title = cap(r);
+      const figures = el('div', 'j-pill-figures');
+      figures.append(el('small', 'j-resource-name', cap(r)), el('span', 'j-amt', String(v)), el('small', 'j-life', `total ${s.lifetime[r] ?? 0}`));
+      pill.append(icon(r, cap(r)), figures);
+      pill.title = `${cap(r)}: ${v} · lifetime ${s.lifetime[r] ?? 0}`;
       bar.appendChild(pill);
       prev[r] = v;
     }

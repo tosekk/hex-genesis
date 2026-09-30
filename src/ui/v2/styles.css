@@ -20,7 +20,7 @@
 .jhud .icon { display:inline-flex; align-items:center; justify-content:center; width:1.25em; height:1.25em; }
 .jhud .icon img { width:100%; height:100%; display:block; }
 .jhud .icon-missing { width:auto; font-size:.85em; font-weight:800; }
-.jhud h2, .jhud .j-head, .jhud .j-tcard-head, .jhud .j-detail-title b, .jhud .j-pill .j-amt { font-family:'Patrick Hand', 'Segoe Print', cursive; font-weight:400; }
+.jhud h2, .jhud .j-head, .jhud .j-tcard-head, .jhud .j-detail-title b { font-family:'Patrick Hand', 'Segoe Print', cursive; font-weight:400; }
 
 .jhud .j-panel, .jhud .panel {
   background:
@@ -46,12 +46,14 @@
 .jhud .card.selected, .jhud .j-card.selected { box-shadow:0 0 0 3px var(--marker); }
 
 /* --- top: resource pills --- */
-.j-top { position:absolute; top:10px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; }
-.j-pills { display:flex; gap:8px; }
-.j-pill { display:flex; align-items:center; gap:6px; background:var(--paper); border:2px solid var(--ink); border-radius:18px 20px 17px 19px; padding:3px 12px 3px 8px; box-shadow:1px 2px 0 rgba(46,42,37,.35); }
-.j-pill .icon { width:26px; height:26px; }
-.j-amt { font-size:26px; line-height:1; min-width:1.4em; text-align:right; }
-.j-life { font-size:12px; color:var(--ink2); }
+.j-top { position:absolute; top:10px; left:50%; transform:none; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.j-pills { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); width:100%; gap:8px; }
+.j-pill { display:flex; align-items:center; gap:4px; min-width:0; height:60px; background:var(--paper); border:2px solid var(--ink); border-radius:18px 20px 17px 19px; padding:3px 6px; box-shadow:1px 2px 0 rgba(46,42,37,.35); }
+.jhud .j-pill .icon { flex:none; width:24px; height:24px; }
+.j-pill-figures { min-width:0; display:flex; flex-direction:column; }
+.j-resource-name { font-size:12px; line-height:14px; font-weight:800; }
+.j-amt { font-family:'Nunito', system-ui, sans-serif; font-variant-numeric:tabular-nums; font-size:22px; line-height:24px; font-weight:800; overflow:hidden; text-overflow:ellipsis; }
+.j-life { font-size:12px; line-height:14px; color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .j-pill.pulse { animation:j-pulse .45s ease-out; }
 @keyframes j-pulse { 0% { transform:scale(1.14); background:var(--marker); } 100% { transform:none; } }
 
@@ -138,7 +140,7 @@
 
 /* --- shared bits --- */
 .j-notice { position:fixed; background:var(--bad); color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700; pointer-events:none !important; z-index:30; }
-.jhud .toasts { position:absolute; top:70px; left:50%; transform:translateX(-50%); pointer-events:none !important; }
+.jhud .toasts { position:absolute; top:108px; left:50%; transform:translateX(-50%); pointer-events:none !important; }
 .jhud .toast { background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:3px; padding:5px 14px; font-weight:800; font-size:16px; box-shadow:2px 3px 0 rgba(46,42,37,.3); transform:rotate(-1.2deg); }
 .jhud .toast-base { border-left:6px solid var(--good); }
 .jhud .toast-pair, .jhud .toast-triple { border-left:6px solid var(--accent); }

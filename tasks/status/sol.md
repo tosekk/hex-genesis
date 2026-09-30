@@ -94,7 +94,8 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- V15 bug 6 ready: no implicit Forest deck; initial/cleared/dead-tile selection shows a prompt. Resolving an offer selects its biome with a matching triangle ring. Choosing a biome clears stale tile/slot and incompatible cards. Real-session regression added; seven UI tests and typecheck pass. Hash recorded after commit.
+- V15 bug 7 ready: four named resource pills fit a fixed 448×60 reservation; amounts use Nunito/tabular figures, lifetime stays small, overflow retains full tooltips. Toasts start below the pills/hint. Eight UI tests and typecheck pass. Hash recorded after commit.
+- V15 bug 6 ready: no implicit Forest deck; initial/cleared/dead-tile selection shows a prompt. Resolving an offer selects its biome with a matching triangle ring. Choosing a biome clears stale tile/slot and incompatible cards. Real-session regression added; seven UI tests and typecheck pass. Commit `39ecab0`.
 - V15 bug 5 ready: triangle has a fixed 232×224 reservation with a 16 px board-edge margin; all six labels sit outside their circles, mixed circles are smaller, and the selected yellow ring remains colored even when its icon is grey. Pure bounds tests cover every circle and label. Six UI tests and typecheck pass. Commit `dff8554`.
 - **V15 bug 4 ready:** compact one-line future-threshold chips/pinned goal; ResizeObserver places tutorial below the measured stack. Later guidance auto-collapses once; explicit expansion uses the free board area (left of triangle, above deck), avoiding long-note scrolling and detail collisions. Fixed 1280×720 / 1024×640 panel reservations tested pairwise; real observer used in browser. No CSS zoom for layout math (triangle cleanup next). First note remains expanded; user expansion persists. Tutorial/VO text unchanged. Commit `2a65fa8`.
 
