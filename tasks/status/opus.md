@@ -3,7 +3,7 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O6.4, waiting for astra's N7 commit (economy v3, 8 thresholds). Then: autoplay + pacing re-run and a full browser run to a win.
+IN PROGRESS: O6.4. N7 round 1 (`cf27db5`) checked (preliminary, see Integration log); waiting for astra's FINAL N7 round + recommended seed. Then: autoplay + pacing re-run and a full browser run to a win.
 O6.1 packaging ✅ `fc24fda` · O6.2 audio wiring ✅ `fc24fda` · O6.3 reviews ✅ (D4, N4, N6 all PASS; see Integration log).
 
 ## Done
@@ -66,6 +66,17 @@ O6.1 packaging ✅ `fc24fda` · O6.2 audio wiring ✅ `fc24fda` · O6.3 reviews 
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O6.4 preliminary: N7 round 1 `cf27db5`** (clean `git archive` export, so astra's uncommitted round-2 edits are excluded). Autoplay on the real map: seeds 1–5 all WIN, invariants hold, replay deterministic. Cumulative placements per threshold, median of seeds 1–5 (my sensible-greedy bot, NOT astra's combo bot) vs v3 targets:
+
+  | | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | board full |
+  |---|---|---|---|---|---|---|---|---|---|
+  | v3 target (±20%, T1 exempt) | 7 | 22 | 45 | 90 | 160 | 270 | 360 | 450 | — |
+  | real map, round 1 | 6 | 18 | 45 | **117** | 177 | **351** | 409 | 484 | 591–639 |
+  | flat map (`npm run pacing`) | 5 | 16 | 35 | 81 | 199 | 352 | 405 | 527 | 840 |
+
+  - Out of band: T4 and T6 (+30%). T8 arrives before board fill on every seed (the v3 requirement).
+  - T1 varies from 4 to 17: seeds 3/4 need 17 placements. The first threshold is stone-only (`{ wood: 0, stone: 16 }`), and those seeds' opening biome yields little stone.
+  - The final numbers and the browser win run come after N7 is final.
 - **O6.3 independent reviews (morning):**
   - **N6 `4eacde4` (preview without full-state clone): PASS.**
     - Code read: every write in `placeBuilding` (`resources`/`lifetime` reassigned; target `slots[]`, `pairPaid[]`, `triplePaid`, `everCompleted`; `discoveredCombos.push`; `adjacencyPaid[key]=`) lands on an object the preview copies. Neighbours, config, and spread are read-only.
