@@ -43,6 +43,9 @@ describe('journal component contract states', () => {
     const tri = createTriangle(s.root, s.session, s.ctrl); disposals.push(tri.dispose);
     s.ctrl.selectSlot(tile.id, 1); tri.render();
     expect(s.root.querySelector<HTMLElement>('.j-biome.selected')?.dataset.biome).toBe('taiga');
+    s.ctrl.handleEvent({ type: 'offerResolved', biome: 'arctic' }); tri.render();
+    expect(s.ctrl.hex).toBe(tile.id); expect(s.ctrl.slot).toBe(1);
+    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')?.dataset.biome).toBe('taiga');
     expect(s.root.querySelector<HTMLButtonElement>('[data-biome="taiga"]')!.disabled).toBe(false);
     expect(s.root.querySelector<HTMLButtonElement>('[data-biome="steppe"]')!.disabled).toBe(true);
     expect(s.root.querySelector('[data-biome="taiga"] .j-badge')).toBeNull();

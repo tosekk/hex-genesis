@@ -256,7 +256,10 @@ export class Ctrl {
         this.card = null; this.hex = null; this.slot = null; this.biome = null; this.lastBuilt = null;
         this.finderToggled = false; this.tabHeld = false;
         break;
-      case 'offerResolved': this.biome = e.biome; break;
+      case 'offerResolved':
+        // The opening offer chooses a deck; later offers preserve the tile/card focus.
+        if (this.hex === null && this.card === null) this.biome = e.biome;
+        break;
       case 'runEnded':
         this.clearInvalid(); this.card = null; this.hex = null; this.slot = null; this.biome = null; this.finderToggled = false; this.tabHeld = false; break;
       case 'offerShown': case 'spreadStarted':
