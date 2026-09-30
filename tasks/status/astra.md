@@ -171,6 +171,11 @@ D4 regressions cover connected mountain count/size variety, hill/placeable distr
 
 ## Balance log
 
+### N8 v4 round 3 — last-core wood gate
+- Round 2 committed `d010e37`. T7 wood **650→550**; every other number unchanged. Seed41 is the only late T7 run, with wood556 and all other T7 requirements already met at its T6 (356/597 slots). Matching T6 wood while retaining higher T7 stone/water/food allows its next transaction to award the last core just under60%. Non-decreasing thresholds explicitly permit equality.
+
+- Results: **50/50 combo wins, 46/50 spam losses**, no combo opening stalls or detected false declarations. Median win use **69.28%**. Targets **1/2/3/4/6 PASS**, **5 MISS**. T7 median/max **37.60/59.80%**, all50 before60%; seed41 earns it at357/597 slots. Ten harness checks pass (136.05s including replay). Preserve this configuration as the safe candidate while using remaining rounds on lowest-priority stock pressure.
+
 ### N8 v4 round 2 — earlier last cores
 - Round 1 committed `b348140`. Keep its costs and final goal. T6 W/S/A/F **850/740/550/120→550/470/270/120**; T7 **1050/920/690/220→650/550/350/150**. Round 1 had 25 late T7 seeds (max89.45%); bring both gates forward, without changing T8, to test core timing while preserving higher-priority 50 wins/46 spam losses and median69.47% winning board use.
 
