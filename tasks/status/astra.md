@@ -171,6 +171,11 @@ D4 regressions cover connected mountain count/size variety, hill/placeable distr
 
 ## Balance log
 
+### N8 v4 round 2 — earlier last cores
+- Round 1 committed `b348140`. Keep its costs and final goal. T6 W/S/A/F **850/740/550/120→550/470/270/120**; T7 **1050/920/690/220→650/550/350/150**. Round 1 had 25 late T7 seeds (max89.45%); bring both gates forward, without changing T8, to test core timing while preserving higher-priority 50 wins/46 spam losses and median69.47% winning board use.
+
+- Results: **50/50 wins, 46/50 spam losses**, zero combo opening stalls/false declarations; median win board use **69.28%**. Targets **1/2/3/4 PASS**, **5/6 MISS**. T7 median/max improves **59.43/89.45%→37.86/68.34%**; only seed41 remains late. Its T6 is placement356 (59.63%), held lifetime wood556; T7 waits for wood650 until placement408. All ten harness checks pass.
+
 ### N8 v4 round 1 — opening repairs
 - Preparation committed `fb652be`; S8 prerequisite `c63b56d` is present. Starting from selected v3, Hillside Mine cost wood **2→0**, Oasis Well cost stone **3→1**. Starting stock, yields, rewards and thresholds unchanged. These exact failures exhausted seed 35 wood and seed 37 stone after three placements; zero-cost mining and cost-neutral well stone allow the fixed greedy policy to finish high-yield sites and continue. Both are within v4 costs 0–8; lowest-priority spending pressure may worsen and will be reported.
 - Results: **50/50 combo wins**, **46/50 spam losses**, zero detected false soft-locks, zero combo opening stalls (35/37 now win at 440/429 placements), median winning board use **69.47%**. Targets **1/2/3/4 PASS**, **5/6 MISS**; T7 median/max **59.43/89.45%**, 25 late seeds. Spam seeds 5/18 win, 23/35 are unproven stalls and excluded from losses. Stock-pressure worst checkpoint median ratio is infinite (positive stock, zero resource cost).
