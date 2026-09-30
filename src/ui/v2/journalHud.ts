@@ -100,13 +100,16 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
         pills.reset(); toasts.clear(); offer.hide(); end.hide(); topRight.hideConfirm(); renderAll();
         help.maybeAutoShow();
         break;
-      case 'offerShown': offer.show(e.offer); renderAll(); break;
+      case 'offerShown': help.hide(); offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
       case 'payouts': toasts.push(e.events); pills.render(); break;
       case 'runEnded': offer.hide(); topRight.hideConfirm(); renderAll(); end.show(e.stats); break;
       default: pills.render();
     }
   });
+
+  // Mounting after newRun must recover the current modal, not wait for another event.
+  if (session.state.pendingOffer) offer.show(session.state.pendingOffer);
 
   return {
     dispose() {

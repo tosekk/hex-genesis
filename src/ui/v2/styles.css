@@ -27,7 +27,13 @@
 .jhud .btn:hover:not(:disabled), .jhud .j-btn:hover:not(:disabled) { background:#f0e3c4; }
 .jhud .btn.primary { background:var(--accent); color:#fff; font-weight:800; }
 .jhud .btn.danger, .jhud .j-btn.danger { background:#efc9bd; }
-.jhud .overlay { background:rgba(30,24,16,.55); }
+.jhud .overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(30,24,16,.55); z-index:100; }
+.jhud .modal { box-sizing:border-box; max-width:min(620px,calc(100vw - 48px)); max-height:calc(100dvh - 48px); overflow:auto; display:flex; flex-direction:column; gap:12px; text-align:center; }
+.jhud .modal h2 { margin:0; font-size:26px; }
+.jhud .card-icon .icon { width:48px; height:48px; margin:0; }
+.jhud .card-title { font-size:18px; font-weight:800; }
+.jhud .card-roster { font-size:12px; line-height:1.4; }
+.jhud .card-key { font-size:12px; }
 .jhud .card.selected, .jhud .j-card.selected { box-shadow:0 0 0 3px var(--marker); }
 
 /* --- top: resource pills --- */
