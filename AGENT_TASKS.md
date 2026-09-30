@@ -424,9 +424,12 @@ At minimum, verify these cases.
 
 ### Win / end
 
-1. Win triggers when no legal core site remains, no spread is active, and every slot on every terraformed placeable hex is occupied.
-2. Leftover unreachable dead land does not block the win.
-3. A held core with no legal core site does not block automatic loss or the win.
+*(Updated 2026-09-30 for the new §41 win rule.)*
+
+1. Win triggers in the same transaction that meets every target of the **final** threshold. No core or offer is awarded for it.
+2. Empty slots, remaining legal core sites, held cores and an active spread do not block the win.
+3. Board full (no empty slot on any terraformed placeable hex), no usable core site, no spread, no pending offer, final threshold unmet → automatic loss (§42).
+4. No automatic loss while any yield-producing placement exists, including via demolition refunds (§43, §44).
 
 ---
 

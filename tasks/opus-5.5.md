@@ -142,3 +142,12 @@ Start once `session`, `boardView`, and `hud` are no longer stubs. Iterate as the
 2. **Loading feel:** a minimal loading indicator in `index.html` that disappears once the first frame renders (the bundle is > 500 kB).
 3. **itch page draft** in `README.md` under "itch.io page": a 2–3 sentence pitch; how to play (the core loop in 5 bullets); controls; a credits and AI-usage section per GAME_DESIGN §47 (AI-assisted coding by the 4 agents; generated graphics/models if any; ElevenLabs/Suno audio if the designer adds it). Use the placeholder name **"<GAME NAME>"**; the designer hasn't picked one yet.
 4. Then continue with O6.4 once astra's `N7` final commit lands.
+
+## O8 — Follow the new win rule (P0, designer decision)
+
+GAME_DESIGN §41 changed (win = final threshold; loss = out of room). Sonnet implements the rule (S8), astra re-tunes (N8), sol updates the tutorial (V9).
+1. **Now:**
+   - update `tests/e2e/**` (the autoplay bot's stop conditions and `assertInvariants`) to the new rule;
+   - update `README.md`: how to play, the itch.io page draft, and the goal line "Reach the final threshold before you run out of room".
+2. **After `[sonnet] S8`:** run the e2e suite and a browser run on the seed sonnet or astra used. Check that the win screen appears the moment T8 is reached, even mid-spread, and that a spam-only run ends in a loss screen (use a seed and a quick-build spam).
+3. **After astra's final N8 round:** re-run autoplay, rebuild `npm run package`, verify it in your itch iframe page, and log the results. Route bugs to their owners.

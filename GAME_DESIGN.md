@@ -26,7 +26,9 @@ The basic progression loop is:
 
 **Biome offer → choose biome → place terraformer core → biome spreads → construct buildings → earn resources/yield → reach threshold → receive next core + biome offer → repeat.**
 
-The run ends when the board is fully developed (see §41), or when the player manually ends an unwinnable run / the game can safely determine the player is soft-locked.
+The run is **won by reaching the final progression threshold** (see §41). It is **lost when the board runs out of room** first: no remaining action can earn more yield (§42). The player can also end a run manually.
+
+> **Design change (2026-09-30, designer-approved):** the win condition changed from "fill every slot" to "reach the final threshold". Payout rules are unchanged. Because every slot and slot pair pays only once, the finite board becomes the challenge.
 
 ---
 
@@ -842,6 +844,8 @@ When lifetime yields reach the next threshold:
 - grant the next terraformer core (it stacks with any unplaced core, see §9);
 - show the biome offer immediately (§9).
 
+**Exception: the final threshold grants no core. Reaching it wins the run (§41).**
+
 Each threshold is a set of mandatory per-resource targets. All targets must be met.
 
 Example: the first threshold might require 100 wheat and 20 wood lifetime (if wheat exists as a resource).
@@ -882,21 +886,18 @@ Another core cannot be placed until the current spread finishes.
 
 # 41. Win Condition
 
-The player wins when all of these hold:
+*(Changed 2026-09-30 by the designer. The previous rule was "no legal core site remains, no spread active, every slot on every terraformed placeable hex occupied".)*
 
-1. no legal core site remains on the board (§10);
-2. no spread is active;
-3. every building slot on every terraformed placeable hex is occupied.
+The player **wins the moment the final progression threshold is reached**: every per-resource lifetime target of the last threshold is met. It is evaluated after the complete placement payout transaction (§29, §39), like any threshold.
 
-Dead land that no legal core site can still reach does not block the win.
-
-Unplaced cores are ignored for the win check when no legal core site remains.
-
-Natural unplaceable tiles do not require buildings.
+- An active spread, held cores, pending offers, empty slots and remaining legal core sites do **not** block the win.
+- Payout rules are unchanged: every slot, slot pair, slot triple and adjacent pair still pays at most once (§23, §31, §34). Board space is therefore finite, and the challenge is to reach the final threshold before running out of room.
 
 The end screen shows:
 
+- win or loss, and the number of thresholds reached;
 - lifetime total for each resource;
+- board used: occupied slots out of all slots on terraformed placeable hexes;
 - time taken;
 - seed.
 
@@ -910,8 +911,10 @@ There is no gameplay countdown timer.
 
 A run may end through:
 
-- automatic soft-lock detection;
+- automatic soft-lock detection (a **loss**);
 - manual End Run button.
+
+The typical loss under the §41 rule is **running out of room**: every slot on every terraformed placeable hex is occupied (or no empty slot can be afforded even with refunds), no legal core site can be used (none left, or no core held and none coming), no spread is active, no offer is pending, and the final threshold isn't met. Because slots and slot pairs never pay twice, no action can earn more yield. The existing conservative detector (§43, §44) covers this: it must still never declare a loss while a yield-producing action exists.
 
 Starting stock guarantees that the cheapest building belonging to each main biome is affordable.
 

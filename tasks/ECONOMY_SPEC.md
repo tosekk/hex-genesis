@@ -1,3 +1,37 @@
+# Economy Spec v4 — new win rule ("reach the final threshold before you run out of room")
+
+## v4 changes (2026-09-30 16:30) — these override everything below
+
+**Why:** in the designer's playtest (v3), the map was fully covered by T6, with 465 empty slots left and 200–280 of every resource stockpiled. There was no resistance, and no reason to plan a placement. **GAME_DESIGN §41 now says: win = reach the final threshold (T8). Loss = the board runs out of room first (§42).** Payout rules are **unchanged**: every slot, pair, triple and adjacent pair pays once. The finite board is the challenge; the numbers must make it bite.
+
+**Start from the v3 config** (`d5910a1`, round 3). **8 thresholds.** T1–T7 each award a core (8 cores including the starting one). T8 awards no core and wins.
+
+### v4 guardrails (wider; the designer asked for numbers to be retuned)
+
+| Item | Allowed |
+|---|---|
+| Building ids, names, rosters, combo recipes, payout **rules** (code), which buildings each terrain/zone modifier targets | **frozen** |
+| Building costs | 0–8 per resource. The §45 check stays: starting stock affords the cheapest building of each main biome |
+| Starting stock | free (fixing starving openings is now allowed) |
+| Base yields | 1–8 total per building |
+| Pair amounts / triple amounts | 3–10 / 8–20 total |
+| `adjacencyAmount` | 0–4 of each resource |
+| Terrain bonus / zone modifier amounts | ±1 from v3 |
+| Thresholds | exactly 8, non-decreasing per resource. T8 is the win |
+
+### v4 balance targets (seeds 1–50, real maps; priority 1 > 2 > 4 > 3 > 6 > 5)
+
+1. **Good play wins:** the combo bot wins (reaches T8) in **≥ 45/50**. Zero false soft-lock declarations while a yield-producing action exists.
+2. **Spam loses:** the spam bot runs out of room (board full or provably dead) **before T8** in **≥ 45/50**.
+3. **Tight but fair:** at the combo bot's win, the median **board use** is **65–85% of the map's placeable slots** (3 × placeable hexes).
+4. **No opening stalls:** no combo-bot run gets stuck with empty slots it can't afford before T2 (seeds 35/37 included).
+5. **Spending matters (lowest priority, report it):** between T3 and T7, the median held stock per resource stays **≤ 3× the most expensive cost** in that biome's roster. A stock of 280 wood against 2–6 costs is the problem to reduce.
+6. **Cores stay meaningful:** the combo bot reaches T7 (its last core) before using **60%** of the placeable slots.
+
+Humans plan better than a greedy bot, so "combo bot wins with ~75% of the board" means a good human wins with room to spare, and a spamming human runs out.
+
+---
+
 # Economy Spec v3 — designer-approved values + tuning guardrails
 
 ## v3 changes (2026-09-30 11:35) — these override the v2 sections below

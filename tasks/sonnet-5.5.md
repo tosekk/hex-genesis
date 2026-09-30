@@ -140,3 +140,23 @@ The win (§41) needs every slot on every terraformed placeable tile filled, with
 3. Add both to the help overlay. Tests for the counters (fake state), the Tab highlight on and off, and no highlight during core-placement mode.
 
 Commit `[sonnet] S7: …` and refresh your status.
+
+## S8 — New win rule in code + HUD (P0, designer decision; do first) — `src/sim/endgame.ts`, `src/game/**`, `src/ui/**`
+
+GAME_DESIGN **§41 changed**. Read §2, §39, §41, §42 and AGENT_TASKS §57 "Win / end". Win = reach the **final** threshold. Loss = the board runs out of room (the conservative detector). Payout rules are unchanged.
+1. **`checkWin`** (`src/sim/endgame.ts`): true iff `state.thresholdIndex >= config.thresholds.length` (every threshold consumed). Remove the old fill-every-slot logic.
+2. **`isProvablySoftLocked`:** keep it conservative (§43, §44). Make sure the "board full" case returns **true**: no empty slot on any terraformed placeable hex, no usable core (none held while a legal site exists), no spread, no offer, final threshold unmet. It must still return **false** whenever a yield-producing placement exists, including via refunds. Don't declare a loss just because resources are low while unpaid empty slots could be funded.
+3. **Session:** after `placeBuilding`, when `advanceThreshold` consumes the **final** threshold → **no `awardCore`, no offer**. Status `'won'` and `runEnded` in the same command. The end check order stays win → soft-lock. A held core or an active spread never blocks the win.
+4. **HUD:**
+   - **Goal line:** "Goal: reach threshold 8 · now N/8".
+   - **Win-progress readout:** replace it with "Slots left: X of Y · Legal core sites: M". Keep the Tab empty-slot finder.
+   - **Help overlay:** a one-line rule, "Reach the final threshold before you run out of room. Every slot and combo pays only once."
+   - **End screen:** win or loss, thresholds reached N/8, "board used X/Y slots (Z%)", plus the existing lifetime, time and seed. A loss reads "Out of room".
+5. **Tests:**
+   - endgame: a win on the final threshold with empty slots, a held core and an active spread;
+   - board full, T8 unmet → soft-locked;
+   - an empty affordable unpaid slot → not soft-locked;
+   - session: the final threshold gives no offer and `runEnded('won')` in the same command;
+   - UI: goal line and end-screen stats.
+
+   Astra rewrites its own acceptance tests in parallel. **Commit as early as possible:** astra's balance calibration waits for your `[sonnet] S8` commit.

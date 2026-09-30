@@ -180,3 +180,11 @@ At the top of `tasks/status/sol.md`, at most 12 lines: commits with hashes, fps 
 3. Update `release-kit/README.md` with how to use photo mode (URL flag, keys, output sizes).
 
 Commit `[sol] V7: …` and refresh your status "Current".
+
+## V9 — Tutorial text for the new win rule (P0, small) — `src/tutorial/**`
+
+GAME_DESIGN **§41 changed**: win = reach the final threshold (T8). Loss = the board runs out of room, because every slot and combo pays only once.
+- Rewrite the `progression` line: each threshold gives a new core, and the last one wins the run. Space is limited, so plan combos and use terrain bonuses. Filling tiles with one building type will run out of room.
+- In `buildings` or `combos`, one short hint: "Each slot and each combo pays only once. Choose placements that earn the most."
+- Update `VO_SCRIPT.md` to match. The designer is generating voice lines now, so **commit this quickly** and note the changed line ids in your status file.
+Commit `[sol] V9: tutorial text for the new win rule`.

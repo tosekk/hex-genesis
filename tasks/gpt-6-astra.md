@@ -174,3 +174,18 @@ Read the **"v3 changes"** section at the top of `tasks/ECONOMY_SPEC.md`.
 4. Update `tests/balance/REPORT.md` and put a short "**v3 result**" block at the top of your status file: wins out of 50, the T1–T8 medians, which targets pass or miss, and which seeds still can't be won and why.
 
 Report failures in other agents' tests to their owners; don't edit their files.
+
+---
+
+## N8 — Economy v4 for the new win rule (P0, designer decision) — `src/config/economy.ts`, `tests/balance/**`, `tests/acceptance/**`
+
+Read GAME_DESIGN §2, §39, §41, §42 (changed today) and the **"v4 changes"** section at the top of `tasks/ECONOMY_SPEC.md` (wider guardrails, 6 targets).
+1. **Now (no dependency):** rewrite your win/end acceptance tests (`tests/acceptance/**`) to the updated AGENT_TASKS §57 "Win / end" list. They may fail until sonnet's S8 lands. Mark them `it.fails` with a note, then remove the marks when S8 lands.
+2. **Now:** update the balance harness:
+   - win = final threshold reached;
+   - loss = soft-lock declared or board full;
+   - bots stop at a win or loss;
+   - report per run: win/loss, placements, **board use % of placeable slots** at the end, T1–T8 placements, held stock per resource at T3–T7 against the max cost, and opening stalls (stuck before T2 with unaffordable empty slots);
+   - `REPORT.md` shows all 6 v4 targets.
+3. **After `[sonnet] S8` lands:** calibrate on seeds 1–50, **at most 5 rounds**, priority 1 > 2 > 4 > 3 > 6 > 5, within the v4 guardrails. Starting stock and costs are unfrozen, so fix the starving openings (35/37). Log each round in the Balance log and commit each separately (`[astra] N8 round <n>: …`).
+4. Put a "**v4 result**" block at the top of your status file: combo wins and spam losses out of 50, median board use, targets pass/miss, and **2–3 recommended playtest seeds** (one tight win, one where spamming clearly fails).
