@@ -1,4 +1,32 @@
-# Economy v2 balance report
+# Economy balance report
+
+## Selected v3 result — round 3
+
+Selected calibration **`f6b6d45`**, retained after four measured rounds (`cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`) by priority **4 > 2 > 1 > 3**. This section is current; the v2 sections and all four v3 rounds below are preserved audit history. Source/results: `v3-round-3.json`.
+
+| Target | Result | Evidence, seeds 1–50 |
+|---|---|---|
+| 4: ≥45 wins, ≥48 T6, zero declarations | **PASS** | 48 wins, 48 T6, zero soft-lock declarations |
+| 2: T4–T6 spam/combo ≥1.5× | **PASS** | 3.46× / 2.74× / 1.96×; 26 spam T6 completers |
+| 1: T2–T8 pacing ±20%, late cores before fill | **PASS** | Combo medians 2 / 23.5 / 47.5 / 105 / 180.5 / 312 / 362.5 / 433.5 (T1 exempt); median win 613.5 |
+| 3: every spam T6 fill ≥70% | **MISS** | Minimum 59.44%; early seeds 3,8,18,19,37,45,47 |
+
+Round 4 raised minimum spam fill to 61.58%, but reduced spam T6 completers to 25/50, making its all-seed median unreached. Round 3 therefore wins the stated priority comparison. No fifth tuning round was run. Starting stock, costs, yields, recipes, terrain, modifiers, adjacency and map size remain unchanged from the v2 round-4 baseline.
+
+| Threshold | Wood | Stone | Water | Food |
+|---|---:|---:|---:|---:|
+| T1 | 0 | 16 | 0 | 0 |
+| T2 | 50 | 45 | 0 | 0 |
+| T3 | 100 | 85 | 40 | 0 |
+| T4 | 240 | 220 | 120 | 90 |
+| T5 | 450 | 380 | 200 | 120 |
+| T6 | 850 | 740 | 550 | 120 |
+| T7 | 1050 | 920 | 690 | 220 |
+| T8 | 1300 | 1150 | 850 | 270 |
+
+T7/T8 reached-only median fill is **60.02% / 69.69%**. Per-seed T7/T8 placements, fill, wins and final legal sites appear in the round-3 table below. Only combo seeds **35/37** remain stuck after three placements: 35 exhausts wood on Hillside Mines; 37 exhausts stone on Oasis Wells/Palm Grove before earning T1. Both were accepted limitations, and no starting-stock/cost repair was attempted. These are bot-route outcomes, not a proof of global unwinnability. All nine earlier core-coverage stalls now win.
+
+Playtest **seed 1** for normal full progression and **seed 12** to confirm the additional core resolves its old coverage stall.
 
 ## Selected final balance — N3 round 4
 

@@ -1,4 +1,15 @@
-## Morning summary
+## v3 result
+
+**N7 complete — selected round 3 (`f6b6d45`), 48/50 combo wins, 48/50 T6, zero soft-lock declarations.** All nine previous core-coverage stalls now win. Four rounds committed: `cf27db5` → `1a2c142` → `f6b6d45` → `d04593b`; round 3 restored by priority **4 > 2 > 1 > 3**.
+
+- **T1–T8 placement medians:** **2 / 23.5 / 47.5 / 105 / 180.5 / 312 / 362.5 / 433.5**. T1 exempt; T7/T8 precede median win **613.5**.
+- **Targets 4, 2 and 1 PASS.** T4–T6 spam/combo ratios **3.46× / 2.74× / 1.96×**. **Target 3 MISS:** minimum spam T6 fill **59.44%**; early seeds **3,8,18,19,37,45,47**. Round 4 improves fill but loses the measurable T6 ratio, so it is not retained.
+- **Only combo seeds 35/37 fail to win**, both at three placements: 35 exhausts wood on three Hillside Mines (wood 0 / stone 30); 37 exhausts stone on two Oasis Wells and a Palm Grove (wood 16 / stone 0, lifetime stone 2 < T1 16). These accepted bot-opening limitations are unchanged; no global-unwinnability claim.
+- **Decision B respected:** starting stock, costs and all non-threshold economy data exactly match the v2 round-4 baseline. Shipping map remains 20×14. Final T7 **1050/920/690/220**, T8 **1300/1150/850/270** (wood/stone/water/food).
+- **Validation:** 124 owned/scoped tests pass, 8 opt-in skips; 16 config/report checks and typecheck pass. Each 50-seed round passes all 8 harness checks. Final source exactly matches the selected archive; no new outside-owner failure observed. Full integration/browser checks remain Opus-owned.
+- **Opus handoff:** final config is ready for O6.4. Playtest **1** for full progression and **12** for its formerly missing eighth core. Full results, T7/T8 fill and legal sites per run: `tests/balance/REPORT.md`, `tests/balance/v3-round-3.json`.
+
+## Historical morning summary — v2, superseded by v3 above
 
 - Commits: N1 `457a221`; N2 `fd23f08`; N3 selection `72ced76` (six rounds below); N4 `0642114`; N5 `2108880`; N6 preview `4eacde4` (~25× faster), 50-seed report `6557f14`.
 
@@ -19,11 +30,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N7 — v3 eight-threshold calibration on seeds 1–50, at most four rounds. Decision A approved; Decision B declined. Previous overnight summary below is historical.
-
-N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified. Morning summary includes larger-sample limits and the outside-owner HUD fixture failure. No seventh calibration; awaiting designer playtest decisions.
+IDLE — available. N7 COMPLETE: four calibration rounds committed, round 3 selected and restored exactly, final owned checks green. No further tuning; ready for Opus's final integration/browser run.
 
 ## Done
+- N7 — v3 eight-threshold calibration, four 50-seed rounds, 48/50 wins; selected `f6b6d45`, with rounds `cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`. Final v3 result and report include all late fills/legal-site counts.
 - N6 confirmation — 50 seeds, exact replay of original 20, explicit larger-sample limits and final checks — `6557f14`.
 - N6 preview — bounded private copy, 2,592 exact old/new comparisons and about 25× lower cost — `4eacde4`.
 - N5 — morning summary and designer handoff — `2108880`.
@@ -44,9 +54,10 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
-- No unfinished owned task. Final full-suite green is blocked by the Sonnet-owned zero-target HUD fixture reported below. Balance gaps require designer review; no guardrail was relaxed. Opus O5 passed D1; independent D4/N4 review remains requested.
+- No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N7 final selection: retain round 3 exactly. Rounds 1/2/3/4 all win 48/50; round 3 alone passes targets 4, 2 and 1 together. Round 4 improves minimum spam fill but loses the finite T6 ratio, so target priority rejects it. Four rounds are a bounded search, not a proof that target 3 is impossible within all allowed configurations. Decision B remains declined; do not change or request changes to starting stock/costs for this task.
 - N7 round 4: use the last allowed calibration for small T6 resource increases (wood +50, stone +20, water +25) rather than changing openings or rewards. Select among the four measured rounds by target priority; no fifth tuning round. Within equal pass/fail outcomes and equal wins, prefer improved minimum spam T6 fill.
 - N7 round 3: interpret “keep round-4 pacing” as retaining its progression shape and target bands, not freezing all six literal gates (v3 explicitly permits retuning). A 7.7% T4 wood correction addresses the sole 50-seed pacing miss; T1–T3 and the known starving openings stay fixed.
 - N7 round 2: a small T6 resource-gate adjustment is permitted by v3; preserve the round-4 progression shape and every other gate while restoring a finite 50-seed spam comparison. T1–T5, T7/T8, stock, costs, yields and recipes stay unchanged.
@@ -81,7 +92,7 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
-- **N6 → sonnet (test assumption, `src/ui/hud.test.ts:203`):** the “resource bar shows per-resource lifetime progress” fixture selects the first T1 key (`wood`, now target 0), sets lifetime wood 4 and expects `4 / 0`. `resourceBar.ts:22` correctly caps displayed progress at the target, yielding `0 / 0` (row text `Wood6lifetime 40 / 0`). Expected fixture repair: select a positive target such as stone 16 or assert `min(have, need)`; §39 allows already-satisfied/zero requirements. Full suite: 273 pass, this one fails, 6 skip. Source and test untouched; all 164 scoped tests pass.
+- **RESOLVED N6 → sonnet (S6, source inspected; owner reports tests green; historical test assumption, `src/ui/hud.test.ts:203`):** the “resource bar shows per-resource lifetime progress” fixture selects the first T1 key (`wood`, now target 0), sets lifetime wood 4 and expects `4 / 0`. `resourceBar.ts:22` correctly caps displayed progress at the target, yielding `0 / 0` (row text `Wood6lifetime 40 / 0`). Expected fixture repair: select a positive target such as stone 16 or assert `min(have, need)`; §39 allows already-satisfied/zero requirements. Full suite: 273 pass, this one fails, 6 skip. Source and test untouched; all 164 scoped tests pass.
 - **RESOLVED N1 → sol (`925ad36`, confirmed by final full suite):** `npx vitest run src/tutorial/tutorial.session.test.ts` fails at line 39 on seed 1. The real-session fixture uses Desert `quarry + quarry` / Arctic `ice_drill + ice_drill` and expects a pair payout; v2 deliberately removes both duplicate recipes. Use `quarry + palm_grove` / `ice_drill + scree_quarry`, or derive an affordable pair from config. Tutorial source/tests untouched.
 - RESOLVED C3-WORLD: all-plain stub replaced by astra D1; T1–T4 now pass normally (`cc0e8e9`, `3950a22`, `d978f14`).
 - RESOLVED C3-END / C3-SESSION stubs: astra D2 `0daa072` and sonnet D3 `c23be27` enabled real-module acceptance.
@@ -89,6 +100,7 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 - RESOLVED C3-FLIP: sonnet `4909942` holds spread locks through the final tile flip; real-session P5 passes with no expected-failure marker.
 
 ## Notes for others
+- **Opus O6.4 final N7 handoff:** selected config is round 3 `f6b6d45`, restored after the four-round search. Eight thresholds; 48/50 combo wins, 48/50 T6, zero declarations. Recommend **seed 1** for the full browser run (combo bot: T7/T8 307/357, win 633, seven cores), and **seed 12** for the extra-core regression (T7/T8 330/389, win 600, eight cores). Your D4/N4/N6 independent review PASS is acknowledged. Config will remain fixed for your final autoplay/pacing/browser verification.
 - **Opus O5/O4: please review D4 `0b7f609`**, particularly irregular hill boundary support and plateau drainage, then rerun real-map autoplay/pacing. D1 review PASS acknowledged. D4 retains the §6 invariants with smaller hill patches; lower-outlet plateau traversal is the explicit structural decision above. No contracts or economy values changed. All 115 astra-scoped tests pass (12 files, 3.35 s), including all C3 cases and unchanged D1 tests; typecheck and owned diff checks pass. Generation mean 0.881 ms, max 1.233 ms over 200 seeds. This D4 pass is headless; the browser evidence below describes D1 only.
 - **D1 handoff (historical; opus O5 review now PASS):** especially hill-path depth/elevation construction, source/minimum river routing, ascending-HexId ties, integer determinism, and below-listed seed statistics. Implementation is in `src/sim/world/{mapgen,relief,water,vegetation}.ts`, knobs in `src/config/map.ts`; commits `cc0e8e9` → `3950a22` → `d978f14`. Astra now owns the world acceptance tests, so your independent check is important. Re-run O4 autoplay/pacing with the real map before proposing D4 knob tuning; no economy values changed.
 - Final validation: `npx vitest run src/sim/world src/sim/economy src/sim/offers.test.ts tests/acceptance` → **110 passed**, 11 files, 2.40 s. Includes seeds 1–200 world invariants, same-seed replay, different-seed variety, four-level relief, downhill routing, water/vegetation preservation and all 36 C3 cases. `npm run typecheck` and owned-path `git diff --check` → green.
@@ -154,6 +166,21 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N7 final selection — round 3 retained
+
+Final verification: **124 owned/scoped tests pass, 8 opt-in skips** (11.20 s); **16 config/report checks pass**; `npm run typecheck` passes. Source diff versus `f6b6d45:src/config/economy.ts` is empty. Deep comparison confirms all selected economy values match `v3-round-3.json` and every non-threshold field matches the original v2 round-4 archive. No new outside-owner issue found; no edits/staging of parallel agents’ files.
+
+Four measured commits: round 1 `cf27db5`, round 2 `1a2c142`, round 3 `f6b6d45`, round 4 `d04593b`. Restore round-3 T6 **wood 900→850, stone 760→740, water 575→550**; food remains 120. This restores the exact measured source, not a fifth candidate. Relative to the v2 round-4 baseline, final changes are T4 wood **260→240**, T6 food **170→120**, plus T7 **1050/920/690/220** and T8 **1300/1150/850/270** (wood/stone/water/food). Everything outside the thresholds is identical to the baseline.
+
+| Round | Combo T6 / wins | T4–T6 advantage | Pacing | Min spam T6 fill | Selection |
+|---|---|---|---|---|---|
+| 1 | 48/50 / 48/50 | T6 unmeasurable | T4 misses | 59.44% | Extra cores solve coverage |
+| 2 | 48/50 / 48/50 | PASS | T4 misses | 59.44% | Finite T6 ratio restored |
+| 3 | 48/50 / 48/50 | PASS | PASS | 59.44% | **Retained** |
+| 4 | 48/50 / 48/50 | T6 unmeasurable | PASS | 61.58% | Higher-priority target 2 lost |
+
+Only combo seeds **35 and 37** stop without winning, both at three placements: seed 35 spends all wood on three Hillside Mines (stock wood 0 / stone 30), despite its second core; seed 37 spends all stone on two Oasis Wells and a Palm Grove (stock wood 16 / stone 0 / water 28; lifetime stone 2 < T1's 16). They remain exactly the accepted baseline limitations. This is a greedy-bot outcome, not an exhaustive proof about every player strategy. All nine previous core-coverage stalls win with v3. Selected T7/T8 reached-only median fills are **60.02% / 69.69%**; median threshold placements **362.5 / 433.5** precede all-seed median win **613.5**. Early spam T6 seeds: **3,8,18,19,37,45,47**; worst **37 at 59.44%**, so target 3 remains a clear miss.
 
 ### N7 v3 round 4 — conservative late-spam delay
 
