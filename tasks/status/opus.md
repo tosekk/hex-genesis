@@ -3,11 +3,11 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O11. Items 1, 2 and 4 ✅. Item 3 (go/no-go) **waiting for its trigger**: sol's V15 DoD AND no open sonnet P0/P1 on the journal HUD. As of `115135d`: sol "awaiting Sonnet browser review"; sonnet has **1 open P1** (tutorial note over the offer modal). → **NO-GO for the journal HUD so far.**
+**GO/NO-GO (O11.3, 01:55): GO for the journal HUD.** Trigger met: sonnet "Open P0/P1 on journal HUD: 0" (QA pass 3 at `4cb1a62`), and sol's V15 code + 80 tests pass. I pre-verified `?ui=journal` from a clean export of `5a5e8bb` in the itch frame (see Integration log): all checks pass.
 
-> **Designer: upload `release/terraform-jam-2026-09-30.zip`** (safety RC, legacy HUD, verified; see O10.1). The next zip will be named `release/hex-genesis-<date>.zip` (rename `4c82ec8`). I'll post it here once the go/no-go trigger fires, with the journal HUD as default if it's a GO.
+> **sol: please flip the default now** (`src/ui/hud.ts`: `createHud` → `createJournalHud`; `main.ts` needs no change, `?ui=legacy` keeps the old HUD). As soon as that commit lands I package `release/hex-genesis-<date>.zip` from it, re-verify in the itch frame without `?ui`, and post the name here.
 
-> **sol: the offer spheres are ready to integrate** (`8d44d59`): `import { createOfferFx } from '../../fx/offerSpheres'` (UI_SPEC §8.3 interface; optional 2nd arg `{ reducedMotion }`). The FX owns keys 1/2 while shown (it stops propagation, so the HUD's 1/2 handler won't double-fire) and calls `onChoose(i)`; you call `session.chooseOffer(i)`, then `resolve(i, cornerRect)` on `offerResolved`. On reshuffle call `update(offer, canReshuffle)`. `hide()` settles any pending resolve. Demo: `http://localhost:5173/src/fx/demo.html`.
+> **Designer:** until that zip is posted, the safe upload is still `release/terraform-jam-2026-09-30.zip` (legacy HUD).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -70,6 +70,7 @@ IN PROGRESS: O11. Items 1, 2 and 4 ✅. Item 3 (go/no-go) **waiting for its trig
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O11.3 pre-verification, journal HUD** (`?ui=journal`, clean export `5a5e8bb`, `node scripts/itch-test.mjs`, frame page 1440×1000 with a 1280×720 game, same-origin for inspection): `.jhud` mounted, tab "Hex Genesis", 0 audio-module controls (the journal has its own). Click into the game → focus in frame; real ↓×5/Space/PgDn/`2` → **parent scrollY 0**, `2` resolved the offer (Arctic deck shown); 0 errors. **Live resize** (sonnet's P2-pass P1): frame at 1024×640 / 1600×900 / 1100×660 / 1280×720 → all 8 journal panels inside the frame, triangle 16 px from the right edge every time. ✅
 - **O11.1 offer spheres** `8d44d59`: `src/fx/offerSpheres.ts` + 7 happy-dom tests (present/backdrop blocks pointer input, keys 1/2 owned + single choice, click, reshuffle/update/disabled, resolve settles ≤ 1.6 s and removes itself, reduced-motion fade, hide/dispose) + `src/fx/demo.html`. Browser (dev server demo): spheres render with biome colours, icons, key badges and Reshuffle; a real `1` → chosen Forest, and the resolve took **1165 ms** and removed the FX.
 - **O11.2 sonnet's P2 (itch-frame)** `0f050ae`: the default mode is now cross-origin via a second port on the same host (4197 page ↔ 4196 game; `itch-test` serves both). The old localhost↔127.0.0.1 swap was cross-SITE (separate renderer process, black in hidden panes, possible name mismatch) and stays available as `?site=1`. The page shows the frame load state. Verified from a clean HEAD export: frame loaded and rendered, focus in game, ↓×5/Space/PgDn → parent scrollY 0, `1` picks the offer. (`npm run itch-test` in the shared tree currently fails on astra's uncommitted `journal.test.ts`, not mine.)
 - **O11.4 rename** `4c82ec8`: `<title>Hex Genesis`, README heading + itch draft, zip → `release/hex-genesis-<date>.zip`.
