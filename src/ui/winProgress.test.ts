@@ -44,10 +44,10 @@ describe('win progress counters', () => {
     t.state.hexes[target].slots[0].building = null;
     t.state.hexes[target].slots[2].building = null;
     t.emit({ type: 'hexChanged', hexId: target });
-    expect(emptySlotSummary(t.state)).toEqual({ hexes: [target], slots: 2 });
-    expect(t.text('.wp-empty')).toContain('Empty slots: 2 (1 tile)');
+    expect(emptySlotSummary(t.state)).toEqual({ hexes: [target], slots: 2, total: ids.length * 3 });
+    expect(t.text('.wp-empty')).toContain(`Slots left: 2 of ${ids.length * 3}`);
     expect(t.text('.wp-row')).toMatch(/Legal core sites: \d+/);
-    expect(t.root.querySelector('.win-progress')!.getAttribute('title')).toContain('no legal core site left and every slot filled');
+    expect(t.root.querySelector('.win-progress')!.getAttribute('title')).toContain('reach the final threshold');
   });
 
   it('shows "Spread active" only while a spread is running', () => {
@@ -60,6 +60,41 @@ describe('win progress counters', () => {
     t.state.activeSpread = null;
     t.emit({ type: 'spreadFinished' });
     expect(spread.hidden).toBe(true);
+  });
+});
+
+describe('goal line and end screen (S8)', () => {
+  it('goal line shows the final threshold and progress', () => {
+    const t = setup();
+    const n = t.state.config.thresholds.length;
+    expect(t.text('.wp-goal')).toBe(`Goal: reach threshold ${n} · now 0/${n}`);
+    t.state.thresholdIndex = 3;
+    t.emit({ type: 'resourcesChanged' });
+    expect(t.text('.wp-goal')).toBe(`Goal: reach threshold ${n} · now 3/${n}`);
+  });
+
+  it('end screen: win shows thresholds reached and board used', () => {
+    const t = setup();
+    const n = t.state.config.thresholds.length;
+    t.state.thresholdIndex = n;
+    for (const s of t.state.hexes[0].slots) s.building = 'x'; // 3 of 48 slots used
+    t.emit({ type: 'runEnded', status: 'won', stats: { status: 'won', lifetime: { wood: 9 }, elapsedMs: 61000, seed: 7 } });
+    const box = t.text('.end-screen');
+    expect(box).toContain('Planet terraformed!');
+    expect(box).toContain(`Thresholds reached: ${n}/${n}`);
+    expect(box).toContain('Board used: 3/48 slots (6%)');
+    expect(box).toContain('Wood: 9');
+    expect(box).toContain('1:01');
+    expect(box).toContain('Seed: 7');
+  });
+
+  it('end screen: a loss reads "Out of room"', () => {
+    const t = setup();
+    t.state.thresholdIndex = 2;
+    t.emit({ type: 'runEnded', status: 'lost', stats: { status: 'lost', lifetime: {}, elapsedMs: 0, seed: 1 } });
+    const box = t.text('.end-screen');
+    expect(box).toContain('Out of room');
+    expect(box).toContain(`Thresholds reached: 2/${t.state.config.thresholds.length}`);
   });
 });
 
@@ -133,6 +168,6 @@ describe('empty-slot finder', () => {
     const t = setup();
     const help = t.root.querySelector('.help-overlay')!.textContent!;
     expect(help).toContain('Hold Tab');
-    expect(help).toContain('every slot filled');
+    expect(help).toContain('Reach the final threshold before you run out of room. Every slot and combo pays only once.');
   });
 });

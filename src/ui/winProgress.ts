@@ -4,16 +4,18 @@ import { legalCoreSites } from '../sim/spread/spread';
 import { el } from './format';
 import type { Interaction } from './interaction';
 
-/** Terraformed placeable tiles that still have an empty slot, plus the total empty slots. Reads state only (§41 needs these at zero). */
-export function emptySlotSummary(state: Readonly<GameState>): { hexes: HexId[]; slots: number } {
+/** Terraformed placeable tiles with an empty slot, the empty-slot count and the total slots on terraformed placeable tiles. Reads state only. */
+export function emptySlotSummary(state: Readonly<GameState>): { hexes: HexId[]; slots: number; total: number } {
   const hexes: HexId[] = [];
   let slots = 0;
+  let total = 0;
   for (const h of state.hexes) {
     if (!h.placeable || h.biome === null) continue;
+    total += h.slots.length;
     const empty = h.slots.filter((s) => s.building === null).length;
     if (empty > 0) { hexes.push(h.id); slots += empty; }
   }
-  return { hexes, slots };
+  return { hexes, slots, total };
 }
 
 const typing = (t: EventTarget | null) =>
@@ -22,12 +24,13 @@ const typing = (t: EventTarget | null) =>
 /** S7: win-progress readout + empty-slot finder (hold Tab, or click the counter, to highlight tiles with an empty slot). */
 export function createWinProgress(root: HTMLElement, session: GameSession, board: BoardView, ui: Interaction) {
   const panel = el('div', 'panel win-progress');
-  panel.title = 'Win: no legal core site left and every slot filled.';
+  panel.title = 'Win: reach the final threshold before you run out of room.';
   const emptyBtn = el('button', 'wp-empty');
   emptyBtn.title = 'Hold Tab (or click) to highlight every tile with an empty slot';
+  const goalRow = el('div', 'wp-goal');
   const sitesRow = el('div', 'wp-row');
   const spreadRow = el('div', 'wp-spread', 'Spread active');
-  panel.append(emptyBtn, sitesRow, spreadRow);
+  panel.append(goalRow, emptyBtn, sitesRow, spreadRow);
   root.appendChild(panel);
 
   let held = false;
@@ -53,8 +56,10 @@ export function createWinProgress(root: HTMLElement, session: GameSession, board
 
   function render(): void {
     const s = session.state;
-    const { hexes, slots } = emptySlotSummary(s);
-    emptyBtn.replaceChildren('Empty slots: ', el('b', undefined, String(slots)), ` (${hexes.length} tile${hexes.length === 1 ? '' : 's'})`);
+    const { slots, total } = emptySlotSummary(s);
+    const goal = s.config.thresholds.length;
+    goalRow.replaceChildren(`Goal: reach threshold ${goal} · now `, el('b', undefined, `${Math.min(s.thresholdIndex, goal)}/${goal}`));
+    emptyBtn.replaceChildren('Slots left: ', el('b', undefined, String(slots)), ` of ${total}`);
     sitesRow.replaceChildren('Legal core sites: ', el('b', undefined, String(legalCoreSites(s).length)));
     spreadRow.hidden = !s.activeSpread;
     refreshHighlight();

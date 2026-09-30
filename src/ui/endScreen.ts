@@ -1,12 +1,13 @@
 import type { GameSession } from '../core/contracts';
 import type { RunStats } from '../core/types';
 import { cap, el, fmtTime } from './format';
+import { emptySlotSummary } from './winProgress';
 
 export function randomSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
 }
 
-const TITLE = { won: 'Planet terraformed!', lost: 'The run is stuck', ended: 'Run ended', playing: '' } as const;
+const TITLE = { won: 'Planet terraformed!', lost: 'Out of room', ended: 'Run ended', playing: '' } as const;
 
 export function createEndScreen(root: HTMLElement, session: GameSession) {
   const overlay = el('div', 'overlay end-overlay');
@@ -17,6 +18,12 @@ export function createEndScreen(root: HTMLElement, session: GameSession) {
     overlay.replaceChildren();
     const box = el('div', 'panel modal end-screen');
     box.appendChild(el('h2', undefined, TITLE[stats.status]));
+    const st = session.state;
+    const goal = st.config.thresholds.length;
+    const { slots, total } = emptySlotSummary(st);
+    const used = total - slots;
+    box.appendChild(el('div', 'end-thresholds', `Thresholds reached: ${Math.min(st.thresholdIndex, goal)}/${goal}`));
+    box.appendChild(el('div', 'end-board', `Board used: ${used}/${total} slots (${total === 0 ? 0 : Math.round((used / total) * 100)}%)`));
     const life = el('div', 'end-lifetime');
     life.appendChild(el('div', 'hint', 'Resources produced this run'));
     for (const r of session.state.config.resources) {

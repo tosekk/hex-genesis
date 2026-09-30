@@ -114,3 +114,5 @@ details.slot[open] > summary::before { content:'▾ '; }
 .wp-empty.active { text-decoration:underline; color:var(--accent); }
 .wp-row { margin-top:2px; }
 .wp-spread { margin-top:2px; font-weight:800; color:var(--accent); }
+.wp-goal { font-weight:800; margin-bottom:2px; }
+.end-thresholds, .end-board { font-size:16px; font-weight:700; }
