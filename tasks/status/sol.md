@@ -16,11 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V12 COMPLETE — shared persistent audioSettings and optional controls, 53 owned tests/typecheck pass. NEXT: V13 (committed contract required) → V14.
+V12 committed `ace4f00`. V13 WAITING for Opus's committed optional slot-highlight contract; V14 journal tutorial presentation can proceed independently while it lands.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
-- V12 — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass. Hash recorded after commit.
+- V12 — `ace4f00` — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass.
 - V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Commit `5f84c07`.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
@@ -75,6 +75,11 @@ V12 COMPLETE — shared persistent audioSettings and optional controls, 53 owned
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
+- V13 / UI_SPEC §6 — awaiting Opus's committed additive optional `BoardView` method in `src/core/contracts.ts`:
+  ```ts
+  setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void;
+  ```
+  Implement only after the contract commit. No workaround or contract edits by Sol. V14 CSS/markup is independent and proceeds while waiting.
 - R7 — APPROVED and committed by Opus as `c357845` (`[opus] CONTRACT`): additive optional member in `src/core/contracts.ts` → `BoardView`:
   ```ts
   showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void;
