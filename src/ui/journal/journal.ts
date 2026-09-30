@@ -4,6 +4,8 @@ import { BIOME_COLORS } from '../../render/palette';
 import { BIOME_LABEL, cap, el, fmtResources, icon } from '../format';
 import { type AdjacencyLogEntry, type ComboPage, type JournalData, resolveJournalData } from './data';
 import './journal.css';
+import './paper.css';
+import { decoratePaperPage, paperBinding, paperJournalEnabled } from './paper';
 
 export type JournalTab = 'contents' | 'combos' | 'adjacency' | 'terrain';
 export interface Journal {
@@ -30,6 +32,8 @@ const amountText = (r: Resources) => fmtResources(r, true);
  */
 export function createJournal(root: HTMLElement, session: GameSession, data: JournalData = resolveJournalData()): Journal {
   const overlay = el('div', 'jr-overlay');
+  const paper = paperJournalEnabled(window.location.search);
+  if (paper) overlay.classList.add('jr-paper');
   overlay.hidden = true;
   overlay.setAttribute('role', 'dialog');
   overlay.setAttribute('aria-label', 'Journal');
@@ -38,6 +42,7 @@ export function createJournal(root: HTMLElement, session: GameSession, data: Jou
   const right = el('div', 'jr-page jr-right');
   const tabs = el('div', 'jr-tabs');
   book.append(left, right, tabs);
+  if (paper) book.appendChild(paperBinding());
   overlay.appendChild(book);
   root.appendChild(overlay);
 
@@ -205,6 +210,7 @@ export function createJournal(root: HTMLElement, session: GameSession, data: Jou
     else if (tab === 'combos') renderCombos();
     else if (tab === 'adjacency') renderAdjacency();
     else renderTerrain();
+    if (paper) { decoratePaperPage(left); decoratePaperPage(right); }
   }
 
   function open(t?: JournalTab): void {

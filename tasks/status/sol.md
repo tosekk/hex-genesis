@@ -1,36 +1,27 @@
-Designer QA: Item 4 — place a core, finish its spread, then click the core tile: detail reads "Terraformer core — no buildings", with no slot chips or building deck target. Try a sticky building/R on it: a short reason appears and nothing is built. Look for no small slot circles or slot highlight on the core; hold Tab and it stays out of the finder. Slots left/end-screen Board used exclude its three slots. Repeat on ?ui=legacy: core panel says "A terraformer core occupies this tile" and counts also exclude it.
-
-Designer QA: Item 3 — at a fresh opening all biome circles are grey/disabled. Pick Forest: its core card is colored, building cards are dimmed and only show cost/yield on hover (click does not select them). Place the core; once Forest land appears, select its circle/tile and building cards work normally. Biomes with no land/core cannot be clicked or tab-focused; New Run clears the selection.
-
-Designer QA: Item 2 — reload without clicking: no voice request until your first click/key. Place a core and let the note collapse: spread/building narration still plays. In ⚙, change Volume during speech, then Sound off: voice/music/SFX stop and new lines stay silent. Select a building card, click dead land: the card/deck stay selected; Esc clears them. Reshuffle/pick spheres: one cue per offer/pick.
-
-Designer QA: Item 1 — reload the game, click once, choose a biome and place a core; music, offer/spread sounds and voice should load. Network MP3 URLs should be hashed assets/ paths, never audio/ paths.
-
-## Morning summary
-
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 default `f72ac73`, book `fd3cd7a`, spheres `feefa3d`; Sonnet pass 3 zero P0/P1.
-
-| Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
-|---|---:|---:|
-| 20×14 / 840 buildings | 120 | 59 |
-| 26×18 / 1,404 buildings | 120 | 59 |
-| 30×20 / 1,800 buildings | 120 | 59 |
-
-Opus: V3 audio import/call before `newRun` and teardown disposal are now present in your morning `src/main.ts` working copy; no frame-loop call. Sol did not edit main.ts.
-Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/README.md`. V7 closes wave/console gaps: both filled-board sizes 120.0 FPS, real seed-7 win has zero console warnings/errors. 48 owned tests/typecheck/sandbox build pass. Supply the 14 MP3s; V5 release image set still pending.
+## MORNING SUMMARY — Night 2 (ready 03:55, before 06:15)
+- Pushed: review/P1-B + voice P2-D `38757d5`; illustrated shader `c44481b`; GLB pipeline/native shader check `0454fda`; paper journal `7424160`; payout P2 `07946d2`; final regression/handoff `36639ae`.
+- Designer QA: default http://localhost:5173/?seed=7 → illustrated http://localhost:5173/?seed=7&style=illustrated → paper http://localhost:5173/?seed=7&journal=paper → both http://localhost:5173/?seed=7&style=illustrated&journal=paper (choose offer, then J).
+- Fresh FPS (settled / mid-wave): **20×14 illustrated UNMEASURED / UNMEASURED; 30×20 illustrated UNMEASURED / UNMEASURED**. No browser was available; ≥60 FPS and visual approval are still designer gates.
+- Historical V7 default only: 20×14 and 30×20 **120.0 FPS settled / 120.0 FPS wave**. These are pre-Night-2 numbers, not evidence for the new shader or GLBs.
+- FPS QA: http://localhost:5173/render-sandbox.html?seed=7&load=1&wave=1&style=illustrated and same URL plus &cols=30&rows=20; compare with &style=illustrated removed. Wait for automatic 3.5s settled window + wave; read/log FPS and calls.
+- GLB steps: export static Y-up flat COLOR_0/no-texture GLB → copy src/assets/models/<buildingId>.glb or core_forest/core_desert/core_arctic.glb → restart Vite/rebuild → ?style=illustrated → sandbox G/L/R. Buildings radius≤0.28,height≤0.5,≤600tris; cores radius≤0.8,height≤1.2,≤1500tris. Full checklist: src/assets/models/README.md.
+- Validation: **193 owned tests / 31 files pass**, global typecheck and production build pass; native headless OpenGL compiles/links both shaders ordinary+instanced; real tiny GLBs generated in tests, no art file committed. Full 840/1800-building checks retain 24 fill + 24 hull batches and one shared fill/ink pair.
+- Journal QA: 1280×720 ↔ 1024×640, all tabs, discovered taped illustration, undiscovered pages only ?, Esc; expected cover 920×526 / 944×528 (CSS envelope, no screenshot claim). Default journal markup identical; rules flag-scoped; actual ink/tab CSS passes ≥4.5:1 contrast.
+- Rough edges: no designer GLBs yet; first unrevealed core uses neutral procedural marker, first visible main biome binds its model; a fresh rebuild of an already-mixed core cannot recover historic main biome from frozen contract. Hull seams/thin roofs/zoom appearance await visual QA. Unsupported/texture/uncolored/over-budget GLBs fall back with a debug reason; existing >500kB build warning remains.
+- Opus: ALL FOUR P1-B locations confirmed fixed by 8d13729, now full-board zero-slot/no-finder/100% regressions in both HUDs; P2-D fixed, P2-E retained as recommended for frozen 280-hex map. No contract, main/app, simulation, economy, or other-owner test edits; all pushes succeeded.
 
 # Status — `sol`
 
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-GLB pipeline implemented; shader compilation/link validated in headless macOS OpenGL (no browser). 52 renderer tests / 14 files pass, typecheck and production build pass. Journal paper pass next.
-V18 shader implemented: 42 renderer tests pass (12 files). Preparing commit, then GLB pipeline.
-IN PROGRESS — Night 2 review confirmation, V18 illustrated shader, GLB drop-in pipeline, then flagged paper journal. Default visuals frozen. Browser unavailable; fresh GPU FPS/visual approval are designer QA, never inferred from unit tests.
-
-Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts and end screen use shared slotCounts; core detail has no chips/deck targets; sticky/R core attempts fail; both Tab finders skip cores; renderer suppresses core anchors/building models/slot picks/highlights, including reveal refresh and setCores. All 166 owned tests / 28 files, typecheck and Vite production build pass (03:00); 19 MP3s occur once each by SHA-256, dist 5.89 MB, no public-directory warnings (existing >500kB bundle warning only). Night 1 `206e815`, Night 2 `1a502c6`, Night 3 `4980e85`. Item 6 skipped: no GLBs in src/assets/models. IDLE — available; designer browser QA checklists are at the top. No main/app/index/sim/tests edits.
+DONE — Night 2 implementation and regression coverage complete. All feature/fix commits pushed to origin/main; morning handoff above. New looks remain behind their flags. Browser visual approval and fresh GPU FPS cannot be performed in this session and are explicitly pending designer QA.
 
 ## Done
+- Final Night 2 coverage — `36639ae` (pushed): full illustrated 20×14/30×20 packed-batch/material-sharing tests plus mirrored-node GLB regression; 193 owned tests / 31 files, typecheck + production build pass at 03:55. Owner-only staged paths; Opus's journal.adjacency.test.ts excluded from the scoped run.
+- Older routed payout P2 — `07946d2` (pushed): 20 newest decorative labels maximum, bounded wait, clear on run end/rebuild, ignore late payouts; burst/terminal-status regressions pass.
+- Paper journal — `7424160` (pushed): physical cover/pages/gutter/binding/grain/bookmarks/ink/photo-frame, opt-in only; 45 focused DOM tests including all locked pages and >=4.5:1 actual CSS contrast, typecheck pass.
+- GLB pipeline — `0454fda` (pushed): build-time optional GLB discovery, dynamic GLTFLoader, texture preflight + loaded-material checks, per-material merge/footprint normalization, packed instances + biome core models and fallback. 52 renderer tests / 14 files, typecheck/build pass. Includes native headless shader compile/link regressions.
 - V18 shader — `c44481b` (pushed): shared vertex-only fill + instanced inverted hull, stepped warm/cool lights, AO, rim, crystal/kiln emit flag, automatic sandbox settled/wave QA. Native shader assembly correction/validation follows in the GLB commit.
 - Night 2 review — `38757d5` (pushed): confirmed V16(a) all four P1-B UI locations, full-board zero/100% regressions in both HUDs, Escape voice-gesture fix P2-D; 51 focused tests + typecheck pass.
 - Night 4 / V16(a) — core detail/no deck targeting, sticky/R reason, shared counts for journal/legacy/end, both finders exclude cores, renderer no anchors/slot picks/rings or building models on cores; 166 owned tests / 28 files, typecheck + production build pass — `8d13729`.
@@ -73,13 +64,10 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
 - V9 — `e048346` — tutorial and VO script match §39/§41: T1–T7 award cores, T8 wins, finite slots/combos pay once, plan combos and terrain bonuses; real-session copy assertion updated, 48 owned tests pass. Changed line ids: `combos`, `progression`.
 
 ## Blockers
-- V15 review gate: Sonnet still records one open resize P1 from pass 2. Fix `4cb1a62` and branding `d67044a` are committed and ready for pass 3. UI_SPEC §8.4 integration/default switch waits for that review; simple offer and coming-soon journal remain. Both modules are committed with passing owner tests.
-<!-- what, waiting on whom -->
-- V13 dependency RESOLVED: Opus CONTRACT `72cc74b` adds the optional slot highlighter; implemented in renderer.
-- V14 historical manual layout review (resolved by Sonnet V15 pass 1, both target sizes): Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
-- V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
+- No implementation blocker. Browser unavailable by assignment: new-look visual approval, screenshots and actual settled/mid-wave GPU FPS remain designer checks. See exact URLs and limitations in MORNING SUMMARY; no fabricated measurements.
 
 ## Decisions
+- Journal / UI_SPEC §9: `?journal=paper` applies solely to the journal overlay; default DOM/material unchanged. Teal stitched cover, 5 page-edge shadow layers, curved shaded gutter, three inline SVG binding clips, static data-URI feTurbulence grain, faint stains/right-page rules, 8 data-free ink corner ornaments, torn header labels and colored top bookmarks. Discovered illustrations get a taped photo frame; locked medallion remains centered and data-free. No page-turn animation; reduced-motion stays instant. Negative/positive text darkened only inside the flag to pass >=4.5:1 against the darkest outer paper.
 - GLB / RENDER_STYLE_SPEC: opt-in discovery/loading only with `?style=illustrated`, to keep default frozen. Up to 4 source-material groups; above that/600 building triangles/1500 core triangles falls back with one debug reason. GLTFLoader is dynamically imported only for an actual asset. Missing files issue no fetch. Models without COLOR_0, any images/maps, animations/skins/morphs or required compression extensions reject. RGB/AO/_EMIT and material factors are baked; scene transforms (including mirrors) flatten before bottom-center/uniform footprint fit. Multi-material instance compaction updates every fill/hull.
 - Core biome / §15/§19: bind to the first visible main hex.biome, remember across conversion; never read future spread claims. An unrevealed origin uses the neutral procedural core until its first visible reveal. On a fresh setBoard of an already mixed core, its historic main biome is not recoverable from the frozen state contract, so neutral fallback remains (normal New Run starts empty).
 - V18 / RENDER_STYLE_SPEC: inverted hull chosen to avoid full-screen normal/depth targets. One shared fill + one shared ink ShaderMaterial per board, instanced hull reuses matrices and packed count. 1.25 CSS-pixel width is updated on resize; no second animation loop. Opaque tiles/natural objects also use the fill; translucent highlights/waterfall ribbons retain the existing readable materials. Shader lights use the existing warm top-left world direction and cool fill; AO alpha never becomes opacity. Kiln emission is limited to colored furnace openings.
@@ -120,10 +108,12 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
   Purpose: presentation-only staggered floating numbers over hexes, preserving event resolution order. Opus's `src/app/bindBoard.ts` now calls `board.showPayouts?.(state, e.events)` for `payouts`. HUD toasts remain authoritative. Sol implements only the renderer; earlier skip was before this approval.
 
 ## Bugs found in others' modules
-- Astra Night 2 WIP: typecheck reports tuple casts at `tests/balance/stuck/audit.test.ts:69,79` (TS2352). Owned render/UI files clean; leaving your file untouched.
+- Historical Astra Night 2 tuple-cast errors at `tests/balance/stuck/audit.test.ts:69,79` are RESOLVED by Astra; final global typecheck passes. No outside-owner file edits by Sol.
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- → opus: also closing your older routed payout P2 (`207` queued labels after win): renderer queue capped at 20 newest decorative events, wait <4s, clears on observed terminal status and setBoard/new run, no late end-run labels. HUD remains authoritative. Two focused regression tests cover burst/win cleanup; no contract/app edits.
+- Designer QA: paper journal compare http://localhost:5173/?seed=7&journal=paper against http://localhost:5173/?seed=7; choose the opening offer then press J (or click 📖). Combined: http://localhost:5173/?seed=7&style=illustrated&journal=paper. Review Contents/Combos/Adjacency/Terrain, discover a combo and check taped illustration, page through locked recipes (only ?), resize 1280×720 ↔ 1024×640, check bookmarks stay inside frame and Esc preserves selection. Expected from CSS, not a screenshot claim: 920×526 cover at 1280×720, 944×528 at 1024×640, page edges +15px bottom and active tab -41px top within viewport; all pages independently scroll, nav stays readable. Teal stitched rim, warm top-left highlight, dark center curve and three clips should read as a physical book. Designer approval remains pending.
 - GLB drop-in ready: `src/assets/models/README.md` has the exact Blender checklist, file names and QA. Use `<buildingId>.glb` / `core_forest.glb`, `core_desert.glb`, `core_arctic.glb`; restart Vite/rebuild after adding files. `?style=illustrated`, G/L/R in sandbox. No designer GLBs present yet; tested using real tiny GLBs generated in memory, not committed art.
 - Native shader check caught/corrected duplicate colorspace declarations: Three ShaderMaterial already injects those functions. `src/render/shaderCheck.test.ts` now compiles/links both shared shaders with the actual headless macOS OpenGL compiler, with and without instancing; this supplements chunk/geometry tests, not browser FPS/approval.
 - Designer QA: V18 compare http://localhost:5173/render-sandbox.html?seed=7&load=1&wave=1 with http://localhost:5173/render-sandbox.html?seed=7&load=1&wave=1&style=illustrated; also add `&cols=30&rows=20` to both. Wait 3.5s for the automatic wave, record settled and active-wave FPS/peak calls, check rotated core/crystal/kiln silhouettes and 1–1.5px ink at both 1280×720 and 1024×640. In game: http://localhost:5173/?seed=7&style=illustrated versus http://localhost:5173/?seed=7. Port substitution only if Vite chooses another port.
@@ -209,3 +199,26 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
 - All ten icons use a transparent 24×24 viewBox, flat fills, matching 1.8px rounded outlines and accessible titles. XML validation passes; browser preview at `/src/render/iconPreview.html` verifies 16/24/48px on light/dark backgrounds. HUD image URLs should respect Vite's base, e.g. `${import.meta.env.BASE_URL}assets/icons/wood.svg`. No UI edits.
 - Updated integration context from the team's latest status: D2 offers and D3 endgame are now implemented; D1 world generation is progressing under astra. Earlier R4's flat-map/deepseek dependency note above describes that earlier verification only.
 - R4-fix / Sonnet report: seed-1 real `GameSession` regression reproduced `spreadStarted` leaving the panel on `biomes` before the fix. The test now reaches all five steps through actual offer/core/spread/building/combo/threshold commands and checks repeated offers do not reset progression. Panel moves to the bottom-left above HUD controls, with an accessible Collapse/Expand button. Nine tutorial tests, typecheck, and scoped sandbox production build pass (existing Three.js bundle-size warning only). Fresh visual verification could not complete because the shared native browser was concurrently controlled elsewhere; no visual verification is claimed for this fix.
+
+## Historical Night 1 designer QA and metrics (superseded by MORNING SUMMARY above)
+
+Designer QA: Item 4 — place a core, finish its spread, then click the core tile: detail reads "Terraformer core — no buildings", with no slot chips or building deck target. Try a sticky building/R on it: a short reason appears and nothing is built. Look for no small slot circles or slot highlight on the core; hold Tab and it stays out of the finder. Slots left/end-screen Board used exclude its three slots. Repeat on ?ui=legacy: core panel says "A terraformer core occupies this tile" and counts also exclude it.
+
+Designer QA: Item 3 — at a fresh opening all biome circles are grey/disabled. Pick Forest: its core card is colored, building cards are dimmed and only show cost/yield on hover (click does not select them). Place the core; once Forest land appears, select its circle/tile and building cards work normally. Biomes with no land/core cannot be clicked or tab-focused; New Run clears the selection.
+
+Designer QA: Item 2 — reload without clicking: no voice request until your first click/key. Place a core and let the note collapse: spread/building narration still plays. In ⚙, change Volume during speech, then Sound off: voice/music/SFX stop and new lines stay silent. Select a building card, click dead land: the card/deck stay selected; Esc clears them. Reshuffle/pick spheres: one cue per offer/pick.
+
+Designer QA: Item 1 — reload the game, click once, choose a biome and place a core; music, offer/spread sounds and voice should load. Network MP3 URLs should be hashed assets/ paths, never audio/ paths.
+
+### Historical morning summary
+
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 default `f72ac73`, book `fd3cd7a`, spheres `feefa3d`; Sonnet pass 3 zero P0/P1.
+
+| Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
+|---|---:|---:|
+| 20×14 / 840 buildings | 120 | 59 |
+| 26×18 / 1,404 buildings | 120 | 59 |
+| 30×20 / 1,800 buildings | 120 | 59 |
+
+Opus: V3 audio import/call before `newRun` and teardown disposal are now present in your morning `src/main.ts` working copy; no frame-loop call. Sol did not edit main.ts.
+Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/README.md`. V7 closes wave/console gaps: both filled-board sizes 120.0 FPS, real seed-7 win has zero console warnings/errors. 48 owned tests/typecheck/sandbox build pass. Supply the 14 MP3s; V5 release image set still pending.

@@ -1,0 +1,1958 @@
+{
+  "head": "b0abf4f65b045e21c44911adf33ad05ac55caa4f",
+  "checked": 195,
+  "passed": 195,
+  "blocked": 0,
+  "results": [
+    {
+      "seed": 1,
+      "strategy": "spam",
+      "botActions": 634,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 2,
+      "strategy": "random",
+      "botActions": 24,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 2,
+      "strategy": "spam",
+      "botActions": 636,
+      "witnessActions": 12,
+      "ok": true,
+      "replayedActions": 12,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 3,
+      "strategy": "random",
+      "botActions": 17,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 3,
+      "strategy": "spam",
+      "botActions": 6,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 4,
+      "strategy": "random",
+      "botActions": 583,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 4,
+      "strategy": "spam",
+      "botActions": 583,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 5,
+      "strategy": "random",
+      "botActions": 628,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 5,
+      "strategy": "spam",
+      "botActions": 570,
+      "witnessActions": 42,
+      "ok": true,
+      "replayedActions": 42,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 6,
+      "strategy": "random",
+      "botActions": 46,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 6,
+      "strategy": "spam",
+      "botActions": 631,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 7,
+      "strategy": "random",
+      "botActions": 614,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 7,
+      "strategy": "spam",
+      "botActions": 370,
+      "witnessActions": 17,
+      "ok": true,
+      "replayedActions": 17,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 8,
+      "strategy": "random",
+      "botActions": 100,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 8,
+      "strategy": "spam",
+      "botActions": 236,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 9,
+      "strategy": "random",
+      "botActions": 14,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 9,
+      "strategy": "spam",
+      "botActions": 569,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 10,
+      "strategy": "random",
+      "botActions": 6,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 10,
+      "strategy": "spam",
+      "botActions": 596,
+      "witnessActions": 53,
+      "ok": true,
+      "replayedActions": 53,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 11,
+      "strategy": "random",
+      "botActions": 6,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 11,
+      "strategy": "spam",
+      "botActions": 510,
+      "witnessActions": 257,
+      "ok": true,
+      "replayedActions": 257,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 12,
+      "strategy": "random",
+      "botActions": 600,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 12,
+      "strategy": "spam",
+      "botActions": 600,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 13,
+      "strategy": "random",
+      "botActions": 584,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 13,
+      "strategy": "spam",
+      "botActions": 584,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 14,
+      "strategy": "random",
+      "botActions": 553,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 14,
+      "strategy": "spam",
+      "botActions": 553,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 15,
+      "strategy": "random",
+      "botActions": 24,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 15,
+      "strategy": "spam",
+      "botActions": 578,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 16,
+      "strategy": "random",
+      "botActions": 587,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 16,
+      "strategy": "spam",
+      "botActions": 587,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 17,
+      "strategy": "random",
+      "botActions": 13,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 17,
+      "strategy": "spam",
+      "botActions": 599,
+      "witnessActions": 12,
+      "ok": true,
+      "replayedActions": 12,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 18,
+      "strategy": "random",
+      "botActions": 615,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 18,
+      "strategy": "spam",
+      "botActions": 611,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 19,
+      "strategy": "random",
+      "botActions": 12,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 19,
+      "strategy": "spam",
+      "botActions": 645,
+      "witnessActions": 18,
+      "ok": true,
+      "replayedActions": 18,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 20,
+      "strategy": "random",
+      "botActions": 623,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 20,
+      "strategy": "spam",
+      "botActions": 623,
+      "witnessActions": 42,
+      "ok": true,
+      "replayedActions": 42,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 21,
+      "strategy": "random",
+      "botActions": 569,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 21,
+      "strategy": "spam",
+      "botActions": 199,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 22,
+      "strategy": "random",
+      "botActions": 155,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 22,
+      "strategy": "spam",
+      "botActions": 607,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 23,
+      "strategy": "random",
+      "botActions": 141,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 23,
+      "strategy": "spam",
+      "botActions": 653,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 24,
+      "strategy": "random",
+      "botActions": 11,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 24,
+      "strategy": "spam",
+      "botActions": 141,
+      "witnessActions": 18,
+      "ok": true,
+      "replayedActions": 18,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 25,
+      "strategy": "random",
+      "botActions": 596,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 25,
+      "strategy": "spam",
+      "botActions": 595,
+      "witnessActions": 8,
+      "ok": true,
+      "replayedActions": 8,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 26,
+      "strategy": "random",
+      "botActions": 10,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 26,
+      "strategy": "spam",
+      "botActions": 523,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 27,
+      "strategy": "random",
+      "botActions": 15,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 27,
+      "strategy": "spam",
+      "botActions": 599,
+      "witnessActions": 13,
+      "ok": true,
+      "replayedActions": 13,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 28,
+      "strategy": "random",
+      "botActions": 596,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 28,
+      "strategy": "spam",
+      "botActions": 596,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 29,
+      "strategy": "random",
+      "botActions": 628,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 29,
+      "strategy": "spam",
+      "botActions": 628,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 30,
+      "strategy": "random",
+      "botActions": 573,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 30,
+      "strategy": "spam",
+      "botActions": 573,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 31,
+      "strategy": "random",
+      "botActions": 610,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 31,
+      "strategy": "spam",
+      "botActions": 610,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 32,
+      "strategy": "random",
+      "botActions": 626,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 32,
+      "strategy": "spam",
+      "botActions": 561,
+      "witnessActions": 25,
+      "ok": true,
+      "replayedActions": 25,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 33,
+      "strategy": "random",
+      "botActions": 587,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 33,
+      "strategy": "spam",
+      "botActions": 587,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 34,
+      "strategy": "random",
+      "botActions": 616,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 34,
+      "strategy": "spam",
+      "botActions": 611,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 35,
+      "strategy": "random",
+      "botActions": 25,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 35,
+      "strategy": "spam",
+      "botActions": 18,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 36,
+      "strategy": "random",
+      "botActions": 21,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 36,
+      "strategy": "spam",
+      "botActions": 594,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 37,
+      "strategy": "spam",
+      "botActions": 619,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 38,
+      "strategy": "random",
+      "botActions": 6,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 38,
+      "strategy": "spam",
+      "botActions": 663,
+      "witnessActions": 133,
+      "ok": true,
+      "replayedActions": 133,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 39,
+      "strategy": "random",
+      "botActions": 39,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 39,
+      "strategy": "spam",
+      "botActions": 627,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 40,
+      "strategy": "random",
+      "botActions": 15,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 40,
+      "strategy": "spam",
+      "botActions": 657,
+      "witnessActions": 25,
+      "ok": true,
+      "replayedActions": 25,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 41,
+      "strategy": "random",
+      "botActions": 599,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 41,
+      "strategy": "spam",
+      "botActions": 597,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 42,
+      "strategy": "random",
+      "botActions": 604,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 42,
+      "strategy": "spam",
+      "botActions": 604,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 43,
+      "strategy": "random",
+      "botActions": 27,
+      "witnessActions": 16,
+      "ok": true,
+      "replayedActions": 16,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 43,
+      "strategy": "spam",
+      "botActions": 626,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 44,
+      "strategy": "random",
+      "botActions": 649,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 44,
+      "strategy": "spam",
+      "botActions": 646,
+      "witnessActions": 11,
+      "ok": true,
+      "replayedActions": 11,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 45,
+      "strategy": "random",
+      "botActions": 630,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 45,
+      "strategy": "spam",
+      "botActions": 630,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 46,
+      "strategy": "random",
+      "botActions": 648,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 46,
+      "strategy": "spam",
+      "botActions": 203,
+      "witnessActions": 110,
+      "ok": true,
+      "replayedActions": 110,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 47,
+      "strategy": "random",
+      "botActions": 88,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 47,
+      "strategy": "spam",
+      "botActions": 643,
+      "witnessActions": 36,
+      "ok": true,
+      "replayedActions": 36,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 48,
+      "strategy": "random",
+      "botActions": 142,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 48,
+      "strategy": "spam",
+      "botActions": 630,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 49,
+      "strategy": "random",
+      "botActions": 23,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 49,
+      "strategy": "spam",
+      "botActions": 17,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 50,
+      "strategy": "random",
+      "botActions": 19,
+      "witnessActions": 10,
+      "ok": true,
+      "replayedActions": 10,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 50,
+      "strategy": "spam",
+      "botActions": 441,
+      "witnessActions": 20,
+      "ok": true,
+      "replayedActions": 20,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 51,
+      "strategy": "random",
+      "botActions": 5,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 51,
+      "strategy": "spam",
+      "botActions": 589,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 52,
+      "strategy": "random",
+      "botActions": 76,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 52,
+      "strategy": "spam",
+      "botActions": 595,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 53,
+      "strategy": "random",
+      "botActions": 619,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 53,
+      "strategy": "spam",
+      "botActions": 619,
+      "witnessActions": 18,
+      "ok": true,
+      "replayedActions": 18,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 54,
+      "strategy": "random",
+      "botActions": 83,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 54,
+      "strategy": "spam",
+      "botActions": 644,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 55,
+      "strategy": "random",
+      "botActions": 180,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 55,
+      "strategy": "spam",
+      "botActions": 648,
+      "witnessActions": 13,
+      "ok": true,
+      "replayedActions": 13,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 56,
+      "strategy": "random",
+      "botActions": 588,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 56,
+      "strategy": "spam",
+      "botActions": 235,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 57,
+      "strategy": "random",
+      "botActions": 616,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 57,
+      "strategy": "spam",
+      "botActions": 616,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 58,
+      "strategy": "random",
+      "botActions": 665,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 58,
+      "strategy": "spam",
+      "botActions": 665,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 59,
+      "strategy": "random",
+      "botActions": 15,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 59,
+      "strategy": "spam",
+      "botActions": 609,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 60,
+      "strategy": "random",
+      "botActions": 655,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 60,
+      "strategy": "spam",
+      "botActions": 286,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 61,
+      "strategy": "random",
+      "botActions": 23,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 61,
+      "strategy": "spam",
+      "botActions": 23,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 62,
+      "strategy": "random",
+      "botActions": 36,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 62,
+      "strategy": "spam",
+      "botActions": 584,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 63,
+      "strategy": "random",
+      "botActions": 26,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 63,
+      "strategy": "spam",
+      "botActions": 691,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 64,
+      "strategy": "random",
+      "botActions": 532,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 64,
+      "strategy": "spam",
+      "botActions": 531,
+      "witnessActions": 11,
+      "ok": true,
+      "replayedActions": 11,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 65,
+      "strategy": "random",
+      "botActions": 9,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 65,
+      "strategy": "spam",
+      "botActions": 345,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 66,
+      "strategy": "random",
+      "botActions": 12,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 66,
+      "strategy": "spam",
+      "botActions": 650,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 67,
+      "strategy": "random",
+      "botActions": 599,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 67,
+      "strategy": "spam",
+      "botActions": 599,
+      "witnessActions": 12,
+      "ok": true,
+      "replayedActions": 12,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 68,
+      "strategy": "random",
+      "botActions": 17,
+      "witnessActions": 8,
+      "ok": true,
+      "replayedActions": 8,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 68,
+      "strategy": "spam",
+      "botActions": 637,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 69,
+      "strategy": "spam",
+      "botActions": 623,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 70,
+      "strategy": "random",
+      "botActions": 19,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 70,
+      "strategy": "spam",
+      "botActions": 541,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 71,
+      "strategy": "random",
+      "botActions": 118,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 71,
+      "strategy": "spam",
+      "botActions": 639,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 72,
+      "strategy": "random",
+      "botActions": 10,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 72,
+      "strategy": "spam",
+      "botActions": 7,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 73,
+      "strategy": "random",
+      "botActions": 104,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 73,
+      "strategy": "spam",
+      "botActions": 607,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 74,
+      "strategy": "random",
+      "botActions": 133,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 74,
+      "strategy": "spam",
+      "botActions": 651,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 75,
+      "strategy": "random",
+      "botActions": 624,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 75,
+      "strategy": "spam",
+      "botActions": 143,
+      "witnessActions": 12,
+      "ok": true,
+      "replayedActions": 12,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 76,
+      "strategy": "random",
+      "botActions": 45,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 76,
+      "strategy": "spam",
+      "botActions": 620,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 77,
+      "strategy": "spam",
+      "botActions": 339,
+      "witnessActions": 44,
+      "ok": true,
+      "replayedActions": 44,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 78,
+      "strategy": "random",
+      "botActions": 13,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 78,
+      "strategy": "spam",
+      "botActions": 623,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 79,
+      "strategy": "random",
+      "botActions": 19,
+      "witnessActions": 11,
+      "ok": true,
+      "replayedActions": 11,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 79,
+      "strategy": "spam",
+      "botActions": 6,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 80,
+      "strategy": "random",
+      "botActions": 558,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 80,
+      "strategy": "spam",
+      "botActions": 535,
+      "witnessActions": 84,
+      "ok": true,
+      "replayedActions": 84,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 81,
+      "strategy": "random",
+      "botActions": 19,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 81,
+      "strategy": "spam",
+      "botActions": 647,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 82,
+      "strategy": "random",
+      "botActions": 585,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 82,
+      "strategy": "spam",
+      "botActions": 584,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 83,
+      "strategy": "random",
+      "botActions": 624,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 83,
+      "strategy": "spam",
+      "botActions": 579,
+      "witnessActions": 20,
+      "ok": true,
+      "replayedActions": 20,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 84,
+      "strategy": "random",
+      "botActions": 12,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 84,
+      "strategy": "spam",
+      "botActions": 16,
+      "witnessActions": 7,
+      "ok": true,
+      "replayedActions": 7,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 85,
+      "strategy": "random",
+      "botActions": 10,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 85,
+      "strategy": "spam",
+      "botActions": 24,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 86,
+      "strategy": "random",
+      "botActions": 13,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 86,
+      "strategy": "spam",
+      "botActions": 18,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 87,
+      "strategy": "random",
+      "botActions": 5,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 87,
+      "strategy": "spam",
+      "botActions": 613,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 88,
+      "strategy": "random",
+      "botActions": 638,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 88,
+      "strategy": "spam",
+      "botActions": 638,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 89,
+      "strategy": "random",
+      "botActions": 11,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 89,
+      "strategy": "spam",
+      "botActions": 593,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 90,
+      "strategy": "random",
+      "botActions": 577,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 90,
+      "strategy": "spam",
+      "botActions": 577,
+      "witnessActions": 16,
+      "ok": true,
+      "replayedActions": 16,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 91,
+      "strategy": "random",
+      "botActions": 8,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 91,
+      "strategy": "spam",
+      "botActions": 632,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 92,
+      "strategy": "random",
+      "botActions": 611,
+      "witnessActions": 3,
+      "ok": true,
+      "replayedActions": 3,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 92,
+      "strategy": "spam",
+      "botActions": 179,
+      "witnessActions": 6,
+      "ok": true,
+      "replayedActions": 6,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 93,
+      "strategy": "random",
+      "botActions": 12,
+      "witnessActions": 5,
+      "ok": true,
+      "replayedActions": 5,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 93,
+      "strategy": "spam",
+      "botActions": 24,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 94,
+      "strategy": "random",
+      "botActions": 558,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 94,
+      "strategy": "spam",
+      "botActions": 558,
+      "witnessActions": 8,
+      "ok": true,
+      "replayedActions": 8,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 95,
+      "strategy": "random",
+      "botActions": 624,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 95,
+      "strategy": "spam",
+      "botActions": 618,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 96,
+      "strategy": "random",
+      "botActions": 562,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 96,
+      "strategy": "spam",
+      "botActions": 562,
+      "witnessActions": 9,
+      "ok": true,
+      "replayedActions": 9,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 97,
+      "strategy": "random",
+      "botActions": 593,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 97,
+      "strategy": "spam",
+      "botActions": 593,
+      "witnessActions": 8,
+      "ok": true,
+      "replayedActions": 8,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 98,
+      "strategy": "random",
+      "botActions": 17,
+      "witnessActions": 14,
+      "ok": true,
+      "replayedActions": 14,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 98,
+      "strategy": "spam",
+      "botActions": 421,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 99,
+      "strategy": "spam",
+      "botActions": 633,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 100,
+      "strategy": "random",
+      "botActions": 647,
+      "witnessActions": 4,
+      "ok": true,
+      "replayedActions": 4,
+      "reason": null,
+      "snapshotFile": null
+    },
+    {
+      "seed": 100,
+      "strategy": "spam",
+      "botActions": 647,
+      "witnessActions": 2,
+      "ok": true,
+      "replayedActions": 2,
+      "reason": null,
+      "snapshotFile": null
+    }
+  ]
+}

@@ -1,3 +1,37 @@
+## MORNING SUMMARY — Night 2 (2026-10-01)
+
+**Economy remains exactly v5 round 6 `b76c051`; no retuning or production-code changes.** All requested audit/measurement work is complete. Generalization preserves four targets but reveals **five combo opening stalls** outside the original 50 seeds; stock pressure remains missed.
+
+| V5 target | 1–100 | 101–200 | Combined 1–200 |
+|---|---|---|---|
+| a: ≥90% combo wins, zero false losses | **PASS** 98/100, 0 | **PASS** 96/100, 0 | **PASS** 194/200, 0 |
+| b: ≥90% careless failures each | **PASS** spam 100, random 95 | **PASS** spam 100, random 96 | **PASS** spam 200, random 191 |
+| c: ≥1.5× T4 median placements | **PASS** spam 1.901×; random ∞ | **PASS** spam 1.725×; random ∞ | **PASS** spam 1.798×; random ∞ |
+| d: T3–T7 stock ≤3× roster max cost | **MISS** worst 101.70× | **MISS** worst 104.63× | **MISS** worst 104.30× |
+| e: no combo stalls before T2 | **MISS** 61, 93 | **MISS** 105, 147, 194 | **MISS** five opening stalls |
+| f: 65–85% median winning slot use | **PASS** 74.80% | **PASS** 74.80% | **PASS** 74.80% |
+
+**Stuck audit:** seeds 1–100 × spam/random, 200 terminal states: **195 recoverable, 5 wins, 0 genuine dead, 0 unknown, 0 false positives, 0 false negatives**. All 84 affordability stalls and 111 full-board stops have a replayed refund/rebuild payout witness. Thus the lack of an end screen is justified in these sampled states; a recoverable state is not a guarantee of eventual victory. **Additional verification: all 195 recovery witnesses pass through real GameSession commands and every intermediate end check; zero were blocked before payout.** No engine loss declaration occurred in any of the 600 generalization sessions. Synthetic custom-config detector limitations are routed to Opus below; no naturally generated instance was found.
+
+**Strategy scan:** all 86,941 combo placements, all 24 buildings. No building exceeds 25% in aggregate (Lumber Camp 16.80%, Sawmill 11.42%, Farm 9.08%). Top paid-event combos: Timber Line 10,971; Homestead 7,103; Woodland Village 6,804; Frontier Outpost 5,979; Salt Cure 4,674. Starting-biome wins: **forest 63/69 (91.30%); desert 70/70; arctic 61/61**. Designer questions: all six combo failures start forest; strong per-run Hillside/Gatherer concentration in stalled runs; Frost Kiln only 1 placement and Resin Works 71. These are observations, not tuning changes or causal claims.
+
+**Three playtest seeds:**
+
+1. **35, tight combo win:** 538 placements/543 living non-core slots (99.08%); water 853/850 lifetime, 6 held. Five slots remain.
+2. **22, careless mid-game stall:** random stops at 143 placements before T4, wood 0 / stone 0 / water 21 / food 69, 400 empty slots. Demolish hex 0 / slot 0 and hex 1 / slot 0, then Driftwood Camp on hex 0 / slot 1: lifetime wood 226→230. A recoverable stall, not a true soft-lock.
+3. **147, newly exposed opening failure:** combo stops after 4 placements before T2; forest start, wood 0 / stone 16 / water 0 / food 14. Useful for the failed opening target. **No genuine stuck seed exists in the requested spam/random audit sample**, so none is invented here.
+
+**Commits / synchronization:**
+
+- `d151c8e` — first-step P1-A verification: W3 already normal `it` in `f8e53fb`; full suite 410 passed/11 skipped. Pushed successfully.
+- `a2885bb` — 200-state stuck audit, minimal seed/action repros, state hashes and payout witnesses. Pushed successfully.
+- `c8a3673` — both 100-seed cohorts, combined 200-seed targets and exact historical-policy comparison. Pushed successfully.
+- `b0abf4f` — placement/combo/starting-biome scan and designer questions. Pushed successfully.
+
+**Final validation:** 160 scoped tests pass, 10 opt-in skipped; typecheck and owned diff checks pass. The initial requested full-suite check passed 410 / 11 skipped. All five sample/classification counters and all 195 command-level recovery replays are archived. **IDLE — ready for designer review and balance feedback.** No endgame changes were made.
+
+**Evidence / QA:** [generalization](../../tests/balance/NIGHT2.md), [stuck audit](../../tests/balance/stuck/REPORT.md), [strategy scan](../../tests/balance/STRATEGIES.md), commands in [harness README](../../tests/balance/README.md). All 150 historical round 6 runs match exactly after removing the two observational fields; both new cohorts have exactly one run per seed/policy. T4 uses inherited population medians: 53 spam and 15 random matched-seed exceptions violate a stricter per-seed reading; six missing combo T4s are separately reported. Other owners' files untouched; no push failures or current outside-owner blocker.
+
 ## v5 result — N12
 
 **Selected round 6 `b76c051`: 50/50 combo wins, 50/50 spam failures, 48/50 random failures. Five targets pass; stock pressure (d) remains missed.** Six measured rounds; no unmeasured final blend. N11 shipped first as `6e8c7f9`; quick cost fix `a15915b`; seeded random harness `559f482`.
@@ -200,6 +234,7 @@ IN PROGRESS — Night 2: verify P1-A, audit spam/random terminal states on seeds
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- **Night 2 → Opus, command-level follow-up:** all195 stored recovery witnesses replay successfully through actual GameSession commands, including intermediate automatic end checks (zero blocks). See `tests/balance/stuck/session-replays.json`; the seed/action repros regenerate exact terminal state hashes before running each witness.
 - **Night 2 → Opus, stuck audit complete:** spam/random seeds 1–100 yield **0 genuine dead states, 0 false negatives, 0 false positives, 0 unresolved**. 195 actual replayed recoveries (84 stalled bots via unpaid bases; 111 full boards via replacement combos) and 5 wins; no engine loss declarations. Reproducible seed/action counts, state hashes and transaction witnesses are in `tests/balance/stuck/audit-1-100.json`; run `tests/balance/stuck/replay.ts random 22` using the loader documented in REPORT.md. Random22's 143-placement stall recovers by two demolitions then Driftwood Camp, lifetime wood226→230. These results do not prove eventual win feasibility.
 - **Synthetic detector limitation for Opus, outside the frozen-seed finding:** `tests/balance/stuck/audit.test.ts` contains a two-hex custom-config state where four refunds fund two replacements forming the first paid pair; the single-replacement detector declares loss. The independent audit proves a payout. A separate 30-hex/no-recipe fixture reaches the detector's 64-simulation guard while actually dead. Neither synthetic fixture uses the frozen economy; no naturally generated case found and no endgame edits made.
 - Night 2: Opus P1-A report is stale relative to local main; W3 is already fixed (`f8e53fb`) and the full suite passes. Economy source exactly matches `b76c051`; no changes made to other owners’ paths.
@@ -579,7 +614,7 @@ Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **
 
 - Step 1: **`d151c8e` pushed successfully**; W3 was already normal `it` in `f8e53fb`. Full `npm test`: 410 passed, 11 skipped. No redundant test edit.
 - Step 2: **`a2885bb` pushed successfully**; audit tooling and 200-run evidence complete; 12 focused audit/observation tests and typecheck pass. Historical-policy replays on seeds 1/spam, 35/combo, 22/random match round6 exactly after removing observational fields. Independent random22 witness replay passes. Economy remains frozen.
-- Next: generalization on 1–100 and 101–200, then strategy concentration.
+- Steps3/4 complete and pushed as `c8a3673` / `b0abf4f`; see generalization/strategy sections and the morning summary.
 
 ## Night 2 generalization — frozen v5
 
@@ -605,3 +640,7 @@ Generalization **`c8a3673` pushed successfully**. Scan covers all200 combo runs,
 - Starting-biome win rates: **forest63/69 (91.30%), desert70/70 (100%), arctic61/61 (100%)**. All six non-wins begin forest. This is descriptive, not a causal biome-effect claim.
 - **Designer questions only:** should the forest opening's greedy Hillside/Gatherer concentration be mitigated in a future balance pass? Are near-unused premium buildings intended (Frost Kiln1 placement; Resin Works71)? No balance or policy changes made.
 - Strategy aggregation test covers losers, zero-use entries, payout sums, placement accounting and unsampled-biome denominators; range tests/typecheck pass.
+
+## Night 2 final verification
+
+`b0abf4f` pushed successfully. All195 independently generated recovery witnesses also pass actual GameSession commands and intermediate end checks, not only economy transactions. `validate-sessions.ts` regenerates each bot state, checks its SHA-256 and full report against the audit archive, then replays the saved witness.195 passed/0 blocked. Synthetic unit fixture demonstrates a legitimate loss after the last possible payout, which still counts as a successful recovery to that first payout; pending-offer gating is respected. Final160 scoped tests/10 skipped, typecheck, owned diff checks and frozen config comparison pass. Morning summary complete; no push failure so far.

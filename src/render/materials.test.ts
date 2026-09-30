@@ -48,6 +48,22 @@ describe('illustrated vertex-only board material', () => {
     });
     expect(group.children.filter(o => o.name.startsWith('building:'))).toHaveLength(24); disposeGroup(group);
   });
+  it.each([[20, 14], [30, 20]])('keeps a full %i×%i illustrated board in model batches, with one fill and one ink material', (cols, rows) => {
+    const state = makeTestState({ cols, rows, hex: () => ({ biome: 'forest' }) }), ids = Object.keys(BUILDING_MODELS);
+    const group = new THREE.Group(), style = installIllustratedStyle(group), buildings = new Buildings(group, cols * rows);
+    for (const hex of state.hexes) {
+      hex.slots.forEach((slot, index) => { slot.building = ids[(hex.id * 3 + index) % ids.length]; });
+      buildings.refresh(hex, hex.col * 2, hex.row * 2);
+    }
+    const models = group.children.filter(o => o.name.startsWith('building:')) as THREE.InstancedMesh[];
+    const hulls = group.children.filter(o => o.userData.inkHull) as THREE.InstancedMesh[];
+    expect(models).toHaveLength(24); expect(hulls).toHaveLength(24);
+    expect(models.reduce((sum, model) => sum + model.count, 0)).toBe(cols * rows * 3);
+    expect(new Set(models.map(m => m.material))).toEqual(new Set([style.fill]));
+    expect(new Set(hulls.map(m => m.material))).toEqual(new Set([style.ink]));
+    expect(hulls.reduce((sum, model) => sum + model.count, 0)).toBe(cols * rows * 3);
+    disposeGroup(group);
+  });
   it('outline shares the matrix buffer and matches packing/removal count without a second animation loop', () => {
     const group = new THREE.Group(); installIllustratedStyle(group);
     const batch = new Instances(group, new THREE.BoxGeometry(), 0xffffff, 3);
