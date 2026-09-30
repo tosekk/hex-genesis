@@ -4,6 +4,7 @@ import { createEndScreen } from '../endScreen';
 import { el } from '../format';
 import { createOfferModal } from '../offerModal';
 import { createToasts } from '../toasts';
+import { createJournal, type Journal } from '../journal';
 import { Ctrl } from './ctrl';
 import { createDeck } from './deck';
 import { createDetail } from './detail';
@@ -18,8 +19,8 @@ import './styles.css';
 
 export interface JournalDeps {
   audio?: AudioSettingsLike;
-  /** U2 plugs the journal book in here. */
-  createJournal?: (root: HTMLElement, session: GameSession) => { toggle(): void; close(): void; isOpen(): boolean; handleEvent(e: import('../../core/contracts').SessionEvent): void; dispose(): void };
+  /** Override the committed book factory; null keeps the coming-soon fallback. */
+  createJournal?: ((root: HTMLElement, session: GameSession) => Journal) | null;
 }
 
 /** sol's optional `audioSettings` (src/audio/settings.ts). Resolved lazily so the build works before it lands. */
@@ -53,12 +54,12 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   const toasts = createToasts(host, session);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
-  const help = createJournalHelp(host, () => session.state.pendingOffer !== null || session.state.status !== 'playing' || [...host.querySelectorAll<HTMLElement>('.overlay')].some(node => !node.hidden && !node.classList.contains('help-overlay')));
+  const journal = (deps.createJournal === undefined ? createJournal : deps.createJournal)?.(host, session);
+  const help = createJournalHelp(host, () => (journal?.isOpen() ?? false) || session.state.pendingOffer !== null || session.state.status !== 'playing' || [...host.querySelectorAll<HTMLElement>('.overlay')].some(node => !node.hidden && !node.classList.contains('help-overlay')));
   top.append(el('small', 'j-controls-hint', 'Press ? for controls'));
-  const journal = deps.createJournal?.(host, session);
   const topRight = createTopRight(host, session, {
     openHelp: () => help.open(),
-    toggleJournal: () => (journal ? journal.toggle() : notice.show('Journal coming soon.')),
+    toggleJournal,
     audio: deps.audio ?? defaultAudioSettings(),
   });
 
@@ -85,14 +86,19 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   ctrl.onNotice((m) => notice.show(m));
   ctrl.isBlocked = () => session.state.status !== 'playing' || session.state.pendingOffer !== null || help.isOpen() || topRight.isOpen() || (journal?.isOpen() ?? false);
 
-  // J opens/closes the journal (U2); the help overlay's own capture handler swallows keys while it is open.
+  function toggleJournal(): void {
+    if (session.state.status !== 'playing' || session.state.pendingOffer || help.isOpen() || topRight.isOpen()) return;
+    if (journal) {
+      if (journal.isOpen()) journal.close(); else { notice.hide(); journal.open(); }
+    } else notice.show('Journal coming soon.');
+  }
+
+  // The book subscribes to session events itself. J can close it even while board input is blocked.
   const onKey = (ev: KeyboardEvent) => {
     const t = ev.target;
     if (t instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable)) return;
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    if ((ev.key === 'j' || ev.key === 'J') && !ev.repeat && !ctrl.isBlocked()) {
-      if (journal) journal.toggle(); else notice.show('Journal coming soon.');
-    }
+    if ((ev.key === 'j' || ev.key === 'J') && !ev.repeat) { ev.preventDefault(); toggleJournal(); }
   };
   document.addEventListener('keydown', onKey);
 
@@ -100,14 +106,13 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   ctrl.onChange(() => { stack.render(); triangle.render(); deck.render(); detail.render(); });
 
   const off = session.subscribe((e) => {
-    journal?.handleEvent(e);
     ctrl.handleEvent(e); // re-renders the selection-dependent components via onChange
     switch (e.type) {
       case 'runStarted':
         pills.reset(); toasts.clear(); offer.hide(); end.hide(); topRight.close(); notice.hide(); topRight.setEnabled(true); renderAll();
         help.hide();
         break;
-      case 'offerShown': help.hide(); offer.show(e.offer); renderAll(); break;
+      case 'offerShown': help.hide(); journal?.close(); topRight.close(); offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
       case 'payouts': toasts.push(e.events); pills.render(); break;
       case 'runEnded': offer.hide(); help.hide(); journal?.close(); topRight.close(); topRight.setEnabled(false); notice.hide(); toasts.clear(); renderAll(); end.show(e.stats);

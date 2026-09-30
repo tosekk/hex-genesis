@@ -18,7 +18,7 @@ export function fixture(startBefore = false, deps: JournalDeps = {}) {
     onPointer(cb) { pointer = cb; return () => { pointer = null; }; } };
   const root = document.createElement('div'); root.id = 'ui'; document.body.append(root);
   if (startBefore) session.newRun(1);
-  const hud = createJournalHud(root, session, board, deps); disposals.push(() => hud.dispose());
+  const hud = createJournalHud(root, session, board, { createJournal: null, ...deps }); disposals.push(() => hud.dispose());
   if (!startBefore) session.newRun(1);
   return { root, session, board, hud, pointer: (pick: BoardPick | null, kind: PointerKind = 'click') => pointer?.(pick, kind),
     click: (selector: string) => root.querySelector<HTMLButtonElement>(selector)!.click() };
@@ -215,4 +215,49 @@ it('exports the reviewed journal HUD as the default and retains the legacy facto
   expect(createHud).toBe(createJournalHud);
   expect(createLegacyHud).toBeTypeOf('function');
   expect(createLegacyHud).not.toBe(createHud);
+});
+
+describe('committed journal book integration', () => {
+  const key = (name: string, type = 'keydown') => document.body.dispatchEvent(new KeyboardEvent(type, { key: name, bubbles: true }));
+  it('opens once by book button, toggles with J, and keeps selection on Escape', () => {
+    const s = fixture(false, { createJournal: undefined });
+    const book = s.root.querySelector<HTMLElement>('.jr-overlay')!;
+    s.click('.journal-btn'); expect(book.hidden).toBe(true); // opening offer blocks the book
+    s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.building');
+    s.click('.journal-btn'); expect(book.hidden).toBe(false);
+    expect(s.root.querySelectorAll('.jr-overlay')).toHaveLength(1);
+    key('J'); expect(book.hidden).toBe(true);
+    key('j'); expect(book.hidden).toBe(false);
+    key('Escape'); expect(book.hidden).toBe(true);
+    expect(s.root.querySelector('.j-card.building.selected')).not.toBeNull();
+    key('Escape'); expect(s.root.querySelector('.j-card.building.selected')).toBeNull();
+  });
+  it('blocks core placement and help while open, then restores input when closed', () => {
+    const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]');
+    s.click('[data-card="core"]'); const site = legalCoreSites(s.session.state)[0];
+    key('j'); s.pointer({ hexId: site, slot: null }); expect(s.session.state.cores).toHaveLength(0);
+    key('h'); expect(s.root.querySelector<HTMLElement>('.help-overlay')!.hidden).toBe(true);
+    key('j'); s.pointer({ hexId: site, slot: null }); expect(s.session.state.cores).toHaveLength(1);
+  });
+  it('releases the held Tab finder even when the book blocks input', () => {
+    const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]');
+    key('Tab'); expect(s.root.querySelector('.j-slots.active')).not.toBeNull();
+    key('j'); key('Tab', 'keyup'); expect(s.root.querySelector('.j-slots.active')).toBeNull();
+  });
+  it('keeps unknown combo pages secret and relies on the book subscription for run reset', () => {
+    const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]'); key('j');
+    s.click('.jr-tab[data-tab="combos"]');
+    const book = s.root.querySelector<HTMLElement>('.jr-overlay')!;
+    expect(book.querySelector('.jr-q')?.textContent).toBe('?');
+    for (const combo of s.session.state.config.combos) expect(book.textContent).not.toContain(combo.name);
+    s.session.newRun(7); expect(book.hidden).toBe(true);
+    s.click('.offer-overlay [data-index="0"]'); key('j'); expect(book.querySelector('.jr-title')?.textContent).toBe('Field Journal');
+    s.hud.dispose(); expect(s.root.querySelector('.jr-overlay')).toBeNull();
+    key('j'); expect(s.root.querySelector('.jr-overlay')).toBeNull();
+  });
+  it('allows the menu book button to close the menu before opening the book', () => {
+    const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]'); s.click('.menu-btn');
+    s.click('.journal-btn'); expect(s.root.querySelector<HTMLElement>('.j-menu')!.hidden).toBe(true);
+    expect(s.root.querySelector<HTMLElement>('.jr-overlay')!.hidden).toBe(false);
+  });
 });

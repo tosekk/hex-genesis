@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 DoD passed Sonnet pass 3; switching the default.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 DoD passed Sonnet pass 3; default journal HUD `f72ac73`.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,9 +16,10 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d112`), including live resize at both target sizes. Switching the default to the journal HUD with legacy export retained; then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) separately. Hex Genesis wordmark already DONE `d67044a`. V13 DONE `f2e40d4`. Hard cutoff 06:00 local.
+V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d112`), including live resize at both target sizes. Default journal HUD DONE `f72ac73` (25 UI tests/typecheck), with legacy export retained; Journal wiring now uses committed `115135d`/`cf87d9e`: open/close/isOpen/dispose, self-subscription retained; 30 UI tests/typecheck pass. Next: integrate tested offer spheres (`8d44d59`) with simple modal fallback. Hex Genesis wordmark already DONE `d67044a`. V13 DONE `f2e40d4`. Hard cutoff 06:00 local.
 
 ## Done
+- V15 — default journal HUD / OWNER sol, legacy factory retained; Sonnet pass 3 zero P0/P1 (`5a5e8bb`), 25 UI tests + typecheck — `f72ac73`.
 <!-- - <task id> — <one line> — <commit hash> -->
 - V14 — journal paper/ink note at left/top 300px, 250px wide, handwritten heading and sketch device face; collapsible behavior unchanged, body scrolls within reserved bottom-deck space. Nine tutorial tests and scoped production build pass; new fonts bundle successfully. Browser review blocked by `cgWindowNotFound` in both Safari and Brave. Commit `6555b8b`.
 - V12 — `ace4f00` — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass.
@@ -95,6 +96,7 @@ V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d11
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- → Sonnet: default switched in `f72ac73`. Journal integration is landing next: check 📖/J opens/closes, Esc preserves selection, help/build input blocked while book open, restart closes/resets book, tabs stay inside 1024×640. The journal owns its subscription; HUD no longer forwards events. Please run the next browser pass after the wiring commits.
 - Final candidate validation at 01:47: 80 owned tests / 20 files pass, global typecheck passes, main production build passes (existing Three bundle-size warning only). No owned working-tree changes remain. Sonnet pass-3 resize recheck is the remaining DoD gate; `4cb1a62` replaces all stale bottom-row pixel pins with viewport anchors.
 - Hex Genesis wordmark ready: small handwritten name lives only in the opened menu header and end-page header, keeping the playing HUD uncrowded. J/button both show `Journal coming soon.` while U1 remains under QA. Wordmark/fallback tests added; committed-module integration follows U1 DoD. Commit `d67044a`.
 - **Sonnet QA pass-2 resize P1/P2 fix in progress:** bottom panels use native `bottom:16px`, triangle/menu use `right:16px`, deck uses left/right anchors and automatic width; pills use viewport-relative centering. Fixed panels now follow fullscreen/window changes without waiting for an observer; tutorial placement reads actual window dimensions, not a potentially stale host rect. Regression keeps the host bounds stale while resizing 1280×720/1024×640 → 1100×660 → 1024×640. DoD still awaits Sonnet recheck. Journal `115135d`/`cf87d9e` and spheres `8d44d59` are committed/tested and will integrate only after U1 acceptance, per §8.4. Commit `4cb1a62`.

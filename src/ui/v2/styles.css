@@ -187,3 +187,10 @@
 
 .j-wordmark { font:400 20px/1.2 'Patrick Hand','Segoe Print',cursive; color:var(--ink2); }
 .j-menu .j-wordmark { border-bottom:1px dashed var(--ink2); padding-bottom:4px; }
+
+/* Preserve book icon sizes and leave room for its right-side tabs at the target viewports. */
+.jhud .jr-book { max-width:calc(100vw - 216px); }
+.jhud .jr-recipe .icon, .jhud .jr-icons .icon, .jhud .jr-terrain .icon { width:26px; height:26px; }
+.jhud .jr-slots .icon { width:44px; height:44px; }
+.jhud .jr-overlay .icon-missing { width:auto; }
+@media (max-width:1000px) { .jhud .jr-book { max-width:calc(100vw - 90px); } }

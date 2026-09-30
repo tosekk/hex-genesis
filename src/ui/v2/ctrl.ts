@@ -242,6 +242,7 @@ export class Ctrl {
 
   private onKey(ev: KeyboardEvent, down: boolean): void {
     if (ev.key === 'Shift') { this.shiftHeld = down; for (const c of this.hoverCbs) c(); return; }
+    if (ev.key === 'Tab' && !down) { this.setTab(false); return; }
     if (this.isBlocked() || typing(ev.target) || ev.ctrlKey || ev.metaKey || ev.altKey) return;
     if (ev.key === 'Tab') { if (down) ev.preventDefault(); this.setTab(down); return; }
     if (!down || ev.repeat) return;
