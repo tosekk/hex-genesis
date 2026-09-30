@@ -156,3 +156,8 @@ Sonnet is paused. **Opus runs in a cloud session** (a separate clone of GitHub `
 | `src/sim/economy/**`, `src/config/economy.ts`, `src/config/map.ts`, `src/sim/world/**`, `src/sim/offers*`, `tests/acceptance/**`, `tests/balance/**` | **astra** |
 
 **Browser QA is done by the designer.** Agents cover every fix with DOM/unit tests. **The final zip is built locally by the designer** with opus's verification script.
+
+## Night 2, 2026-10-01 03:20–06:20: designer asleep, all three agents unattended
+- **Freeze:** default gameplay and visuals change **only** for bug fixes (plus opus's soft-lock fix, if astra's audit shows it's needed). The economy stays at v5 round 6 (`b76c051`). **New visuals only behind URL flags** (`?style=illustrated`, `?journal=paper`).
+- **Syncing:** sol and astra run `git push origin main` after every commit. If a push fails (network or sandbox), log it in your status and continue. Opus pulls `origin/main` into `opus/night` before every step; the designer merges `opus/night` in the morning.
+- **By 06:15**, each agent writes a "**MORNING SUMMARY**" block at the top of its status file: what's done (hashes), flags to try, QA steps, open risks.
