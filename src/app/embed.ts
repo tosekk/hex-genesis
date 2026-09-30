@@ -3,14 +3,26 @@
 /** Keys the browser uses to scroll. Inside a non-scrollable iframe they scroll the PARENT page instead. */
 const SCROLL_KEYS = new Set([' ', 'Spacebar', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End']);
 
-/** Elements that need these keys themselves (typing a seed, activating a focused button with Space, sliders). */
-const ownsKey = (t: EventTarget | null) =>
-  t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SUMMARY'].includes(t.tagName));
+/** Does the focused element use this key itself? Buttons need only Space (activation); sliders and
+ *  selects need arrows (and Home/End); text fields need every key. Anything else must not scroll. */
+function ownsKey(t: EventTarget | null, key: string): boolean {
+  if (!(t instanceof HTMLElement)) return false;
+  if (t.isContentEditable || t.tagName === 'TEXTAREA') return true;
+  const space = key === ' ' || key === 'Spacebar';
+  if (t.tagName === 'BUTTON' || t.tagName === 'SUMMARY') return space;
+  if (t.tagName === 'SELECT') return true;
+  if (t instanceof HTMLInputElement) {
+    if (t.type === 'range') return !space;
+    if (t.type === 'checkbox' || t.type === 'radio' || t.type === 'button' || t.type === 'submit') return space;
+    return true; // text-like inputs (e.g. the seed box)
+  }
+  return false;
+}
 
 /** Stops scroll keys from scrolling the embedding page. Returns an uninstall function. */
 export function preventScrollKeys(): () => void {
   const onKey = (e: KeyboardEvent) => {
-    if (SCROLL_KEYS.has(e.key) && !ownsKey(e.target)) e.preventDefault();
+    if (SCROLL_KEYS.has(e.key) && !ownsKey(e.target, e.key)) e.preventDefault();
   };
   // Window CAPTURE phase runs before every other handler, so a UI handler that stops propagation
   // (e.g. the help overlay swallowing keys) can't bypass it. It only cancels the browser's default

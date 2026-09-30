@@ -3,7 +3,11 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O8.3, waiting for astra's final N8 round (then re-run autoplay, `npm run package`, verify in the itch iframe page). O8.1 ✅ `d339fc9` · O8.2 ✅ this commit.
+PAUSED (usage limit). O8.3 in progress; O9 not started.
+- O8.3: final N8 `e4448fd` autoplay ✅ (greedy seeds 1–5 WIN at T8, 70–76% board; spam fills 100% and is stuck, not lost; see the O8.1 routing). RC zip built from clean `1fa5455` (legacy HUD; U1 keeps `createHud` = legacy).
+- The itch-frame check of that RC found that the parent page still scrolls: (1) help overlay swallows keys in capture phase → fixed `1fa5455` (window capture listener); (2) the guard exempted focused BUTTONS for every key, and help focuses its "Got it" button → fixed in THIS commit (key-specific ownership + tests).
+- NEXT: rebuild the RC from this commit (`git archive` → `node scripts/package.mjs` → `release/`), re-run the itch-frame test (click into the game, help open and closed: ↓×5/Space/PgDn/End ⇒ parent scrollY 0), then tell the designer the zip is ready. Then O9 (read tasks/UI_SPEC.md; add optional `BoardView.setSlotHighlight`; wire `?ui=legacy` + `createAudio(…, { controls: false })` after sonnet U1 exports; browser-check the new HUD; repackage).
+- NOTE: `release/terraform-jam-2026-09-30.zip` currently holds the `1fa5455` build, which still has bug (2). Do NOT upload it.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->

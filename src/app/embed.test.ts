@@ -32,14 +32,29 @@ describe('preventScrollKeys (itch.io iframe)', () => {
     }
   });
 
+  it('a focused button owns only Space: arrows and PageDown on it must not scroll the page (help overlay regression)', () => {
+    uninstall = preventScrollKeys();
+    const button = document.createElement('button');
+    document.body.append(button);
+    for (const k of ['ArrowDown', 'ArrowUp', 'PageDown', 'End']) expect(press(button, k).defaultPrevented).toBe(true);
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    document.body.append(slider);
+    expect(press(slider, ' ').defaultPrevented).toBe(true);
+  });
+
   it('leaves keys alone for controls that use them, and lets game handlers see every key', () => {
     uninstall = preventScrollKeys();
     const button = document.createElement('button');
     const slider = document.createElement('input');
     slider.type = 'range';
     document.body.append(button, slider);
+    const seedBox = document.createElement('input');
+    document.body.append(seedBox);
     expect(press(button, ' ').defaultPrevented).toBe(false);
     expect(press(slider, 'ArrowRight').defaultPrevented).toBe(false);
+    expect(press(seedBox, 'Home').defaultPrevented).toBe(false);
+    expect(press(seedBox, ' ').defaultPrevented).toBe(false);
     const seen: string[] = [];
     const onKey = (e: KeyboardEvent) => seen.push(e.key);
     window.addEventListener('keydown', onKey);
