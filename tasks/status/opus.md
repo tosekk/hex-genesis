@@ -3,14 +3,14 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-**IN PROGRESS: O13 (cloud night shift, branch `opus/night`).** Waiting on `main` for astra's N11 (`isCoreHex`/`slotCounts`), sol's night items 1–4 and astra's N12. Nothing from either has reached `origin/main` yet (last checked 21:52 UTC, `main` = `9c3434b`).
+**IN PROGRESS: O13 (cloud, branch `opus/night`), on `main` `a752b06`.**
 
-- O13.1 endgame: done against `state.cores` (`105fab2`); swap to `isCoreHex` when N11 lands.
-- O13.2 e2e: done. **`npm test` 83 s → 30 s** (cloud, 4 cores). Full sample: `npm run test:e2e-full`.
-- O13.3 adjacency-log integration test: done.
-- O13.4 review: waiting for sol/astra night commits.
-- O13.5 `npm run verify-zip`: done. **On current `main` it FAILS as designed: all 19 MP3s ship twice** (`audio/…` from `public/` + hashed `assets/…`). Sol's night item 1 (audio → `src/assets/audio`) fixes that.
-- O13.6 release gate: not yet.
+- O13.1 follow-up DONE (`8249711`): endgame + e2e use astra's `isCoreHex` / `slotCounts`.
+- O13.4 review DONE for everything since `9c3434b` (sol `206e815`, `1a502c6`, `4980e85`; astra `6e8c7f9`, `a15915b`, `559f482`, `e075831`): **0 P0, 2 P1, 3 P2**, see "Bugs routed" → "O13.4 night review". Blocking the release gate: **astra P1-A** (W3 `it.fails` → `it`, `npm test` is red by one test until then) and **sol P1-B** (core hexes still counted in 4 UI places; expected in V16 (a)).
+- **Package on `a752b06` (O13 step 3): PASS.** `npm run package` → `hex-genesis-<date>.zip`: 67 files, **19 MP3s, each exactly once** (19 sources, matched by content), **5.00 MB zipped** (5,239,550 bytes; 5.59 MB unpacked; was ~11 MB), `index.html` at root, relative URLs only, no `src/`. zip sha256 `b66c147b…850b929`, content sha256 `4479bfb6…3f5d71ce` (Node 22.22.0). Not a release candidate: P1-A/P1-B are open and V16 (a) / the v5 result are pending.
+- verify-zip now also prints a **content sha256** (hash of every entry's name + bytes, independent of compression and order). The zip's own sha256 depends on the local Node/zlib deflate output, so the designer's local zip may differ byte-wise from the cloud one; the content hash must match.
+- **Docs (O13 step 4) DONE:** README controls rewritten for the journal HUD, each row checked against the code (`ui/v2/ctrl.ts` keys, `help.ts`, `topRight.ts`, `journalHud.ts` J, `fx/offerSpheres.ts` + `ui/offerModal.ts` 1/2, `render/boardView.ts` OrbitControls + Q/E/WASD). README's duplicate itch draft was replaced by a link to `itch/PAGE.md`; the credits now say ElevenLabs made the voice, SFX and music. `itch/PAGE.md`: resolved the journal-HUD `[CHECK]`s (controls, fonts, tutorial note) and the audio ones (ElevenLabs credit, 5 VO + 13 SFX + 1 music). Every `[CHECK]` left is a designer-only fact (jam name/tag, designer name, release status, session length, cover/screenshots, browsers tested, AI design review, generated art, Three.js licence, and the v4-era slow-opening seeds).
+- Next: the release gate, after astra's "v5 result" and sol's V16 (a) (+ P1-A, P1-B).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -185,6 +185,28 @@ Only `opus` edits this file. Everyone else reads it.
 
 ## Bugs routed
 <!-- - to <tag>: <report> -->
+### O13.4 night review (2026-10-01, commits since `9c3434b`)
+Checked: correctness, determinism, layering, hidden info (§32, §38), v5 R1–R4, core-hex handling (§10). **No P0.**
+
+- **P1-A → astra (blocks the release gate):** `tests/acceptance/endgame.test.ts:58` W3 is `it.fails(...)` "waiting for the opus night endgame". That landed (`105fab2`, `8249711`); W3 now passes, so vitest reports the `it.fails` as a failure and `npm test` is red (1 of 415). Fix: `it.fails` → `it`. Nothing else needed; I checked that W3 passes for the right reason (the empty core hex 0 is no longer counted as room).
+- **P1-B → sol (V16 (a) scope; list it so nothing is missed):** four UI counts still include core hexes, because they filter only `placeable && biome !== null`:
+  1. journal HUD "Slots left N of M": `slotSummary` in `src/ui/v2/ctrl.ts:8` (used by `thresholds.ts:75`);
+  2. the **Tab / "Slots left" finder highlight**: the same `slotSummary(...).hexes` (`ctrl.ts:297`) highlights every core hex as "has empty slots", and it always will, since a core hex can never be filled;
+  3. legacy HUD "Slots left": `emptySlotSummary` in `src/ui/winProgress.ts:8`;
+  4. the **end screen "Board used: used/total"** (`src/ui/endScreen.ts:36`, shared by both HUDs) via `emptySlotSummary`. A player who fills every real slot sees < 100% and "3 × cores" slots left.
+  Repro: any run after the first core: `total` = `slotCounts(state).total + 3 × state.cores.length`, and the finder lights the core hex. Fix: both helpers → `slotCounts` for the numbers, plus `!isCoreHex(state, h.id)` in the `hexes` list. Test: one core hex, everything else full → "Slots left 0 of N", no finder highlight, end screen 100%.
+- **P2-C → astra (report clarity):** v5 target f says "placeable non-core slots (via `slotCounts`)", but `slotCounts.total` counts **terraformed** non-core slots, not all placeable ones. `runBalance` now reports `boardUse = occupied / slotCounts.total`, while v4's 68% median was `placements / all placeable map slots`. Both are defensible, but v5 and v4 board-use numbers aren't comparable. Name the denominator in `REPORT.md` next to target f. Also `thresholds[i].fill` and `.boardUse` are now the same number (`bot.ts`, both `/ slotCounts(state).total`).
+- **P2-D → sol:** `voice.ts` treats any non-modified `keydown` as the unlock gesture. Esc isn't a user activation in Chromium, so if the first key is Esc, `start()` gets `NotAllowedError`, re-queues the line, and waits for the next gesture. That's harmless (it retries), only noting it so the designer's QA doesn't read it as "VO sometimes skips its first line". No change needed.
+- **P2-E → sol:** `Ctrl.hasBiomeLand` / `biomeEnabled` scan all hexes on every call (6× per triangle render + deck + `sync`). Fine at 280 tiles; revisit only if a larger map ships.
+
+Verified OK, no finding:
+- **Determinism:** the random bot is seeded (`createRng(deriveSeed(seed, 'balance-random'))`), with `nextInt` draws and a test that pins the draw sequence and that no RNG state is used on a null choice. There is no `Math.random`, `Date` or `performance.now` in `src/core`, `src/sim`, `src/game` or `tests/balance`. The only exception is the session's pre-existing `Date.now` for wall-clock stats. `audio.ts`'s pitch jitter is presentation only.
+- **Layering:** no `three`, DOM or UI imports in core/sim/game.
+- **R1–R4** (`a15915b`): checked every building by hand, and `config.test.ts` enforces all four (R3 includes "no 0 keys"). Hillside Mine now costs wood 2.
+- **§32/§38:** the deck preview filters combos to discovered ones, the journal's locked pages carry no data, and the adjacency log's current matches are always discovered (placement discovers every current match; demolition adds none).
+- **N11:** `canPlaceBuilding` checks the core before anything else and returns the exact reason text, `session.preview` returns null on a core hex, and the soft-lock/harness paths all skip core hexes.
+- **Audio move** (`206e815`): globs point at `src/assets/audio`, and a test guards that no MP3 remains in `public/audio`.
+
 - **to sol (P1 usability):** clicks in the thin gaps between tile tops are silently ignored. `pick()` raycasts only `tops` (radius 0.95 vs spacing 1.0), so a ray through a gap hits nothing. Repro: HEAD build, `?seed=7`, default camera, 1024×768; a synthetic pointerdown/up at client (454,454) returns null, while (450,450) → tile 8,11 and (458,458) → tile 9,11. A 20 px grid scan finds ~5% of on-board points are dead, mostly tile corners, which is where players naturally click. Suggestion: raycast an invisible full-size (radius 1.0) pick mesh, or fall back to the nearest hex centre at the hit plane.
 - to sonnet (cosmetic): after a win, the hex panel stays open behind the end screen with live "Demolish" buttons (the session rejects them, since the run is over). Close/hide the panel on `runEnded`.
 - to sonnet (minor): "New Run" with a typed seed on the end screen doesn't update `?seed=` in the URL, so a reload replays the previous seed.

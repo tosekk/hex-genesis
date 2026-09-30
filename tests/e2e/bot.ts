@@ -4,7 +4,7 @@ import { expect } from 'vitest';
 import type { GameSession } from '../../src/core/contracts';
 import { canAfford } from '../../src/core/resources';
 import type { BuildingId, GameState, HexId, Resources, SlotIndex } from '../../src/core/types';
-import { rosterFor } from '../../src/sim/economy';
+import { isCoreHex, rosterFor, slotCounts } from '../../src/sim/economy';
 import { computeSpread, isHexLocked, legalCoreSites } from '../../src/sim/spread/spread';
 import { assertInvariants } from './invariants';
 
@@ -89,7 +89,7 @@ function chooseCoreSite(s: Readonly<GameState>): Action | null {
 /** Living, placeable, unlocked, and not a core's own hex (§10: a core hex never holds buildings). */
 const buildable = (s: Readonly<GameState>, id: HexId) => {
   const h = s.hexes[id];
-  return h.placeable && h.biome !== null && !isHexLocked(s, id) && !s.cores.includes(id);
+  return h.placeable && h.biome !== null && !isHexLocked(s, id) && !isCoreHex(s, id);
 };
 
 /**
@@ -205,8 +205,9 @@ export function runBot(session: GameSession, seed: number, opts: BotOptions = {}
   }
 
   const s = session.state;
-  // Core hexes are not building slots anywhere, board-used stats included (§10).
-  const living = s.hexes.filter((h) => h.placeable && h.biome !== null && !s.cores.includes(h.id));
+  // Core hexes are not building slots anywhere, board-used stats included (§10): the economy's slotCounts.
+  const living = s.hexes.filter((h) => h.placeable && h.biome !== null && !isCoreHex(s, h.id));
+  const slots = slotCounts(s);
   return {
     seed, strategy, status: s.status, stop, actions, placements, coresPlaced,
     thresholdsReached: s.thresholdIndex,
@@ -215,8 +216,8 @@ export function runBot(session: GameSession, seed: number, opts: BotOptions = {}
     lifetime: { ...s.lifetime }, resources: { ...s.resources },
     filledHexes: living.filter((h) => h.slots.every((x) => x.building !== null)).length,
     livingPlaceableHexes: living.length,
-    occupiedSlots: living.reduce((n, h) => n + h.slots.filter((x) => x.building !== null).length, 0),
-    terraformedSlots: 3 * living.length,
+    occupiedSlots: slots.total - slots.empty,
+    terraformedSlots: slots.total,
     placeableSlots: 3 * s.hexes.filter((h) => h.placeable).length,
   };
 }

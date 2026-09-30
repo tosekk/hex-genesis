@@ -8,7 +8,7 @@ import type { SessionEvent } from '../../src/core/contracts';
 import { createInitialState } from '../../src/core/state';
 import type { GameState, SlotIndex } from '../../src/core/types';
 import { createGameSession } from '../../src/game/session';
-import { placeBuilding, previewPlacement, rosterFor } from '../../src/sim/economy';
+import { isCoreHex, placeBuilding, previewPlacement, rosterFor } from '../../src/sim/economy';
 import { checkWin, isProvablySoftLocked } from '../../src/sim/endgame';
 import { awardCore, resolveOffer } from '../../src/sim/offers';
 import { isHexLocked, legalCoreSites } from '../../src/sim/spread/spread';
@@ -69,8 +69,9 @@ describe.skipIf(!newWinRule)('autoplay under the §41 win rule (real modules)', 
     expect(s.placeCore(far, 0).ok).toBe(true);
     expect(s.state.activeSpread).not.toBeNull();
     st.resources = { wood: 99, stone: 99, water: 99, food: 99 };
-    // A buildable tile from the first spread, outside the active claim set.
-    const hex = s.state.hexes.find((h) => h.placeable && h.biome !== null && !isHexLocked(s.state, h.id) && h.slots[0].building === null)!;
+    // A buildable tile from the first spread, outside the active claim set, and not a core's own hex (§10).
+    const hex = s.state.hexes.find((h) => h.placeable && h.biome !== null && !isHexLocked(s.state, h.id)
+      && !isCoreHex(s.state, h.id) && h.slots[0].building === null)!;
     const building = rosterFor(s.state, hex.id).find((b) => Object.values(previewPlacement(s.state, hex.id, 0, b).base).some((v) => v > 0))!;
     const base = previewPlacement(s.state, hex.id, 0, building).base;
     const res = Object.keys(base).find((k) => base[k] > 0)!;
