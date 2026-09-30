@@ -1,4 +1,5 @@
 // OWNER: sonnet (reassigned from deepseek) — D3
+import { SLOT_PAIRS } from '../core/types';
 import type { BuildingId, GameState, HexId, Resources, SlotIndex } from '../core/types';
 import { demolishRefund, placeBuilding, rosterFor } from './economy';
 import { legalCoreSites } from './spread/spread';
@@ -23,19 +24,13 @@ function nonZero(r: Resources): boolean {
   return false;
 }
 
-/** §41: no legal core site, no spread running, every slot on every terraformed placeable hex occupied. Held cores and leftover dead land are ignored. */
+/** §41 (changed 2026-09-30): the run is won the moment the FINAL threshold is consumed. Spreads, held cores, offers, empty slots and legal sites never block it. */
 export function checkWin(state: Readonly<GameState>): boolean {
-  if (state.activeSpread !== null) return false;
-  if (legalCoreSites(state).length > 0) return false;
-  for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null) continue;
-    for (const s of h.slots) if (s.building === null) return false;
-  }
-  return true;
+  return state.thresholdIndex >= state.config.thresholds.length;
 }
 
 /**
- * §43, §44: true ONLY if the run is provably dead. No multi-step demolition solver;
+ * §42–§44: true ONLY if the run is provably dead (typically: out of room, final threshold unmet). No multi-step demolition solver;
  * whenever a single known action might still produce resources, or we are unsure, → false.
  */
 export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
@@ -63,6 +58,10 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
     const roster = rosterFor(state, h.id);
     for (const slot of SLOTS) {
       const cur = h.slots[slot];
+      // Provably no payout from (re)building here, whatever the building (economy §23, §31, §34): base pays once per slot,
+      // pairs/triple once per position, adjacency only on a hex's first completion. Skips the expensive simulation.
+      if (cur.yieldPaid && h.everCompleted && h.triplePaid !== null
+        && SLOT_PAIRS.every(([a, b2], k) => (a !== slot && b2 !== slot) || h.pairPaid[k] !== null)) continue;
       for (const b of roster) {
         const def = cfg.buildings[b];
         if (!def) return false; // unknown data: unsure

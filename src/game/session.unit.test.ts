@@ -47,11 +47,12 @@ vi.mock('../sim/economy', () => ({
   },
 }));
 vi.mock('../sim/endgame', () => ({
-  checkWin: () => flags.win,
+  checkWin: (s: GameState) => flags.win || s.thresholdIndex >= s.config.thresholds.length,
   isProvablySoftLocked: () => flags.lock,
 }));
 
 import { legalCoreSites } from '../sim/spread/spread';
+import { DEFAULT_CONFIG } from '../config';
 import { createGameSession } from './session';
 
 type Session = ReturnType<typeof boot>['session'];
@@ -209,6 +210,44 @@ describe('GameSession (fakes)', () => {
     expect(session.state.status).toBe('won');
     expect(session.state.pendingOffer).toBeNull();
     expect(types(events).at(-1)).toBe('runEnded');
+  });
+
+  it('S8: the final threshold gives no core and no offer, and wins in the same command', () => {
+    let t = 0;
+    const session = createGameSession({ config: { ...DEFAULT_CONFIG, thresholds: [{ wood: 10 }] }, now: () => t++ });
+    const events: SessionEvent[] = [];
+    session.subscribe((e) => events.push(e));
+    session.newRun(1);
+    session.chooseOffer(0); // holds an unplaced core: must not block the win
+    const id = origin(session);
+    session.state.hexes[id].biome = 'forest';
+    session.placeBuilding(id, 0, 'x'); // lifetime 5
+    events.length = 0;
+    session.placeBuilding(id, 1, 'x'); // lifetime 10 → final threshold
+    const ty = types(events);
+    expect(ty).not.toContain('coreAwarded');
+    expect(ty).not.toContain('offerShown');
+    expect(ty.at(-1)).toBe('runEnded');
+    expect(ty.filter((x) => x === 'runEnded')).toHaveLength(1);
+    expect(session.state.status).toBe('won');
+    expect(session.state.pendingOffer).toBeNull();
+    expect(session.state.thresholdIndex).toBe(1);
+    expect((events.at(-1) as Extract<SessionEvent, { type: 'runEnded' }>).status).toBe('won');
+  });
+
+  it('S8: a non-final threshold still awards a core and shows an offer', () => {
+    const session = createGameSession({ config: { ...DEFAULT_CONFIG, thresholds: [{ wood: 10 }, { wood: 50 }] }, now: () => 0 });
+    const events: SessionEvent[] = [];
+    session.subscribe((e) => events.push(e));
+    session.newRun(1);
+    session.chooseOffer(0);
+    const id = origin(session);
+    session.state.hexes[id].biome = 'forest';
+    session.placeBuilding(id, 0, 'x');
+    events.length = 0;
+    session.placeBuilding(id, 1, 'x'); // lifetime 10 → threshold 1 of 2
+    expect(types(events)).toContain('offerShown');
+    expect(session.state.status).toBe('playing');
   });
 
   it('soft-lock ends the run as lost', () => {

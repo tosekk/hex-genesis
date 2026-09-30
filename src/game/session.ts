@@ -114,7 +114,8 @@ export function createGameSession(opts?: { config?: GameConfig; now?: () => numb
       if (r.value.discovered.length > 0) emit({ type: 'combosDiscovered', comboIds: r.value.discovered });
       emit({ type: 'resourcesChanged' });
       // §29: the transaction is complete; only now check the threshold.
-      if (advanceThreshold(state)) awardAndShow();
+      // The FINAL threshold grants no core: endCheck() below wins the run (§39, §41).
+      if (advanceThreshold(state) && state.thresholdIndex < config.thresholds.length) awardAndShow();
       endCheck();
       return r;
     },

@@ -7,7 +7,12 @@ import { checkWin, isProvablySoftLocked } from './endgame';
 function fullBoard(): { s: GameState; b: string } {
   const s = makeTestState({ hex: () => ({ biome: 'forest' }) });
   const b = s.config.rosters.forest[0];
-  for (const h of s.hexes) for (const sl of h.slots) { sl.building = b; sl.yieldPaid = true; }
+  const rec = { comboId: 'c', amount: {} };
+  for (const h of s.hexes) {
+    for (const sl of h.slots) { sl.building = b; sl.yieldPaid = true; }
+    // A genuinely played-out board: every one-time payout has already happened.
+    h.everCompleted = true; h.pairPaid = [rec, rec, rec]; h.triplePaid = rec;
+  }
   s.cores.push(0);
   return { s, b };
 }
@@ -16,33 +21,25 @@ const emptySlot = (s: GameState, id: HexId, i: 0 | 1 | 2, paid: boolean) => {
   s.hexes[id].slots[i].yieldPaid = paid;
 };
 
-describe('checkWin (§41)', () => {
-  it('1: all slots full, no legal core site → won', () => {
-    expect(checkWin(fullBoard().s)).toBe(true);
-  });
+describe('checkWin (§41, changed 2026-09-30)', () => {
+  const lastIndex = (s: GameState) => s.config.thresholds.length;
 
-  it('2: one empty slot on a terraformed placeable hex → not won', () => {
+  it('is false until the final threshold is consumed', () => {
     const { s } = fullBoard();
-    emptySlot(s, 5, 1, true);
+    expect(checkWin(s)).toBe(false); // board full but threshold unmet: that is a loss, not a win
+    s.thresholdIndex = lastIndex(s) - 1;
     expect(checkWin(s)).toBe(false);
   });
 
-  it('3: held cores and leftover dead land are ignored (dead land with no legal site)', () => {
-    const { s } = fullBoard();
-    s.coreStack.push('desert', 'arctic');
-    // Dead placeable hex next to a core: illegal site (distance < 6), so it does not block a win.
-    s.hexes[1].biome = null;
+  it('wins on the final threshold even with empty slots, a held core and an active spread', () => {
+    const s = makeTestState({ hex: () => ({ biome: 'forest' }) });
+    emptySlot(s, 5, 0, false);
+    s.coreStack.push('desert');
+    s.activeSpread = { result: { origin: 0, biome: 'forest', claims: [], poolUsed: 0 }, revealed: 0, locked: {} };
+    s.pendingOffer = { options: ['forest', 'desert'], reshuffled: false };
+    s.hexes[100].biome = null; // a legal core site remains too
+    s.thresholdIndex = lastIndex(s);
     expect(checkWin(s)).toBe(true);
-  });
-
-  it('a legal core site left → not won; active spread → not won', () => {
-    const { s } = fullBoard();
-    s.cores.length = 0;
-    s.hexes[100].biome = null;
-    expect(checkWin(s)).toBe(false);
-    const w = fullBoard().s;
-    w.activeSpread = { result: { origin: 0, biome: 'forest', claims: [], poolUsed: 0 }, revealed: 0, locked: {} };
-    expect(checkWin(w)).toBe(false);
   });
 });
 
@@ -59,8 +56,18 @@ describe('isProvablySoftLocked (§43, §44)', () => {
     expect(isProvablySoftLocked(locked())).toBe(true);
   });
 
+  it('board full, final threshold unmet → soft-locked (out of room), even when rich and fast', () => {
+    const { s } = fullBoard();
+    s.resources = { wood: 999, stone: 999, food: 999, water: 999 };
+    const t = performance.now();
+    expect(isProvablySoftLocked(s)).toBe(true);
+    expect(performance.now() - t).toBeLessThan(10);
+  });
+
   it('never true when won, or when the run is not playing', () => {
-    expect(isProvablySoftLocked(fullBoard().s)).toBe(false);
+    const w = fullBoard().s;
+    w.thresholdIndex = w.config.thresholds.length;
+    expect(isProvablySoftLocked(w)).toBe(false);
     const s = locked(); s.status = 'ended';
     expect(isProvablySoftLocked(s)).toBe(false);
   });
