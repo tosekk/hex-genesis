@@ -3,9 +3,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N2 — real-session spam/combo measurement harness and untuned v2 baseline. N1 committed `457a221`; scoped tests/typecheck pass, one outside-owner tutorial fixture failure reported.
+IN PROGRESS: N3 round 1 — thresholds first, using reached-run pacing as a diagnostic while retaining all-seed failures in target checks. N2 committed `fd23f08`.
 
 ## Done
+- N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
 - N1 — exact v2 economy, immutable v2 guardrail fixture, six-threshold/recipe/yield checks — `457a221`.
 - D4 — 1–4 connected mountain clusters of 3–10 tiles, 15–25% hill coverage, draining plateau rivers, tuned natural-terrain probabilities and before/after statistics — `0b7f609`.
 - D1 step 3 — woods/marsh, all world/C3 acceptance passing, 200-seed checks and terrain statistics — `d978f14`.
@@ -23,6 +24,7 @@ IN PROGRESS: N2 — real-session spam/combo measurement harness and untuned v2 b
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3: prioritize target 4, then 2, 1, 3. Round 1 changes thresholds only, approximately scaling the untuned completers' pacing toward targets; this is not evidence that the censored seeds succeed. Stop after six measured rounds and keep the best reachable/winnable result rather than disguise stuck runs as favorable spam ratios.
 - N2 measurement: both bots score every affordable building on each eligible hex, using its first empty slot (equivalent empty slots because these bots never demolish). Highest immediate total payout wins; combo bot ties favor more occupied hexes, then HexId/roster order. No resource weighting, cost penalty, lookahead, reshuffle, or rescue actions are added. Offer choice previews each option at its maximum-dead-placeable site and favors a newly represented mixed biome there, then fewer main-biome tiles, then option 0. Unreached thresholds are censored as infinity for all-seed medians, never silently dropped; reached-only ranges/counts are also reported. Stuck-without-affordable-action is distinct from a game soft-lock declaration.
 - Overnight: follow N1–N5 sequentially, commit each item/round using explicit owned paths, and report outside-owner failures without edits. N0 already complete. Treat v2 table sparse yield keys as the permitted yield channels (±1 on listed resources); keep missing resources at zero unless a later designer decision authorizes a new channel.
 - D4 §6/§53 (designer feedback): the old fixed-radius/count algorithm cannot express the requested variety through knobs alone. Add min/max cluster count/size and hill-budget knobs, grow connected irregular mountain/hill patches, and shape hill elevations from their outer boundary while retaining mountain distance ≤3. Rivers may cross an equal-height plateau only along a shortest route to a strictly lower outlet; enclosed plateaus remain local minima. All decisions use integer RNG and ascending HexId ties, with one construction pass and no map rejection/regeneration.
@@ -172,3 +174,20 @@ N1 scoped check: `npx vitest run src/sim src/config tests/acceptance tests/balan
 No balance values changed. Real-session harness (`tests/balance`) finished seeds 1–20 × both bots in **90.54 s**, plus replay/unit verification: **2 tests pass**, total **106.22 s**; default run skips both tests (132 ms). Typecheck passes. `baseline.json` preserves exact config and all run data; `REPORT.md` records every target and seed.
 
 Baseline combo T6 **9/20**, wins **7/20**, spam T6/wins **0/20**, **zero soft-lock declarations**. Ten combo runs and eighteen spam runs do not reach T1; all-seed medians are consequently unreached. Among combo completers, medians T1–T6 are **14.5 / 47.5 / 77 / 113 / 280 / 394** (completion counts **10 / 10 / 9 / 9 / 9 / 9**). Every target is missed or unmeasurable. Ten combo runs stop after only three high-yield buildings, spending all available wood (or wood+stone) without producing either required T1 resource. This is a bot/economy guardrail issue, not a Sonnet soft-lock bug: the detector conservatively allows demolition escape and never declares loss. Seeds 12 and 18 reach T6 but fill all living slots while legal core sites remain; N3 will quantify the seven-core ceiling before reporting a frozen-limit blocker.
+
+### N3 round 1 — thresholds only
+
+Threshold-only round scales the reached-run baseline toward 7/22/45/90/160/270. It improves reachable-run timing, but leaves the same ten three-placement openings stuck: missing lifetime resources cannot meet any positive threshold. Target 2 therefore remains unmeasurable; round 2 is justified in trying allowed yield adjustments to make productive recipe paths affordable.
+
+| Value | Before → after |
+|---|---|
+| T1 | wood 15, stone 15 → wood 7, stone 7 |
+| T2 | wood 60, stone 50 → wood 28, stone 23 |
+| T3 | wood 130, stone 110, water 45 → wood 76, stone 64, water 26 |
+| T4 | wood 300, stone 250, water 140, food 110 → wood 240, stone 200, water 112, food 88 |
+| T5 | wood 560, stone 470, water 260, food 210 → wood 320, stone 270, water 150, food 120 |
+| T6 | wood 950, stone 800, water 450, food 370 → wood 650, stone 550, water 310, food 255 |
+
+Before: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached.
+
+After: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached. Measurement 80.47 s. Exact configuration/run archive: `tests/balance/round-1.json`.
