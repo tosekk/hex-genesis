@@ -67,4 +67,8 @@ function teardown(): void {
 window.addEventListener('pagehide', (e) => { if (!e.persisted) teardown(); });
 import.meta.hot?.dispose(teardown);
 
+// Dev-only QA hook (stripped from production builds): lets a tester set up hard-to-reach states,
+// e.g. a genuinely out-of-room board to check the loss screen (§42).
+if (import.meta.env.DEV) (window as unknown as { __session: typeof session }).__session = session;
+
 session.newRun(pickSeed());
