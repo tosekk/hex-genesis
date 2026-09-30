@@ -42,21 +42,57 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
   if (checkWin(state)) return false;
 
   const cfg = state.config;
-  // Most optimistic wallet for an unpaid slot: resources plus the refund of EVERY demolishable
-  // building (§26). Over-counts on purpose: a multi-step demolition may free an unpaid slot (§43).
   // §10 (2026-10-01): a core's own hex never holds buildings and is never a slot. One definition for
   // every slot count: the economy's isCoreHex (the same one slotCounts and the HUDs use).
+  const living = state.hexes.filter((h) => h.placeable && h.biome !== null && !isCoreHex(state, h.id));
+
+  // Most optimistic wallet: resources plus the refund of EVERY demolishable building (§26). Over-counts
+  // on purpose: any set of demolitions can fund one build, and a multi-step demolition may free a payout (§43).
+  // Every check below uses it, so a payout that refunds could fund is never ruled out (§44).
   let optimistic: Resources = state.resources;
-  for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null || isCoreHex(state, h.id)) continue;
+  for (const h of living) {
     for (const s of h.slots) {
       if (s.building !== null) optimistic = plus(optimistic, demolishRefund(state, s.building));
     }
   }
 
+  // 1. An empty slot that has never paid its base yield (§23): assume it pays if the wallet could fund it.
+  for (const h of living) {
+    const roster = rosterFor(state, h.id);
+    for (const s of h.slots) {
+      if (s.building !== null || s.yieldPaid) continue;
+      for (const b of roster) {
+        const def = cfg.buildings[b];
+        if (!def || covers(optimistic, def.cost)) return false; // unknown data: unsure
+      }
+    }
+  }
+
+  // 2. An unpaid combo position whose recipe this hex can build (§31). Rebuilding may take several
+  // replacements, which the one-step simulation below can't see (astra's night-2 stuck audit). Cost lower
+  // bound: only the recipe buildings not already standing on the hex.
+  for (const h of living) {
+    const roster = rosterFor(state, h.id);
+    const pairOpen = h.pairPaid.some((r) => r === null);
+    for (const combo of cfg.combos) {
+      const open = combo.buildings.length === 2 ? pairOpen : combo.buildings.length === 3 && h.triplePaid === null;
+      if (!open || !combo.buildings.every((b) => roster.includes(b))) continue;
+      const standing = h.slots.map((s) => s.building);
+      let cost: Resources = {};
+      for (const b of combo.buildings) {
+        const at = standing.indexOf(b);
+        if (at >= 0) { standing[at] = null; continue; }
+        const def = cfg.buildings[b];
+        if (!def) return false; // unknown data: unsure
+        cost = plus(cost, def.cost);
+      }
+      if (covers(optimistic, cost)) return false;
+    }
+  }
+
+  // 3. One (demolish +) build per slot, simulated: first-completion adjacency (§34) and anything 1–2 missed.
   let sims = 0;
-  for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null || isCoreHex(state, h.id)) continue;
+  for (const h of living) {
     const roster = rosterFor(state, h.id);
     for (const slot of SLOTS) {
       const cur = h.slots[slot];
@@ -67,32 +103,23 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
       for (const b of roster) {
         const def = cfg.buildings[b];
         if (!def) return false; // unknown data: unsure
-        if (cur.building === null) {
-          if (!cur.yieldPaid) {
-            // A base yield is still owed here. Assume it pays if demolishing anything could fund it.
-            if (covers(optimistic, def.cost)) return false;
-          } else if (covers(state.resources, def.cost)) {
-            if (++sims > MAX_SIMULATIONS) return false;
-            if (paysAfter(state, h.id, slot, b, false)) return false;
-          }
-        } else if (covers(plus(state.resources, demolishRefund(state, cur.building)), def.cost)) {
-          if (++sims > MAX_SIMULATIONS) return false;
-          if (paysAfter(state, h.id, slot, b, true)) return false;
-        }
+        if (!covers(optimistic, def.cost)) continue;
+        if (++sims > MAX_SIMULATIONS) return false;
+        if (paysAfter(state, h.id, slot, b, optimistic)) return false;
       }
     }
   }
   return true;
 }
 
-/** Simulates (demolish +) placement on a private copy; true if any payout is non-zero. Unexpected failure → true (unsure). */
-function paysAfter(state: Readonly<GameState>, hexId: HexId, slot: SlotIndex, b: BuildingId, demolish: boolean): boolean {
+/**
+ * Simulates (demolish +) placement on a private copy, holding `wallet` (so a refund-funded build is tried);
+ * true if any payout is non-zero or the hex completes for the first time. A rejected placement → false (provably illegal).
+ */
+function paysAfter(state: Readonly<GameState>, hexId: HexId, slot: SlotIndex, b: BuildingId, wallet: Resources): boolean {
   const sim = structuredClone(state) as GameState;
-  if (demolish) {
-    const old = sim.hexes[hexId].slots[slot].building!;
-    sim.hexes[hexId].slots[slot].building = null;
-    sim.resources = plus(sim.resources, demolishRefund(sim, old));
-  }
+  sim.hexes[hexId].slots[slot].building = null;
+  sim.resources = { ...wallet };
   const r = placeBuilding(sim, hexId, slot, b);
   if (!r.ok) return false; // provably illegal
   return r.value.payouts.some((p) => nonZero(p.amount)) || r.value.firstCompletion;

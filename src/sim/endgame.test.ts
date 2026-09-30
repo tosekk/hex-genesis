@@ -149,4 +149,45 @@ describe('isProvablySoftLocked (§43, §44)', () => {
     isProvablySoftLocked(s);
     expect(performance.now() - t).toBeLessThan(10);
   });
+
+  // Night 2 (astra's stuck-state audit, tests/balance/stuck): cases the old one-step detector declared dead
+  // although a payout remained (§44). Tiny 2-hex worlds, one resource, three buildings, one recipe.
+  describe('refund-funded and multi-step rescues are never declared dead (§43, §44)', () => {
+    const tiny = (extra: Partial<GameState['config']> = {}) => makeTestState({
+      cols: 2, rows: 1, resources: {}, hex: () => ({ biome: 'forest' }),
+      config: {
+        resources: ['wood'], startingResources: {},
+        buildings: Object.fromEntries(['a', 'b', 'c'].map((id) => [id, { id, name: id, cost: { wood: 2 }, baseYield: { wood: 1 } }])),
+        rosters: { forest: ['a', 'b', 'c'], desert: [], arctic: [], steppe: [], taiga: [], polarDesert: [] },
+        combos: [{ id: 'bc', name: 'BC', buildings: ['b', 'c'], amount: { wood: 3 } }],
+        thresholds: [{ wood: 1000 }], terrainBonuses: [], zoneModifiers: {}, adjacencyAmount: {}, ...extra,
+      },
+    });
+    const paid = { comboId: 'bc', amount: { wood: 3 } };
+
+    it('a full board whose first combo needs TWO replacements is not dead', () => {
+      const s = tiny();
+      for (const h of s.hexes) { h.everCompleted = true; for (const sl of h.slots) { sl.building = 'a'; sl.yieldPaid = true; } }
+      expect(isProvablySoftLocked(s)).toBe(false); // demolish two 'a' → build b + c → BC pays 3
+      // Control: every pair and triple position already paid → nothing can pay again.
+      for (const h of s.hexes) { h.pairPaid = [paid, paid, paid]; h.triplePaid = paid; }
+      expect(isProvablySoftLocked(s)).toBe(true);
+    });
+
+    it('a demolition refund elsewhere funding a first completion that pays adjacency is not dead', () => {
+      const setup = (extra: Partial<GameState['config']> = {}) => {
+        const s = tiny({ adjacencyAmount: { wood: 2 }, ...extra });
+        const [h0, h1] = s.hexes;
+        for (const h of s.hexes) { for (const sl of h.slots) sl.yieldPaid = true; h.pairPaid = [paid, paid, paid]; h.triplePaid = paid; }
+        h0.slots[0].building = 'a'; h0.slots[1].building = 'a'; // slot 2 empty (already paid), hex never completed
+        h1.slots[0].building = 'b'; h1.slots[1].building = 'c'; h1.slots[2].building = 'a'; h1.everCompleted = true;
+        return s;
+      };
+      // Wallet 0, but refunds (1 wood each) fund a 2-wood build; completing hex 0 pays adjacency with hex 1's BC.
+      expect(isProvablySoftLocked(setup())).toBe(false);
+      // Control: no refunds at all → the build can't be funded → dead.
+      expect(isProvablySoftLocked(setup({ demolishRefundRatio: 0 }))).toBe(true);
+    });
+  });
 });
+
