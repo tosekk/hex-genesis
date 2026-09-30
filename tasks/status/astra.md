@@ -1,3 +1,7 @@
+## N11 result
+
+Core-hex placement rejection and shared `isCoreHex`/`slotCounts` are ready. Roster stays visible; core previews return no payout. N12 calibration incorporates the core exclusion.
+
 ## N9 result
 
 **Selected round 4 (`4ba61e3`): median total held stock at T7 falls 54.10%, from 1,946.5 to 893.5. All five required v4 targets still pass.** Four rounds completed within the 90-minute cap; no baseline restoration needed.
@@ -69,7 +73,7 @@ Before (`e4448fd`) → after, **median held stock over the same 50 combo seeds**
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-N10 COMPLETE: journal data helpers are ready for Sonnet, per UI_SPEC §8.1. All 96 economy/acceptance tests and global typecheck pass. Only the new economy helper/tests and this status changed; no UI or economy tuning changes.
+IN PROGRESS: N11 helpers ready, then N12 cost-only fix, random bot and up to six v5 calibration rounds. Night revision: Opus owns endgame/e2e/packaging; no writes there.
 
 ## Done
 - N10 — `d4fc4f8` (`[astra] N10: journal helpers`): all four journal helpers and exact view types; discovered-only enforced before reading recipe metadata, current-combo adjacency snapshots, detached config views. Eleven new tests; `npx vitest run src/sim/economy tests/acceptance` → 96 passed across nine files (3.26 s); `npm run typecheck` and owned diff checks pass.
@@ -102,6 +106,7 @@ N10 COMPLETE: journal data helpers are ready for Sonnet, per UI_SPEC §8.1. All 
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N11: slotCounts counts terraformed placeable non-core slots even during a temporary spread lock; paid-but-empty slots remain empty. User explicitly requests the status result, so this own status file is the sole documentation exception to the listed code paths. N11 balance re-check is folded into N12 as the task file specifies.
 - N10 / UI_SPEC §8.1 and GAME_DESIGN §§32–35: page indices are zero-based config positions; recipe members retain order/multiplicity and costs count every occurrence. Biomes, terrain rules and zone effects retain config insertion order. Zone rules expand into one row per targeted building, retaining one row for `any`. All returned arrays/objects/resource maps are detached snapshots.
 - N10 adjacency: map each currentComboMatches occurrence to its name in match order (including duplicate recipe matches on different pairs), rather than historical paid records; the UI captures this when the event arrives. Ignore non-adjacency events and malformed adjacency events without neighborId; neighborId0 is valid. No signature changes or UI writes.
 - N9 final selection: round4 preserves all five required pass/fail targets, though combo wins change50→49 (still above the45 requirement); report that regression explicitly. Its54.10% median per-run T7 total reduction is larger than round1’s34.04%, with every resource median lower at every checkpoint. Rounds2/3 are ineligible because spam losses44<45. Keep round4 exactly; no unmeasured blend or fifth round. The final source differs from e4448fd only in building costs.
@@ -150,6 +155,7 @@ N10 COMPLETE: journal data helpers are ready for Sonnet, per UI_SPEC §8.1. All 
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- N11 → Opus: acceptance W3 now uses a 2×1 plain board, core at0, three fixture buildings on1, final threshold unmet. Expected lost; actual playing because core slots still count in endgame. Marked `it.fails` pending your night endgame fix. 98 other economy/acceptance tests pass; global typecheck passes.
 - N9 / Opus O8.2 advisory acknowledged: the prescribed no-demolition harness's board-full bot losses may still have productive replacement combos and do not imply the live game's loss screen. This is an existing design/measurement distinction, not a new session bug. N9 preserves the designer-requested e4448fd target definitions and explicit labels; no endgame/UI changes. Parallel UI files are untouched.
 - N8: no new outside-owner issue observed. S8 final-threshold behavior passes nine independent acceptance cases; global typecheck passed. Owned/scoped tests only; no full-suite/browser claim.
 - **RESOLVED N6 → sonnet (S6, source inspected; owner reports tests green; historical test assumption, `src/ui/hud.test.ts:203`):** the “resource bar shows per-resource lifetime progress” fixture selects the first T1 key (`wood`, now target 0), sets lifetime wood 4 and expects `4 / 0`. `resourceBar.ts:22` correctly caps displayed progress at the target, yielding `0 / 0` (row text `Wood6lifetime 40 / 0`). Expected fixture repair: select a positive target such as stone 16 or assert `min(have, need)`; §39 allows already-satisfied/zero requirements. Full suite: 273 pass, this one fails, 6 skip. Source and test untouched; all 164 scoped tests pass.
@@ -160,6 +166,7 @@ N10 COMPLETE: journal data helpers are ready for Sonnet, per UI_SPEC §8.1. All 
 - RESOLVED C3-FLIP: sonnet `4909942` holds spread locks through the final tile flip; real-session P5 passes with no expected-failure marker.
 
 ## Notes for others
+- Sol / Opus N11: exported `isCoreHex(state, hexId)` and `slotCounts(state)` from economy/index; reason text exactly `A terraformer core occupies this tile`. Ready for your slot accounting integration. Acceptance fixtures no longer build on a core.
 - **Sonnet / N10 journal handoff:** import `comboPages`, `adjacencyLogEntry`, `terrainRules`, `zoneEffects` and their exported view types directly from `src/sim/economy/journal`. Exact UI_SPEC §8.1 signatures are implemented. Locked pages contain only `locked` and zero-based `index`; discovered pages retain config order and recipe multiplicity. Capture adjacency entries when payout events arrive: both name lists use current matches (including repeated matches), and amounts/arrays are copied so saved entries remain stable. Reset/retention belongs to your journal UI. All 96 economy/acceptance tests and typecheck pass; no outside-owner issues observed in this validation.
 - **Opus O6.4 final N7 handoff:** selected config is round 3 `f6b6d45`, restored after the four-round search. Eight thresholds; 48/50 combo wins, 48/50 T6, zero declarations. Recommend **seed 1** for the full browser run (combo bot: T7/T8 307/357, win 633, seven cores), and **seed 12** for the extra-core regression (T7/T8 330/389, win 600, eight cores). Your D4/N4/N6 independent review PASS is acknowledged. Config will remain fixed for your final autoplay/pacing/browser verification.
 - **Opus O5/O4: please review D4 `0b7f609`**, particularly irregular hill boundary support and plateau drainage, then rerun real-map autoplay/pacing. D1 review PASS acknowledged. D4 retains the §6 invariants with smaller hill patches; lower-outlet plateau traversal is the explicit structural decision above. No contracts or economy values changed. All 115 astra-scoped tests pass (12 files, 3.35 s), including all C3 cases and unchanged D1 tests; typecheck and owned diff checks pass. Generation mean 0.881 ms, max 1.233 ms over 200 seeds. This D4 pass is headless; the browser evidence below describes D1 only.

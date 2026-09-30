@@ -8,6 +8,21 @@ import type {
 } from '../../core/types';
 import { isHexLocked } from '../spread/spread';
 
+export function isCoreHex(state: Readonly<GameState>, hexId: HexId): boolean {
+  return state.cores.includes(hexId);
+}
+
+/** Building slots on terraformed, placeable, non-core hexes, including temporarily locked slots. */
+export function slotCounts(state: Readonly<GameState>): { empty: number; total: number } {
+  let empty = 0, total = 0;
+  for (const hex of state.hexes) {
+    if (!hex.placeable || hex.biome === null || isCoreHex(state, hex.id)) continue;
+    total += hex.slots.length;
+    empty += hex.slots.filter(slot => slot.building === null).length;
+  }
+  return { empty, total };
+}
+
 export function rosterFor(state: Readonly<GameState>, hexId: HexId): BuildingId[] {
   const hex = state.hexes[hexId];
   return hex?.placeable && hex.biome !== null ? [...state.config.rosters[hex.biome]] : [];
@@ -17,6 +32,7 @@ export function canPlaceBuilding(state: Readonly<GameState>, hexId: HexId, slot:
   if (state.status !== 'playing') return err('Run is not playing');
   const hex = state.hexes[hexId];
   if (!hex) return err('Hex does not exist');
+  if (isCoreHex(state, hexId)) return err('A terraformer core occupies this tile');
   if (!hex.placeable || hex.biome === null) return err('Hex is not terraformed placeable land');
   if (isHexLocked(state, hexId)) return err('Hex is locked by an active spread');
   if (slot !== 0 && slot !== 1 && slot !== 2) return err('Invalid slot');

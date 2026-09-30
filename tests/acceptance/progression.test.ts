@@ -3,6 +3,7 @@ import { DEFAULT_CONFIG } from '../../src/config';
 import type { GameSession, SessionEvent } from '../../src/core/contracts';
 import type { GameConfig, SlotIndex } from '../../src/core/types';
 import { createGameSession } from '../../src/game/session';
+import { isCoreHex } from '../../src/sim/economy';
 import { legalCoreSites } from '../../src/sim/spread/spread';
 
 // Small deterministic fixture payouts expose session sequencing, not placeholder balance.
@@ -29,7 +30,7 @@ function ready(): GameSession {
 
 function buildNext(session: GameSession) {
   for (const hex of session.state.hexes) {
-    if (!hex.placeable || hex.biome === null || session.state.activeSpread?.locked[hex.id]) continue;
+    if (!hex.placeable || hex.biome === null || isCoreHex(session.state, hex.id) || session.state.activeSpread?.locked[hex.id]) continue;
     const slot = hex.slots.findIndex(s => s.building === null);
     if (slot >= 0) {
       const result = session.placeBuilding(hex.id, slot as SlotIndex, 'probe');

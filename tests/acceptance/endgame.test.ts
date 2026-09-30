@@ -5,7 +5,7 @@ import { legalCoreSites } from '../../src/sim/spread/spread';
 import type { SessionEvent } from '../../src/core/contracts';
 import { makeTestState } from '../../src/core/testing';
 import type { GameConfig, GameState } from '../../src/core/types';
-import { demolishBuilding, placeBuilding } from '../../src/sim/economy';
+import { canPlaceBuilding, demolishBuilding, isCoreHex, placeBuilding, slotCounts } from '../../src/sim/economy';
 import { checkWin, isProvablySoftLocked } from '../../src/sim/endgame';
 
 // Rule fixtures remain independent of designer tuning and production building ids.
@@ -25,12 +25,13 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     session.newRun(1); expect(session.chooseOffer(0).ok).toBe(true);
     const origin = legalCoreSites(session.state)[0];
     expect(session.placeCore(origin).ok).toBe(true); session.advance(cfg.animation.spreadMaxMs);
-    expect(session.placeBuilding(origin, 0, 'fixture').ok).toBe(true);
+    const tile = session.state.hexes.find(h => h.placeable && h.biome && !isCoreHex(session.state, h.id))!.id;
+    expect(session.placeBuilding(tile, 0, 'fixture').ok).toBe(true);
     expect(session.state.status).toBe('playing');
     expect(session.chooseOffer(0).ok).toBe(true);
     const held = [...session.state.coreStack];
     const events: SessionEvent[] = []; session.subscribe(e => events.push(e));
-    const final = session.placeBuilding(origin, 1, 'fixture');
+    const final = session.placeBuilding(tile, 1, 'fixture');
     expect(final.ok).toBe(true);
     if (final.ok) expect(final.value.payouts.map(p => p.kind)).toEqual(['base', 'pair']);
     expect(session.state.lifetime).toEqual({ wood: 6, stone: 11 });
@@ -38,7 +39,7 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     expect(session.state.status).toBe('won');
     expect(session.state.coreStack).toEqual(held);
     expect(session.state.pendingOffer).toBeNull();
-    expect(session.state.hexes[origin].slots[2].building).toBeNull();
+    expect(session.state.hexes[tile].slots[2].building).toBeNull();
     expect(legalCoreSites(session.state).length).toBeGreaterThan(0);
     expect(events.filter(e => e.type === 'coreAwarded' || e.type === 'offerShown')).toEqual([]);
     expect(events.filter(e => e.type === 'runEnded')).toHaveLength(1);
@@ -53,9 +54,10 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     expect(checkWin(s)).toBe(true); expect(s).toEqual(before);
     s.thresholdIndex = 0; expect(checkWin(s)).toBe(false); // Session consumes thresholds after the transaction.
   });
-  it('W3: exhausted board before the final threshold automatically loses in the final placement command', () => {
+  // Opus night endgame dependency: empty core slots must not prevent board-full loss.
+  it.fails('W3: exhausted board before the final threshold automatically loses in the final placement command', () => {
     const cfg: GameConfig = { ...DEFAULT_CONFIG, ...config,
-      map: { ...DEFAULT_CONFIG.map, cols: 1, rows: 1, levels: 1,
+      map: { ...DEFAULT_CONFIG.map, cols: 2, rows: 1, levels: 1,
         params: { ...DEFAULT_CONFIG.map.params, mountainClustersMin: 0, mountainClustersMax: 0,
           hillShareMin: 0, hillShareMax: 0, riverSourceChance: 0, basinChance: 0, woodsChance: 0, woodsMidBonus: 0, marshChance: 0, marshLowBonus: 0, marshWaterBonus: 0 } },
       buildings: { fixture: { id: 'fixture', name: 'Fixture', cost: {}, baseYield: { wood: 1 } } },
@@ -64,7 +66,7 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     expect(session.chooseOffer(0).ok).toBe(true); expect(session.placeCore(0).ok).toBe(true);
     session.advance(cfg.animation.spreadMaxMs);
     const events: SessionEvent[] = []; session.subscribe(e => events.push(e));
-    for (const slot of [0, 1, 2] as const) expect(session.placeBuilding(0, slot, 'fixture').ok).toBe(true);
+    for (const slot of [0, 1, 2] as const) expect(session.placeBuilding(1, slot, 'fixture').ok).toBe(true);
     expect(session.state.thresholdIndex).toBe(0); expect(session.state.status).toBe('lost');
     expect(events.filter(e => e.type === 'runEnded')).toMatchObject([{ status: 'lost' }]);
     expect(checkWin(session.state)).toBe(false);
@@ -78,6 +80,14 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     for (const slot of s.hexes[0].slots) { slot.building = 'fixture'; slot.yieldPaid = true; }
     s.hexes[0].everCompleted = true;
     expect(isProvablySoftLocked(s)).toBe(false);
+  });
+  it('W5: core hexes reject buildings and never count as empty or total slots', () => {
+    const s = makeTestState({ config, cols: 2, rows: 1, hex: () => ({ biome: 'forest' }) });
+    s.cores = [0];
+    expect(canPlaceBuilding(s, 0, 0, 'fixture')).toEqual({ ok: false, reason: 'A terraformer core occupies this tile' });
+    expect(slotCounts(s)).toEqual({ empty: 3, total: 3 });
+    for (const slot of s.hexes[1].slots) slot.building = 'fixture';
+    expect(slotCounts(s)).toEqual({ empty: 0, total: 3 });
   });
   it.each(['offer', 'spread', 'legal core', 'productive building'])('§44: never declares loss while %s offers a progression action', action => {
     const s = makeTestState({ config, cols: 3, rows: 1, resources: {}, hex: () => ({ biome: 'forest' }) });
