@@ -25,11 +25,11 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     }
   });
   it('measures both deterministic bots and writes the reviewable report', async () => {
-    const count = Number(process.env.BALANCE_SEEDS ?? 20);
+    const count = Number(process.env.BALANCE_SEEDS ?? 50);
     const width = Number(process.env.BALANCE_COLS ?? DEFAULT_CONFIG.map.cols);
     const height = Number(process.env.BALANCE_ROWS ?? DEFAULT_CONFIG.map.rows);
     const config = { ...DEFAULT_CONFIG, map: { ...DEFAULT_CONFIG.map, cols: width, rows: height } };
-    const label = process.env.BALANCE_LABEL ?? 'Current v2 calibration';
+    const label = process.env.BALANCE_LABEL ?? 'Current v3 calibration';
     const file = process.env.BALANCE_FILE ?? 'current';
     if (!/^[a-z0-9-]+$/.test(file)) throw new Error('Invalid balance report file suffix');
     const started = performance.now();
@@ -38,7 +38,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     const section = renderReport(runs, label, width, height, elapsed);
     writeFileSync(`tests/balance/${file}.json`, JSON.stringify({ label, config, elapsedMs: elapsed, runs }, null, 2) + '\n');
     const reportPath = 'tests/balance/REPORT.md';
-    const prior = process.env.BALANCE_APPEND === '1' && existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '# Economy v2 balance report\n\n';
+    const prior = process.env.BALANCE_APPEND === '1' && existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '# Economy balance report\n\n';
     writeFileSync(reportPath, (prior.trimEnd() + '\n\n' + section).trimEnd() + '\n');
     console.info(section.split('| Seed |')[0]);
     expect(runBalance(1, 'combo', config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === 'combo'));

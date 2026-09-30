@@ -19,6 +19,8 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
+IN PROGRESS: N7 — v3 eight-threshold calibration on seeds 1–50, at most four rounds. Decision A approved; Decision B declined. Previous overnight summary below is historical.
+
 N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified. Morning summary includes larger-sample limits and the outside-owner HUD fixture failure. No seventh calibration; awaiting designer playtest decisions.
 
 ## Done
@@ -45,6 +47,7 @@ N1–N6 COMPLETE and committed. Economy remains round 4; all owned work verified
 - No unfinished owned task. Final full-suite green is blocked by the Sonnet-owned zero-target HUD fixture reported below. Balance gaps require designer review; no guardrail was relaxed. Opus O5 passed D1; independent D4/N4 review remains requested.
 
 ## Decisions
+- N7 / ECONOMY_SPEC v3: start from exact retained round-4 values; append steeper all-resource T7/T8. Keep starting stock, costs and the known seed-35/37 openings untouched. Count the initial eight-threshold measurement as round 1 of the maximum four. T1 is pacing-exempt. Evaluate target 4 at 96% T6 completion and 90% wins (48/50 and 45/50); finite T4–T6 spam/combo medians are still required for target 2. Zero spam T6 completers passes target 3 under the explicit v3 override. Late threshold medians must precede the finite all-seed median win placement count.
 - N6 §38: preserve transaction-based preview math, including unaffordable projections and hidden discoveries. Copy the state shell, hex array, target hex/slots/pair-history array, resource maps, discovery list and adjacency map; share only data that placement reads. Verify equivalence against the previous full-clone algorithm on frozen seeded states, including demolition/conversion and invalid requests. The larger 50-seed sample is confirmation, not a seventh calibration round.
 - N4 §6/§53: scale mountain cluster min/max by board area relative to the new PLACEHOLDER `mountainReferenceArea: 280`, rounding up. This fixes hill coverage dropping to 8–10% on large maps without changing default dimensions or any of the first 200 default-map outputs (SHA-256 `377692786bd55dc8b02f911dbfcfeec00ddedb6b01ba4884f5884ded1a62ecb1`). No retries or seed filtering. Interpret “roughly 65–80%” as the mean and at least 90% of tested seeds within range, consistent with D4; record all outliers.
 - N4 measurement: the strict two-minute budget remains for 20 seeds on the default board. Larger informational previews get area-squared runtime scaling because candidate search grows with both tiles and placements. The 50-seed stretch scales runtime linearly with seed count; no economy or bot changes.
@@ -148,6 +151,10 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N7 v3 round 1 — append-only baseline
+
+Keep every round-4 economy value and all T1–T6 gates. Append T7 `{wood:1050,stone:920,water:690,food:220}` and T8 `{wood:1300,stone:1150,water:850,food:270}`: about 1.25× and 1.55× T6 resource gates, steeper in all four resources, intended to land near 360/450 placements while funding the last 1–2 core sites. No opening repair, stock/cost change, yield/combo change or map change. Harness/report now includes all eight thresholds, late fills and final legal-site counts; 16 config/report tests and typecheck pass. Result: **48/50 T6, 48/50 wins, zero declarations** (v2: 48/50 T6, 39/50 wins). All nine core-coverage stalls are recovered; only accepted openings 35/37 remain. Combo medians **2 / 23.5 / 47.5 / 110.5 / 181 / 312.5 / 363 / 433.5**; T7/T8 precede median win **613.5**. Target 4 passes; target 1 misses only T4, target 2 is unmeasurable at T6 (22/50 spam completers), target 3 misses (minimum 59.44%). Measurement **175.74 s**, all 8 harness tests pass. Scoped 124 tests and typecheck pass.
 
 ### N1 — exact designer v2 baseline
 

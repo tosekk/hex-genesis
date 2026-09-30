@@ -6,7 +6,7 @@ import { MAIN_BIOMES, MIXED_BIOMES } from '../../core/types';
 import type { Resources } from '../../core/types';
 import v2 from './__fixtures__/economy-v2.json';
 
-describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v2)', () => {
+describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v3)', () => {
   it('starting stock affords the cheapest building in every main biome', () => {
     for (const biome of MAIN_BIOMES) {
       const buildings = ECONOMY.rosters[biome].map(id => ECONOMY.buildings[id]);
@@ -89,10 +89,14 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v2)', ()
       }
     }
   });
-  it('has six thresholds with water first at T3 and food first at T4', () => {
-    expect(ECONOMY.thresholds).toHaveLength(6);
+  it('has eight thresholds with water first at T3 and food first at T4', () => {
+    expect(ECONOMY.thresholds).toHaveLength(8);
     expect(ECONOMY.thresholds.findIndex(t => (t.water ?? 0) > 0)).toBe(2);
     expect(ECONOMY.thresholds.findIndex(t => (t.food ?? 0) > 0)).toBe(3);
+    expect(ECONOMY.thresholds[0].wood ?? 0).toBe(0);
+    for (const i of [6, 7]) for (const r of ECONOMY.resources) {
+      expect(ECONOMY.thresholds[i][r]).toBeGreaterThan(ECONOMY.thresholds[i - 1][r]);
+    }
   });
   it('preserves frozen v2 data and keeps base yields and adjacency inside tuning guardrails', () => {
     for (const key of ['resources', 'startingResources', 'rosters', 'terrainBonuses', 'zoneModifiers', 'demolishRefundRatio', 'reshufflesPerRun'] as const) {

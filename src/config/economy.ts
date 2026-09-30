@@ -1,6 +1,6 @@
 import type { GameConfig } from '../core/types';
 
-// PLACEHOLDER v2 (ECONOMY_SPEC.md) — designer-approved, tunable within guardrails
+// PLACEHOLDER v3 (ECONOMY_SPEC.md) — designer-approved, tunable within guardrails
 export const ECONOMY: Pick<GameConfig,
   'resources' | 'startingResources' | 'buildings' | 'rosters' | 'combos' | 'terrainBonuses' |
   'zoneModifiers' | 'adjacencyAmount' | 'thresholds' | 'demolishRefundRatio' | 'reshufflesPerRun'> = {
@@ -92,6 +92,8 @@ export const ECONOMY: Pick<GameConfig,
     { wood: 260, stone: 220, water: 120, food: 90 },
     { wood: 450, stone: 380, water: 200, food: 120 },
     { wood: 850, stone: 740, water: 550, food: 170 },
+    { wood: 1050, stone: 920, water: 690, food: 220 },
+    { wood: 1300, stone: 1150, water: 850, food: 270 },
   ],
   demolishRefundRatio: 0.5,
   reshufflesPerRun: 1,
