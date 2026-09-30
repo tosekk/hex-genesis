@@ -94,7 +94,8 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- V15 bug 8 ready: new `public/assets/icons/journal.svg` and `menu.svg` replace emoji/glyphs; drawn 40 px icons, text fallback and aria labels, fixed 88×40 reservation with 16 px margins. Nine UI tests and typecheck pass. Hash recorded after commit.
+- V15 bug 9 ready: empty detail panel is a full 248×176 paper card with round journal portrait and field-note prompt; selection changes preserve the reservation. Ten UI tests and typecheck pass. Designer bugs 1→9 implemented in order; continuing remaining U1 interaction tests. QA: `/src/ui/v2/preview.html?seed=1` or `/?ui=journal`, 1280×720 and 1024×640. Hash recorded after commit.
+- V15 bug 8 ready: new `public/assets/icons/journal.svg` and `menu.svg` replace emoji/glyphs; drawn 40 px icons, text fallback and aria labels, fixed 88×40 reservation with 16 px margins. Nine UI tests and typecheck pass. Commit `ec0f572`.
 - V15 bug 7 ready: four named resource pills fit a fixed 448×60 reservation; amounts use Nunito/tabular figures, lifetime stays small, overflow retains full tooltips. Toasts start below the pills/hint. Eight UI tests and typecheck pass. Commit `f8f9be9`.
 - V15 bug 6 ready: no implicit Forest deck; initial/cleared/dead-tile selection shows a prompt. Resolving an offer selects its biome with a matching triangle ring. Choosing a biome clears stale tile/slot and incompatible cards. Real-session regression added; seven UI tests and typecheck pass. Commit `39ecab0`.
 - V15 bug 5 ready: triangle has a fixed 232×224 reservation with a 16 px board-edge margin; all six labels sit outside their circles, mixed circles are smaller, and the selected yellow ring remains colored even when its icon is grey. Pure bounds tests cover every circle and label. Six UI tests and typecheck pass. Commit `dff8554`.

@@ -106,11 +106,16 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
   }
 
   function render(): void {
-    panel.replaceChildren();
+    panel.replaceChildren(); panel.classList.remove('empty-state');
     if (ctrl.card?.kind === 'building') renderBuilding(ctrl.card.id);
     else if (ctrl.card?.kind === 'core') renderCore();
     else if (ctrl.hex !== null) renderTile();
-    else panel.appendChild(row('Select a tile, or pick a building card.', 'j-hint'));
+    else {
+      panel.appendChild(head(icon('journal', 'Book'), 'Field notes', 'Your next placement'));
+      panel.appendChild(row('Select a tile, or pick a building card.', 'j-hint'));
+      panel.appendChild(row('Terrain, yields and discovered combos appear here.', 'j-rule'));
+      panel.classList.add('empty-state');
+    }
   }
 
   render();

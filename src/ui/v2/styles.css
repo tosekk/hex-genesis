@@ -162,3 +162,6 @@
 @media (max-width:1150px) { .j-card { width:84px; height:84px; } }
 
 .j-deck-prompt { display:flex; align-items:center; justify-content:center; width:100%; min-height:92px; color:var(--ink2); font-size:14px; }
+
+.j-detail.empty-state { justify-content:center; }
+.j-detail.empty-state .j-hint { margin-top:8px; }

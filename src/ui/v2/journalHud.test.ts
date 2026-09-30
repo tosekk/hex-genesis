@@ -93,3 +93,13 @@ it('uses labeled drawn SVGs in the fixed top-right controls', () => {
   }
   expect(s.root.querySelector<HTMLElement>('.j-topright')!.style.width).toBe('88px');
 });
+
+it('keeps the empty detail card at its full reservation before and after selection', () => {
+  const s = fixture(), detail = s.root.querySelector<HTMLElement>('.j-detail')!;
+  expect(detail.style.width).toBe('248px'); expect(detail.style.height).toBe('176px');
+  expect(detail.querySelector('.j-portrait')).not.toBeNull(); expect(detail.classList.contains('empty-state')).toBe(true);
+  s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.building');
+  expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(false);
+  s.click('.j-card.building');
+  expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(true);
+});
