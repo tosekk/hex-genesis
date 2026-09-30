@@ -16,7 +16,7 @@ const config: Partial<GameConfig> = {
   combos: [], terrainBonuses: [], zoneModifiers: {}, adjacencyAmount: {}, thresholds: [{ wood: 10, stone: 10 }],
 };
 
-describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
+describe('C3 v4 win/end acceptance (§57 W1–W5, opus night endgame)', () => {
   it('W1: final full payout transaction wins immediately without a final core/offer', () => {
     const cfg: GameConfig = { ...DEFAULT_CONFIG, ...config,
       combos: [{ id: 'pair', name: 'Fixture pair', buildings: ['fixture', 'fixture'], amount: { stone: 5 } }],

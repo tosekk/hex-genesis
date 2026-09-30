@@ -125,15 +125,8 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v5)', ()
     for (const stock of Object.values(ECONOMY.startingResources)) { expect(Number.isInteger(stock)).toBe(true); expect(stock).toBeGreaterThanOrEqual(0); }
     expect(ECONOMY.combos.map(({ amount: _, ...recipe }) => recipe)).toEqual(v3.combos.map(({ amount: _, ...recipe }) => recipe));
     for (const resource of ECONOMY.resources) { expect(ECONOMY.adjacencyAmount[resource] ?? 0).toBeGreaterThanOrEqual(0); expect(ECONOMY.adjacencyAmount[resource] ?? 0).toBeLessThanOrEqual(4); }
-    expect(ECONOMY.terrainBonuses.map(({ bonus: _, ...target }) => target)).toEqual(v3.terrainBonuses.map(({ bonus: _, ...target }) => target));
-    for (let i = 0; i < ECONOMY.terrainBonuses.length; i++) for (const r of ECONOMY.resources) {
-      expect(Math.abs((ECONOMY.terrainBonuses[i].bonus[r] ?? 0) - ((v3.terrainBonuses[i].bonus as Partial<Resources>)[r] ?? 0))).toBeLessThanOrEqual(1);
-    }
-    expect(Object.keys(ECONOMY.zoneModifiers)).toEqual(Object.keys(v3.zoneModifiers));
-    for (const [biome, original] of Object.entries(v3.zoneModifiers)) {
-      const actual = ECONOMY.zoneModifiers[biome as keyof typeof ECONOMY.zoneModifiers]!;
-      expect(actual.map(m => m.buildings)).toEqual(original.map(m => m.buildings));
-      for (let i = 0; i < actual.length; i++) for (const r of ECONOMY.resources) expect(Math.abs((actual[i].delta[r] ?? 0) - ((original[i].delta as Partial<Resources>)[r] ?? 0))).toBeLessThanOrEqual(1);
-    }
+    // V5 does not list terrain or zone modifiers among tunable values.
+    expect(ECONOMY.terrainBonuses).toEqual(v3.terrainBonuses);
+    expect(ECONOMY.zoneModifiers).toEqual(v3.zoneModifiers);
   });
 });
