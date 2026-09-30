@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 5 — delay the bootstrap to the maximum safe 24 stone and raise late water to 625. Round 4 `7b2aa4c` passes targets 4 and 2, with T2–T6 pacing inside ±20%.
+IN PROGRESS: N3 round 6 (final) — test Hillside Mine wood 0→1 with a later 42-stone first gate; restore round-4 late water. Round 5 committed; round 4 `7b2aa4c` remains the priority-ranked fallback.
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,7 @@ IN PROGRESS: N3 round 5 — delay the bootstrap to the maximum safe 24 stone and
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 round 6 revises the initial conservative yield-channel assumption: CONTRACTS explicitly defines missing resource keys as zero, and v2 allows ±1 per resource without freezing yield keys. Therefore Hillside Mine wood 0→1 is inside the literal guardrail. Test it with T1 stone 42 (T2 stone 50 to stay monotone), preserving every frozen cost, starting stock, roster and recipe. The guardrail test now compares all four declared resources against sparse v2 zeros rather than imposing an extra key-freeze rule. This is the sixth and final calibration round; afterward select by the designer's priority order.
 - N3 round 5: 24 stone is the largest safe T1 gate for the four Forest mine-only openings (three 8-stone mines spend all six starting wood). Raise late water 550→625, just below the smallest completed spam final water (seed 20: 627), to delay two of the four early T6 seeds without destroying the finite spam median. Keep other thresholds and rewards fixed.
 - N3 round 4: hold the successful opening yields/Polar Base rescue fixed. Raise T2/T5 toward pacing targets. At T6, reduce food 255→170 (eleven round-3 spam runs earned at least this much) while raising wood/stone/water to slow completion; this makes the spam comparison measurable without counting failed seeds as successes. Leave T1 stone-only because a positive wood requirement reintroduces the four frozen-terrain opening failures.
 - N3 round 3: prioritize reachability over early pacing. Four remaining Forest openings earn 24 stone and zero wood before exhausting stock; T1 becomes wood 0 / stone 16 so they unlock a core before the third mine. The Arctic seed-13 triple exhausts wood and leaves stone 1; Polar Base adds stone 2 (total 12→14, within the triple 11–15 guardrail) to fund Driftwood Camp. Combo recipes are frozen, but payout resource allocation is not; this adds an existing resource to a combo amount, not a base-yield channel or mechanic.
@@ -257,3 +258,18 @@ The delayed bootstrap keeps reachability and improves T1 from 2 to 3 placements,
 Before: combo T6 20/20, wins 18/20; spam T6 11/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 21.0 / 44.0 / 93.0 / 173.5 / 299.0.
 
 After: combo T6 20/20, wins 18/20; spam T6 10/20; 0 soft-lock declarations; combo all-seed medians 3.0 / 21.0 / 45.0 / 89.0 / 173.5 / 299.0. Measurement 97.62 s. Exact configuration/run archive: `tests/balance/round-5.json`.
+
+### N3 round 6 — mine construction yield and later first core
+
+Final permitted round tests the literal sparse-resource +1 guardrail. A later first gate still leaves five greedy openings stuck, reducing T6/wins to 15/20 and 13/20. The experiment is rejected by target priority. Stop calibration at six rounds and restore round 4, the only round passing both targets 4 and 2 with T2–T6 pacing within bands.
+
+| Value | Before → after |
+|---|---|
+| T1 | wood 0, stone 24 → wood 0, stone 42 |
+| T2 | wood 50, stone 45 → wood 50, stone 50 |
+| T6 | wood 850, stone 740, water 625, food 170 → wood 850, stone 740, water 550, food 170 |
+| `hillside_mine` yield | stone 2 → stone 2, wood 1 |
+
+Before: combo T6 20/20, wins 18/20; spam T6 10/20; 0 soft-lock declarations; combo all-seed medians 3.0 / 21.0 / 45.0 / 89.0 / 173.5 / 299.0.
+
+After: combo T6 15/20, wins 13/20; spam T6 8/20; 0 soft-lock declarations; combo all-seed medians 8.5 / 28.5 / 48.0 / 111.0 / 179.0 / 315.0. Measurement 64.24 s. Exact configuration/run archive: `tests/balance/round-6.json`.

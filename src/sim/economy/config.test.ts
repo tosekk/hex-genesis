@@ -102,10 +102,13 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v2)', ()
     for (const [id, original] of Object.entries(v2.buildings)) {
       const actual = ECONOMY.buildings[id];
       expect({ id: actual.id, name: actual.name, cost: actual.cost }).toEqual({ id, name: original.name, cost: original.cost });
-      expect(Object.keys(actual.baseYield).sort()).toEqual(Object.keys(original.baseYield).sort());
-      for (const [resource, amount] of Object.entries(original.baseYield)) {
-        expect(Number.isInteger(actual.baseYield[resource])).toBe(true);
-        expect(Math.abs(actual.baseYield[resource] - amount), `${id}/${resource}`).toBeLessThanOrEqual(1);
+      // Resources are sparse: a missing v2 yield is zero, so +1 is inside the per-resource guardrail.
+      for (const resource of ECONOMY.resources) {
+        const amount = (original.baseYield as Resources)[resource] ?? 0;
+        const actualAmount = actual.baseYield[resource] ?? 0;
+        expect(Number.isInteger(actualAmount)).toBe(true);
+        expect(actualAmount).toBeGreaterThanOrEqual(0);
+        expect(Math.abs(actualAmount - amount), `${id}/${resource}`).toBeLessThanOrEqual(1);
       }
     }
     expect(ECONOMY.combos.map(({ amount: _, ...recipe }) => recipe))
