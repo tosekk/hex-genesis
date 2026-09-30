@@ -6,7 +6,7 @@ import { DEFAULT_CONFIG } from './config';
 import { createGameSession } from './game/session';
 import { createBoardView } from './render/boardView';
 import { createTutorial } from './tutorial/tutorial';
-import { createHud } from './ui/hud';
+import { createHud, createJournalHud, createLegacyHud } from './ui/hud';
 
 if (import.meta.env.DEV) installErrorOverlay();
 const allowScrollKeys = preventScrollKeys();
@@ -18,6 +18,14 @@ function pickSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
 }
 
+/** ?ui=legacy | ?ui=journal forces a HUD (UI_SPEC safety net); otherwise `createHud` decides the default. */
+function pickHud(): typeof createHud {
+  const ui = new URLSearchParams(location.search).get('ui');
+  if (ui === 'legacy') return createLegacyHud;
+  if (ui === 'journal') return createJournalHud;
+  return createHud;
+}
+
 function el(id: string): HTMLElement {
   const e = document.getElementById(id);
   if (!e) throw new Error(`missing #${id}`);
@@ -27,10 +35,12 @@ function el(id: string): HTMLElement {
 const session = createGameSession({ config: DEFAULT_CONFIG, now: () => Date.now() });
 const board = createBoardView(el('board'), DEFAULT_CONFIG);
 const unbindBoard = bindBoard(session, board);
-const hud = createHud(el('ui'), session, board);
+const hudFactory = pickHud();
+const hud = hudFactory(el('ui'), session, board);
 const tutorial = createTutorial(el('tutorial'), session);
 // Optional audio (sol V3): silent, without errors, while the MP3s in public/audio are missing.
-const audio = createAudio(el('ui'), session);
+// The journal HUD has its own mute/volume (sol V12 audio settings), so audio renders controls only for legacy.
+const audio = createAudio(el('ui'), session, { controls: hudFactory === createLegacyHud });
 
 // Start the frame loop before the first run so a throw during newRun can't stop rendering.
 // The next frame is scheduled first, so one bad frame doesn't kill the loop either.

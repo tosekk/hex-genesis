@@ -3,11 +3,9 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-PAUSED (usage limit). O8.3 in progress; O9 not started.
-- O8.3: final N8 `e4448fd` autoplay ✅ (greedy seeds 1–5 WIN at T8, 70–76% board; spam fills 100% and is stuck, not lost; see the O8.1 routing). RC zip built from clean `1fa5455` (legacy HUD; U1 keeps `createHud` = legacy).
-- The itch-frame check of that RC found that the parent page still scrolls: (1) help overlay swallows keys in capture phase → fixed `1fa5455` (window capture listener); (2) the guard exempted focused BUTTONS for every key, and help focuses its "Got it" button → fixed in THIS commit (key-specific ownership + tests).
-- NEXT: rebuild the RC from this commit (`git archive` → `node scripts/package.mjs` → `release/`), re-run the itch-frame test (click into the game, help open and closed: ↓×5/Space/PgDn/End ⇒ parent scrollY 0), then tell the designer the zip is ready. Then O9 (read tasks/UI_SPEC.md; add optional `BoardView.setSlotHighlight`; wire `?ui=legacy` + `createAudio(…, { controls: false })` after sonnet U1 exports; browser-check the new HUD; repackage).
-- NOTE: `release/terraform-jam-2026-09-30.zip` currently holds the `1fa5455` build, which still has bug (2). Do NOT upload it.
+IN PROGRESS: O10. Steps 1–3 ✅. Waiting for **06:00 go/no-go** (step 4): read sonnet's S9 QA bugs → package with the journal HUD as default if no open P0/P1 on it, else legacy.
+
+> **Designer: `release/terraform-jam-2026-09-30.zip` is SAFE TO UPLOAD** (safety RC, legacy HUD). Built at 23:59 from HEAD `7c7d39e` (code = `5cfe4c0`: N9 economy, S8 win rule, legacy HUD default), 44 files, 0.23 MB, sha256 `314dcec421e08444…`. Verified in the itch-style iframe: see Integration log. If the 06:00 call switches to the journal HUD, I'll post a new zip name here; until then this is the one.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -66,10 +64,18 @@ PAUSED (usage limit). O8.3 in progress; O9 not started.
 
 ## Contract changelog
 <!-- - <commit> · <change> · requested by <tag> -->
-- (this commit) · `BoardView.setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void` added to `src/core/contracts.ts`: optional, presentation only, `null` clears. No `bindBoard` wiring; the HUD calls it directly (`board.setSlotHighlight?.(…)`). · requested in O9/UI_SPEC for sol (V13) and the journal HUD (V15, formerly sonnet U1)
+- `72cc74b` · `BoardView.setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void` added to `src/core/contracts.ts`: optional, presentation only, `null` clears. No `bindBoard` wiring; the HUD calls it directly (`board.setSlotHighlight?.(…)`). · requested in O9/UI_SPEC for sol (V13) and the journal HUD (V15, formerly sonnet U1)
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O10.1: safety RC verified** (zip above, served unzipped next to `scripts/itch-frame.html`, 1440×1000 page with a 1280×720 frame).
+  - **Parent scroll ✅** (both fixes in the build: `1fa5455` capture phase, `f4609b3` key-specific ownership). (A) help overlay open, focus on its "Got it" button: ↓×5, PageDown, End → parent scrollY 0. (B) help closed: ↓×5, Space, PageDown → 0. The earlier RC (`1fa5455`) scrolled 2314 px in case (A), so it's superseded and must not be uploaded.
+  - **Focus ✅:** a click into the frame focuses the game; the game takes focus on load once its first frame renders.
+  - **Full loop in the frame ✅:** offer → cores → spreads → 375 placements through the real HUD → End Run → "Run ended · 2/8 · Board used 375/375 (100%)". 0 errors, parent never scrolled. The win path on the same code: `tests/e2e/autoplay.test.ts` seeds 4/5 WIN at T8 (real modules).
+  - Zip: `unzip -t` OK, 44 files (Sol's V11 icons under `assets/icons/{buildings,terrain}`), relative paths only.
+- **N9 balance note (for astra + designer, not a build blocker):** on N9 (`4ba61e3`) my greedy e2e bot wins only seeds 4/5; seeds 1/2/3 fill the WHOLE board (639/633/612 slots) and stall at T7, with no end screen (same full-board limbo as routed in O8.1). On N8 it won 5/5. Astra's combo bot still wins 49/50, so good play wins, but modest play now lands in limbo much more often, and my simple UI player (no combo awareness) filled the board by T2 on seed 4. The designer's §42 decision on the full-board loss matters more now.
+- **O10.2 / O9.1: contract** `72cc74b`: optional `BoardView.setSlotHighlight` (see Contract changelog). **sol: V13 is unblocked**; the journal HUD calls `board.setSlotHighlight?.(…)` directly.
+- **O10.3 / O9.2: wiring** (this commit, `src/main.ts`): `?ui=legacy` → `createLegacyHud`, `?ui=journal` → `createJournalHud`, otherwise `createHud` (legacy until sol flips the default in `src/ui/hud.ts`; no main.ts change needed then). `createAudio(…, { controls: hud is legacy })`. Smoke test at 1280×720: default and `?ui=legacy` mount `.hud` + 1 audio control box; `?ui=journal` mounts `.jhud` and 0 audio-module controls; no errors.
 - **O8.2: browser win/loss screens on S8** (`c63b56d` rule, `51cef86` UI; economy still v3).
   - **WIN ✅** (clean release build of `d339fc9`, seed 1, full UI play): the build that met T8 (placement 430) opened **"Planet terraformed!" immediately**, with no offer or core awarded. The T7 core was HELD ("No legal site left") and did not block the win. End screen per §41: "Thresholds reached: 8/8 · Board used: 430/639 slots (67%)", lifetime per resource, time 1:56, seed 1. HUD: "Goal: reach threshold 8 · now 8/8", "Slots left: 209 of 639". 0 errors.
   - **Mid-spread win:** not reachable in the browser on v3 maps (seed 1 has no legal site left at T7; seed 12 stalled in the opening, see below). It is covered deterministically by the e2e scenario test (T8 crossed during an active spread with a held core → `won` in the same command, spread and held core untouched). Retry in the browser after N8.
