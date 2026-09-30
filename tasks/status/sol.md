@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V3 verified — committing optional audio and precise Opus wiring handoff before V4 polish.
+V4 COMPLETE; preparing V5 browser-capture blocker record and V6 morning summary.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -21,6 +21,7 @@ IN PROGRESS: V3 verified — committing optional audio and precise Opus wiring h
 - R7 — approved `showPayouts` implemented with ordered, camera-projected rise/fade labels; 26 scoped tests/typecheck/build pass — `0d6afd8`.
 - V1 — reviewed D4 seeds 1–20, connected bends/branches and water-only falls; live-recipe tutorial regression, 27 scoped tests/typecheck pass — `925ad36`.
 - V2 — sandbox size overrides, fitted camera/zoom/pan/table, edge picks and live diagnostics; all three filled-board sizes measured 120 FPS / 59 calls; 33 scoped tests/typecheck/build pass — `7edfb22`.
+- V3 — gesture-gated optional audio, persistent controls, all specified event cues and asset generation list; precise main.ts handoff, 39 scoped tests/typecheck/build and missing-asset browser checks pass — `fe7e802`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -39,6 +40,8 @@ IN PROGRESS: V3 verified — committing optional audio and precise Opus wiring h
 - V2 / §3–§4: `cols`/`rows` overrides are sandbox-only copies of the config, bounded to 2–60 / 2–40; production MAP remains unchanged. Camera framing fits all board/frame corners at the start angle, includes peaks, preserves zoom ratio on resize, and scales near/far zoom limits and pan margins. Picking retains exact per-tile footprints. Renderer diagnostics are a canvas WeakMap helper, not a new BoardView contract.
 - V3 / §46–§47: music/SFX use optional build-time MP3 discovery (restart dev/rebuild after file drops) to avoid missing-file requests. First pointer/keyboard gesture unlocks playback; only the current opening offer cue is deferred, never a backlog. Corrupt assets are disabled per instance; policy rejection may retry later. Tile pitch randomness is presentation-only. Adjacent-only payout events are silent, per the specified base/pair/triple mapping. Mute/volume control music/SFX; tutorial narration retains its existing separate mute. Controls sit bottom-right at `right:150px;bottom:12px`, beside Help/End Run and below Codex.
 
+- V4 / §15/§19: 700 ms core beam/ring and 850 ms first-everCompleted ring observe only visible current cores/flags. Rebuilt boards baseline existing flags; refreshes never restart effects. Reduced-motion mode keeps transforms still while fading. Three instanced effect batches add at most three calls; shadows use a cached 1024² PCF map, invalidated on geometry changes/reveals. Softer warm ambient/sun and cool fill; no state or spread planning changes.
+
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 - R7 — APPROVED and committed by Opus as `c357845` (`[opus] CONTRACT`): additive optional member in `src/core/contracts.ts` → `BoardView`:
@@ -51,6 +54,8 @@ IN PROGRESS: V3 verified — committing optional audio and precise Opus wiring h
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- V4 verification: 42 owned render/tutorial/audio tests, typecheck and scoped sandbox production build pass. Browser observed the softened lighting/completion effect and a settled 30×20 filled board at 120 FPS / 59 calls / 821,634 triangles before browser access disappeared. Three 0.186 removed PCFSoftShadowMap; replaced it with supported PCFShadowMap after seeing the warning. Fresh warning-free browser verification and active-wave FPS could not be completed: CUA reports cgWindowNotFound and its fallback browser timed out. Payout text/background composite contrast is 9.39–10.10:1 across all six renderer biome colors; its existing backed labels remain unchanged.
+
 - **V3 / Opus main.ts wiring required:** add `import { createAudio } from './audio/audio';`, then `const audio = createAudio(document.getElementById('ui')!, session);` after session creation and before `session.newRun(...)`. No frame-loop call. Dispose with other factory handles if a teardown path is added. Sol did not edit main.ts, HUD, contracts, or config.
 - V3 asset handoff: `public/audio/AUDIO_LIST.md` lists all 14 exact MP3 paths, triggers, lengths and generation prompts. Drop music/SFX under those paths and restart Vite/rebuild; VO scripts remain separate. Sandbox uses the same factory via a synthetic event adapter: R = core/flip/done, B/X = model add/remove, P = populate, F = combo payout. Browser verified the corner widget, persisted mute across reload, and a reveal with all sounds absent: no visible console errors/warnings (optional debug messages hidden). No recordings exist yet, so actual authored sound quality is not evaluated. 39 scoped tests, typecheck and scoped production build pass; 6 new audio tests cover all mapped cues, ≤12/s flips/pitch, persistence, blocked storage, corrupt/missing media, autoplay recovery and cleanup.
 - V2: use `/render-sandbox.html?seed=7&cols=30&rows=20&load=1&viewport=1280x720` for an all-plain five-layer stress board with all 1,800 slots occupied. Remove `load` for the generated map; remove `viewport` to fit the browser window. L uses the current dimensions, not a hard-coded 840. Diagnostics report actual rAF FPS and Three render calls/triangles.

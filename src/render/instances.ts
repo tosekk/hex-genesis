@@ -5,11 +5,12 @@ export class Instances {
   readonly mesh: THREE.InstancedMesh;
   private readonly transform = new THREE.Object3D();
   constructor(parent: THREE.Group, geometry: THREE.BufferGeometry, color: number, capacity: number,
-    options: { opacity?: number; roughness?: number; emissive?: number; vertexColors?: boolean } = {}) {
+    options: { opacity?: number; roughness?: number; emissive?: number; vertexColors?: boolean; castShadow?: boolean; receiveShadow?: boolean } = {}) {
     const material = new THREE.MeshStandardMaterial({ color, roughness: options.roughness ?? 0.85,
       metalness: 0, emissive: options.emissive ?? 0,
       transparent: options.opacity !== undefined, opacity: options.opacity ?? 1, vertexColors: options.vertexColors ?? false });
     this.mesh = new THREE.InstancedMesh(geometry, material, capacity);
+    this.mesh.castShadow = options.castShadow ?? false; this.mesh.receiveShadow = options.receiveShadow ?? false;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     // Instance locations can change after initial bounds computation.
     this.mesh.frustumCulled = false;

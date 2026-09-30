@@ -15,12 +15,14 @@ import { PayoutLabels } from './payouts';
 import { waterDirections } from './water';
 import { boardBounds, boundedPan, framingFor, START_DIRECTION, type BoardBounds } from './framing';
 import { trackRenderer } from './diagnostics';
+import { BoardEffects } from './effects';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x292f30);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap; renderer.shadowMap.autoUpdate = false;
   renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;outline:none';
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label', 'Terraforming board. Right drag or Q/E to rotate, wheel to zoom, middle drag or WASD to pan.');
@@ -34,10 +36,11 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   controls.minPolarAngle = 0.18; controls.maxPolarAngle = Math.PI / 2 - 0.12;
   controls.minDistance = 8; controls.maxDistance = 65;
   controls.mouseButtons = { LEFT: null as unknown as THREE.MOUSE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.ROTATE };
-  scene.add(new THREE.HemisphereLight(0xfff2dc, 0x65706c, 2.3));
-  const sun = new THREE.DirectionalLight(0xffdfb4, 3.1);
-  sun.position.set(-12, 25, 10); scene.add(sun);
-  const fill = new THREE.DirectionalLight(0xa9d4e8, 1.1);
+  scene.add(new THREE.HemisphereLight(0xfff4e3, 0x65706c, 2.1));
+  const sun = new THREE.DirectionalLight(0xffedcf, 2.2);
+  sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -0.0002; sun.shadow.normalBias = 0.025;
+  sun.position.set(-12, 25, 10); scene.add(sun, sun.target);
+  const fill = new THREE.DirectionalLight(0xbad9e5, 0.8);
   fill.position.set(15, 12, -12); scene.add(fill);
   let board = new THREE.Group(); scene.add(board);
   let state: Readonly<GameState> | null = null;
@@ -47,6 +50,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let buildings: Buildings | null = null;
   let cores: Cores | null = null;
   let decorations: Decorations | null = null;
+  let effects: BoardEffects | null = null;
   let framingDistance = 0;
   let bounds: BoardBounds | null = null;
   const reveals = new Map<HexId, { hex: Hex; elapsed: number; swapped: boolean }>();
@@ -70,6 +74,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     buildings?.refresh(hex, p.x, p.z);
     decorations?.refresh(hex, p.x, p.z);
     decorations?.refreshFalls(current, id);
+    effects?.refresh(hex); renderer.shadowMap.needsUpdate = true;
   }
   function playReveal(current: Readonly<GameState>, ids: HexId[]): void {
     for (const id of ids) {
@@ -97,13 +102,14 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
     const count = current.hexes.length;
     const layers = new Instances(board, new THREE.CylinderGeometry(0.97, 0.97, LAYER_HEIGHT - 0.025, 6),
-      LAYER_COLOR, current.hexes.reduce((n, h) => n + h.elevation + 1, 0));
-    tops = new Instances(board, new THREE.CylinderGeometry(0.95, 0.95, 0.05, 6), 0xffffff, count);
+      LAYER_COLOR, current.hexes.reduce((n, h) => n + h.elevation + 1, 0), { castShadow: true, receiveShadow: true });
+    tops = new Instances(board, new THREE.CylinderGeometry(0.95, 0.95, 0.05, 6), 0xffffff, count, { castShadow: true, receiveShadow: true });
     pickSurface = createPickSurface(board, current.hexes);
     natural = new NaturalTerrain(board, count);
     buildings = new Buildings(board, count);
     cores = new Cores(board, count);
     decorations = new Decorations(board, count);
+    effects = new BoardEffects(board, current, window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
     let layer = 0;
     for (const hex of current.hexes) {
       const p = hexToWorld(hex.col, hex.row, HEX_SIZE); positions.set(hex.id, p);
@@ -122,6 +128,10 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     bounds = boardBounds(current.hexes);
     const centreX = (bounds.minX + bounds.maxX) / 2, centreZ = (bounds.minZ + bounds.maxZ) / 2;
     addTable(board, bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ, centreX, centreZ);
+    const span = Math.hypot(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ);
+    sun.target.position.set(centreX, 0, centreZ); sun.position.set(centreX - span * 0.35, span * 0.8, centreZ + span * 0.25);
+    Object.assign(sun.shadow.camera, { left: -span / 2 - 2, right: span / 2 + 2, top: span / 2 + 2, bottom: -span / 2 - 2, near: 0.1, far: span * 3 });
+    sun.shadow.camera.updateProjectionMatrix(); renderer.shadowMap.needsUpdate = true;
     framingDistance = 0;
     resize();
     controls.target.set(centreX, bounds.maxY / 2, centreZ);
@@ -192,6 +202,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   }
   function update(dtMs: number): void {
     if (disposed) return;
+    if (reveals.size) renderer.shadowMap.needsUpdate = true;
     for (const [id, reveal] of reveals) {
       reveal.elapsed += Math.max(0, dtMs);
       const tween = sampleReveal(reveal.elapsed, config.animation.tileFlipMs);
@@ -224,18 +235,18 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       camera.position.x += target.x - controls.target.x; camera.position.z += target.z - controls.target.z;
       controls.target.x = target.x; controls.target.z = target.z;
     }
-    payouts.update(dtMs); renderer.render(scene, camera);
+    effects?.update(dtMs); payouts.update(dtMs); renderer.render(scene, camera);
   }
   resize();
   return {
     setBoard, refreshHex, setHighlights, playReveal,
     showPayouts(current, events) { payouts.show(current, events); },
-    setCores(ids) { if (state) cores?.set(ids, state.hexes, positions); },
+    setCores(ids) { if (state) { cores?.set(ids, state.hexes, positions); effects?.setCores(ids, state); renderer.shadowMap.needsUpdate = true; } },
     onPointer(cb) { listeners.add(cb); return () => { listeners.delete(cb); }; },
     update, resize,
     dispose() {
       if (disposed) return; disposed = true;
-      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); untrackRenderer(); renderer.dispose();
+      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); sun.shadow.dispose(); untrackRenderer(); renderer.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move);
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);

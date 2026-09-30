@@ -12,12 +12,12 @@ export class NaturalTerrain {
   private readonly crowns: Instances;
   private readonly marsh: Instances;
   constructor(parent: THREE.Group, count: number) {
-    this.peak = new Instances(parent, new THREE.ConeGeometry(0.72, 1.15, 5), 0xaaa59a, count);
+    this.peak = new Instances(parent, new THREE.ConeGeometry(0.72, 1.15, 5), 0xaaa59a, count, { castShadow: true });
     this.channel = new Instances(parent, new THREE.CylinderGeometry(0.68, 0.68, 0.025, 6), 0xffffff, count);
     this.banks = new Instances(parent, new THREE.BoxGeometry(0.035, 0.03, 0.85), 0x756c5c, count * 12);
     this.branches = new Instances(parent, new THREE.BoxGeometry(0.42, 0.025, 0.88), 0xffffff, count * 6);
     this.trunks = new Instances(parent, new THREE.CylinderGeometry(0.06, 0.09, 0.3, 5), 0x625045, count * 3);
-    this.crowns = new Instances(parent, new THREE.ConeGeometry(0.25, 0.55, 5), 0xffffff, count * 3);
+    this.crowns = new Instances(parent, new THREE.ConeGeometry(0.25, 0.55, 5), 0xffffff, count * 3, { castShadow: true });
     this.marsh = new Instances(parent, new THREE.CylinderGeometry(0.73, 0.73, 0.025, 6), 0xffffff, count);
   }
   refresh(hex: Hex, x: number, z: number, directions: { x: number; z: number }[] = []): void {

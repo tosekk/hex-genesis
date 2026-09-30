@@ -21,7 +21,7 @@ export class Buildings {
     let batch = this.models.get(model.id);
     if (!batch) {
       const instances = new Instances(this.parent, model.geometry(), 0xffffff, this.count * 3,
-        { vertexColors: true, emissive: id === 'glass_kiln' ? 0x261000 : id === 'frost_kiln' ? 0x09232b : 0 });
+        { vertexColors: true, castShadow: true, emissive: id === 'glass_kiln' ? 0x261000 : id === 'frost_kiln' ? 0x09232b : 0 });
       instances.mesh.name = `building:${model.id}`;
       instances.mesh.count = 0;
       batch = { instances, keys: [] }; this.models.set(model.id, batch);
@@ -64,9 +64,9 @@ export class Cores {
   private readonly bases: Instances;
   private readonly crystals: Instances;
   constructor(parent: THREE.Group, private readonly count: number) {
-    this.bases = new Instances(parent, new THREE.CylinderGeometry(0.17, 0.23, 0.12, 6), 0xeee2c3, count);
+    this.bases = new Instances(parent, new THREE.CylinderGeometry(0.17, 0.23, 0.12, 6), 0xeee2c3, count, { castShadow: true });
     this.crystals = new Instances(parent, new THREE.OctahedronGeometry(0.2), 0x9cf4de, count,
-      { emissive: 0x54aa92 });
+      { emissive: 0x54aa92, castShadow: true });
   }
   set(ids: HexId[], hexes: readonly Hex[], positions: ReadonlyMap<HexId, { x: number; z: number }>): void {
     for (let id = 0; id < this.count; id++) { this.bases.hide(id); this.crystals.hide(id); }

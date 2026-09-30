@@ -26,7 +26,7 @@ export class Decorations {
   constructor(parent: THREE.Group, count: number) {
     this.rocks = new Instances(parent, new THREE.OctahedronGeometry(0.14), 0xffffff, count);
     this.stems = new Instances(parent, new THREE.CylinderGeometry(0.04, 0.055, 0.3, 5), 0xffffff, count);
-    this.crowns = new Instances(parent, new THREE.ConeGeometry(0.16, 0.39, 5), 0xffffff, count);
+    this.crowns = new Instances(parent, new THREE.ConeGeometry(0.16, 0.39, 5), 0xffffff, count, { castShadow: true });
     this.tufts = new Instances(parent, new THREE.ConeGeometry(0.13, 0.16, 5), 0xffffff, count);
     this.arms = new Instances(parent, new THREE.CylinderGeometry(0.034, 0.034, 0.17, 5), 0x76935b, count);
     this.falls = new Instances(parent, new THREE.BoxGeometry(0.28, 1, 0.035), 0x90cdd1, count * 6,
@@ -70,9 +70,11 @@ export function addTable(parent: THREE.Group, width: number, depth: number, cent
   const wood = new THREE.MeshStandardMaterial({ color: 0x4c3d32, roughness: 0.94 });
   const frame = new THREE.MeshStandardMaterial({ color: 0x8c7150, roughness: 0.72 });
   const tray = new THREE.Mesh(new THREE.BoxGeometry(width + 2.2, 0.3, depth + 2.2), wood);
+  tray.receiveShadow = true;
   tray.position.set(centreX, -0.18, centreZ); parent.add(tray);
   const inset = new THREE.Mesh(new THREE.BoxGeometry(width + 1.4, 0.04, depth + 1.4),
     new THREE.MeshStandardMaterial({ color: 0x3b4a43, roughness: 1 }));
+  inset.receiveShadow = true;
   inset.position.set(centreX, -0.015, centreZ); parent.add(inset);
   for (const sign of [-1, 1]) {
     const horizontal = new THREE.Mesh(new THREE.BoxGeometry(width + 2.2, 0.18, 0.28), frame);

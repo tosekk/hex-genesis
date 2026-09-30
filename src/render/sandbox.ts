@@ -49,6 +49,8 @@ function reveal(): void {
   const ids = state.hexes.filter(h => h.terrain !== 'mountain').map(h => h.id)
     .sort((a, b) => hexDistance(a, origin, state.cols) - hexDistance(b, origin, state.cols) || a - b).slice(0, 69);
   wave = { ids, elapsed: 0, next: 0, biome: biomes[biomeIndex++ % biomes.length] };
+  if (!state.cores.includes(origin)) state.cores.push(origin);
+  board.setCores(state.cores);
   audio.emit({ type: 'spreadStarted', result: { origin, biome: 'forest', claims: [], poolUsed: 0 } });
   board.setHighlights('locked', ids);
 }
@@ -74,6 +76,7 @@ function populate(): void {
     if (!hex.placeable) continue;
     hex.biome ??= biomes[hex.col % biomes.length];
     hex.slots.forEach((slot, index) => { slot.building = ids[(hex.id + index) % ids.length] ?? `sandbox-${index}`; });
+    hex.everCompleted = true;
     board.refreshHex(state, hex.id);
   }
   state.cores = state.hexes.filter(hex => hex.placeable && hex.id % 43 === 0).map(hex => hex.id);
