@@ -1,6 +1,44 @@
 # Economy balance report
 
-## Selected v4 result — round 4
+## N9 selected result — round 4
+
+Selected **`4ba61e3`**, after four measured rounds. Source exactly matches [n9-round-4.json](n9-round-4.json), which contains its config and all 100 seed/bot records. Baseline is `e4448fd`, archived in [v4-round-4.json](v4-round-4.json). No fifth round. The five hard targets still pass; target 5 improves but does not pass.
+
+| V4 target | Baseline | Selected N9 round 4 | Result |
+|---|---:|---:|---|
+| 1. ≥45 combo wins; zero false declarations | 50/50; 0 | 49/50; 0 | PASS |
+| 2. ≥45 spam bot losses | 46/50 | 46/50 | PASS |
+| 3. Median winning map use 65–85% | 68.76% | 68.29% | PASS |
+| 4. No combo opening stalls | 0 | 0 | PASS |
+| 6. Every T7 below 60%; ≥45 completers | max 59.80%; 50 | max 54.61%; 50 | PASS |
+| 5. Every checkpoint/resource median stock ≤3× cost | worst 300.5× | worst 71.31× | MISS |
+
+**Raw stock before → after** (wood/stone/water/food), all 50 combo runs at every checkpoint. The total column takes the median of per-run totals; it does not sum the four resource medians. No missing runs are dropped to improve the comparison.
+
+| Checkpoint | Wood | Stone | Water | Food | Total per run |
+|---|---:|---:|---:|---:|---:|
+| T3 | 78 → 57.5 | 105.5 → 91.5 | 83.5 → 51 | 72 → 34 | 413 → 292 |
+| T4 | 210 → 173 | 144 → 97.5 | 182 → 88.5 | 184.5 → 63 | 813.5 → 483 |
+| T5 | 400 → 282 | 177.5 → 32 | 331.5 → 156.5 | 340 → 126.5 | 1428 → 708 |
+| T6 | 533 → 349.5 | 234 → 48.5 | 425 → 181 | 422.5 → 126 | 1718 → 826.5 |
+| T7 | 665.5 → 403 | 262 → 57 | 458.5 → 191.5 | 479 → 157.5 | 1946.5 → 893.5 |
+
+T7 median total **1,946.5→893.5 (−54.10%)**. Per-resource T7 reductions: wood 39.44%, stone 78.24%, water 58.23%, food 67.12%. All four resource medians also fall at T3–T6. Late wood remains high, and the ≤3× spending target is still far away.
+
+| N9 round | Commit | Combo wins | Spam bot losses | Median winning board use | Max T7 use | Median T7 total stock | Change vs baseline | Hard gates |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| 1 | 51344a9 | 50 | 45 | 68.87% | 59.80% | 1284 | −34.04% | PASS |
+| 2 | 66648c4 | 50 | 44 | 69.28% | 56.95% | 1023.5 | −47.42% | MISS target 2 |
+| 3 | 8e46d30 | 50 | 44 | 65.03% | 55.71% | 1435.5 | −26.25% | MISS target 2 |
+| **4** | **4ba61e3** | **49** | **46** | **68.29%** | **54.61%** | **893.5** | **−54.10%** | **PASS; selected** |
+
+All four rounds have zero combo opening stalls and zero flagged false soft-locks. Round3's lower Glass Kiln raw stone changed greedy choices, increased stock and almost breached the 65% winning-use floor; the final config restores that yield. Round4 retains **cost changes only**, with all starting stock, thresholds, base yields, combo/adjacency rewards, modifiers, rules and map values unchanged from baseline. Exact before/after cost edits are in the status Balance log and archived configs.
+
+**Limits and playtest:** combo seed 21 is the one new board-full bot stop: 567 living slots filled, lifetime stone 1131 versus 1150 required, with no legal core site. The other resources meet the final threshold. It is not a claim of global unwinnability: the fixed bots never demolish, and replacement payouts can remain. Selected spam wins are 8/13; stalls 9/23 are unproven and excluded from losses. Opus's O8.2 advisory remains applicable: a board-full bot loss does not imply the actual game displayed its loss screen. N9 deliberately preserves the designer-required e4448fd metric instead of silently changing it.
+
+**Validation:** 125 scoped tests, 9 focused report/scorer checks, all 10 checks in each round, typecheck and exact archive/source equality pass. Every archive contains seeds 1–50 for each of the two unchanged bots. UI/render/tutorial edits belong to other agents and were not touched.
+
+## Historical N8 selected v4 result — round 4
 
 Selected **`39e6ea9`**, restored after the five-round cap. All measurements follow Sonnet S8 (`c63b56d`); source and every selected run are archived in [v4-round-4.json](v4-round-4.json). All five round sections and older v2/v3 results below remain audit history.
 

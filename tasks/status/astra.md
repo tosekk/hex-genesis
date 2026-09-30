@@ -1,4 +1,24 @@
-## v4 result
+## N9 result
+
+**Selected round 4 (`4ba61e3`): median total held stock at T7 falls 54.10%, from 1,946.5 to 893.5. All five required v4 targets still pass.** Four rounds completed within the 90-minute cap; no baseline restoration needed.
+
+Before (`e4448fd`) → after, **median held stock over the same 50 combo seeds**. All 50 reach every T3–T7 checkpoint, including the one later losing run. Totals are medians of each run's total, not sums of resource medians.
+
+| Checkpoint | Wood | Stone | Water | Food | Total per run |
+|---|---:|---:|---:|---:|---:|
+| T3 | 78 → 57.5 | 105.5 → 91.5 | 83.5 → 51 | 72 → 34 | 413 → 292 |
+| T4 | 210 → 173 | 144 → 97.5 | 182 → 88.5 | 184.5 → 63 | 813.5 → 483 |
+| T5 | 400 → 282 | 177.5 → 32 | 331.5 → 156.5 | 340 → 126.5 | 1428 → 708 |
+| T6 | 533 → 349.5 | 234 → 48.5 | 425 → 181 | 422.5 → 126 | 1718 → 826.5 |
+| T7 | 665.5 → 403 | 262 → 57 | 458.5 → 191.5 | 479 → 157.5 | 1946.5 → 893.5 |
+
+- **Targets:** 1 **PASS**, 49/50 combo wins (before 50), zero detected false soft-locks; 2 **PASS**, 46/50 spam bot losses (unchanged); 3 **PASS**, 68.29% median winning board use (before 68.76%); 4 **PASS**, zero combo opening stalls; 6 **PASS**, all 50 T7s below 60%, max 54.61% (before 59.80%). Target 5 remains **MISS**: worst checkpoint median held/max-cost **300.5×→71.31×**. Wood remains a substantial pile; this is a reduction, not a claim that the strict spending target is solved.
+- **Tradeoff:** combo seed 21 now fills all 567 living slots with lifetime stone 1131/1150 (19 short). This is a no-demolition bot stop, not a proof of global unwinnability or an engine loss declaration. Selected spam seeds 8/13 win; 9/23 are unproven stalls and excluded from losses. Every resource median decreases at every T3–T7 checkpoint.
+- **What worked:** retain cheap opening buildings; raise production-resource costs on mid/premium buildings, then make Glass Kiln spend wood/food and Sawmill spend stone. Final changes are **building costs only**: starting stock, raw yields, combo rewards, thresholds, map and all rules match `e4448fd`. The one raw-yield experiment worsened stock and was discarded.
+- **Commits:** rounds 1–4 `51344a9`, `66648c4`, `8e46d30`, **`4ba61e3`**; exact configs/all 100 runs per round in `tests/balance/n9-round-N.json`. Rounds 2/3 miss target 2; round 1 passes but reduces total T7 stock only 34.04%, versus 54.10% selected.
+- **Validation:** 125 scoped tests, 9 focused harness checks, all 10 harness checks per measured round, typecheck, and selected source/archive equality pass. No outside-owner issue found in these checks; UI/render/tutorial files untouched. Opus: selected config and the full comparisons in `tests/balance/REPORT.md` are ready for review.
+
+## Historical v4 result — N8
 
 **N8 complete — selected round 4 (`39e6ea9`), restored after five measured 50-seed rounds.** Priority **1 > 2 > 4 > 3 > 6 > 5** respected; no sixth calibration. S8 prerequisite landed before measurements (`c63b56d`, `51cef86`).
 
@@ -49,9 +69,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N9 stockpile pressure. Started 2026-09-30 14:31 UTC; deadline 16:01 UTC (90 minutes), maximum four measured rounds. Baseline is `e4448fd` / N8 round4. Only costs/base yields may change in this search; all five previously passing targets must remain passing.
+IDLE — available. N9 complete: round4 (`4ba61e3`) selected, median T7 total stock −54.10%, targets1/2/3/4/6 still pass. Four measured rounds; no fifth calibration. Strict target5 remains missed and is quantified above.
 
 ## Done
+- N9 — four rounds `51344a9` / `66648c4` / `8e46d30` / `4ba61e3`, selected fourth: median T7 total1946.5→893.5; all five hard targets pass. Only building costs retained; all T3–T7 before/after medians and remaining limitations are in the top result.
 - N8 — five measured rounds (`b348140`, `d010e37`, `6168e56`, `39e6ea9`, `c30a2c2`), selected round4: 50 wins/46 spam losses, five targets pass, all guardrails respected. Top v4 result and report contain remaining stock-pressure miss and three playtest seeds.
 - N8 preparation — final-threshold win/end acceptance (9 cases), v4 outcome/board-use/opening/stock metrics, all six report targets, frozen-v3 guardrail reference; 26 preliminary checks pass. S8 is committed; no calibration preceded it.
 - N7 — v3 eight-threshold calibration, four 50-seed rounds, 48/50 wins; selected `f6b6d45`, with rounds `cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`. Final v3 result and report include all late fills/legal-site counts.
@@ -75,10 +96,12 @@ IN PROGRESS: N9 stockpile pressure. Started 2026-09-30 14:31 UTC; deadline 16:01
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
+- N9: no implementation blocker; four-round search complete. Significant stock reduction achieved while all hard targets pass. Strict target5 remains a future tuning issue; no claim of mathematical impossibility within the guardrails.
 - N8 has no implementation/dependency blocker. Five-round limit reached; target5 remains missed. Further tuning is a future task, and current selected config preserves all higher-priority targets.
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N9 final selection: round4 preserves all five required pass/fail targets, though combo wins change50→49 (still above the45 requirement); report that regression explicitly. Its54.10% median per-run T7 total reduction is larger than round1’s34.04%, with every resource median lower at every checkpoint. Rounds2/3 are ineligible because spam losses44<45. Keep round4 exactly; no unmeasured blend or fifth round. The final source differs from e4448fd only in building costs.
 - N9 round4: discard the raw-yield trim and use round2 as the base. Raise only Sawmill stone and Glass Kiln food to8: sawmills can draw on free Hillside Mine stone, and the kiln always returns stone/water even when it spends wood/food. Leave basic recovery buildings unchanged and keep the original kiln raw yield. This is the final allowed round; select only a measured candidate meeting all five hard targets.
 - N9 round3: costs have been tried first (two rounds). Trim only Glass Kiln raw stone3→2, total yield6→5, to reduce its standalone spam attractiveness after round2 missed target2 by one seed. Leave all combo rewards and every other number fixed; assess actual stock and all five constraints again, rather than assuming lower yield must improve balance.
 - N9 round2: baseline final combo placements most often use Glass Kiln (3,526 across50 runs), which charges neither wood nor food despite adjacency paying both. Add moderate wood/food costs specifically there; its base payout retains at least3 stone, enough for the unchanged basic Quarry/Palm recovery costs. No general cross-resource tax on fragile opening buildings.
@@ -200,6 +223,9 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N9 final selection
+- Retain `4ba61e3` unchanged. All five hard targets pass, with T7 median total−54.10% and component medians W/S/A/F−39.44/78.24/58.23/67.12% from e4448fd. Round4 beats eligible round1 on raw-stock reduction; rounds2/3 fail target2. All50 samples retained at all measured checkpoints. Selected source equality and cost-only diff from baseline verified; no extra measured calibration.
 
 ### N9 round 4 — premium stone/food costs (final round)
 - Round3 committed `8e46d30`. Restore Glass Kiln base stone **2→3**, returning to round2 yield (round3 increased stock). Relative to round2: **Sawmill stone2→8; Glass Kiln food4→8**. All other round2 numbers unchanged. Goal: consume the remaining stone/food piles and recover at least45 spam losses while preserving the cheap resource loop. No fifth round.
