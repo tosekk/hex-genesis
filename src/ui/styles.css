@@ -15,7 +15,7 @@
 
 .resource-bar { position:absolute; top:10px; left:10px; min-width:270px; }
 .res-head { font-size:12px; font-weight:700; opacity:.7; margin-bottom:4px; }
-.res-row { display:grid; grid-template-columns:60px 46px 1fr; gap:2px 8px; align-items:baseline; margin-bottom:6px; }
+.res-row { display:grid; grid-template-columns:96px 46px 1fr; gap:2px 8px; align-items:baseline; margin-bottom:6px; }
 .res-name { font-weight:700; }
 .res-amount { font-size:24px; font-weight:900; text-align:right; }
 .res-life { font-size:11px; opacity:.7; }
@@ -106,3 +106,4 @@ details.slot[open] > summary::before { content:'▾ '; }
 .card-icon .icon { width:48px; height:48px; margin:0; font-size:42px; }
 .chip.no-site { opacity:.6; background:var(--paper); }
 .chip-note { display:block; font-size:10px; font-weight:700; color:var(--bad); }
+.res-name { white-space:nowrap; display:flex; align-items:center; }
