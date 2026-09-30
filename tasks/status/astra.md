@@ -238,6 +238,7 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+- V5 round1 (`v5-round-1.json`), cost-only baseline after core exclusion: 44/50 combo wins; spam49/random44 failures; T4 ratios2.433×/∞; four opening stalls (13/23/35/49); winning use72.41%; stock pressure∞. Targets a/b/e miss, c/f pass, d miss. Seed12 fills its first forest before T1: Sawmill stone costs consume the recovery stock; seeds13/23 consume both construction resources on water/food; 35/49 drain wood on Hillside Mine. No tuning beyond the already committed cost fix. All12 harness tests pass, replay deterministic; 67.27s.
 - N12 cost-only prerequisite: Hillside Mine wood0→2; remove all water/food self-costs; redistribute premium costs to wood/stone (full per-building diff in this commit), cap co-produced costs. New R1–R3 tests fail on old config (plus positive-cost guardrail); R4 retains cheapest-building affordability. No calibration round used yet.
 
 ### N9 final selection
