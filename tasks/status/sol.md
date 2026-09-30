@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V7 COMPLETE — photo mode and capture guide implemented; both active-wave stress checks and real-session win console check pass. IDLE — available. Dev server uses port 5175.
+V7 COMPLETE (`7e47e0d`) — photo mode and capture guide implemented; both active-wave stress checks and real-session win console check pass. IDLE — available. Dev server uses port 5175.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -41,7 +41,7 @@ V7 COMPLETE — photo mode and capture guide implemented; both active-wave stres
 
 - V6 — morning summary at the top, final 42 owned tests/typecheck/scoped build pass; `0e2afd7`.
 
-- V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. Hash recorded after commit.
+- V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. `7e47e0d`.
 
 ## Blockers
 <!-- what, waiting on whom -->
