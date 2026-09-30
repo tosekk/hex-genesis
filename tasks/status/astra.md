@@ -1,4 +1,23 @@
-## v3 result
+## v4 result
+
+**N8 complete — selected round 4 (`39e6ea9`), restored after five measured 50-seed rounds.** Priority **1 > 2 > 4 > 3 > 6 > 5** respected; no sixth calibration. S8 prerequisite landed before measurements (`c63b56d`, `51cef86`).
+
+| Target | Final result |
+|---|---|
+| 1. Good play wins ≥45/50; zero false losses | **PASS — 50/50 combo wins; zero detected false soft-locks** |
+| 2. Spam loses ≥45/50 before T8 | **PASS — 46/50 board-full bot losses**; 2 wins (5/18), 2 unproven stalls (23/35), excluded from losses |
+| 3. Median winning map board use 65–85% | **PASS — 68.76%** of ALL map placeable slots |
+| 4. No combo stalls before T2 | **PASS — zero**, including repaired seeds 35/37 |
+| 6. Last core before 60% board use | **PASS — all 50 T7 completers; median 37.60%, max 59.80%** |
+| 5. T3–T7 median stock ≤3× biome max cost | **MISS — worst checkpoint median ratio 300.5× (T7 wood)** |
+
+- **T1–T8 placement medians:** **2 / 21.5 / 45 / 102 / 178 / 208 / 229.5 / 426**. T8 wins without awarding a core; empty slots/held cores do not block it.
+- **Stock limitation:** T7 median held W/S/A/F **665.5/262/458.5/479**. Round4 reduces food/water stock from round 3 while keeping all five other targets. Round5 reduces wood/stone too, but yields only 38 spam losses plus 8 unproven stalls, so target 2 rejects it. Five rounds do not prove target 5 impossible within the guardrails; it still needs further design/tuning work. No rule/recipe/roster/map changes were made.
+- **Playtest seeds:** **41** for a tight combo win at 571/597 slots (**95.64%**; spam loses at 579); **37** for repaired opening plus clear spam failure (combo 423/618, **68.45%**; spam fills all 618 and loses); **35** for the other repaired opening (combo 440/576, **76.39%**, formerly stalled at 3; spam's 546-placement stall is explicitly unproven).
+- **Commits:** prep `fb652be`; rounds 1–5 **`b348140` / `d010e37` / `6168e56` / `39e6ea9` / `c30a2c2`**. Each retains its exact config and all 100 bot records in `tests/balance/v4-round-N.json`; selected source is verified identical to the round 4 archive. Every round's 10 harness checks passed; measurement 134–140 seconds/100 runs.
+- **Validation/handoff:** 125 scoped tests, 9 focused harness checks and typecheck pass on the restored config. No new outside-owner issue found; other agents' files untouched. Opus can review the selected v4 config, win/loss acceptance and complete report at `tests/balance/REPORT.md`.
+
+## Historical v3 result
 
 **N7 complete — selected round 3 (`f6b6d45`), 48/50 combo wins, 48/50 T6, zero soft-lock declarations.** All nine previous core-coverage stalls now win. Four rounds committed: `cf27db5` → `1a2c142` → `f6b6d45` → `d04593b`; round 3 restored by priority **4 > 2 > 1 > 3**.
 
@@ -30,9 +49,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N8 v4 calibration. Preparation complete; Sonnet S8 landed (`c63b56d`, `51cef86`). Win/end acceptance passes with no expected-failure markers. At most five 50-seed rounds follow; prior v3 result is historical.
+COMPLETE: N8 five-round v4 calibration, round4 selected and restored. Five of six targets pass; stock pressure remains the documented lowest-priority miss. Final restored-config verification passed:125 scoped tests,9 focused harness checks, typecheck and exact archive/source equality.
 
 ## Done
+- N8 — five measured rounds (`b348140`, `d010e37`, `6168e56`, `39e6ea9`, `c30a2c2`), selected round4: 50 wins/46 spam losses, five targets pass, all guardrails respected. Top v4 result and report contain remaining stock-pressure miss and three playtest seeds.
 - N8 preparation — final-threshold win/end acceptance (9 cases), v4 outcome/board-use/opening/stock metrics, all six report targets, frozen-v3 guardrail reference; 26 preliminary checks pass. S8 is committed; no calibration preceded it.
 - N7 — v3 eight-threshold calibration, four 50-seed rounds, 48/50 wins; selected `f6b6d45`, with rounds `cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`. Final v3 result and report include all late fills/legal-site counts.
 - N6 confirmation — 50 seeds, exact replay of original 20, explicit larger-sample limits and final checks — `6557f14`.
@@ -55,9 +75,11 @@ IN PROGRESS: N8 v4 calibration. Preparation complete; Sonnet S8 landed (`c63b56d
 - D2 — biome offers, first-offer distinctness, repeated-pair protection, reshuffle budget, final-pair history and stacked cores; 19 tests and typecheck green — `0daa072`. Designer reassigned offers ownership to astra.
 
 ## Blockers
+- N8 has no implementation/dependency blocker. Five-round limit reached; target5 remains missed. Further tuning is a future task, and current selected config preserves all higher-priority targets.
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N8 selection: compare six target outcomes in order1>2>4>3>6>5; retain successful opening fixes, bring T6/T7 earlier while preserving T8, then use the last two rounds on stock costs. Rounds3/4 pass the same five targets with equal50 wins/46 losses; prefer round4’s reduced food/water stocks. Reject round5 because target2 regresses. Restore round4 exactly, without an unmeasured hybrid or sixth run. Stock pressure remains a bounded-search miss, not a proven guardrail impossibility. All literal before/after numeric decisions are recorded in Balance log.
 - N8 target 6: require at least 45/50 T7 completers and every completer strictly below 60% all-map board use. Report median/max and coverage, so missing runs never produce a vacuous pass. Target 5 also requires ≥45 checkpoint samples. Keep historical v2/v3 report sections unchanged.
 - N8 / v4: win means all final lifetime targets met, final threshold awards no core. Report map board use against **all** placeable slots, including dead tiles (distinct from the end-screen living-slot denominator). Keep bots’ scoring, core/offer rules, no-demolition policy and 1500-action cap unchanged. A bot exhausting living slots with no usable held core is a separately labelled board-full loss; an unaffordable empty-slot stall without a detector proof remains `stuck`, never silently counted as a spam loss.
 - N8 stock-pressure measurement: snapshot held stock at each T3–T7 transaction, against the per-resource maximum cost in the placed building’s current-biome roster. Compare median stock/max-cost ratio at every checkpoint/resource; positive stock with zero roster cost is infinite pressure. Report raw held and max-cost medians too, and mark absent checkpoints unmeasurable. This is checkpoint sampling, not a claim about every frame between thresholds.
@@ -96,6 +118,7 @@ IN PROGRESS: N8 v4 calibration. Preparation complete; Sonnet S8 landed (`c63b56d
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- N8: no new outside-owner issue observed. S8 final-threshold behavior passes nine independent acceptance cases; global typecheck passed. Owned/scoped tests only; no full-suite/browser claim.
 - **RESOLVED N6 → sonnet (S6, source inspected; owner reports tests green; historical test assumption, `src/ui/hud.test.ts:203`):** the “resource bar shows per-resource lifetime progress” fixture selects the first T1 key (`wood`, now target 0), sets lifetime wood 4 and expects `4 / 0`. `resourceBar.ts:22` correctly caps displayed progress at the target, yielding `0 / 0` (row text `Wood6lifetime 40 / 0`). Expected fixture repair: select a positive target such as stone 16 or assert `min(have, need)`; §39 allows already-satisfied/zero requirements. Full suite: 273 pass, this one fails, 6 skip. Source and test untouched; all 164 scoped tests pass.
 - **RESOLVED N1 → sol (`925ad36`, confirmed by final full suite):** `npx vitest run src/tutorial/tutorial.session.test.ts` fails at line 39 on seed 1. The real-session fixture uses Desert `quarry + quarry` / Arctic `ice_drill + ice_drill` and expects a pair payout; v2 deliberately removes both duplicate recipes. Use `quarry + palm_grove` / `ice_drill + scree_quarry`, or derive an affordable pair from config. Tutorial source/tests untouched.
 - RESOLVED C3-WORLD: all-plain stub replaced by astra D1; T1–T4 now pass normally (`cc0e8e9`, `3950a22`, `d978f14`).

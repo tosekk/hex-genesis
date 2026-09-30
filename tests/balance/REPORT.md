@@ -1,8 +1,37 @@
 # Economy balance report
 
-## Selected v3 result — round 3
+## Selected v4 result — round 4
 
-Selected calibration **`f6b6d45`**, retained after four measured rounds (`cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`) by priority **4 > 2 > 1 > 3**. This section is current; the v2 sections and all four v3 rounds below are preserved audit history. Source/results: `v3-round-3.json`.
+Selected **`39e6ea9`**, restored after the five-round cap. All measurements follow Sonnet S8 (`c63b56d`); source and every selected run are archived in [v4-round-4.json](v4-round-4.json). All five round sections and older v2/v3 results below remain audit history.
+
+| V4 target (priority 1 > 2 > 4 > 3 > 6 > 5) | Selected result, seeds 1–50 |
+|---|---|
+| 1. Combo wins ≥45; zero false declarations | **PASS — 50 wins, zero detected false declarations** |
+| 2. Spam loses ≥45 before final goal | **PASS — 46 board-full bot losses**, 2 wins, 2 unproven stalls |
+| 4. No unaffordable opening stalls before T2 | **PASS — zero combo stalls**, including 35/37 |
+| 3. Median winning all-map board use 65–85% | **PASS — 68.76%** |
+| 6. T7 before 60% board use | **PASS — all 50 completers; median 37.60%, max 59.80%** |
+| 5. T3–T7 stock ≤3× max biome cost | **MISS — worst checkpoint median ratio 300.5×**, T7 wood |
+
+Combo T1–T8 placement medians: **2 / 21.5 / 45 / 102 / 178 / 208 / 229.5 / 426**. T7 median held stock W/S/A/F: **665.5/262/458.5/479**. Pressure is the median of each run's held/max-cost ratio, not the ratio of two independently computed medians. It samples threshold transactions, not every frame.
+
+| Round | Commit | Combo wins | Spam losses | Median winning board use | Opening stalls (combo) | Max T7 board use | Worst checkpoint median stock/cost | Passing targets |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| 1 | b348140 | 50 | 46 | 69.47% | 0 | 89.45% | ∞ | 1,2,3,4 |
+| 2 | d010e37 | 50 | 46 | 69.28% | 0 | 68.34% | ∞ | 1,2,3,4 |
+| 3 | 6168e56 | 50 | 46 | 69.28% | 0 | 59.80% | ∞ | 1,2,3,4,6 |
+| **4 selected** | **39e6ea9** | **50** | **46** | **68.76%** | **0** | **59.80%** | **300.5×** | **1,2,3,4,6** |
+| 5 | c30a2c2 | 50 | 38 | 68.87% | 0 | 59.80% | 220× | 1,3,4,6 |
+
+Round4 wins the comparison: it retains round 3's higher-priority outcomes and reduces food/water stock. Round5 introduces eight unproven spam stalls and four spam wins, losing target 2. It cannot be selected to improve the lower-priority stock result. The five-round search does not prove stock pressure impossible within the allowed numbers. No sixth calibration or unmeasured hybrid was used.
+
+**Playtest:** seed **41** for a tight win (571/597 slots, 95.64%); seed **37** for the repaired desert opening and clear spam failure (combo 423/618, 68.45%; spam fills 618 and loses); seed **35** for the repaired forest opening (combo 440/576, 76.39%, formerly stalled at 3). Selected spam seeds 5/18 win; seeds 23/35 stall with empty slots and are never counted as losses.
+
+**Interpretation:** all-map board use includes dead placeable land. Board-full bot losses mean no empty living slots and no usable remaining core, under the prescribed no-demolition policy; they are distinct from engine-proven losses, because replacement combos can remain. Zero detected false-loss declarations uses the constructive escape audit and independent acceptance fixtures, not an exhaustive theorem about every possible replacement sequence. The selected runs have zero engine loss declarations and zero combo losses. See the round 4 section for all per-run checkpoints and held-stock/cost vectors.
+
+## Historical selected v3 result — round 3
+
+Selected calibration **`f6b6d45`**, retained after four measured rounds (`cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`) by priority **4 > 2 > 1 > 3**. This v3 section is historical; its original assessments are preserved below. Source/results: `v3-round-3.json`.
 
 | Target | Result | Evidence, seeds 1–50 |
 |---|---|---|
