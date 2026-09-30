@@ -4,7 +4,7 @@ import type { BoardPick, BoardView, GameSession, PointerKind, SessionEvent } fro
 import { err, ok } from '../core/result';
 import { makeTestState } from '../core/testing';
 import type { GameState } from '../core/types';
-import { createHud } from './hud';
+import { createLegacyHud as createHud } from './legacyHud';
 import { BACKLOG, TOAST_FAST_MS, TOAST_MS } from './toasts';
 
 function setup() {

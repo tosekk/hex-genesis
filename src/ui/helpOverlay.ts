@@ -4,7 +4,7 @@ const SEEN_KEY = 'terraform.helpSeen';
 
 // Camera bindings mirror src/render/boardView.ts: OrbitControls with LEFT disabled,
 // RIGHT = rotate, MIDDLE = pan, wheel = zoom; keys W/A/S/D pan and Q/E rotate.
-const ROWS: [string, string][] = [
+const LEGACY_ROWS: [string, string][] = [
   ['Left-click', 'Select a tile / place a core / build'],
   ['Shift + click, or R over a tile', 'Repeat your last building'],
   ['1 / 2', 'Pick the left / right biome offer'],
@@ -17,12 +17,31 @@ const ROWS: [string, string][] = [
   ['Goal', 'Reach the final threshold before you run out of room. Every slot and combo pays only once.'],
 ];
 
+const JOURNAL_ROWS: [string, string][] = [
+  ['Building card, then a slot', 'Place it. The card stays selected, so keep clicking slots'],
+  ['A slot, then a building card', 'Place into that slot; selection moves to the next empty slot'],
+  ['Core card, then a highlighted tile', 'Place a core (grey card = no core of that biome held)'],
+  ['Shift + click, or R over a tile', 'Repeat your last building'],
+  ['1 / 2', 'Pick the left / right biome offer'],
+  ['Hold Tab, or click "Slots left"', 'Highlight every tile that still has an empty slot'],
+  ['J', 'Open / close the journal'],
+  ['Esc, or right-click', 'Clear the current selection'],
+  ['Right-drag, or Q / E', 'Rotate the camera'],
+  ['Mouse wheel', 'Zoom'],
+  ['Middle-drag, or W A S D', 'Pan the camera'],
+  ['? or H', 'Show / hide this help'],
+  ['Goal', 'Reach the final threshold before you run out of room. Every slot and combo pays only once.'],
+];
+
 const typing = (t: EventTarget | null) =>
   t instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable);
 
 /** Controls help: `?` / `H` / the "?" button toggle it; Esc closes; shown once automatically per browser session. */
-export function createHelpOverlay(root: HTMLElement) {
+export function createHelpOverlay(root: HTMLElement, opts: { variant?: 'legacy' | 'journal' } = {}) {
+  const journal = opts.variant === 'journal';
+  const ROWS = journal ? JOURNAL_ROWS : LEGACY_ROWS;
   const btn = el('button', 'btn help-btn', '?');
+  btn.hidden = journal; // the journal HUD opens help from its menu
   btn.title = 'Controls (? or H)';
   btn.setAttribute('aria-label', 'Show controls help');
   const overlay = el('div', 'overlay help-overlay');
@@ -61,6 +80,8 @@ export function createHelpOverlay(root: HTMLElement) {
   let shown = false;
   return {
     isOpen,
+    open,
+    hide,
     /** Call on runStarted: opens the help the first time only. */
     maybeAutoShow(): void {
       if (shown) return;

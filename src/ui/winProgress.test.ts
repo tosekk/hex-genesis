@@ -4,7 +4,7 @@ import type { BoardPick, BoardView, GameSession, PointerKind, SessionEvent } fro
 import { ok } from '../core/result';
 import { makeTestState } from '../core/testing';
 import type { GameState } from '../core/types';
-import { createHud } from './hud';
+import { createLegacyHud as createHud } from './legacyHud';
 import { emptySlotSummary } from './winProgress';
 
 /** 4×4 board: hexes 0..15 terraformed; everything else dead. */

@@ -26,20 +26,20 @@ export function toastText(session: GameSession, e: PayoutEvent): string {
 export function createToasts(root: HTMLElement, session: GameSession) {
   const host = el('div', 'toasts');
   root.appendChild(host);
-  const queue: string[] = [];
+  const queue: { text: string; kind: string }[] = [];
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   function next(): void {
     host.replaceChildren();
-    const text = queue.shift();
-    if (text === undefined) { timer = null; return; }
-    host.appendChild(el('div', 'toast', text));
+    const item = queue.shift();
+    if (item === undefined) { timer = null; return; }
+    host.appendChild(el('div', `toast toast-${item.kind}`, item.text));
     timer = setTimeout(next, queue.length > BACKLOG ? TOAST_FAST_MS : TOAST_MS);
   }
 
   return {
     push(events: PayoutEvent[]): void {
-      for (const e of events) queue.push(toastText(session, e));
+      for (const e of events) queue.push({ text: toastText(session, e), kind: e.kind });
       if (timer === null) next();
     },
     clear(): void {

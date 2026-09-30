@@ -7,6 +7,18 @@ export function randomSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
 }
 
+/** New run from a typed seed (digits) or a random one; keeps ?seed= in the URL in sync. */
+export function startNewRun(session: GameSession, text: string): void {
+  const v = text.trim();
+  const seed = /^\d+$/.test(v) ? Number(v) >>> 0 : randomSeed();
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('seed', String(seed));
+    history.replaceState(null, '', url);
+  } catch { /* non-browser or sandboxed history: ignore */ }
+  session.newRun(seed);
+}
+
 const TITLE = { won: 'Planet terraformed!', lost: 'Out of room', ended: 'Run ended', playing: '' } as const;
 
 export function createEndScreen(root: HTMLElement, session: GameSession) {
@@ -38,17 +50,7 @@ export function createEndScreen(root: HTMLElement, session: GameSession) {
     input.type = 'text';
     input.placeholder = 'seed (blank = random)';
     const btn = el('button', 'btn primary new-run', 'New Run');
-    btn.addEventListener('click', () => {
-      const v = input.value.trim();
-      const seed = /^\d+$/.test(v) ? Number(v) >>> 0 : randomSeed();
-      // Keep the URL in sync so a reload/share reproduces this world.
-      try {
-        const url = new URL(location.href);
-        url.searchParams.set('seed', String(seed));
-        history.replaceState(null, '', url);
-      } catch { /* non-browser or sandboxed history: ignore */ }
-      session.newRun(seed);
-    });
+    btn.addEventListener('click', () => startNewRun(session, input.value));
     box.append(input, btn);
     overlay.appendChild(box);
     overlay.hidden = false;
