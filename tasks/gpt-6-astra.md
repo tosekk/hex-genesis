@@ -209,3 +209,17 @@ Implement exactly the signatures in `tasks/UI_SPEC.md` §8.1: pure, deterministi
 - `adjacencyLogEntry` reads the **current** combos of both hexes (use `currentComboMatches`) and maps ids to names.
 
 Tests: an undiscovered combo leaks nothing (check the object's keys); a known recipe gives the right totalCost and biomes; adjacency entries only for `kind: 'adjacency'`; terrain and zone views match the config. Commit `[astra] N10: journal helpers` and note it in your status for sonnet.
+
+## N11 — Core hex holds no buildings + the shared slot-count helper (P0, designer, 2026-10-01 02:20)
+GAME_DESIGN §10/§20 changed: **a core's own hex can never hold buildings** and never counts as a slot.
+1. `src/sim/economy`: `canPlaceBuilding` rejects hexes in `state.cores` (reason text: "A terraformer core occupies this tile"). `rosterFor` still returns the biome roster (the UI shows why it's blocked). `previewPlacement` returns no payout for them.
+2. **One shared definition**, exported from `src/sim/economy/index.ts`:
+   ```ts
+   export function isCoreHex(state: Readonly<GameState>, hexId: HexId): boolean;
+   /** Building slots on terraformed placeable non-core hexes. */
+   export function slotCounts(state: Readonly<GameState>): { empty: number; total: number };
+   ```
+   Sonnet (endgame, legacy HUD) and sol (journal HUD) will switch to these, so all counts agree.
+3. Tests: placement on a core hex is rejected; `slotCounts` excludes core hexes; acceptance case AGENT_TASKS §57 Win/end 5.
+4. **Balance re-check** on seeds 1–50 with the harness (it loses roughly 3 slots per core): report the v4 targets. If target 1 (≥ 45/50 combo wins) or 2 fails, apply the **smallest threshold-only fix** within the v4 guardrails (e.g. lower T8 slightly), with at most 2 rounds.
+5. Commit `[astra] N11: …` and put an "N11 result" line at the top of your status. **Commit step 1–3 first** (others wait on the helper), then do the balance check.

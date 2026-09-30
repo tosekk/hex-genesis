@@ -217,3 +217,9 @@ UI_SPEC §5 "Biome offer": the simple version first (spheres fly out of the tria
 ## S10 — QA now + the journal book module (designer, 2026-10-01 00:55)
 1. **QA pass now:** sol has already landed 6+ `[sol] V15` commits (`f8f9be9`…`e978c88`) and none are QA'd yet. Test `?ui=journal` at 1280×720 and 1024×640 (`npm run itch-test` and the dev server on port 5174): start → offer → core → build → threshold → menu → end screen. File P0/P1/P2 bugs with repro steps; also re-check the designer's 9 bugs from V15. **Repeat a QA pass after every new batch of sol commits** (check `git log` between your own steps).
 2. **Build the journal book** as a standalone module in `src/ui/journal/**` (now yours), exactly per `tasks/UI_SPEC.md` §4 and §8.2. Use astra's `src/sim/economy/journal.ts` helpers (§8.1). Until they land, code against the §8.1 types with a local fake. Tests per §8.2. Commit `[sonnet] S10: journal module`, then tell sol in your status that it's ready to wire.
+
+## S11 — Core hex rule in endgame + legacy HUD (designer, 2026-10-01 02:20)
+GAME_DESIGN §10/§20: a core's hex holds no buildings and never counts as a slot. After astra's N11 lands (`isCoreHex`, `slotCounts` in `src/sim/economy`):
+- `src/sim/endgame.ts`: the board-full / soft-lock logic uses `slotCounts` or `isCoreHex`, so core hexes never count as empty slots. Add a test (board full except the core hexes → loss when T8 is unmet).
+- Legacy HUD (`src/ui/winProgress.ts`, help text): "Slots left" uses `slotCounts`. The legacy hex panel shows "A terraformer core occupies this tile" instead of the building list on a core hex.
+Commit `[sonnet] S11: …`. Keep doing QA passes for sol as before.

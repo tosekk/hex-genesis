@@ -241,6 +241,8 @@ A terraformer core creates a biome spread.
 
 A core may be placed on dead land.
 
+**The core's own hex can never hold buildings** (designer, 2026-10-01). Its three slots are permanently unavailable, and it doesn't count as a building slot anywhere: not in "slots left", "board used", the win check or the loss check.
+
 Core placement is constrained by existing cores.
 
 The flat hex-grid distance between core centers must be at least:
@@ -460,7 +462,7 @@ However:
 
 # 20. Building Slots
 
-Every placeable hex contains:
+Every placeable hex contains (except a hex holding a terraformer core, see §10):
 
 **3 building slots**
 

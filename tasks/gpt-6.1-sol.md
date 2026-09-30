@@ -240,3 +240,18 @@ Everything else in U1 that isn't done yet: both placement flows (sticky card; sl
 - **Sonnet's browser review:** **no open P0/P1 bugs** from sonnet.
 
 Commit small and often (`[sol] V15: …`), and record each hash and what changed in your status so sonnet knows what to re-check.
+
+## V16 — Designer requests (2026-10-01 02:20), after the pass-4 fixes
+
+**(a) Core hex holds no buildings** (GAME_DESIGN §10/§20). After astra's N11 lands, use `isCoreHex` and `slotCounts` from `src/sim/economy`:
+- journal HUD "Slots left X of Y" and end-screen "board used" use `slotCounts`;
+- clicking a core hex shows it in the detail panel as a **core tile** ("Terraformer core — no buildings"), with no slot chips and no deck targeting;
+- sticky-card clicks on it fail with that reason;
+- renderer: **no slot anchors or slot rings** on core hexes (`state.cores`), and `setSlotHighlight` ignores them;
+- the Tab empty-slot finder skips them.
+
+**(b) Biome circles are selectable only when useful:** a circle is **enabled iff that biome has at least one tile on the map, OR (main biomes only) a core of that biome is held**. Otherwise it's **disabled**: not clickable, not focusable, greyed, with a tooltip like "No Forest land yet". Mixed circles have no cores, so they unlock only when that mixed biome exists. If the currently selected biome becomes disabled (e.g. New Run), clear the selection and show the deck prompt.
+
+**(c) Core held but no land of that biome yet:** its deck shows the **core card in full color** and **every building card dimmed and not selectable for placement** (hover still shows cost/yield; the tooltip says "Place a Forest core first to create Forest land"). Once the biome has at least one tile on the map, buildings follow the normal affordability rules.
+
+Tests for each of (a), (b), (c). Commit `[sol] V16: …` (a can be a separate commit after N11). Ask sonnet for a QA pass.

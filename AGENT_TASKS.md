@@ -179,6 +179,11 @@ Treat these as assertions.
 - No building is placed on a tile in an active spread's claim set.
 - Another core cannot be placed during spread animation.
 
+### Core hex invariants (2026-10-01)
+
+- No building is ever placed on a hex in `state.cores`.
+- Core hexes are excluded from every slot count (slots left, board used %, board-full loss).
+
 ### Discovery invariants
 
 - Undiscovered combos are not shown in placement preview.
@@ -430,6 +435,7 @@ At minimum, verify these cases.
 2. Empty slots, remaining legal core sites, held cores and an active spread do not block the win.
 3. Board full (no empty slot on any terraformed placeable hex), no usable core site, no spread, no pending offer, final threshold unmet → automatic loss (§42).
 4. No automatic loss while any yield-producing placement exists, including via demolition refunds (§43, §44).
+5. A core hex is rejected for building placement, and its slots never count as empty or total slots.
 
 ---
 

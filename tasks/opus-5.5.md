@@ -176,3 +176,7 @@ The designer wants to **submit early**, so the go/no-go no longer waits for 06:0
 2. **Fix sonnet's P2** in `scripts/itch-frame.html` (a localhost vs 127.0.0.1 origin mismatch makes the cross-origin frame black).
 3. **Go/no-go when triggered, not at 06:00:** as soon as sol reports the V15 DoD met **and** sonnet has no open P0/P1 on the new HUD, package with the journal HUD as default and verify it in the itch frame. Post the zip name in your status. Repeat after the journal and spheres are integrated.
 4. **Name: the game is "Hex Genesis"** (designer, 01:05). Small rename in your files: `<title>` in `index.html` → `Hex Genesis`; replace `<GAME NAME>` in `README.md` (and its heading); the zip name in `scripts/package.mjs` → `release/hex-genesis-<date>.zip` (update the README line too); any loading-indicator text. Leave `package.json`'s `name` alone. Commit `[opus] rename: Hex Genesis`.
+
+## O12 — Core hex rule in e2e + final package (designer, 2026-10-01 02:20)
+1. Add to `assertInvariants` (`tests/e2e`): no building on any hex in `state.cores`. The autoplay bot must skip core hexes (use astra's `isCoreHex` once N11 lands). Commit.
+2. The final package waits for: astra N11 (plus its balance re-check), sol's pass-4 fixes + V16, sonnet S11, and **sonnet reporting 0 open P0/P1**. Then repackage from HEAD with all audio, verify it in the itch frame (music + an SFX after the first click), and post the final zip, size and hash in your status.
