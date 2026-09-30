@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 recorded under Done.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -39,7 +39,7 @@ Overnight queue finished: V1–V4 implemented, V5 capture skipped as permitted, 
 - V4 — visible core/completion effects, reduced motion, softened lighting and cached PCF shadows; 42 owned tests/typecheck/scoped build pass, settled 30×20 board stays at 120 FPS — `38367c2`.
 - V5 — browser capture skipped under task allowance; release-kit README records blocker and candidate capture handoff. `5a6cdcb`.
 
-- V6 — morning summary at the top, final 42 owned tests/typecheck/scoped build pass; summary commit recorded after commit.
+- V6 — morning summary at the top, final 42 owned tests/typecheck/scoped build pass; `0e2afd7`.
 
 ## Blockers
 <!-- what, waiting on whom -->
