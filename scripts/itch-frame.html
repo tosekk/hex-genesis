@@ -1,0 +1,59 @@
+<!doctype html>
+<!-- Local stand-in for an itch.io game page. Served next to the built dist/ by `npm run itch-test`.
+     Like itch, the game runs in a 1280×720 iframe on a DIFFERENT origin (this page on 127.0.0.1, the game on
+     localhost), inside a page that scrolls. Not part of the release zip. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>itch.io embed test</title>
+  <style>
+    body { margin: 0; background: #2b2b2b; color: #ddd; font: 14px/1.5 system-ui, sans-serif; }
+    header { padding: 12px 24px; background: #fa5c5c; color: #fff; font-weight: 700; }
+    main { width: 1280px; margin: 24px auto; }
+    #wrap { width: 1280px; height: 720px; background: #000; position: relative; }
+    #wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+    #bar { display: flex; gap: 12px; align-items: center; margin: 8px 0; }
+    button { font: inherit; padding: 4px 12px; }
+    #hud { background: #111; padding: 8px 12px; border-radius: 6px; font: 12px/1.6 ui-monospace, monospace; white-space: pre; min-height: 5em; }
+    .filler { height: 2200px; padding: 24px; color: #888; }
+  </style>
+</head>
+<body>
+  <header>itch.io (local embed test)</header>
+  <main>
+    <p>Click the game, then try: R, Tab, Esc, W A S D, Q E, 1 / 2, ? / H, arrow keys, Space, PageDown. <b>Parent scrollY must stay 0.</b></p>
+    <div id="wrap">
+      <iframe id="game" allow="autoplay; fullscreen *; gamepad; accelerometer; gyroscope; xr-spatial-tracking"
+        scrolling="no" frameborder="0"></iframe>
+    </div>
+    <div id="bar">
+      <button id="fs">⛶ Fullscreen (like itch's button)</button>
+      <span id="origin"></span>
+    </div>
+    <div id="hud"></div>
+    <div class="filler">Page content below the game (it makes this parent page scrollable, like a real itch page).</div>
+  </main>
+  <script>
+    const frame = document.getElementById('game');
+    const params = new URLSearchParams(location.search);
+    // Cross-origin by default: swap localhost ↔ 127.0.0.1. ?same=1 keeps the same origin (for debugging).
+    const host = params.has('same') ? location.hostname : (location.hostname === '127.0.0.1' ? 'localhost' : '127.0.0.1');
+    const seed = params.get('seed');
+    // ?game=<url> loads another build (e.g. an older preview server) for A/B comparisons.
+    frame.src = params.get('game') ?? `${location.protocol}//${host}:${location.port}/index.html${seed ? `?seed=${seed}` : ''}`;
+    document.getElementById('origin').textContent = `page ${location.origin} · game ${new URL(frame.src).origin}`;
+    document.getElementById('fs').addEventListener('click', () => document.getElementById('wrap').requestFullscreen());
+    const log = [];
+    let lastY = 0;
+    window.addEventListener('scroll', () => { if (scrollY !== lastY) log.push(`parent scrolled to ${scrollY}`); lastY = scrollY; });
+    document.addEventListener('fullscreenchange', () => log.push(document.fullscreenElement ? 'entered fullscreen' : 'left fullscreen'));
+    // Exposed for automated checks.
+    window.__embed = { log };
+    setInterval(() => {
+      document.getElementById('hud').textContent =
+        `parent scrollY: ${scrollY}\nfocus: ${document.activeElement === frame ? 'IN GAME iframe' : document.activeElement?.tagName}\n` +
+        `fullscreen: ${!!document.fullscreenElement}\n` + log.slice(-5).join('\n');
+    }, 200);
+  </script>
+</body>
+</html>

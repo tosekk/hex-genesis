@@ -1,4 +1,5 @@
 import { bindBoard } from './app/bindBoard';
+import { hideLoading, preventScrollKeys, requestFocus } from './app/embed';
 import { installErrorOverlay } from './app/errorOverlay';
 import { createAudio } from './audio/audio';
 import { DEFAULT_CONFIG } from './config';
@@ -8,6 +9,7 @@ import { createTutorial } from './tutorial/tutorial';
 import { createHud } from './ui/hud';
 
 if (import.meta.env.DEV) installErrorOverlay();
+const allowScrollKeys = preventScrollKeys();
 
 function pickSeed(): number {
   const param = new URLSearchParams(location.search).get('seed');
@@ -34,12 +36,14 @@ const audio = createAudio(el('ui'), session);
 // The next frame is scheduled first, so one bad frame doesn't kill the loop either.
 let last = performance.now();
 let rafId = 0;
+let firstFrame = true;
 function frame(t: number) {
   rafId = requestAnimationFrame(frame);
   const dt = Math.min(100, Math.max(0, t - last));
   last = t;
   session.advance(dt);
   board.update(dt);
+  if (firstFrame) { firstFrame = false; hideLoading(); requestFocus(); }
 }
 rafId = requestAnimationFrame(frame);
 
@@ -52,6 +56,7 @@ function teardown(): void {
   tornDown = true;
   cancelAnimationFrame(rafId);
   window.removeEventListener('resize', onResize);
+  allowScrollKeys();
   audio.dispose();
   tutorial.dispose();
   hud.dispose();

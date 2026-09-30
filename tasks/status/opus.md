@@ -3,8 +3,8 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O6.4. N7 round 1 (`cf27db5`) checked (preliminary, see Integration log); waiting for astra's FINAL N7 round + recommended seed. Then: autoplay + pacing re-run and a full browser run to a win.
-O6.1 packaging ✅ `fc24fda` · O6.2 audio wiring ✅ `fc24fda` · O6.3 reviews ✅ (D4, N4, N6 all PASS; see Integration log).
+IN PROGRESS: O6.4, waiting for astra's FINAL N7 round + recommended seed. Round 1 was checked as a preliminary (see Integration log); round 2 `1a2c142` has landed, and N7 is still in progress.
+O7 (release readiness) ✅ this commit. O6.1–O6.3 ✅.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -66,6 +66,20 @@ O6.1 packaging ✅ `fc24fda` · O6.2 audio wiring ✅ `fc24fda` · O6.3 reviews 
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O7 itch.io embed test** (`npm run itch-test` → `http://127.0.0.1:4197/itch-frame.html`).
+  - The page mimics itch: a 1280×720 iframe with itch-style `allow` attributes, inside a tall scrolling page, CROSS-SITE by default (page on 127.0.0.1, game on localhost; `?same=1` for an inspectable same-origin frame; `?game=<url>` for A/B against another build).
+  - Results on the RELEASE=1 build of the working tree:
+    - **Relative paths ✅:** every asset loads 200 from the frame origin.
+    - **Keyboard ✅:** after a click into the game, real key presses work: `1`/`2` pick offers, `h` and `?` toggle help, Esc closes help and cancels core placement, R quick-builds over the hovered tile, W/A/S/D/Q/E reach the board's camera handler, and Tab cycles the game's own controls. (The automation sends `?` with an empty `key`, so `?` was verified with a dispatched `KeyboardEvent`.)
+    - **Scrolling: FIXED (mine) ✅:** before, arrow keys, Space, and PageDown inside the game scrolled the ITCH PAGE. A/B test with the pre-fix build: parent scrollY 0 → 200 after ↓×5 + Space. `src/app/embed.ts` `preventScrollKeys()` now cancels the default for ↑↓←→, Space, PageUp/Down, Home/End unless an input, button, summary, or select owns the key: Space still activates a focused button, and arrows still move the volume slider. After the fix, parent scrollY stays 0 with ↓×5, ↑, Space, PageDown, End, same-origin and cross-site.
+    - **Focus on load: IMPROVED (mine):** `requestFocus()` (`window.focus()`) on the first rendered frame. Cross-site, with no click, the frame took focus and a real `2` picked the offer. Real browsers may refuse this without user activation; clicking still works. Please re-check on the live itch page.
+    - **Fullscreen:** `requestFullscreen` is denied inside the automated pane, so it was checked as what itch actually does, resizing the frame. At 1800×1169, 1024×768, 1600×900, and back to 1280×720, the canvas CSS size and drawing buffer (DPR 2) follow and the HUD stays visible. Please re-check itch's real fullscreen button by hand.
+    - **Audio after first click ✅:** on the first click, `createAudio` unlocks and immediately tries the music and the offer cue. With the MP3s missing it only logs `[audio] Optional file absent: …` (console.debug) and plays nothing. Storage is safe for third-party iframes: every `localStorage`/`sessionStorage` use (help seen-flag, audio settings) is in try/catch.
+    - **Console ✅:** no errors or warnings from the game. (The browser warnings about `web-share`/`allowfullscreen` came from my test page's `allow` list; that list is trimmed now.)
+    - **Automation note:** in the hidden automation pane a cross-site frame doesn't paint or run rAF until something forces a paint. That's a pane throttling artefact, not a game bug: same-site frames and a direct load are fine.
+  - Nothing to route: every issue found was in my files.
+- **O7 loading indicator:** `index.html` has a `#loading` overlay ("Waking the planet…", CSS spinner, reduced-motion aware). `main.ts` fades it out and removes it after the FIRST rendered frame (`hideLoading()`). Verified in the frame: present before the first frame, removed after.
+- **O7 itch page draft:** `README.md` → "itch.io page (draft)": pitch, core loop in 5 bullets, controls, click-for-focus hint, and credits + AI usage per §47. The name is `<GAME NAME>`, and `<JAM NAME>`/`<DESIGNER NAME>` are placeholders too. Asset-dependent credit lines (generated art, ElevenLabs voice, Suno music) are marked *(designer: confirm)*.
 - **O6.4 preliminary: N7 round 1 `cf27db5`** (clean `git archive` export, so astra's uncommitted round-2 edits are excluded). Autoplay on the real map: seeds 1–5 all WIN, invariants hold, replay deterministic. Cumulative placements per threshold, median of seeds 1–5 (my sensible-greedy bot, NOT astra's combo bot) vs v3 targets:
 
   | | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | board full |

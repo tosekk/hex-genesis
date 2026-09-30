@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "package": "node scripts/package.mjs",
     "pacing": "PACING=1 vitest run tests/e2e/pacing.test.ts",
-    "preview:head": "sh scripts/preview-head.sh"
+    "preview:head": "sh scripts/preview-head.sh",
+    "itch-test": "node scripts/itch-test.mjs"
   },
   "dependencies": {
     "three": "0.186.1"

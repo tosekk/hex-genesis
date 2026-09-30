@@ -12,12 +12,19 @@
       #ui > * { pointer-events: auto; }
       #tutorial { position: fixed; inset: 0; pointer-events: none; }
       #tutorial > * { pointer-events: auto; }
+      /* Shown until main.ts renders the first frame (the bundle is ~650 kB). */
+      #loading { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: #1b1d22; color: #c9c2b4; font-size: 15px; letter-spacing: .04em; transition: opacity .35s; }
+      #loading.done { opacity: 0; pointer-events: none; }
+      #loading .ring { width: 38px; height: 38px; border-radius: 50%; border: 3px solid #3a3d44; border-top-color: #d8a55a; animation: spin 0.9s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { #loading .ring { animation-duration: 3s; } }
     </style>
   </head>
   <body>
     <div id="board"></div>
     <div id="ui"></div>
     <div id="tutorial"></div>
+    <div id="loading" role="status" aria-live="polite"><div class="ring"></div><div>Waking the planet…</div></div>
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
