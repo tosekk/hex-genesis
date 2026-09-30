@@ -10,6 +10,8 @@ Any anomalous or unresolved states are saved under states/ and indexed in [audit
 
 Engine loss declarations: 0. Bot stops: stuck 84, board-full 111, won 5. All stalls have a base-payout rescue; all full boards have a combo-payout rescue. Witnesses are deterministic, not optimized for minimal action count (maximum 257 actions). No anomalous snapshots were needed.
 
+**Command-level verification:** all 195 recovery witnesses also passed real GameSession commands, including every intermediate automatic end check; 0 blocked before payout. [Session replay results](session-replays.json) preserve each seed and executed action count. Regenerate with `node --no-warnings --experimental-strip-types --experimental-loader ./tests/balance/resolve-ts.mjs tests/balance/stuck/validate-sessions.ts`.
+
 Replay: `node --no-warnings --experimental-strip-types --experimental-loader ./tests/balance/resolve-ts.mjs tests/balance/stuck/replay.ts random 22` (or another archived policy/seed).
 
 | Seed | Bot | Stop | Actions / placements | Detector | Audit | Witness builds / demolitions | Flag |
