@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -43,7 +43,7 @@ V8 COMPLETE — darker grey dead tops, both layer bands and dry natural tiles; r
 
 - V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. `7e47e0d`.
 
-- V8 — darker neutral-grey dead land/layers, matching dry channels/woods/marsh/rubble and readable stone-grey peaks; three seeded sandbox reviews with every highlight, 48 owned tests/typecheck/scoped build pass. Hash recorded after commit.
+- V8 — `323833e` — darker neutral-grey dead land/layers, matching dry channels/woods/marsh/rubble and readable stone-grey peaks; three seeded sandbox reviews with every highlight, 48 owned tests/typecheck/scoped build pass.
 
 ## Blockers
 <!-- what, waiting on whom -->
