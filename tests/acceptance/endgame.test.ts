@@ -54,8 +54,7 @@ describe('C3 v4 win/end acceptance (§57 W1–W4, owner sonnet S8)', () => {
     expect(checkWin(s)).toBe(true); expect(s).toEqual(before);
     s.thresholdIndex = 0; expect(checkWin(s)).toBe(false); // Session consumes thresholds after the transaction.
   });
-  // Opus night endgame dependency: empty core slots must not prevent board-full loss.
-  it.fails('W3: exhausted board before the final threshold automatically loses in the final placement command', () => {
+  it('W3: exhausted board before the final threshold automatically loses in the final placement command', () => {
     const cfg: GameConfig = { ...DEFAULT_CONFIG, ...config,
       map: { ...DEFAULT_CONFIG.map, cols: 2, rows: 1, levels: 1,
         params: { ...DEFAULT_CONFIG.map.params, mountainClustersMin: 0, mountainClustersMax: 0,
