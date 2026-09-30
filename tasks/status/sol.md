@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V2 verified — committing larger-board framing/diagnostics before V3 audio.
+IN PROGRESS: V3 verified — committing optional audio and precise Opus wiring handoff before V4 polish.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -20,6 +20,7 @@ IN PROGRESS: V2 verified — committing larger-board framing/diagnostics before 
 - R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required — verification/status commit `e8a1be6`.
 - R7 — approved `showPayouts` implemented with ordered, camera-projected rise/fade labels; 26 scoped tests/typecheck/build pass — `0d6afd8`.
 - V1 — reviewed D4 seeds 1–20, connected bends/branches and water-only falls; live-recipe tutorial regression, 27 scoped tests/typecheck pass — `925ad36`.
+- V2 — sandbox size overrides, fitted camera/zoom/pan/table, edge picks and live diagnostics; all three filled-board sizes measured 120 FPS / 59 calls; 33 scoped tests/typecheck/build pass — `7edfb22`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -36,6 +37,7 @@ IN PROGRESS: V2 verified — committing larger-board framing/diagnostics before 
 - R7/§29: one decorative text label per payout event, scheduled in received order across calls with 140 ms staggering and a 1.2 s rise/fade. Resource text follows config order. Same-hex lines separate vertically; camera/viewport projection follows the board. No state, commands, payout calculation, or HUD notifications are changed. Clear on `setBoard` and dispose; overlays never intercept input or duplicate accessibility announcements.
 - V1 / §46: the real-session tutorial regression chooses a two-building recipe from the live offered biome's roster instead of assuming duplicate recipes exist. Astra removed twin_quarries/meltwater during overnight balance work; all event-driven coverage remains real and unchanged.
 - V2 / §3–§4: `cols`/`rows` overrides are sandbox-only copies of the config, bounded to 2–60 / 2–40; production MAP remains unchanged. Camera framing fits all board/frame corners at the start angle, includes peaks, preserves zoom ratio on resize, and scales near/far zoom limits and pan margins. Picking retains exact per-tile footprints. Renderer diagnostics are a canvas WeakMap helper, not a new BoardView contract.
+- V3 / §46–§47: music/SFX use optional build-time MP3 discovery (restart dev/rebuild after file drops) to avoid missing-file requests. First pointer/keyboard gesture unlocks playback; only the current opening offer cue is deferred, never a backlog. Corrupt assets are disabled per instance; policy rejection may retry later. Tile pitch randomness is presentation-only. Adjacent-only payout events are silent, per the specified base/pair/triple mapping. Mute/volume control music/SFX; tutorial narration retains its existing separate mute. Controls sit bottom-right at `right:150px;bottom:12px`, beside Help/End Run and below Codex.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
@@ -49,6 +51,8 @@ IN PROGRESS: V2 verified — committing larger-board framing/diagnostics before 
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **V3 / Opus main.ts wiring required:** add `import { createAudio } from './audio/audio';`, then `const audio = createAudio(document.getElementById('ui')!, session);` after session creation and before `session.newRun(...)`. No frame-loop call. Dispose with other factory handles if a teardown path is added. Sol did not edit main.ts, HUD, contracts, or config.
+- V3 asset handoff: `public/audio/AUDIO_LIST.md` lists all 14 exact MP3 paths, triggers, lengths and generation prompts. Drop music/SFX under those paths and restart Vite/rebuild; VO scripts remain separate. Sandbox uses the same factory via a synthetic event adapter: R = core/flip/done, B/X = model add/remove, P = populate, F = combo payout. Browser verified the corner widget, persisted mute across reload, and a reveal with all sounds absent: no visible console errors/warnings (optional debug messages hidden). No recordings exist yet, so actual authored sound quality is not evaluated. 39 scoped tests, typecheck and scoped production build pass; 6 new audio tests cover all mapped cues, ≤12/s flips/pitch, persistence, blocked storage, corrupt/missing media, autoplay recovery and cleanup.
 - V2: use `/render-sandbox.html?seed=7&cols=30&rows=20&load=1&viewport=1280x720` for an all-plain five-layer stress board with all 1,800 slots occupied. Remove `load` for the generated map; remove `viewport` to fit the browser window. L uses the current dimensions, not a hard-coded 840. Diagnostics report actual rAF FPS and Three render calls/triangles.
 - V2 browser measurements in Brave on this machine, 1280×720 CSS canvas, renderer pixel ratio capped at 2, settled one-second samples at default camera (synthetic all-plain five-layer boards, all 24 model types):
 
