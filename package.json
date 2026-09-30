@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "package": "echo 'package: not implemented yet (opus O4)' && exit 1",
+    "package": "node scripts/package.mjs",
     "pacing": "PACING=1 vitest run tests/e2e/pacing.test.ts",
     "preview:head": "sh scripts/preview-head.sh"
   },

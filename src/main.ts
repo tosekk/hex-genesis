@@ -1,5 +1,6 @@
 import { bindBoard } from './app/bindBoard';
 import { installErrorOverlay } from './app/errorOverlay';
+import { createAudio } from './audio/audio';
 import { DEFAULT_CONFIG } from './config';
 import { createGameSession } from './game/session';
 import { createBoardView } from './render/boardView';
@@ -23,22 +24,42 @@ function el(id: string): HTMLElement {
 
 const session = createGameSession({ config: DEFAULT_CONFIG, now: () => Date.now() });
 const board = createBoardView(el('board'), DEFAULT_CONFIG);
-bindBoard(session, board);
-createHud(el('ui'), session, board);
-createTutorial(el('tutorial'), session);
+const unbindBoard = bindBoard(session, board);
+const hud = createHud(el('ui'), session, board);
+const tutorial = createTutorial(el('tutorial'), session);
+// Optional audio (sol V3): silent, without errors, while the MP3s in public/audio are missing.
+const audio = createAudio(el('ui'), session);
 
 // Start the frame loop before the first run so a throw during newRun can't stop rendering.
 // The next frame is scheduled first, so one bad frame doesn't kill the loop either.
 let last = performance.now();
+let rafId = 0;
 function frame(t: number) {
-  requestAnimationFrame(frame);
+  rafId = requestAnimationFrame(frame);
   const dt = Math.min(100, Math.max(0, t - last));
   last = t;
   session.advance(dt);
   board.update(dt);
 }
-requestAnimationFrame(frame);
+rafId = requestAnimationFrame(frame);
 
-window.addEventListener('resize', () => board.resize());
+const onResize = () => board.resize();
+window.addEventListener('resize', onResize);
+
+let tornDown = false;
+function teardown(): void {
+  if (tornDown) return;
+  tornDown = true;
+  cancelAnimationFrame(rafId);
+  window.removeEventListener('resize', onResize);
+  audio.dispose();
+  tutorial.dispose();
+  hud.dispose();
+  unbindBoard();
+  board.dispose();
+}
+// A page kept in the back/forward cache (persisted) must stay alive for when the player returns.
+window.addEventListener('pagehide', (e) => { if (!e.persisted) teardown(); });
+import.meta.hot?.dispose(teardown);
 
 session.newRun(pickSeed());

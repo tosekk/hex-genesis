@@ -4,8 +4,8 @@ import { defineConfig } from 'vite';
 
 const root = import.meta.dirname;
 const input: Record<string, string> = { main: resolve(root, 'index.html') };
-// sol's render sandbox is an optional second page.
-if (existsSync(resolve(root, 'render-sandbox.html'))) {
+// sol's render sandbox is an optional second (dev-only) page; `npm run package` sets RELEASE=1 to leave it out.
+if (process.env.RELEASE !== '1' && existsSync(resolve(root, 'render-sandbox.html'))) {
   input.sandbox = resolve(root, 'render-sandbox.html');
 }
 
