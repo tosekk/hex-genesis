@@ -1,0 +1,134 @@
+/* Field-journal HUD (UI_SPEC v1). Everything is scoped under .jhud. The shared components (toasts, offer modal, end screen,
+   help) read the same custom properties, so redefining them here re-skins them. */
+.jhud {
+  --paper:#F4EAD5; --paper2:#E8DBBE; --ink:#2E2A25; --ink2:#6B6257; --accent:#D9826B; --marker:#F5D547; --bad:#C0503A; --good:#4d7a3a;
+  position:absolute; inset:0; pointer-events:none; color:var(--ink);
+  font-family:'Nunito', system-ui, sans-serif; font-size:14px; font-variant-numeric:tabular-nums;
+}
+.jhud > * { pointer-events:auto; }
+#ui > .jhud, .jhud > .j-bottom { pointer-events:none; } /* full-screen containers must not swallow board clicks */
+.jhud [hidden] { display:none !important; }
+.jhud .icon { display:inline-flex; align-items:center; justify-content:center; width:1.25em; height:1.25em; }
+.jhud .icon img { width:100%; height:100%; display:block; }
+.jhud .icon-missing { width:auto; font-size:.85em; font-weight:800; }
+.jhud h2, .jhud .j-head, .jhud .j-tcard-head, .jhud .j-detail-title b, .jhud .j-pill .j-amt { font-family:'Patrick Hand', 'Segoe Print', cursive; font-weight:400; }
+
+.jhud .j-panel, .jhud .panel {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,.35), transparent 45%),
+    repeating-linear-gradient(0deg, rgba(120,90,50,.035) 0 2px, transparent 2px 5px),
+    var(--paper);
+  border:2px solid var(--ink); border-radius:8px 10px 7px 9px;
+  box-shadow:2px 3px 0 rgba(46,42,37,.35), 0 8px 18px rgba(0,0,0,.25); padding:8px 10px;
+}
+.jhud .btn, .jhud .j-btn, .jhud .chip, .jhud .card {
+  font:inherit; color:inherit; cursor:pointer; background:var(--paper2); border:1.5px solid var(--ink); border-radius:7px 8px 6px 8px; padding:5px 10px;
+}
+.jhud .btn:hover:not(:disabled), .jhud .j-btn:hover:not(:disabled) { background:#f0e3c4; }
+.jhud .btn.primary { background:var(--accent); color:#fff; font-weight:800; }
+.jhud .btn.danger, .jhud .j-btn.danger { background:#efc9bd; }
+.jhud .overlay { background:rgba(30,24,16,.55); }
+.jhud .card.selected, .jhud .j-card.selected { box-shadow:0 0 0 3px var(--marker); }
+
+/* --- top: resource pills --- */
+.j-top { position:absolute; top:10px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; }
+.j-pills { display:flex; gap:8px; }
+.j-pill { display:flex; align-items:center; gap:6px; background:var(--paper); border:2px solid var(--ink); border-radius:18px 20px 17px 19px; padding:3px 12px 3px 8px; box-shadow:1px 2px 0 rgba(46,42,37,.35); }
+.j-pill .icon { width:26px; height:26px; }
+.j-amt { font-size:26px; line-height:1; min-width:1.4em; text-align:right; }
+.j-life { font-size:12px; color:var(--ink2); }
+.j-pill.pulse { animation:j-pulse .45s ease-out; }
+@keyframes j-pulse { 0% { transform:scale(1.14); background:var(--marker); } 100% { transform:none; } }
+
+/* --- left: threshold stack --- */
+.j-left { position:absolute; top:10px; left:10px; width:250px; display:flex; flex-direction:column; gap:8px; }
+.j-stack { display:flex; flex-direction:column; gap:6px; }
+.j-done { display:flex; gap:4px; }
+.j-check { color:var(--good); font-weight:900; }
+.j-tcard { border:1.5px solid var(--ink); border-radius:6px; padding:5px 8px; background:var(--paper2); }
+.j-tcard.current { background:var(--paper); }
+.j-tcard.collapsed { font-size:12px; color:var(--ink2); padding:2px 8px; }
+.j-tcard.goal { background:#f3cfc2; border-color:var(--accent); border-width:2px; }
+.j-tcard-head { font-size:17px; }
+.j-tcard.goal .j-tcard-head { color:#8f3f2a; }
+.j-tsmall { font-size:12px; color:var(--ink2); }
+.j-bars { display:grid; gap:3px; margin-top:3px; }
+.j-bar { display:grid; grid-template-columns:48px 1fr auto; gap:6px; align-items:center; font-size:12px; }
+.j-meter { height:8px; background:rgba(46,42,37,.15); border-radius:4px; overflow:hidden; }
+.j-meter-fill { display:block; height:100%; background:var(--good); }
+.j-tcard.goal .j-meter-fill { background:var(--accent); }
+.j-award { font-size:12px; color:var(--accent); font-weight:800; margin-top:2px; }
+.j-slots { font:inherit; background:none; border:0; padding:0; text-align:left; cursor:pointer; color:inherit; }
+.j-slots.active { text-decoration:underline; text-decoration-color:var(--marker); text-decoration-thickness:4px; }
+.j-sites { font-size:12px; color:var(--ink2); }
+.j-spread { color:var(--accent); font-weight:800; }
+
+/* --- top right --- */
+.j-topright { position:absolute; top:10px; right:10px; display:flex; gap:8px; align-items:flex-start; }
+.j-icon-btn { width:40px; height:40px; font-size:20px; padding:0; }
+.j-menu { position:absolute; top:46px; right:0; width:230px; display:flex; flex-direction:column; gap:6px; }
+.j-sound { display:flex; gap:6px; align-items:center; }
+.j-sound input { flex:1; }
+.j-newrun { display:flex; gap:6px; }
+.j-newrun input, .jhud .seed-input { font:inherit; padding:4px 6px; border:1.5px solid var(--ink); border-radius:6px; min-width:0; flex:1; background:#fffaf0; }
+
+/* --- bottom --- */
+.j-bottom { position:absolute; left:10px; right:10px; bottom:10px; display:flex; align-items:flex-end; gap:12px; }
+.j-bottom > * { pointer-events:auto; }
+.j-detail { width:250px; flex:none; max-height:190px; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+.j-detail-head { display:flex; gap:10px; align-items:center; }
+.j-portrait { width:52px; height:52px; border-radius:50%; border:2px solid var(--ink); background:var(--paper2); display:flex; align-items:center; justify-content:center; flex:none; }
+.j-portrait .icon { width:34px; height:34px; margin:0; }
+.j-detail-title { display:flex; flex-direction:column; }
+.j-detail-title b { font-size:20px; line-height:1.1; }
+.j-tag { font-size:12px; color:var(--ink2); }
+.j-row { font-size:13px; }
+.j-rule { color:var(--ink2); font-size:12px; }
+.j-combo { color:var(--good); font-weight:700; }
+.j-strong { font-weight:800; }
+.j-hint { color:var(--ink2); }
+.j-neg { color:var(--bad); font-weight:700; }
+.j-chips { display:flex; gap:8px; margin:4px 0; }
+.j-chip { width:44px; height:44px; border-radius:50%; border:2px solid var(--ink); background:var(--paper2); font:inherit; font-weight:800; color:var(--ink2); cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; }
+.j-chip.empty { border-style:dashed; background:transparent; }
+.j-chip .icon { width:28px; height:28px; margin:0; }
+.j-chip.selected { box-shadow:0 0 0 3px var(--marker); }
+
+.j-deck { flex:1; min-width:0; }
+.j-deck-strip { display:flex; gap:8px; overflow-x:auto; padding:4px 2px 6px; }
+.j-card { position:relative; flex:none; width:92px; height:92px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:4px; }
+.j-card .icon { width:40px; height:40px; margin:0; }
+.j-card-name { font-size:12px; font-weight:700; line-height:1.15; }
+.j-card.core { border-color:var(--accent); background:color-mix(in srgb, var(--biome, #ccc) 35%, var(--paper2)); }
+.j-card.grey { filter:grayscale(1); opacity:.6; }
+.j-card.disabled { cursor:not-allowed; }
+.j-card.unaffordable { opacity:.55; }
+.j-card-why { position:absolute; bottom:2px; font-size:10px; font-weight:800; color:var(--bad); }
+.j-badge { position:absolute; top:-6px; right:-6px; background:var(--accent); color:#fff; border:1.5px solid var(--ink); border-radius:10px; font-size:11px; font-weight:800; min-width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+.j-note { position:fixed; z-index:8; background:#fffaf0; border:1.5px solid var(--ink); padding:6px 9px; font-size:12px; box-shadow:2px 3px 0 rgba(46,42,37,.3); pointer-events:none !important; transform:rotate(-.8deg); max-width:240px; }
+
+.j-triangle { position:relative; width:220px; height:200px; flex:none; }
+.j-tri-lines { position:absolute; inset:0; width:100%; height:100%; }
+.j-tri-lines polygon { fill:none; stroke:var(--ink2); stroke-width:1.5; stroke-dasharray:4 4; }
+.j-biome { position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px; border-radius:50%; border:2px solid var(--ink); background:var(--biome, #b9b1a2); cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; font:inherit; color:var(--ink); }
+.j-biome.mixed { width:44px; height:44px; margin:-22px 0 0 -22px; }
+.j-biome .icon { width:60%; height:60%; margin:0; }
+.j-biome.grey { filter:grayscale(1); opacity:.55; }
+.j-biome.selected { box-shadow:0 0 0 4px var(--marker); }
+.j-biome:disabled { cursor:default; }
+.j-biome-name { position:absolute; top:100%; font-size:11px; font-weight:800; white-space:nowrap; color:var(--ink); text-shadow:0 0 3px var(--paper), 0 0 3px var(--paper); }
+
+/* --- shared bits --- */
+.j-notice { position:fixed; background:var(--bad); color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700; pointer-events:none !important; z-index:30; }
+.jhud .toasts { position:absolute; top:70px; left:50%; transform:translateX(-50%); pointer-events:none !important; }
+.jhud .toast { background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:3px; padding:5px 14px; font-weight:800; font-size:16px; box-shadow:2px 3px 0 rgba(46,42,37,.3); transform:rotate(-1.2deg); }
+.jhud .toast-base { border-left:6px solid var(--good); }
+.jhud .toast-pair, .jhud .toast-triple { border-left:6px solid var(--accent); }
+.jhud .toast-adjacency { border-left:6px solid var(--marker); }
+.jhud .modal { min-width:320px; }
+.jhud .help { min-width:460px; }
+.jhud .help-row kbd { font:inherit; font-weight:800; background:var(--paper2); border:1.5px solid var(--ink); border-radius:5px; padding:2px 8px; }
+.jhud .cards { display:flex; gap:14px; justify-content:center; }
+.jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }
+
+@media (max-width:1150px) { .j-triangle { zoom:.8; } .j-card { width:84px; height:84px; } }
