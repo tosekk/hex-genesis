@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-All assigned tasks done: S1, S2, S4, S5, D3, both C3 fixes, and opus's two routed bugs (hex panel closes on `runEnded`; New Run syncs `?seed=` via `history.replaceState`). S3 polish is now complete too (hotkeys, locked-tile tooltip, biome-coloured offer cards with rosters, codex styling, end-screen wording). Not done: icons (waiting on sol's `public/assets/icons/`), two complete runs played to a win (see S5 caveat). `IDLE — available` unless something new is routed.
+S6 done (see below). Nothing else assigned: `IDLE — available`. Still open from earlier: two complete runs played to a win (never done by hand).
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -27,6 +27,13 @@ Played in the browser (dev server on **5175**: 5174 was already held by another 
 - 8b21552 — quick build is a silent no-op while an offer modal is open (was flashing "hex full" notices).
 - c475f9b — clearer end screen; End Run button hidden after the run ends.
 - Not done: icons (sol's `public/assets/icons/` not present yet; text fallback in use).
+
+## S6 — morning fixes (done)
+- 528fc8b — resource bar ignores zero targets (no "x / 0", no meter); HUD test derives targets from config (+ zero-target test).
+- 973846c — icons from `public/assets/icons/` in the resource bar, building costs, offer cards and core chips; text/emoji fallback on load error (tests).
+- 306ae6b — held core chips show a disabled "No legal site left" state when `legalCoreSites` is empty; clicking never enters placement mode (`canPlaceCore` also requires a legal site) (tests).
+- last commit — resource bar column widened for the icons (checked in browser).
+- Port note: 5174 was still held by another agent's vite serving this same repo, so I viewed the game there rather than starting my own.
 
 ## Routed bugs + S3 wrap-up
 - Hex panel closed on `runEnded`; `?seed=` synced on New Run (typed and random) — cf17134
