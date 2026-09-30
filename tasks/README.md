@@ -146,12 +146,13 @@ npm run package      # zip dist/ → release/ (opus, O4)
 - **P2:** polish, safe to simplify. Cut order: AGENT_TASKS §55.
 
 
-## Night shift 2026-10-01 02:50: opus and sonnet are near their limits
-Until further notice, **only astra and sol work**. Temporary ownership (reverts when opus/sonnet return):
+## Night shift 2026-10-01 02:45 (revised): sol + astra locally, opus in a cloud session
+Sonnet is paused. **Opus runs in a cloud session** (a separate clone of GitHub `origin`), working on branch **`opus/night`**. The designer pushes local `main` and merges `origin/opus/night` back.
 
 | Path | Temporary owner |
 |---|---|
-| `src/sim/endgame.ts`, `src/sim/endgame.test.ts`, `src/game/**`, `tests/e2e/**`, `scripts/**` | **astra** |
-| `src/ui/journal/**`, legacy HUD `src/ui/*.ts` (fallback, fixes only), `src/main.ts`, `src/app/**`, `index.html` | **sol** |
+| `src/sim/endgame.ts` (+ test), `src/game/**`, `tests/e2e/**`, `scripts/**`, `src/main.ts`, `src/app/**`, `index.html`, `src/ui/journal/journal.adjacency.test.ts` (new file only) | **opus** (cloud) |
+| `src/ui/**` (journal HUD, journal book, legacy HUD: fixes only), `src/render/**`, `src/tutorial/**`, `src/audio/**`, `src/assets/**`, `public/**` | **sol** |
+| `src/sim/economy/**`, `src/config/economy.ts`, `src/config/map.ts`, `src/sim/world/**`, `src/sim/offers*`, `tests/acceptance/**`, `tests/balance/**` | **astra** |
 
-**Browser QA is done by the designer** (no agent with a browser is running). Agents must cover every fix with DOM/unit tests.
+**Browser QA is done by the designer.** Agents cover every fix with DOM/unit tests. **The final zip is built locally by the designer** with opus's verification script.

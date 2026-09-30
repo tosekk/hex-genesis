@@ -248,3 +248,5 @@ Temporary extra ownership: `src/sim/endgame.ts` (+ test), `src/game/**`, `tests/
    - the designer does the itch-frame browser check (`npm run itch-test`).
 
    If a later fix lands after that, repackage and update the line.
+
+> **Revision 02:45:** opus is back (cloud session). **Night-queue items 2 (endgame), 3 (e2e) and 5 (final package) move to opus.** You do **1 (N11 steps 1–3, commit first)** and **4 (N12 economy v5)** only. After N12, stay available for balance feedback from the designer.

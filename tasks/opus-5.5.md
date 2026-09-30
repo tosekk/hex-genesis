@@ -180,3 +180,17 @@ The designer wants to **submit early**, so the go/no-go no longer waits for 06:0
 ## O12 — Core hex rule in e2e + final package (designer, 2026-10-01 02:20)
 1. Add to `assertInvariants` (`tests/e2e`): no building on any hex in `state.cores`. The autoplay bot must skip core hexes (use astra's `isCoreHex` once N11 lands). Commit.
 2. The final package waits for: astra N11 (plus its balance re-check), sol's pass-4 fixes + V16, sonnet S11, and **sonnet reporting 0 open P0/P1**. Then repackage from HEAD with all audio, verify it in the itch frame (music + an SFX after the first click), and post the final zip, size and hash in your status.
+
+---
+
+## O13 — Cloud night shift (2026-10-01 02:45), branch `opus/night`
+
+You run in a **cloud clone**. Work on branch `opus/night` and push after every commit. The designer merges it into local `main`. **Before each task, `git pull origin main` (merge, never rebase)** to get sol's and astra's latest work. You don't have a browser, and the designer does browser QA. Budget-conscious: avoid long repeated test runs (balance runs are astra's).
+
+Ownership tonight: `src/sim/endgame.ts` (+ test), `src/game/**`, `tests/e2e/**`, `scripts/**`, `src/main.ts`, `src/app/**`, `index.html`, and the new file `src/ui/journal/journal.adjacency.test.ts` only. Order:
+1. **Endgame and the core hex** (after astra commits N11's `isCoreHex`/`slotCounts`): board-full/soft-lock never counts core hexes. Test: full except the core hexes, T8 unmet → loss.
+2. **e2e:** `assertInvariants` adds "no building on a core hex"; the autoplay bot skips core hexes. **Make the full `npm test` finish in < 60 s** (bounded e2e/profile tests; move anything slow behind an env flag).
+3. **Adjacency-log integration test** `src/ui/journal/journal.adjacency.test.ts`: a real `createGameSession` plus the real `createJournal` (happy-dom), placements from config until a `payouts` event with `kind: 'adjacency'`, then assert the log entry (both combo names and the amount).
+4. **Independent review (O5)** of the night's commits by sol and astra as they land: correctness, determinism, layering, hidden-info rules (§32, §38), and the v5 hard rules R1–R4. Report findings in your status under "Bugs routed" with P0/P1/P2.
+5. **`scripts/verify-zip.mjs`** + `npm run verify-zip`: checks the newest `release/*.zip` has `index.html` at the root, only relative URLs, **each MP3 exactly once**, no `src/` files, and prints size + sha256. Wire it into `npm run package` (package, then verify).
+6. **Release gate:** when sol's night items 1–4 and astra's N12 are in `main`, pull, run `npm test`, `npm run package` and `npm run verify-zip` in the cloud, and put "**RELEASE READY at <commit>**" plus the expected size and hash at the top of your status. The designer then builds the same commit locally and uploads.

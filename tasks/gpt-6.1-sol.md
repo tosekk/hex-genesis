@@ -280,3 +280,5 @@ Temporary extra ownership: `src/ui/journal/**`, the legacy HUD `src/ui/*.ts` (fi
 - Normalize: the pivot at the bottom center, scaled to the slot footprint (the core fills the hex top).
 - Budget: 60 fps on a full 20×14 board; if a model breaks the budget, keep the procedural version and log it.
 - Test: missing files fall back without errors.
+
+> **Revision 02:45:** opus is back (cloud session). `src/main.ts`, `src/app/**` and `index.html` go back to opus, and **the adjacency-log integration test (night item 5) moves to opus.** Your night queue is items **1–4 and 6** (audio move, pass-4 fixes, V16 b/c, V16 a plus the legacy slot text, optional GLB models).
