@@ -3,17 +3,21 @@ import { makeTestState } from '../core/testing';
 import type { GameState, HexId } from '../core/types';
 import { checkWin, isProvablySoftLocked } from './endgame';
 
-/** Fully developed board: every hex forest, every slot built + paid, one core placed. */
-function fullBoard(): { s: GameState; b: string } {
+/**
+ * Fully developed board: every hex forest, every slot built + paid, except the core hexes.
+ * A core's own hex never holds buildings (§10, 2026-10-01): its slots stay empty and unpaid.
+ */
+function fullBoard(cores: HexId[] = [0]): { s: GameState; b: string } {
   const s = makeTestState({ hex: () => ({ biome: 'forest' }) });
   const b = s.config.rosters.forest[0];
   const rec = { comboId: 'c', amount: {} };
   for (const h of s.hexes) {
+    if (cores.includes(h.id)) continue;
     for (const sl of h.slots) { sl.building = b; sl.yieldPaid = true; }
     // A genuinely played-out board: every one-time payout has already happened.
     h.everCompleted = true; h.pairPaid = [rec, rec, rec]; h.triplePaid = rec;
   }
-  s.cores.push(0);
+  s.cores.push(...cores);
   return { s, b };
 }
 const emptySlot = (s: GameState, id: HexId, i: 0 | 1 | 2, paid: boolean) => {
@@ -62,6 +66,17 @@ describe('isProvablySoftLocked (§43, §44)', () => {
     const t = performance.now();
     expect(isProvablySoftLocked(s)).toBe(true);
     expect(performance.now() - t).toBeLessThan(10);
+  });
+
+  it('full except the core hexes, final threshold unmet → soft-locked: core hexes are never slots (§10, §42)', () => {
+    // Three cores ≥ 6 apart, their hexes empty and unpaid; a wallet that could buy anything.
+    const { s } = fullBoard([0, 10, 200]);
+    s.thresholdIndex = s.config.thresholds.length - 1; // T8 unmet
+    s.resources = { wood: 999, stone: 999, food: 999, water: 999 };
+    expect(isProvablySoftLocked(s)).toBe(true);
+    // Control: the same empty unpaid slots on hexes that are NOT cores are room to grow → not a loss.
+    s.cores.length = 0;
+    expect(isProvablySoftLocked(s)).toBe(false);
   });
 
   it('never true when won, or when the run is not playing', () => {

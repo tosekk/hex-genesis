@@ -1,4 +1,4 @@
-// OWNER: sonnet (reassigned from deepseek) — D3
+// OWNER: sonnet (reassigned from deepseek) — D3; opus for the 2026-10-01 night shift (O13.1)
 import { SLOT_PAIRS } from '../core/types';
 import type { BuildingId, GameState, HexId, Resources, SlotIndex } from '../core/types';
 import { demolishRefund, placeBuilding, rosterFor } from './economy';
@@ -44,9 +44,11 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
   const cfg = state.config;
   // Most optimistic wallet for an unpaid slot: resources plus the refund of EVERY demolishable
   // building (§26). Over-counts on purpose: a multi-step demolition may free an unpaid slot (§43).
+  // §10 (2026-10-01): a core's own hex never holds buildings and is never a slot, here or anywhere.
+  const cores = new Set(state.cores);
   let optimistic: Resources = state.resources;
   for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null) continue;
+    if (!h.placeable || h.biome === null || cores.has(h.id)) continue;
     for (const s of h.slots) {
       if (s.building !== null) optimistic = plus(optimistic, demolishRefund(state, s.building));
     }
@@ -54,7 +56,7 @@ export function isProvablySoftLocked(state: Readonly<GameState>): boolean {
 
   let sims = 0;
   for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null || state.activeSpread) continue;
+    if (!h.placeable || h.biome === null || cores.has(h.id)) continue;
     const roster = rosterFor(state, h.id);
     for (const slot of SLOTS) {
       const cur = h.slots[slot];

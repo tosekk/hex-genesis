@@ -12,7 +12,8 @@ import { placeBuilding, previewPlacement, rosterFor } from '../../src/sim/econom
 import { checkWin, isProvablySoftLocked } from '../../src/sim/endgame';
 import { awardCore, resolveOffer } from '../../src/sim/offers';
 import { isHexLocked, legalCoreSites } from '../../src/sim/spread/spread';
-import { applyAction, expectSameRun, formatReport, report, runBot } from './bot';
+import { applyAction, expectSameRun, formatReport, report, runBot, snapshot } from './bot';
+import { assertInvariants } from './invariants';
 
 function implemented(fn: () => unknown): boolean {
   try { fn(); return true; } catch (e) { return !(e instanceof Error && e.message.includes('NOT_IMPLEMENTED')); }
@@ -32,11 +33,16 @@ winProbe.thresholdIndex = DEFAULT_CONFIG.thresholds.length;
 const newWinRule = ready && checkWin(winProbe);
 
 const FINAL = DEFAULT_CONFIG.thresholds.length;
+// Default `npm test` stays under 60 s: a bounded sample. E2E_FULL=1 (npm run test:e2e-full) runs every seed.
+const FULL = process.env.E2E_FULL === '1';
+const GREEDY_SEEDS = FULL ? [1, 2, 3, 4, 5] : [1, 2, 3];
+const SPAM_SEEDS = FULL ? [1, 2, 3] : [1];
+const REPLAY_SEEDS = FULL ? [1, 4] : [1];
 const session = () => createGameSession({ now: () => 0 });
 const finish = (s: ReturnType<typeof session>) => { for (let i = 0; i < 1000 && s.state.activeSpread; i++) s.advance(250); };
 
 describe.skipIf(!newWinRule)('autoplay under the §41 win rule (real modules)', () => {
-  it.each([1, 2, 3, 4, 5])('seed %i greedy: ends in a win or a loss; invariants hold every step', (seed) => {
+  it.each(GREEDY_SEEDS)('seed %i greedy: ends in a win or a loss; invariants hold every step', (seed) => {
     const r = runBot(session(), seed);
     report(formatReport(r));
     expect(r.placements).toBeGreaterThan(0);
@@ -44,7 +50,7 @@ describe.skipIf(!newWinRule)('autoplay under the §41 win rule (real modules)', 
     if (r.status === 'won') expect(r.thresholdsReached).toBe(FINAL);
   }, 60_000);
 
-  it.each([1, 2, 3])('seed %i spam: ends (loss expected once N8 is tuned); invariants hold every step', (seed) => {
+  it.each(SPAM_SEEDS)('seed %i spam: ends (loss expected once N8 is tuned); invariants hold every step', (seed) => {
     const r = runBot(session(), seed, { strategy: 'spam' });
     report(formatReport(r));
     expect(['terminal', 'stuck']).toContain(r.stop);
@@ -90,8 +96,20 @@ describe.skipIf(!newWinRule)('autoplay under the §41 win rule (real modules)', 
     expect(s.placeBuilding(hex.id, 1 as SlotIndex, building).ok).toBe(false); // the run is over
   });
 
+  it('invariant: a building on a core hex is a violation (§10)', () => {
+    const s = session();
+    s.newRun(1);
+    expect(s.chooseOffer(0).ok).toBe(true);
+    expect(s.placeCore(legalCoreSites(s.state)[0]).ok).toBe(true);
+    finish(s);
+    const st = snapshot(s.state) as GameState;
+    expect(() => assertInvariants(st)).not.toThrow();
+    st.hexes[st.cores[0]].slots[0] = { building: rosterFor(st, st.cores[0])[0], yieldPaid: true };
+    expect(() => assertInvariants(st)).toThrow(/core hex/);
+  });
+
   it('same seed + same actions → same final state', () => {
-    for (const seed of [1, 4]) {
+    for (const seed of REPLAY_SEEDS) {
       const a = session();
       const r = runBot(a, seed);
       const b = session();
