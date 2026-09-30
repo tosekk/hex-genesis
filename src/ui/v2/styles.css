@@ -30,7 +30,7 @@
   border:2px solid var(--ink); border-radius:8px 10px 7px 9px;
   box-shadow:2px 3px 0 rgba(46,42,37,.35), 0 8px 18px rgba(0,0,0,.25); padding:8px 10px;
 }
-.jhud .btn, .jhud .j-btn, .jhud .chip, .jhud .card {
+.jhud .btn, .jhud .j-btn, .jhud .chip, .jhud .card, .jhud .j-card {
   font:inherit; color:inherit; cursor:pointer; background:var(--paper2); border:1.5px solid var(--ink); border-radius:7px 8px 6px 8px; padding:5px 10px;
 }
 .jhud .btn:hover:not(:disabled), .jhud .j-btn:hover:not(:disabled) { background:#f0e3c4; }
@@ -172,3 +172,8 @@
 .jhud .end-lifetime { background:var(--paper2); padding:10px 14px; border:1.5px dashed var(--ink2); border-radius:6px; }
 .jhud .end-row { display:inline-block; width:50%; padding:4px 0; font-variant-numeric:tabular-nums; }
 .jhud .end-thresholds, .jhud .end-board { font-weight:800; }
+
+/* Modal layer rules follow shared overlay geometry. */
+.jhud .offer-overlay, .jhud .confirm-overlay { z-index:100; }
+.jhud .help-overlay { z-index:110; }
+.jhud .end-overlay { z-index:120; }

@@ -69,6 +69,14 @@ describe('journal component contract states', () => {
     const saw = s.root.querySelector<HTMLButtonElement>('[data-building="sawmill"]')!; saw.focus();
     const note = s.root.querySelector<HTMLElement>('.j-note')!; expect(note.hidden).toBe(false); expect(note.textContent).toContain('Base yield');
     expect(note.textContent).not.toContain('Timber Line'); expect(note.querySelector('[data-combo-id="timber_line"]')).toBeNull();
+    const badPreviewSession: GameSession = { ...s.session, get state() { return s.session.state; }, preview: (hex, slot, id) => {
+      const p = s.session.preview(hex, slot, id)!;
+      return { ...p, combos: [{ match: { comboId: 'timber_line', pair: 0 }, amount: { wood: 5 } }] };
+    } };
+    const guardedCtrl = new Ctrl(badPreviewSession, s.board); disposals.push(() => guardedCtrl.dispose()); guardedCtrl.selectSlot(h.id, 1);
+    const guardedDeck = createDeck(s.root, badPreviewSession, guardedCtrl); disposals.push(guardedDeck.dispose);
+    const cards = s.root.querySelectorAll<HTMLButtonElement>('[data-building="sawmill"]'); cards[cards.length - 1].focus();
+    expect(s.root.querySelectorAll('[data-combo-id="timber_line"]')).toHaveLength(0);
     // Discovery belongs to simulation; a presentation snapshot may contain its public id.
     const snapshot = structuredClone(s.session.state) as GameState; snapshot.discoveredCombos.push('timber_line');
     const visibleSession: GameSession = { ...s.session, get state() { return snapshot; } };

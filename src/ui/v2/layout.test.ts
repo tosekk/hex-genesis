@@ -11,6 +11,8 @@ describe('journal desktop panel reservations', () => {
       expect(rect.y + rect.height, name).toBeLessThanOrEqual(h - 16);
       for (const [other, b] of rects) if (name !== other) expect(overlaps(rect, b), `${name}/${other}`).toBe(false);
     }
+    const first = journalLayout(w, h, 176, false, 200);
+    for (const key of ['stack', 'detail', 'deck', 'triangle', 'pills', 'menu'] as const) expect(overlaps(first.tutorial, first[key]), `first/${key}`).toBe(false);
     const expanded = journalLayout(w, h, 234, true);
     for (const key of ['stack', 'detail', 'deck', 'triangle', 'pills', 'menu'] as const)
       expect(overlaps(expanded.tutorial, expanded[key]), key).toBe(false);
