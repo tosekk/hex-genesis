@@ -58,6 +58,6 @@ describe('tutorial driven by real session events', () => {
     expect(session.state.pendingOffer).not.toBeNull();
     expect(panel.dataset.line).toBe('progression');
     expect([...new Set(seen)]).toEqual(['biomes', 'spread', 'buildings', 'combos', 'progression']);
-    expect(root.querySelector('.assistant-message')!.textContent).toContain('no legal core site remains');
+    expect(root.querySelector('.assistant-message')!.textContent).toContain('reaching the final threshold, T8, wins the run');
   });
 });

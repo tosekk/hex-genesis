@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V8 COMPLETE — darker grey dead tops, both layer bands and dry natural tiles; reviewed seeds 1/7/15 with all five highlights. 48 owned tests/typecheck/scoped build pass. IDLE — available.
+V9 COMPLETE — tutorial/VO copy matches final-threshold victory and finite one-time payouts. Changed voice line ids: `combos`, `progression`. IDLE — available.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -44,6 +44,8 @@ V8 COMPLETE — darker grey dead tops, both layer bands and dry natural tiles; r
 - V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. `7e47e0d`.
 
 - V8 — `323833e` — darker neutral-grey dead land/layers, matching dry channels/woods/marsh/rubble and readable stone-grey peaks; three seeded sandbox reviews with every highlight, 48 owned tests/typecheck/scoped build pass.
+
+- V9 — tutorial and VO script match §39/§41: T1–T7 award cores, T8 wins, finite slots/combos pay once, plan combos and terrain bonuses; real-session copy assertion updated, 48 owned tests pass. Changed line ids: `combos`, `progression`. Hash recorded after commit.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -81,6 +83,8 @@ V8 COMPLETE — darker grey dead tops, both layer bands and dry natural tiles; r
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **Designer / V9 VO regeneration: changed line ids are `combos` and `progression`** (`combos.mp3`, `progression.mp3`). All other line texts are unchanged. `src/tutorial/VO_SCRIPT.md` exactly matches all five texts in `lines.ts`; read “T8” as “threshold eight”. Final threshold wins and awards no core; earlier thresholds award cores. Typecheck currently fails only in Astra's parallel `src/sim/economy/config.test.ts:114,120` (TS2352 sparse Resources casts); no owned-file errors, no edits there.
+
 - V8 visual check: `/render-sandbox.html?seed=1&photo=1&highlights=1`, seed 7 (overview + top-down) in Brave, then seed 15 in Safari after native Brave control collided with active designer browsing. All three boards show darker neutral grey tops/layers and matching dry natural tiles; light stone mountains stand out, and legalCore/selected/hover/locked/invalid rings remain visible and distinct. `highlights=1` is an explicitly labeled sandbox color QA overlay, unrelated to legal/locked simulation state. Existing 48 owned tests, typecheck and scoped sandbox production build pass; no new tests for this reversible visual-only palette change.
 
 - V7 final integrated-page smoke check: `/?seed=7&photo=1` with the final photo code loads successfully; key 1 resolves the offer to an Arctic core, and F4 applies the top-down preset without consuming an offer key. Opus's live main.ts now imports/creates/disposes audio; the earlier V3 wiring request is fulfilled in his working copy.
