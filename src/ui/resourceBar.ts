@@ -17,7 +17,7 @@ export function createResourceBar(root: HTMLElement, session: GameSession) {
       row.appendChild(el('span', 'res-amount', String(s.resources[r] ?? 0)));
       row.appendChild(el('span', 'res-life', `lifetime ${s.lifetime[r] ?? 0}`));
       const need = target?.[r];
-      if (need !== undefined) {
+      if (need !== undefined && need > 0) { // a 0 target is no requirement: show nothing
         const have = s.lifetime[r] ?? 0;
         const prog = el('span', 'res-progress', `${Math.min(have, need)} / ${need}`);
         const meter = el('span', 'meter');

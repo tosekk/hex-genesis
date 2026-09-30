@@ -8,8 +8,8 @@ import { createHud } from './hud';
 import { renderPreview } from './preview';
 import { TOAST_MS } from './toasts';
 
-function fakes() {
-  const state: GameState = makeTestState();
+function fakes(opts: Parameters<typeof makeTestState>[0] = {}) {
+  const state: GameState = makeTestState(opts);
   const listeners: ((e: SessionEvent) => void)[] = [];
   const session = {
     get state() { return state; },
@@ -195,12 +195,20 @@ describe('HUD', () => {
   });
 
   it('resource bar shows per-resource lifetime progress toward the threshold', () => {
-    const f = fakes();
-    const [res, need] = Object.entries(f.state.config.thresholds[0])[0];
-    f.state.lifetime = { [res]: 4 };
+    const f = fakes({ config: { thresholds: [{ wood: 10, stone: 6 }] } });
+    f.state.lifetime = { wood: 4, stone: 9 };
     createHud(root, f.session, f.board);
-    const row = root.querySelector(`[data-resource="${res}"]`)!;
-    expect(row.textContent).toContain(`4 / ${need}`);
+    expect(root.querySelector('[data-resource="wood"]')!.textContent).toContain('4 / 10');
+    expect(root.querySelector('[data-resource="stone"]')!.textContent).toContain('6 / 6'); // capped at the target
+  });
+
+  it('a zero target shows no requirement (no "x / 0", no meter)', () => {
+    const f = fakes({ config: { thresholds: [{ wood: 0, stone: 5 }] } });
+    createHud(root, f.session, f.board);
+    const wood = root.querySelector('[data-resource="wood"]')!;
+    expect(wood.textContent).not.toContain('/ 0');
+    expect(wood.querySelector('.meter')).toBeNull();
+    expect(root.querySelector('[data-resource="stone"] .meter')).not.toBeNull();
   });
 
   it('End Run asks for confirmation first', () => {
