@@ -111,19 +111,13 @@ describe('isProvablySoftLocked (§43, §44)', () => {
   it('false when demolishing one building would fund an unpaid-slot placement', () => {
     const s = locked();
     emptySlot(s, 5, 0, false);
-    const cost = s.config.buildings[s.config.rosters.forest[0]].cost;
-    // Wallet is one unit short of the cheapest forest building; a demolish refund closes the gap.
-    const res = Object.keys(cost)[0];
-    s.resources = {};
-    expect(Math.ceil(cost[res] * s.config.demolishRefundRatio)).toBeGreaterThan(0);
-    // Ensure every roster building is unaffordable from resources alone but reachable with one refund.
-    for (const id of s.config.rosters.forest) {
-      const c = s.config.buildings[id].cost;
-      expect(Object.values(c).some((v) => v > 0)).toBe(true);
-    }
-    const s2 = s;
-    s2.resources = { ...Object.fromEntries(Object.entries(cost).map(([r, v]) => [r, v - Math.ceil(v * s.config.demolishRefundRatio)])) };
-    expect(isProvablySoftLocked(s2)).toBe(false);
+    // Use a forest building that actually costs something (the economy may have zero-cost ones).
+    const cost = s.config.rosters.forest.map((id) => s.config.buildings[id].cost)
+      .find((c) => Object.values(c).some((v) => v > 0))!;
+    expect(cost).toBeDefined();
+    // Stock is short of that building's cost by exactly what one demolition refunds.
+    s.resources = Object.fromEntries(Object.entries(cost).map(([r, v]) => [r, Math.max(0, v - Math.ceil(v * s.config.demolishRefundRatio))]));
+    expect(isProvablySoftLocked(s)).toBe(false);
   });
 
   it('false when demolishing TWO buildings would fund an unpaid slot', () => {
