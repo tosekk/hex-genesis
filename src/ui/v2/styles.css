@@ -1,3 +1,6 @@
+/* A fixed #ui is a stacking context that traps modals below #tutorial.
+   Journal children own their fixed/absolute bounds; legacy keeps its original root. */
+#ui.journal-root { position:static; }
 /* Field-journal HUD (UI_SPEC v1). Everything is scoped under .jhud. The shared components (toasts, offer modal, end screen,
    help) read the same custom properties, so redefining them here re-skins them. */
 .jhud {
@@ -8,7 +11,7 @@
 .jhud *, .jhud *::before, .jhud *::after { box-sizing:border-box; }
 /* No z-index on the fullscreen HUD: its modals share the page's stacking context. */
 .jhud .j-left, .jhud .j-top, .jhud .j-bottom, .jhud .j-topright { z-index:10; }
-#tutorial:has(.assistant-panel) { z-index:20; }
+#tutorial.journal-tutorial { z-index:20; }
 .jhud .toasts { z-index:30; }
 .jhud .offer-overlay, .jhud .confirm-overlay { z-index:100; }
 .jhud .help-overlay { z-index:110; }

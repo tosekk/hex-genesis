@@ -1,4 +1,6 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs';
+const journalStyles = readFileSync('src/ui/v2/styles.css', 'utf8');
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
 import { createGameSession } from '../../game/session';
@@ -184,4 +186,16 @@ it('keeps sound controls stable during slider input and confirms End Run before 
   expect(s.session.state.seed).toBe(7); expect(s.session.state.status).toBe('playing'); expect(s.root.querySelector<HTMLElement>('.end-overlay')!.hidden).toBe(true);
   expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false); expect(s.root.querySelector<HTMLButtonElement>('.menu-end')!.disabled).toBe(false);
   s.hud.dispose(); expect(callbacks.size).toBe(0);
+});
+
+it('removes the journal root stacking context so offer/help/end layers sit above tutorial', () => {
+  const style = document.createElement('style'); style.textContent = '#ui { position:fixed; } #tutorial { position:fixed; }' + journalStyles; document.head.append(style); disposals.push(() => style.remove());
+  const tutorial = document.createElement('div'); tutorial.id = 'tutorial'; tutorial.innerHTML = '<section class="assistant-panel"></section>'; document.body.append(tutorial);
+  const s = fixture();
+  expect(getComputedStyle(s.root).position).toBe('static');
+  expect(getComputedStyle(tutorial).zIndex).toBe('20');
+  expect(getComputedStyle(s.root.querySelector('.offer-overlay')!).zIndex).toBe('100');
+  expect(getComputedStyle(s.root.querySelector('.help-overlay')!).zIndex).toBe('110');
+  expect(getComputedStyle(s.root.querySelector('.end-overlay')!).zIndex).toBe('120');
+  s.hud.dispose(); expect(getComputedStyle(s.root).position).toBe('fixed');
 });

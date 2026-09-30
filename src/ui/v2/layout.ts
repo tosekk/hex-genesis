@@ -23,6 +23,7 @@ export function overlaps(a: PanelRect, b: PanelRect): boolean {
 /** Live layout uses real stack/viewport bounds; no browser-specific zoom or guessed note offset. */
 export function installJournalLayout(host: HTMLElement, stack: HTMLElement): () => void {
   const tutorial = host.ownerDocument.getElementById('tutorial');
+  const hadTutorialClass = tutorial?.classList.contains('journal-tutorial'); tutorial?.classList.add('journal-tutorial');
   const rect = (selector: string, value: PanelRect) => {
     const node = host.querySelector<HTMLElement>(selector); if (!node) return;
     Object.assign(node.style, { position: 'fixed', left: `${value.x}px`, top: `${value.y}px`, right: 'auto', bottom: 'auto', width: `${value.width}px`, height: `${value.height}px` });
@@ -51,6 +52,6 @@ export function installJournalLayout(host: HTMLElement, stack: HTMLElement): () 
   const mutations = new MutationObserver(update);
   if (tutorial) mutations.observe(tutorial, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-collapsed', 'data-line', 'hidden'] });
   window.addEventListener('resize', update); update();
-  return () => { resize.disconnect(); mutations.disconnect(); window.removeEventListener('resize', update);
+  return () => { if (!hadTutorialClass) tutorial?.classList.remove('journal-tutorial'); resize.disconnect(); mutations.disconnect(); window.removeEventListener('resize', update);
     for (const key of ['top', 'left', 'width', 'max-height', 'overflow']) tutorial?.style.removeProperty(`--tutorial-${key}`); };
 }

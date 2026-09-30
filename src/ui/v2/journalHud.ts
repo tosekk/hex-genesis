@@ -32,6 +32,7 @@ const hexColor = (n: number) => `#${n.toString(16).padStart(6, '0')}`;
 
 /** The field-journal HUD (UI_SPEC v1). State changes only through GameSession commands. */
 export function createJournalHud(root: HTMLElement, session: GameSession, board: BoardView, deps: JournalDeps = {}): Hud {
+  const hadRootClass = root.classList.contains('journal-root'); root.classList.add('journal-root');
   const host = el('div', 'jhud');
   for (const [b, c] of Object.entries(BIOME_COLORS)) host.style.setProperty(`--b-${b}`, hexColor(c));
   root.appendChild(host);
@@ -123,7 +124,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
       document.removeEventListener('keydown', onKey);
       for (const c of [pills, stack, triangle, deck, detail, toasts, offer, end, help, topRight]) c.dispose();
       journal?.dispose();
-      host.remove();
+      host.remove(); if (!hadRootClass) root.classList.remove('journal-root');
     },
   };
 }
