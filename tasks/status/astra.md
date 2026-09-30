@@ -18,9 +18,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-N5 complete; N6 next. N1–N4 committed, standard-board calibration remains selected round 4.
+IN PROGRESS: N6 — preview copy-on-write equivalence/performance and 50-seed confirmation; N5 committed `2108880`.
 
 ## Done
+- N5 — morning summary and designer handoff — `2108880`.
 - N4 — size-aware cluster density, 400 larger-map invariant checks, unchanged default terrain, 26×18 balance preview — `0642114`.
 - N3 — six committed calibration rounds; round 4 selected by priority, targets 4 and 2 pass, remaining misses documented — selection `72ced76` (rounds `922c134`, `f284644`, `9b84564`, `7b2aa4c`, `b9fdfe4`, `fefe6aa`).
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -41,6 +42,7 @@ N5 complete; N6 next. N1–N4 committed, standard-board calibration remains sele
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N6 §38: preserve transaction-based preview math, including unaffordable projections and hidden discoveries. Copy the state shell, hex array, target hex/slots/pair-history array, resource maps, discovery list and adjacency map; share only data that placement reads. Verify equivalence against the previous full-clone algorithm on frozen seeded states, including demolition/conversion and invalid requests. The larger 50-seed sample is confirmation, not a seventh calibration round.
 - N4 §6/§53: scale mountain cluster min/max by board area relative to the new PLACEHOLDER `mountainReferenceArea: 280`, rounding up. This fixes hill coverage dropping to 8–10% on large maps without changing default dimensions or any of the first 200 default-map outputs (SHA-256 `377692786bd55dc8b02f911dbfcfeec00ddedb6b01ba4884f5884ded1a62ecb1`). No retries or seed filtering. Interpret “roughly 65–80%” as the mean and at least 90% of tested seeds within range, consistent with D4; record all outliers.
 - N4 measurement: the strict two-minute budget remains for 20 seeds on the default board. Larger informational previews get area-squared runtime scaling because candidate search grows with both tiles and placements. The 50-seed stretch scales runtime linearly with seed count; no economy or bot changes.
 - N3 selection: restore round 4 exactly for both config and REPORT. It is the sole round passing targets 4 and 2; T2–T6 also meet pacing. Round 5 loses the finite T6 comparison; round 6 loses reachability despite the permitted new yield channel. Keep the corrected sparse-resource guardrail test, but revert the experimental mine wood yield. Do not claim that six trials exhaust every possible combination inside the guardrails.
@@ -314,3 +316,9 @@ Default `MAP.cols/rows` remain 20×14. A fixed 1–4 cluster count produced sub-
 New tests cover replay, indexing, all terrain types, mountain height, integer elevation, hill-only paths, ascending approach limits, neighbor supports, basin minima, downhill river paths without cycles, coverage and the 40 ms generation bound. Scoped suite: **162 passed, 5 opt-in skipped**, 10.52 s; typecheck and owned diff checks pass. Default-map seeds 1–200 match the pre-N4 output hash exactly.
 
 26×18 balance preview (unchanged economy): **169.85 s**, 5 harness checks pass. Combo medians **4 / 24.5 / 62 / 105 / 151.5 / 297**; T6 **17/20**, wins **0/20**, zero soft-lock declarations. All 17 T6 completers use seven cores, fill every living slot, and retain **9–32 legal core sites**; the other three stop at three placements. This is a size-design limitation, not a generator invariant failure. Do not enlarge the shipping map without revisiting core coverage/availability and opening economy. Full rows/config are in `tests/balance/REPORT.md` and `size-26x18.json`.
+
+## N6 preview performance and expanded confirmation
+
+Preview now copies only mutation targets while reusing the real placement transaction. **2,592** exact comparisons against the previous full-clone implementation pass across 72 seeded boards (6×5, 20×14, 30×20), histories, demolition, conversion, discovery subsets, sparse wallets, locks, invalid input and ended statuses. All inputs are recursively frozen, and mutating returned payout maps leaves them unchanged. Coverage includes 392 nonempty base previews, 56 pair payouts, 15 triple payouts, 537 paid-slot cases and 2,055 unaffordable quotes.
+
+Default-board benchmark (five batches of 200 calls, medians): **0.7286 ms → 0.0286 ms**, **25.4× faster**. Economy suite **48 passed** in 3.42 s; typecheck passes. Timing is test-only; no gameplay decisions use clocks. Fifty-seed confirmation is running with the retained round-4 config; no further calibration will occur.

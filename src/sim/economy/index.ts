@@ -144,9 +144,22 @@ export function previewPlacement(state: Readonly<GameState>, hexId: HexId, slot:
   };
   if (!def) return preview;
   // Quote the same transaction even when the real wallet cannot afford it.
-  // The clone keeps hypothetical discoveries and payout histories private.
-  const projected: GameState = structuredClone(state);
-  projected.resources = addRes(projected.resources, def.cost);
+  // Placement writes only the target hex, resource maps, discovery list and adjacency map.
+  // Neighbor hexes, existing paid records, configuration and spread state are read-only.
+  const projected: GameState = {
+    ...state,
+    hexes: [...state.hexes],
+    resources: addRes(state.resources, def.cost),
+    lifetime: { ...state.lifetime },
+    discoveredCombos: [...state.discoveredCombos],
+    adjacencyPaid: { ...state.adjacencyPaid },
+  };
+  const target = state.hexes[hexId];
+  if (target) projected.hexes[hexId] = {
+    ...target,
+    slots: [{ ...target.slots[0] }, { ...target.slots[1] }, { ...target.slots[2] }],
+    pairPaid: [...target.pairPaid],
+  };
   const result = placeBuilding(projected, hexId, slot, building);
   if (!result.ok) return preview;
   for (const payout of result.value.payouts) {
