@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 code ready, default awaits Sonnet P1 recheck.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 DoD passed Sonnet pass 3; switching the default.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 code and 80 owned tests/typecheck/main production build pass (01:47). Sonnet pass 2 verified pass-1 fixes, but found one new P1: stale bottom-row layout on window resize. Native viewport-anchor fix `4cb1a62` is ready for pass 3; default remains legacy until no open P0/P1. Then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) per UI_SPEC §8.4, with simple offer fallback. Hex Genesis wordmark DONE `d67044a` in menu/end page (24 UI tests + typecheck pass). Holding source steady for pass 3. V13 DONE `f2e40d4`. Hard cutoff 06:00 local: ship legacy if DoD unmet.
+V15 U1 has zero open P0/P1 in Sonnet pass 3 (`5a5e8bb`, reviewed through `481d112`), including live resize at both target sizes. Switching the default to the journal HUD with legacy export retained; then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) separately. Hex Genesis wordmark already DONE `d67044a`. V13 DONE `f2e40d4`. Hard cutoff 06:00 local.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->

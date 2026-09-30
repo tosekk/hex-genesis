@@ -6,6 +6,7 @@ import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
 import { createGameSession } from '../../game/session';
 import { legalCoreSites } from '../../sim/spread/spread';
 import { createJournalHud, type JournalDeps } from './journalHud';
+import { createHud, createLegacyHud } from '../hud';
 
 const disposals: (() => void)[] = [];
 afterEach(() => { disposals.splice(0).forEach(off => off()); document.body.replaceChildren(); vi.useRealTimers(); });
@@ -208,4 +209,10 @@ it('keeps the journal coming-soon fallback available by button and J until integ
   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'J', bubbles: true }));
   expect(s.root.querySelector<HTMLElement>('.j-notice')!.hidden).toBe(false);
   expect(s.root.querySelector('.j-notice')?.textContent).toBe('Journal coming soon.');
+});
+
+it('exports the reviewed journal HUD as the default and retains the legacy factory', () => {
+  expect(createHud).toBe(createJournalHud);
+  expect(createLegacyHud).toBeTypeOf('function');
+  expect(createLegacyHud).not.toBe(createHud);
 });
