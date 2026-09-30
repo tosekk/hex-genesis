@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 3 — bootstrap T1 from stone and return two stone from Polar Base, addressing the remaining five opening stalls. Round 2 committed `f284644` (15/20 T6, 13/20 wins).
+IN PROGRESS: N3 round 4 — slow T2/T5 and shift T6 toward construction resources/water, reducing its spam food bottleneck. Round 3 `9b84564` is the fallback (20/20 T6, 18/20 wins; target 4 passes).
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,7 @@ IN PROGRESS: N3 round 3 — bootstrap T1 from stone and return two stone from Po
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 round 4: hold the successful opening yields/Polar Base rescue fixed. Raise T2/T5 toward pacing targets. At T6, reduce food 255→170 (eleven round-3 spam runs earned at least this much) while raising wood/stone/water to slow completion; this makes the spam comparison measurable without counting failed seeds as successes. Leave T1 stone-only because a positive wood requirement reintroduces the four frozen-terrain opening failures.
 - N3 round 3: prioritize reachability over early pacing. Four remaining Forest openings earn 24 stone and zero wood before exhausting stock; T1 becomes wood 0 / stone 16 so they unlock a core before the third mine. The Arctic seed-13 triple exhausts wood and leaves stone 1; Polar Base adds stone 2 (total 12→14, within the triple 11–15 guardrail) to fund Driftwood Camp. Combo recipes are frozen, but payout resource allocation is not; this adds an existing resource to a combo amount, not a base-yield channel or mechanic.
 - N3 harness runtime: round 2's serial measurement exceeded 120 s after more bots survived. Run the unchanged simulation/scorer in four bounded local Node test workers, with a tiny extension resolver for Vite-style TypeScript imports. All 40 serial/worker results match exactly; the ordinary Vitest replay remains as a cross-runtime check. This is measurement parallelism, not delegation or a gameplay change.
 - N3 round 2: round 1 proves threshold scaling cannot repair openings earning zero required wood/stone. Increase wood producers and Arctic pair participants within ±1, lower Hillside Mine by one and Glacier Pump from 5 to 4 (Ice Drill rises 3 to 4) so the cheaper drill can tie the pump and enable Ice Mine/Harbor. Keep recipes, costs, terrain bonuses and bot strategies fixed.
@@ -226,3 +227,19 @@ Bootstrap T1 on stone alone before Forest construction stock is exhausted; add t
 Before: combo T6 15/20, wins 13/20; spam T6 3/20; 0 soft-lock declarations; combo all-seed medians 11.0 / 14.5 / 36.0 / 98.5 / 134.5 / 249.0.
 
 After: combo T6 20/20, wins 18/20; spam T6 6/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 11.5 / 38.0 / 84.0 / 115.0 / 230.5. Measurement 98.75 s. Exact configuration/run archive: `tests/balance/round-3.json`.
+
+### N3 round 4 — pacing and measurable late comparison
+
+Retain the 20/20 T6 and 18/20 win rescue while shifting late pacing toward targets. Food 170 makes eleven spam T6 completions observable; larger wood/stone/water targets delay them. Target 2 now passes with finite all-seed medians. Four spam seeds still reach T6 below 70% fill (3,8,18,19); their exact threshold-time lifetimes guide the final rounds.
+
+| Value | Before → after |
+|---|---|
+| T2 | wood 28, stone 23 → wood 50, stone 45 |
+| T3 | wood 76, stone 64, water 26 → wood 100, stone 85, water 40 |
+| T4 | wood 240, stone 200, water 112, food 88 → wood 260, stone 220, water 120, food 90 |
+| T5 | wood 320, stone 270, water 150, food 120 → wood 450, stone 380, water 200, food 120 |
+| T6 | wood 650, stone 550, water 310, food 255 → wood 850, stone 740, water 550, food 170 |
+
+Before: combo T6 20/20, wins 18/20; spam T6 6/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 11.5 / 38.0 / 84.0 / 115.0 / 230.5.
+
+After: combo T6 20/20, wins 18/20; spam T6 11/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 21.0 / 44.0 / 93.0 / 173.5 / 299.0. Measurement 97.41 s. Exact configuration/run archive: `tests/balance/round-4.json`.
