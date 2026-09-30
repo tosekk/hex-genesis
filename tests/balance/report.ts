@@ -75,9 +75,15 @@ export function assessV5(runs: RunReport[]) {
       old.targets[4], old.targets[3], old.targets[2]] };
 }
 
+export function seedRange(runs: RunReport[]): string {
+  const seeds = [...new Set(runs.map(r => r.seed))].sort((a, b) => a - b);
+  if (!seeds.length) return "none";
+  return seeds.every((s, i) => s === seeds[0] + i) ? `${seeds[0]}–${seeds.at(-1)}` : seeds.join(", ");
+}
+
 export function renderReport(runs: RunReport[], label: string, width: number, height: number, elapsedMs: number): string {
   const a = assessV5(runs), count = runs.filter(r => r.strategy === 'combo').length;
-  let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds 1–${count}, ${Math.round(elapsedMs)} ms for three bots.\n\n`;
+  let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds ${seedRange(runs)}, ${Math.round(elapsedMs)} ms for three bots.\n\n`;
   text += 'V5: no demolition, lookahead or resource weighting. Combo/spam scoring and core choices unchanged. Random uses an independent seeded stream: uniform eligible empty physical slot, then uniform affordable building in its roster. Core hexes are excluded from choices, false-loss audits and slot counts. Board use = occupied / terraformed placeable non-core slots via slotCounts; all-map non-core capacity is also reported separately. Careless stalls count as target-b failures, not engine loss proofs. Threshold medians include unreached seeds as infinity; T4 tension compares these medians. Stock ratios retain positive stock / zero cost = infinity. False-loss audit is constructive, not exhaustive.\n\n';
   const evidence = [`${a.wins}/${count} wins; ${a.falseSoftLocks} detected false declarations`, `${a.spamFailures}/${count} spam and ${a.randomFailures}/${count} random failures`, `T4 spam/combo ${fmt(a.tension.spam)}×; random/combo ${fmt(a.tension.random)}×`, `worst median held/max cost ${fmt(Math.max(...a.pressure.map(p => p.ratio)))}×`, a.openingStalls.length ? `seeds ${a.openingStalls.join(', ')}` : 'zero opening stalls', `${fmt(a.medianBoardUse * 100)}% median winning board use`];
   const names = ['a. Combo wins ≥90%; zero false loss', 'b. Both careless bots fail ≥90%', 'c. Both T4 placement ratios ≥1.5× or never', 'd. T3–T7 stock ≤3× biome max cost', 'e. No combo opening stalls before T2', 'f. Winning board use 65–85%'];

@@ -31,6 +31,11 @@ describe('optional prerecorded voice', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true })); expect(players).toHaveLength(0);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: '1' })); expect(players.map(p => p.url)).toEqual(['/assets/spread.mp3']);
   });
+  it('ignores Escape as a first gesture and keeps narration queued for an activation key', () => {
+    const voice = use(); voice.play('biomes', vi.fn());
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); expect(players).toHaveLength(0);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: '1' })); expect(players).toHaveLength(1);
+  });
   it('uses Sound volume live, stops on mute/zero volume and does not restart an old line on unmute', () => {
     const voice = use(), finish = vi.fn(); audioSettings.setVolume(.4); voice.play('biomes', finish); gesture();
     expect(players[0].volume).toBe(.4); audioSettings.setVolume(.2); expect(players[0].volume).toBe(.2);

@@ -1,3 +1,11 @@
+## Night 2 frozen-v5 audits
+
+- `node --no-warnings --experimental-strip-types --experimental-loader ./tests/balance/resolve-ts.mjs tests/balance/stuck/run.ts 1 100` audits spam/random terminal states. See `stuck/REPORT.md`; `stuck/replay.ts random 22` regenerates and verifies a stored witness.
+- `node --no-warnings --experimental-strip-types --experimental-loader ./tests/balance/resolve-ts.mjs tests/balance/generalization.ts` measures all three unchanged policies on seeds 1–100 and 101–200, then reports both cohorts and combined 1–200 in `NIGHT2.md`. Archives retain exact configs and observations.
+- `node --no-warnings --experimental-strip-types --experimental-loader ./tests/balance/resolve-ts.mjs tests/balance/strategy-scan.ts` derives `STRATEGIES.md` and `night2-strategies.json` from both measured archives.
+- The generic Vitest harness also accepts `BALANCE_FIRST_SEED=101 BALANCE_SEEDS=100`; report labels use actual seed bounds.
+- First-biome and per-combo payout observations do not affect scoring, choices or RNG. Regression checks compare historical round6 outcomes after removing these two new fields.
+
 ## V5 night calibration
 
 Three policies: combo, spam, and seeded random (uniform eligible empty physical slot, then uniform affordable roster building). V5 uses slotCounts for terraformed placeable non-core capacity. `assessV5` evaluates a–f; legacy `assess` / `renderV4Report` remain for historical evidence. Careless stalls count as failures only in v5, not as engine proofs.

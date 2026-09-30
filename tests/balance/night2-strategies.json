@@ -1,0 +1,1496 @@
+[
+  {
+    "range": "1-100",
+    "runs": 100,
+    "placements": 43882,
+    "buildings": [
+      {
+        "id": "lumber_camp",
+        "name": "Lumber Camp",
+        "count": 7408,
+        "share": 0.16881637117724807,
+        "medianShare": 0.16828511332157384,
+        "maxShare": 0.2771618625277162,
+        "dominantRuns": 3
+      },
+      {
+        "id": "sawmill",
+        "name": "Sawmill",
+        "count": 5067,
+        "share": 0.11546875712137095,
+        "medianShare": 0.11836726141697088,
+        "maxShare": 0.19550561797752808,
+        "dominantRuns": 0
+      },
+      {
+        "id": "farm",
+        "name": "Farm",
+        "count": 4011,
+        "share": 0.09140422040927944,
+        "medianShare": 0.09429588980203102,
+        "maxShare": 0.1550561797752809,
+        "dominantRuns": 0
+      },
+      {
+        "id": "scree_quarry",
+        "name": "Scree Quarry",
+        "count": 3215,
+        "share": 0.07326466432705893,
+        "medianShare": 0.06796156542537837,
+        "maxShare": 0.19516407599309155,
+        "dominantRuns": 0
+      },
+      {
+        "id": "quarry",
+        "name": "Quarry",
+        "count": 3069,
+        "share": 0.06993755981951598,
+        "medianShare": 0.06363346925780342,
+        "maxShare": 0.24324324324324326,
+        "dominantRuns": 0
+      },
+      {
+        "id": "driftwood_camp",
+        "name": "Driftwood Camp",
+        "count": 2515,
+        "share": 0.05731279340048311,
+        "medianShare": 0.048581324005052814,
+        "maxShare": 0.2659758203799655,
+        "dominantRuns": 1
+      },
+      {
+        "id": "salt_mine",
+        "name": "Salt Mine",
+        "count": 2210,
+        "share": 0.05036233535390365,
+        "medianShare": 0.046009739010710884,
+        "maxShare": 0.13385826771653545,
+        "dominantRuns": 0
+      },
+      {
+        "id": "glass_kiln",
+        "name": "Glass Kiln",
+        "count": 1978,
+        "share": 0.04507542956109566,
+        "medianShare": 0.03965478965478965,
+        "maxShare": 0.12643678160919541,
+        "dominantRuns": 0
+      },
+      {
+        "id": "ice_drill",
+        "name": "Ice Drill",
+        "count": 1957,
+        "share": 0.04459687343329839,
+        "medianShare": 0.04473858256752994,
+        "maxShare": 0.5555555555555556,
+        "dominantRuns": 1
+      },
+      {
+        "id": "stonemason",
+        "name": "Stonemason",
+        "count": 1822,
+        "share": 0.04152044118317306,
+        "medianShare": 0.034661429105873554,
+        "maxShare": 0.17792792792792791,
+        "dominantRuns": 0
+      },
+      {
+        "id": "gatherers_hut",
+        "name": "Gatherer's Hut",
+        "count": 1795,
+        "share": 0.040905154733147986,
+        "medianShare": 0.026111111111111113,
+        "maxShare": 0.15942028985507245,
+        "dominantRuns": 0
+      },
+      {
+        "id": "oasis_well",
+        "name": "Oasis Well",
+        "count": 1453,
+        "share": 0.0331115263661638,
+        "medianShare": 0.027740435425914183,
+        "maxShare": 0.1,
+        "dominantRuns": 0
+      },
+      {
+        "id": "lichen_farm",
+        "name": "Lichen Farm",
+        "count": 1305,
+        "share": 0.029738845084544916,
+        "medianShare": 0.029821545028754372,
+        "maxShare": 0.08333333333333333,
+        "dominantRuns": 0
+      },
+      {
+        "id": "caravanserai",
+        "name": "Caravanserai",
+        "count": 1292,
+        "share": 0.029442596053051363,
+        "medianShare": 0.02478348995761931,
+        "maxShare": 0.12376237623762376,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hillside_mine",
+        "name": "Hillside Mine",
+        "count": 1036,
+        "share": 0.023608768971332208,
+        "medianShare": 0.02105289077120063,
+        "maxShare": 0.76,
+        "dominantRuns": 1
+      },
+      {
+        "id": "palm_grove",
+        "name": "Palm Grove",
+        "count": 923,
+        "share": 0.02103368123604211,
+        "medianShare": 0.020786993327039094,
+        "maxShare": 0.04703476482617587,
+        "dominantRuns": 0
+      },
+      {
+        "id": "grain_fields",
+        "name": "Grain Fields",
+        "count": 849,
+        "share": 0.01934734059523267,
+        "medianShare": 0.01622593611169875,
+        "maxShare": 0.06060606060606061,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hot_spring",
+        "name": "Hot Spring",
+        "count": 600,
+        "share": 0.013673032222779272,
+        "medianShare": 0.00844423066645289,
+        "maxShare": 0.08863636363636364,
+        "dominantRuns": 0
+      },
+      {
+        "id": "ice_fishery",
+        "name": "Ice Fishery",
+        "count": 431,
+        "share": 0.00982179481336311,
+        "medianShare": 0.00807779462349815,
+        "maxShare": 0.2777777777777778,
+        "dominantRuns": 1
+      },
+      {
+        "id": "glacier_pump",
+        "name": "Glacier Pump",
+        "count": 370,
+        "share": 0.008431703204047217,
+        "medianShare": 0.006493506493506494,
+        "maxShare": 0.029891304347826088,
+        "dominantRuns": 0
+      },
+      {
+        "id": "trapper_lodge",
+        "name": "Trapper Lodge",
+        "count": 310,
+        "share": 0.007064399981769291,
+        "medianShare": 0.0034016991902296565,
+        "maxShare": 0.025974025974025976,
+        "dominantRuns": 0
+      },
+      {
+        "id": "windmill",
+        "name": "Windmill",
+        "count": 234,
+        "share": 0.005332482566883916,
+        "medianShare": 0.0033621282026111707,
+        "maxShare": 0.03125,
+        "dominantRuns": 0
+      },
+      {
+        "id": "resin_works",
+        "name": "Resin Works",
+        "count": 31,
+        "share": 0.000706439998176929,
+        "medianShare": 0,
+        "maxShare": 0.008658008658008658,
+        "dominantRuns": 0
+      },
+      {
+        "id": "frost_kiln",
+        "name": "Frost Kiln",
+        "count": 1,
+        "share": 0.00002278838703796545,
+        "medianShare": 0,
+        "maxShare": 0.0026246719160104987,
+        "dominantRuns": 0
+      }
+    ],
+    "combos": [
+      {
+        "id": "timber_line",
+        "name": "Timber Line",
+        "count": 5676,
+        "amount": {
+          "wood": 28380,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 28380
+      },
+      {
+        "id": "homestead",
+        "name": "Homestead",
+        "count": 3589,
+        "amount": {
+          "wood": 10767,
+          "stone": 0,
+          "water": 0,
+          "food": 10767
+        },
+        "total": 21534
+      },
+      {
+        "id": "forest_camp",
+        "name": "Forest Camp",
+        "count": 1940,
+        "amount": {
+          "wood": 5820,
+          "stone": 0,
+          "water": 0,
+          "food": 5820
+        },
+        "total": 11640
+      },
+      {
+        "id": "woodland_village",
+        "name": "Woodland Village",
+        "count": 3460,
+        "amount": {
+          "wood": 24220,
+          "stone": 0,
+          "water": 0,
+          "food": 20760
+        },
+        "total": 44980
+      },
+      {
+        "id": "cut_stone",
+        "name": "Cut Stone",
+        "count": 1923,
+        "amount": {
+          "wood": 0,
+          "stone": 9615,
+          "water": 0,
+          "food": 0
+        },
+        "total": 9615
+      },
+      {
+        "id": "oasis_town",
+        "name": "Oasis Town",
+        "count": 1117,
+        "amount": {
+          "wood": 3351,
+          "stone": 0,
+          "water": 3351,
+          "food": 0
+        },
+        "total": 6702
+      },
+      {
+        "id": "desert_outpost",
+        "name": "Desert Outpost",
+        "count": 729,
+        "amount": {
+          "wood": 1458,
+          "stone": 2187,
+          "water": 0,
+          "food": 0
+        },
+        "total": 3645
+      },
+      {
+        "id": "sun_citadel",
+        "name": "Sun Citadel",
+        "count": 1388,
+        "amount": {
+          "wood": 0,
+          "stone": 11104,
+          "water": 6940,
+          "food": 0
+        },
+        "total": 18044
+      },
+      {
+        "id": "ice_mine",
+        "name": "Ice Mine",
+        "count": 1342,
+        "amount": {
+          "wood": 0,
+          "stone": 4026,
+          "water": 4026,
+          "food": 0
+        },
+        "total": 8052
+      },
+      {
+        "id": "harbor",
+        "name": "Harbor",
+        "count": 486,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 1458,
+          "food": 1458
+        },
+        "total": 2916
+      },
+      {
+        "id": "frontier_outpost",
+        "name": "Frontier Outpost",
+        "count": 3047,
+        "amount": {
+          "wood": 9141,
+          "stone": 9141,
+          "water": 0,
+          "food": 0
+        },
+        "total": 18282
+      },
+      {
+        "id": "polar_base",
+        "name": "Polar Base",
+        "count": 370,
+        "amount": {
+          "wood": 0,
+          "stone": 740,
+          "water": 2960,
+          "food": 1480
+        },
+        "total": 5180
+      },
+      {
+        "id": "bread_road",
+        "name": "Bread Road",
+        "count": 366,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 2196
+        },
+        "total": 2196
+      },
+      {
+        "id": "frontier_farm",
+        "name": "Frontier Farm",
+        "count": 292,
+        "amount": {
+          "wood": 584,
+          "stone": 0,
+          "water": 0,
+          "food": 1168
+        },
+        "total": 1752
+      },
+      {
+        "id": "market_town",
+        "name": "Market Town",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      },
+      {
+        "id": "fur_trade",
+        "name": "Fur Trade",
+        "count": 310,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 1860
+        },
+        "total": 1860
+      },
+      {
+        "id": "resin_mill",
+        "name": "Resin Mill",
+        "count": 29,
+        "amount": {
+          "wood": 174,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 174
+      },
+      {
+        "id": "spa_village",
+        "name": "Spa Village",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      },
+      {
+        "id": "salt_cure",
+        "name": "Salt Cure",
+        "count": 2233,
+        "amount": {
+          "wood": 0,
+          "stone": 4466,
+          "water": 0,
+          "food": 8932
+        },
+        "total": 13398
+      },
+      {
+        "id": "frost_glass",
+        "name": "Frost Glass",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 2,
+          "water": 4,
+          "food": 0
+        },
+        "total": 6
+      },
+      {
+        "id": "lichen_terraces",
+        "name": "Lichen Terraces",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 6,
+          "food": 7
+        },
+        "total": 13
+      }
+    ],
+    "biomes": [
+      {
+        "biome": "forest",
+        "runs": 36,
+        "wins": 34,
+        "winRate": 0.9444444444444444,
+        "medianWinningUse": 0.7508680555555556,
+        "losingSeeds": [
+          61,
+          93
+        ]
+      },
+      {
+        "biome": "desert",
+        "runs": 35,
+        "wins": 35,
+        "winRate": 1,
+        "medianWinningUse": 0.7401960784313726,
+        "losingSeeds": []
+      },
+      {
+        "biome": "arctic",
+        "runs": 29,
+        "wins": 29,
+        "winRate": 1,
+        "medianWinningUse": 0.7524752475247525,
+        "losingSeeds": []
+      }
+    ]
+  },
+  {
+    "range": "101-200",
+    "runs": 100,
+    "placements": 43059,
+    "buildings": [
+      {
+        "id": "lumber_camp",
+        "name": "Lumber Camp",
+        "count": 7197,
+        "share": 0.16714275761164912,
+        "medianShare": 0.17039821776663883,
+        "maxShare": 0.26107226107226106,
+        "dominantRuns": 5
+      },
+      {
+        "id": "sawmill",
+        "name": "Sawmill",
+        "count": 4861,
+        "share": 0.11289161383218375,
+        "medianShare": 0.11820866677554576,
+        "maxShare": 0.25,
+        "dominantRuns": 0
+      },
+      {
+        "id": "farm",
+        "name": "Farm",
+        "count": 3880,
+        "share": 0.09010892031863257,
+        "medianShare": 0.09099718111346018,
+        "maxShare": 0.25,
+        "dominantRuns": 0
+      },
+      {
+        "id": "quarry",
+        "name": "Quarry",
+        "count": 3126,
+        "share": 0.07259806312269212,
+        "medianShare": 0.06574006951802078,
+        "maxShare": 0.21103117505995203,
+        "dominantRuns": 0
+      },
+      {
+        "id": "scree_quarry",
+        "name": "Scree Quarry",
+        "count": 2916,
+        "share": 0.06772103393018881,
+        "medianShare": 0.060552364658438225,
+        "maxShare": 0.18962075848303392,
+        "dominantRuns": 0
+      },
+      {
+        "id": "driftwood_camp",
+        "name": "Driftwood Camp",
+        "count": 2407,
+        "share": 0.055900044125502216,
+        "medianShare": 0.0438859123857548,
+        "maxShare": 0.2435129740518962,
+        "dominantRuns": 0
+      },
+      {
+        "id": "salt_mine",
+        "name": "Salt Mine",
+        "count": 2382,
+        "share": 0.05531944541210897,
+        "medianShare": 0.04417831004657352,
+        "maxShare": 0.19298245614035087,
+        "dominantRuns": 0
+      },
+      {
+        "id": "gatherers_hut",
+        "name": "Gatherer's Hut",
+        "count": 1950,
+        "share": 0.045286699644673585,
+        "medianShare": 0.03827838827838828,
+        "maxShare": 0.7446808510638298,
+        "dominantRuns": 1
+      },
+      {
+        "id": "glass_kiln",
+        "name": "Glass Kiln",
+        "count": 1916,
+        "share": 0.04449708539445876,
+        "medianShare": 0.036593936148852146,
+        "maxShare": 0.1437125748502994,
+        "dominantRuns": 0
+      },
+      {
+        "id": "stonemason",
+        "name": "Stonemason",
+        "count": 1758,
+        "share": 0.04082770152581342,
+        "medianShare": 0.031004140786749484,
+        "maxShare": 0.17764471057884232,
+        "dominantRuns": 0
+      },
+      {
+        "id": "ice_drill",
+        "name": "Ice Drill",
+        "count": 1661,
+        "share": 0.03857497851784761,
+        "medianShare": 0.03769736842105263,
+        "maxShare": 0.3076923076923077,
+        "dominantRuns": 1
+      },
+      {
+        "id": "oasis_well",
+        "name": "Oasis Well",
+        "count": 1471,
+        "share": 0.034162428296058894,
+        "medianShare": 0.02712144892893261,
+        "maxShare": 0.11194029850746269,
+        "dominantRuns": 0
+      },
+      {
+        "id": "lichen_farm",
+        "name": "Lichen Farm",
+        "count": 1451,
+        "share": 0.0336979493253443,
+        "medianShare": 0.029487501045063123,
+        "maxShare": 0.10337552742616034,
+        "dominantRuns": 0
+      },
+      {
+        "id": "caravanserai",
+        "name": "Caravanserai",
+        "count": 1302,
+        "share": 0.03023758099352052,
+        "medianShare": 0.025559441691764627,
+        "maxShare": 0.09166666666666666,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hillside_mine",
+        "name": "Hillside Mine",
+        "count": 1010,
+        "share": 0.023456188021087346,
+        "medianShare": 0.021978316874194936,
+        "maxShare": 0.5454545454545454,
+        "dominantRuns": 2
+      },
+      {
+        "id": "grain_fields",
+        "name": "Grain Fields",
+        "count": 959,
+        "share": 0.022271766645765113,
+        "medianShare": 0.017977891233758037,
+        "maxShare": 0.08067542213883677,
+        "dominantRuns": 0
+      },
+      {
+        "id": "palm_grove",
+        "name": "Palm Grove",
+        "count": 923,
+        "share": 0.02143570449847883,
+        "medianShare": 0.01839080459770115,
+        "maxShare": 0.06474820143884892,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hot_spring",
+        "name": "Hot Spring",
+        "count": 529,
+        "share": 0.012285468775401194,
+        "medianShare": 0.007453703703703704,
+        "maxShare": 0.07142857142857142,
+        "dominantRuns": 0
+      },
+      {
+        "id": "ice_fishery",
+        "name": "Ice Fishery",
+        "count": 397,
+        "share": 0.009219907568684828,
+        "medianShare": 0.006872933396315541,
+        "maxShare": 0.23076923076923078,
+        "dominantRuns": 0
+      },
+      {
+        "id": "glacier_pump",
+        "name": "Glacier Pump",
+        "count": 342,
+        "share": 0.007942590399219676,
+        "medianShare": 0.005487244454380605,
+        "maxShare": 0.19230769230769232,
+        "dominantRuns": 0
+      },
+      {
+        "id": "trapper_lodge",
+        "name": "Trapper Lodge",
+        "count": 302,
+        "share": 0.007013632457790474,
+        "medianShare": 0.0037433155080213902,
+        "maxShare": 0.03048780487804878,
+        "dominantRuns": 0
+      },
+      {
+        "id": "windmill",
+        "name": "Windmill",
+        "count": 279,
+        "share": 0.0064794816414686825,
+        "medianShare": 0.0022753393594880872,
+        "maxShare": 0.0450281425891182,
+        "dominantRuns": 0
+      },
+      {
+        "id": "resin_works",
+        "name": "Resin Works",
+        "count": 40,
+        "share": 0.0009289579414292017,
+        "medianShare": 0,
+        "maxShare": 0.028735632183908046,
+        "dominantRuns": 0
+      },
+      {
+        "id": "frost_kiln",
+        "name": "Frost Kiln",
+        "count": 0,
+        "share": 0,
+        "medianShare": 0,
+        "maxShare": 0,
+        "dominantRuns": 0
+      }
+    ],
+    "combos": [
+      {
+        "id": "timber_line",
+        "name": "Timber Line",
+        "count": 5295,
+        "amount": {
+          "wood": 26475,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 26475
+      },
+      {
+        "id": "homestead",
+        "name": "Homestead",
+        "count": 3514,
+        "amount": {
+          "wood": 10542,
+          "stone": 0,
+          "water": 0,
+          "food": 10542
+        },
+        "total": 21084
+      },
+      {
+        "id": "forest_camp",
+        "name": "Forest Camp",
+        "count": 2091,
+        "amount": {
+          "wood": 6273,
+          "stone": 0,
+          "water": 0,
+          "food": 6273
+        },
+        "total": 12546
+      },
+      {
+        "id": "woodland_village",
+        "name": "Woodland Village",
+        "count": 3344,
+        "amount": {
+          "wood": 23408,
+          "stone": 0,
+          "water": 0,
+          "food": 20064
+        },
+        "total": 43472
+      },
+      {
+        "id": "cut_stone",
+        "name": "Cut Stone",
+        "count": 1862,
+        "amount": {
+          "wood": 0,
+          "stone": 9310,
+          "water": 0,
+          "food": 0
+        },
+        "total": 9310
+      },
+      {
+        "id": "oasis_town",
+        "name": "Oasis Town",
+        "count": 1044,
+        "amount": {
+          "wood": 3132,
+          "stone": 0,
+          "water": 3132,
+          "food": 0
+        },
+        "total": 6264
+      },
+      {
+        "id": "desert_outpost",
+        "name": "Desert Outpost",
+        "count": 802,
+        "amount": {
+          "wood": 1604,
+          "stone": 2406,
+          "water": 0,
+          "food": 0
+        },
+        "total": 4010
+      },
+      {
+        "id": "sun_citadel",
+        "name": "Sun Citadel",
+        "count": 1262,
+        "amount": {
+          "wood": 0,
+          "stone": 10096,
+          "water": 6310,
+          "food": 0
+        },
+        "total": 16406
+      },
+      {
+        "id": "ice_mine",
+        "name": "Ice Mine",
+        "count": 1081,
+        "amount": {
+          "wood": 0,
+          "stone": 3243,
+          "water": 3243,
+          "food": 0
+        },
+        "total": 6486
+      },
+      {
+        "id": "harbor",
+        "name": "Harbor",
+        "count": 444,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 1332,
+          "food": 1332
+        },
+        "total": 2664
+      },
+      {
+        "id": "frontier_outpost",
+        "name": "Frontier Outpost",
+        "count": 2932,
+        "amount": {
+          "wood": 8796,
+          "stone": 8796,
+          "water": 0,
+          "food": 0
+        },
+        "total": 17592
+      },
+      {
+        "id": "polar_base",
+        "name": "Polar Base",
+        "count": 342,
+        "amount": {
+          "wood": 0,
+          "stone": 684,
+          "water": 2736,
+          "food": 1368
+        },
+        "total": 4788
+      },
+      {
+        "id": "bread_road",
+        "name": "Bread Road",
+        "count": 447,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 2682
+        },
+        "total": 2682
+      },
+      {
+        "id": "frontier_farm",
+        "name": "Frontier Farm",
+        "count": 279,
+        "amount": {
+          "wood": 558,
+          "stone": 0,
+          "water": 0,
+          "food": 1116
+        },
+        "total": 1674
+      },
+      {
+        "id": "market_town",
+        "name": "Market Town",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      },
+      {
+        "id": "fur_trade",
+        "name": "Fur Trade",
+        "count": 302,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 1812
+        },
+        "total": 1812
+      },
+      {
+        "id": "resin_mill",
+        "name": "Resin Mill",
+        "count": 22,
+        "amount": {
+          "wood": 132,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 132
+      },
+      {
+        "id": "spa_village",
+        "name": "Spa Village",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 6,
+          "food": 7
+        },
+        "total": 13
+      },
+      {
+        "id": "salt_cure",
+        "name": "Salt Cure",
+        "count": 2441,
+        "amount": {
+          "wood": 0,
+          "stone": 4882,
+          "water": 0,
+          "food": 9764
+        },
+        "total": 14646
+      },
+      {
+        "id": "frost_glass",
+        "name": "Frost Glass",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      },
+      {
+        "id": "lichen_terraces",
+        "name": "Lichen Terraces",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      }
+    ],
+    "biomes": [
+      {
+        "biome": "forest",
+        "runs": 33,
+        "wins": 29,
+        "winRate": 0.8787878787878788,
+        "medianWinningUse": 0.7533333333333333,
+        "losingSeeds": [
+          105,
+          147,
+          179,
+          194
+        ]
+      },
+      {
+        "biome": "desert",
+        "runs": 35,
+        "wins": 35,
+        "winRate": 1,
+        "medianWinningUse": 0.7089430894308943,
+        "losingSeeds": []
+      },
+      {
+        "biome": "arctic",
+        "runs": 32,
+        "wins": 32,
+        "winRate": 1,
+        "medianWinningUse": 0.7561630194544968,
+        "losingSeeds": []
+      }
+    ]
+  },
+  {
+    "range": "1-200",
+    "runs": 200,
+    "placements": 86941,
+    "buildings": [
+      {
+        "id": "lumber_camp",
+        "name": "Lumber Camp",
+        "count": 14605,
+        "share": 0.16798748576620925,
+        "medianShare": 0.17034333603676668,
+        "maxShare": 0.2771618625277162,
+        "dominantRuns": 8
+      },
+      {
+        "id": "sawmill",
+        "name": "Sawmill",
+        "count": 9928,
+        "share": 0.11419238334042627,
+        "medianShare": 0.11833943798021997,
+        "maxShare": 0.25,
+        "dominantRuns": 0
+      },
+      {
+        "id": "farm",
+        "name": "Farm",
+        "count": 7891,
+        "share": 0.09076270114215387,
+        "medianShare": 0.09159934327719563,
+        "maxShare": 0.25,
+        "dominantRuns": 0
+      },
+      {
+        "id": "quarry",
+        "name": "Quarry",
+        "count": 6195,
+        "share": 0.0712552190566016,
+        "medianShare": 0.06411434556629315,
+        "maxShare": 0.24324324324324326,
+        "dominantRuns": 0
+      },
+      {
+        "id": "scree_quarry",
+        "name": "Scree Quarry",
+        "count": 6131,
+        "share": 0.0705190876571468,
+        "medianShare": 0.06534972547147291,
+        "maxShare": 0.19516407599309155,
+        "dominantRuns": 0
+      },
+      {
+        "id": "driftwood_camp",
+        "name": "Driftwood Camp",
+        "count": 4922,
+        "share": 0.05661310543932092,
+        "medianShare": 0.04574810008711063,
+        "maxShare": 0.2659758203799655,
+        "dominantRuns": 1
+      },
+      {
+        "id": "salt_mine",
+        "name": "Salt Mine",
+        "count": 4592,
+        "share": 0.05281742791088209,
+        "medianShare": 0.044816316096990945,
+        "maxShare": 0.19298245614035087,
+        "dominantRuns": 0
+      },
+      {
+        "id": "glass_kiln",
+        "name": "Glass Kiln",
+        "count": 3894,
+        "share": 0.044788994835578154,
+        "medianShare": 0.03747392071898571,
+        "maxShare": 0.1437125748502994,
+        "dominantRuns": 0
+      },
+      {
+        "id": "gatherers_hut",
+        "name": "Gatherer's Hut",
+        "count": 3745,
+        "share": 0.04307518892122244,
+        "medianShare": 0.03195225113033332,
+        "maxShare": 0.7446808510638298,
+        "dominantRuns": 1
+      },
+      {
+        "id": "ice_drill",
+        "name": "Ice Drill",
+        "count": 3618,
+        "share": 0.04161442817542931,
+        "medianShare": 0.03947161709258483,
+        "maxShare": 0.5555555555555556,
+        "dominantRuns": 2
+      },
+      {
+        "id": "stonemason",
+        "name": "Stonemason",
+        "count": 3580,
+        "share": 0.04117735015700302,
+        "medianShare": 0.03337311058074781,
+        "maxShare": 0.17792792792792791,
+        "dominantRuns": 0
+      },
+      {
+        "id": "oasis_well",
+        "name": "Oasis Well",
+        "count": 2924,
+        "share": 0.0336320033125913,
+        "medianShare": 0.027382840663302092,
+        "maxShare": 0.11194029850746269,
+        "dominantRuns": 0
+      },
+      {
+        "id": "lichen_farm",
+        "name": "Lichen Farm",
+        "count": 2756,
+        "share": 0.03169965838902244,
+        "medianShare": 0.029666299963329666,
+        "maxShare": 0.10337552742616034,
+        "dominantRuns": 0
+      },
+      {
+        "id": "caravanserai",
+        "name": "Caravanserai",
+        "count": 2594,
+        "share": 0.029836325784152472,
+        "medianShare": 0.025028732954368964,
+        "maxShare": 0.12376237623762376,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hillside_mine",
+        "name": "Hillside Mine",
+        "count": 2046,
+        "share": 0.023533200676320722,
+        "medianShare": 0.021201678154030568,
+        "maxShare": 0.76,
+        "dominantRuns": 3
+      },
+      {
+        "id": "palm_grove",
+        "name": "Palm Grove",
+        "count": 1846,
+        "share": 0.021232790053024465,
+        "medianShare": 0.01899749373433584,
+        "maxShare": 0.06474820143884892,
+        "dominantRuns": 0
+      },
+      {
+        "id": "grain_fields",
+        "name": "Grain Fields",
+        "count": 1808,
+        "share": 0.020795712034598176,
+        "medianShare": 0.016843299691058425,
+        "maxShare": 0.08067542213883677,
+        "dominantRuns": 0
+      },
+      {
+        "id": "hot_spring",
+        "name": "Hot Spring",
+        "count": 1129,
+        "share": 0.012985817968507379,
+        "medianShare": 0.007874015748031496,
+        "maxShare": 0.08863636363636364,
+        "dominantRuns": 0
+      },
+      {
+        "id": "ice_fishery",
+        "name": "Ice Fishery",
+        "count": 828,
+        "share": 0.00952369998044651,
+        "medianShare": 0.0073892073892073895,
+        "maxShare": 0.2777777777777778,
+        "dominantRuns": 1
+      },
+      {
+        "id": "glacier_pump",
+        "name": "Glacier Pump",
+        "count": 712,
+        "share": 0.008189461818934679,
+        "medianShare": 0.006369426751592357,
+        "maxShare": 0.19230769230769232,
+        "dominantRuns": 0
+      },
+      {
+        "id": "trapper_lodge",
+        "name": "Trapper Lodge",
+        "count": 612,
+        "share": 0.00703925650728655,
+        "medianShare": 0.0037433155080213902,
+        "maxShare": 0.03048780487804878,
+        "dominantRuns": 0
+      },
+      {
+        "id": "windmill",
+        "name": "Windmill",
+        "count": 513,
+        "share": 0.005900553248754903,
+        "medianShare": 0.0023475342624278794,
+        "maxShare": 0.0450281425891182,
+        "dominantRuns": 0
+      },
+      {
+        "id": "resin_works",
+        "name": "Resin Works",
+        "count": 71,
+        "share": 0.0008166457712701717,
+        "medianShare": 0,
+        "maxShare": 0.028735632183908046,
+        "dominantRuns": 0
+      },
+      {
+        "id": "frost_kiln",
+        "name": "Frost Kiln",
+        "count": 1,
+        "share": 0.000011502053116481292,
+        "medianShare": 0,
+        "maxShare": 0.0026246719160104987,
+        "dominantRuns": 0
+      }
+    ],
+    "combos": [
+      {
+        "id": "timber_line",
+        "name": "Timber Line",
+        "count": 10971,
+        "amount": {
+          "wood": 54855,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 54855
+      },
+      {
+        "id": "homestead",
+        "name": "Homestead",
+        "count": 7103,
+        "amount": {
+          "wood": 21309,
+          "stone": 0,
+          "water": 0,
+          "food": 21309
+        },
+        "total": 42618
+      },
+      {
+        "id": "forest_camp",
+        "name": "Forest Camp",
+        "count": 4031,
+        "amount": {
+          "wood": 12093,
+          "stone": 0,
+          "water": 0,
+          "food": 12093
+        },
+        "total": 24186
+      },
+      {
+        "id": "woodland_village",
+        "name": "Woodland Village",
+        "count": 6804,
+        "amount": {
+          "wood": 47628,
+          "stone": 0,
+          "water": 0,
+          "food": 40824
+        },
+        "total": 88452
+      },
+      {
+        "id": "cut_stone",
+        "name": "Cut Stone",
+        "count": 3785,
+        "amount": {
+          "wood": 0,
+          "stone": 18925,
+          "water": 0,
+          "food": 0
+        },
+        "total": 18925
+      },
+      {
+        "id": "oasis_town",
+        "name": "Oasis Town",
+        "count": 2161,
+        "amount": {
+          "wood": 6483,
+          "stone": 0,
+          "water": 6483,
+          "food": 0
+        },
+        "total": 12966
+      },
+      {
+        "id": "desert_outpost",
+        "name": "Desert Outpost",
+        "count": 1531,
+        "amount": {
+          "wood": 3062,
+          "stone": 4593,
+          "water": 0,
+          "food": 0
+        },
+        "total": 7655
+      },
+      {
+        "id": "sun_citadel",
+        "name": "Sun Citadel",
+        "count": 2650,
+        "amount": {
+          "wood": 0,
+          "stone": 21200,
+          "water": 13250,
+          "food": 0
+        },
+        "total": 34450
+      },
+      {
+        "id": "ice_mine",
+        "name": "Ice Mine",
+        "count": 2423,
+        "amount": {
+          "wood": 0,
+          "stone": 7269,
+          "water": 7269,
+          "food": 0
+        },
+        "total": 14538
+      },
+      {
+        "id": "harbor",
+        "name": "Harbor",
+        "count": 930,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 2790,
+          "food": 2790
+        },
+        "total": 5580
+      },
+      {
+        "id": "frontier_outpost",
+        "name": "Frontier Outpost",
+        "count": 5979,
+        "amount": {
+          "wood": 17937,
+          "stone": 17937,
+          "water": 0,
+          "food": 0
+        },
+        "total": 35874
+      },
+      {
+        "id": "polar_base",
+        "name": "Polar Base",
+        "count": 712,
+        "amount": {
+          "wood": 0,
+          "stone": 1424,
+          "water": 5696,
+          "food": 2848
+        },
+        "total": 9968
+      },
+      {
+        "id": "bread_road",
+        "name": "Bread Road",
+        "count": 813,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 4878
+        },
+        "total": 4878
+      },
+      {
+        "id": "frontier_farm",
+        "name": "Frontier Farm",
+        "count": 571,
+        "amount": {
+          "wood": 1142,
+          "stone": 0,
+          "water": 0,
+          "food": 2284
+        },
+        "total": 3426
+      },
+      {
+        "id": "market_town",
+        "name": "Market Town",
+        "count": 0,
+        "amount": {},
+        "total": 0
+      },
+      {
+        "id": "fur_trade",
+        "name": "Fur Trade",
+        "count": 612,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 0,
+          "food": 3672
+        },
+        "total": 3672
+      },
+      {
+        "id": "resin_mill",
+        "name": "Resin Mill",
+        "count": 51,
+        "amount": {
+          "wood": 306,
+          "stone": 0,
+          "water": 0,
+          "food": 0
+        },
+        "total": 306
+      },
+      {
+        "id": "spa_village",
+        "name": "Spa Village",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 6,
+          "food": 7
+        },
+        "total": 13
+      },
+      {
+        "id": "salt_cure",
+        "name": "Salt Cure",
+        "count": 4674,
+        "amount": {
+          "wood": 0,
+          "stone": 9348,
+          "water": 0,
+          "food": 18696
+        },
+        "total": 28044
+      },
+      {
+        "id": "frost_glass",
+        "name": "Frost Glass",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 2,
+          "water": 4,
+          "food": 0
+        },
+        "total": 6
+      },
+      {
+        "id": "lichen_terraces",
+        "name": "Lichen Terraces",
+        "count": 1,
+        "amount": {
+          "wood": 0,
+          "stone": 0,
+          "water": 6,
+          "food": 7
+        },
+        "total": 13
+      }
+    ],
+    "biomes": [
+      {
+        "biome": "forest",
+        "runs": 69,
+        "wins": 63,
+        "winRate": 0.9130434782608695,
+        "medianWinningUse": 0.7517361111111112,
+        "losingSeeds": [
+          61,
+          93,
+          105,
+          147,
+          179,
+          194
+        ]
+      },
+      {
+        "biome": "desert",
+        "runs": 70,
+        "wins": 70,
+        "winRate": 1,
+        "medianWinningUse": 0.7329957870158875,
+        "losingSeeds": []
+      },
+      {
+        "biome": "arctic",
+        "runs": 61,
+        "wins": 61,
+        "winRate": 1,
+        "medianWinningUse": 0.7549549549549549,
+        "losingSeeds": []
+      }
+    ]
+  }
+]

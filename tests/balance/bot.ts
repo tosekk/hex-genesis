@@ -14,6 +14,8 @@ export type Strategy = 'spam' | 'combo' | 'random';
 export interface Candidate { hexId: number; slot: SlotIndex; building: BuildingId; base: number; bonus: number; occupied: number; }
 export interface ThresholdRecord { placements: number; fill: number; boardUse: number; lifetime: Resources; stock: Resources; biome: string; maxCost: Resources; }
 export interface RunReport {
+  startingBiome?: MainBiome;
+  comboPayouts?: Record<string, { count: number; amount: Resources }>;
   seed: number; strategy: Strategy; stop: 'won' | 'soft-lock' | 'board-full' | 'stuck' | 'action-cap';
   placements: number; actions: number; cores: number; thresholds: (ThresholdRecord | null)[];
   winPlacements: number | null; softLocks: number; lifetime: Resources; resources: Resources;
@@ -143,13 +145,14 @@ export function hasYieldEscape(state: Readonly<GameState>): boolean {
   return false;
 }
 
-export function runBalance(seed: number, strategy: Strategy, config: GameConfig = DEFAULT_CONFIG, maxActions = 1500): RunReport {
+export function runBalance(seed: number, strategy: Strategy, config: GameConfig = DEFAULT_CONFIG, maxActions = 1500, onFinish?: (state: Readonly<GameState>, report: RunReport) => void): RunReport {
   const session = createGameSession({ config, now: () => 0 });
   session.newRun(seed);
   const rng = createRng(deriveSeed(seed, 'balance-random'));
   const report: RunReport = { seed, strategy, stop: 'action-cap', placements: 0, actions: 0, cores: 0,
     thresholds: config.thresholds.map(() => null), winPlacements: null, softLocks: 0, lifetime: {}, resources: {}, livingSlots: 0, buildings: {},
     legalSitesRemaining: 0, heldCores: 0, emptySlots: 0, outcome: 'cap', mapSlots: session.state.hexes.filter(h => h.placeable).length * 3, boardUse: 0, openingStall: false, falseSoftLocks: 0 };
+  report.comboPayouts = {};
   let scorer = new PayoutScorer(session.state);
   for (; report.actions < maxActions; report.actions++) {
     const state = session.state;
@@ -165,6 +168,7 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
       const index = ca?.newMix !== cb?.newMix ? (cb?.newMix ? 1 : 0) : (count(b) < count(a) ? 1 : 0);
       const result = session.chooseOffer(index);
       if (!result.ok) throw new Error(`offer rejected: ${result.reason}`);
+      report.startingBiome ??= result.value;
       continue;
     }
     if (state.activeSpread) {
@@ -199,6 +203,10 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
       for (const [r, v] of Object.entries(payout.amount)) sum[r] = (sum[r] ?? 0) + v;
       return sum;
     }, {})) !== candidate.base + candidate.bonus) throw new Error('Harness payout scorer disagrees with real transaction');
+    for (const payout of result.value.payouts) if (payout.comboId && (payout.kind === 'pair' || payout.kind === 'triple')) {
+      const paid = report.comboPayouts[payout.comboId] ??= { count: 0, amount: {} };
+      paid.count++; paid.amount = addRes(paid.amount, payout.amount);
+    }
     report.placements++;
     report.buildings[candidate.building] = (report.buildings[candidate.building] ?? 0) + 1;
     if (state.thresholdIndex > previousThreshold) {
@@ -223,5 +231,6 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
   report.heldCores = final.coreStack.length;
   report.emptySlots = counts.empty;
   report.openingStall ||= report.stop !== 'won' && final.thresholdIndex < 2 && report.emptySlots > 0 && !new PayoutScorer(final).choose('spam');
+  onFinish?.(final, report);
   return report;
 }

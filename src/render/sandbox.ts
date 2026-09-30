@@ -162,8 +162,14 @@ if (query.has('highlights')) {
   readout.textContent = `Highlight color QA: ${styles.map((style, index) => `${style}=${ids[index] ?? '—'}`).join(' · ')}`;
 }
 let previous = performance.now(), frames = 0, sampleMs = 0;
+let autoWaveMs = query.get('wave') === '1' ? 0 : null;
+const settledSamples: number[] = [];
 function frame(now: number): void {
   const elapsed = now - previous, dt = Math.min(elapsed, 100); previous = now;
+  if (autoWaveMs !== null) {
+    autoWaveMs += elapsed;
+    if (autoWaveMs >= 3500) { autoWaveMs = null; reveal(); }
+  }
   const active = wave;
   if (wave) {
     wave.elapsed += dt;
@@ -178,9 +184,13 @@ function frame(now: number): void {
   if (active) {
     active.frames++; active.wallMs += elapsed;
     active.maxCalls = Math.max(active.maxCalls, rendererStats(container)?.calls ?? 0);
-    if (!wave) waveStats.textContent = `Active wave: ${(active.frames * 1000 / active.wallMs).toFixed(1)} FPS · peak ${active.maxCalls} calls · ${active.ids.length} flips · ${(active.wallMs / 1000).toFixed(2)} s`;
+    if (!wave) {
+      console.info('Render QA measurement', { style: query.get('style') ?? 'default', cols: state.cols, rows: state.rows, settledFPS: settledSamples.at(-1) ?? null, waveFPS: active.frames * 1000 / active.wallMs, peakCalls: active.maxCalls });
+      waveStats.textContent = `Active wave: ${(active.frames * 1000 / active.wallMs).toFixed(1)} FPS · peak ${active.maxCalls} calls · ${active.ids.length} flips · ${(active.wallMs / 1000).toFixed(2)} s`;
+    }
   }
   if (sampleMs > 1000) {
+    if (!active) settledSamples.push(frames * 1000 / sampleMs);
     const stats = rendererStats(container);
     document.querySelector('#fps')!.textContent = `${Math.round(frames * 1000 / sampleMs)} fps · ${stats?.calls ?? '—'} draw calls · ${stats?.triangles.toLocaleString() ?? '—'} triangles`;
     frames = 0; sampleMs = 0;

@@ -40,6 +40,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
   });
   it('measures three deterministic bots and writes the reviewable report', async () => {
     const count = Number(process.env.BALANCE_SEEDS ?? 50);
+    const firstSeed = Number(process.env.BALANCE_FIRST_SEED ?? 1);
     const width = Number(process.env.BALANCE_COLS ?? DEFAULT_CONFIG.map.cols);
     const height = Number(process.env.BALANCE_ROWS ?? DEFAULT_CONFIG.map.rows);
     const config = { ...DEFAULT_CONFIG, map: { ...DEFAULT_CONFIG.map, cols: width, rows: height } };
@@ -47,7 +48,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     const file = process.env.BALANCE_FILE ?? 'current';
     if (!/^[a-z0-9-]+$/.test(file)) throw new Error('Invalid balance report file suffix');
     const started = performance.now();
-    const runs = await measure(config, count);
+    const runs = await measure(config, count, { firstSeed });
     const elapsed = performance.now() - started;
     const section = renderReport(runs, label, width, height, elapsed);
     writeFileSync(`tests/balance/${file}.json`, JSON.stringify({ label, config, elapsedMs: elapsed, runs }, null, 2) + '\n');
@@ -55,7 +56,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     const prior = process.env.BALANCE_APPEND === '1' && existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '# Economy balance report\n\n';
     writeFileSync(reportPath, (prior.trimEnd() + '\n\n' + section).trimEnd() + '\n');
     console.info(section.split('| Seed |')[0]);
-    for (const strategy of ['combo', 'random'] as const) expect(runBalance(1, strategy, config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === strategy));
+    for (const strategy of ['combo', 'random'] as const) expect(runBalance(firstSeed, strategy, config)).toEqual(runs.find(r => r.seed === firstSeed && r.strategy === strategy));
     // Standard-board budget stays two minutes; larger informational previews scale with search area.
     const areaScale = Math.max(1, width * height / (DEFAULT_CONFIG.map.cols * DEFAULT_CONFIG.map.rows));
     expect(elapsed, 'standard 20-seed measurement budget is two minutes').toBeLessThan(count / 20 * 120_000 * areaScale * areaScale);

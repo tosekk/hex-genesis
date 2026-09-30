@@ -382,3 +382,19 @@ describe('V16 core hex exclusions in the journal HUD', () => {
     s.session.endRun(); expect(s.root.querySelector('.end-board')?.textContent).toContain(`Board used: 1/${slots} slots`);
   });
 });
+
+it('O13.4 P1-B: full non-core board shows zero slots, no finder marks and 100% end usage', () => {
+  const s = restoredFixture(); const state = s.session.state;
+  let total = 0;
+  for (const h of state.hexes) if (h.placeable && h.biome && !state.cores.includes(h.id)) {
+    total += 3; for (const slot of h.slots) slot.building = s.id;
+  }
+  s.pointer({ hexId: state.cores[0], slot: null });
+  // Components refresh on the session notification without invoking game rules on this fixture.
+  s.session.advance(0);
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+  expect(s.root.querySelector('.j-slots')?.textContent).toContain(`Slots left 0 of ${total}`);
+  expect(s.board.setHighlights).toHaveBeenLastCalledWith('selected', []);
+  document.body.dispatchEvent(new KeyboardEvent('keyup', { key: 'Tab', bubbles: true }));
+  s.session.endRun(); expect(s.root.querySelector('.end-board')?.textContent).toContain(`Board used: ${total}/${total} slots (100%)`);
+});

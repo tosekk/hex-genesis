@@ -139,6 +139,7 @@ IN PROGRESS — Night 2: verify P1-A, audit spam/random terminal states on seeds
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- Night 2 audit: certify a missed dead state only after exhausting first-payout base/recipe goals under non-profitable refunds; unresolved adjacency or search limits stay unknown. Recoveries are legal transaction witnesses, not minimal paths or guarantees of eventual victory. All 200 sampled states resolved constructively; zero dead/unknown.
 - Night 2 freeze: all numeric economy data and bot policies remain at v5 round6. Distinguish a no-demolition bot stop from a genuinely dead state. A productive refund/rebuild witness disproves a soft-lock; absence of a bounded witness alone is not proof. Instrumentation and audit code live only under tests/balance.
 - N12 final cost audit correction: the round5 scripted `farm` match also changed Lichen Farm W2/S3/A1→W5/S2/A2. This was not listed in that round’s decision entry; it is in both measured archives5/6 and source. Retain the measured candidate exactly, with no silent post-measurement correction. All changed costs meet R1–R4.
 - N12 selection: round6 eliminates all combo losses and preserves the other passing targets; prefer this highest-priority win robustness over round5’s smaller stockpile. d remains explicitly missed (and its worst ratio worsens98.71→108.83); do not claim full balance compliance. T4 uses the inherited all-seed median convention, not a per-seed guarantee; per-seed exceptions are reported in the final report.
@@ -199,6 +200,8 @@ IN PROGRESS — Night 2: verify P1-A, audit spam/random terminal states on seeds
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- **Night 2 → Opus, stuck audit complete:** spam/random seeds 1–100 yield **0 genuine dead states, 0 false negatives, 0 false positives, 0 unresolved**. 195 actual replayed recoveries (84 stalled bots via unpaid bases; 111 full boards via replacement combos) and 5 wins; no engine loss declarations. Reproducible seed/action counts, state hashes and transaction witnesses are in `tests/balance/stuck/audit-1-100.json`; run `tests/balance/stuck/replay.ts random 22` using the loader documented in REPORT.md. Random22's 143-placement stall recovers by two demolitions then Driftwood Camp, lifetime wood226→230. These results do not prove eventual win feasibility.
+- **Synthetic detector limitation for Opus, outside the frozen-seed finding:** `tests/balance/stuck/audit.test.ts` contains a two-hex custom-config state where four refunds fund two replacements forming the first paid pair; the single-replacement detector declares loss. The independent audit proves a payout. A separate 30-hex/no-recipe fixture reaches the detector's 64-simulation guard while actually dead. Neither synthetic fixture uses the frozen economy; no naturally generated case found and no endgame edits made.
 - Night 2: Opus P1-A report is stale relative to local main; W3 is already fixed (`f8e53fb`) and the full suite passes. Economy source exactly matches `b76c051`; no changes made to other owners’ paths.
 - RESOLVED N11 → Opus (`105fab2`, merged locally during N12): acceptance W3 now uses a 2×1 plain board, core at0, three fixture buildings on1, final threshold unmet. Expected lost; actual playing because core slots still count in endgame. Your core exclusion makes W3 pass; expected-failure marker removed. No outside module edits.
 - N9 / Opus O8.2 advisory acknowledged: the prescribed no-demolition harness's board-full bot losses may still have productive replacement combos and do not imply the live game's loss screen. This is an existing design/measurement distinction, not a new session bug. N9 preserves the designer-requested e4448fd target definitions and explicit labels; no endgame/UI changes. Parallel UI files are untouched.
@@ -571,3 +574,34 @@ T2/T3/T5/T6 medians shift by only 4–12%, but T4 shifts by 18.8% and exceeds it
 Nine combo routes exhaust seven cores and fill all living slots with legal sites remaining: seeds **12,18,40,48** retain one; **30,38,39,45,46** retain two. This describes these greedy bot routes, not a proof that every possible player route needs extra cores. Seed **35** gets T1, then three Hillside Mines consume all wood (stock wood 0 / stone 30); the second selected biome does not provide an affordable escape. Seed **37** stops after two Oasis Wells and a Palm Grove (stock wood 16 / stone 0 / water 28; lifetime stone 2 < T1 stone 16). Both have empty living slots; no engine soft-lock declaration occurs. Early spam T6 seeds are **3,8,18,19,37,45**, with seed 37 at **59.44%**.
 
 Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **36 passed**, 0.564 s; full suite **273 passed / 1 Sonnet-owned test failure / 6 skipped**, 13.47 s. Sol's v2 tutorial fixture is confirmed fixed. `npm run typecheck`, `npm run build`, and owned-path diff checks pass. Build has only the existing >500 kB bundle advisory. Sol's uncommitted rendering work remains untouched and unstaged.
+
+## Night 2 progress
+
+- Step 1: **`d151c8e` pushed successfully**; W3 was already normal `it` in `f8e53fb`. Full `npm test`: 410 passed, 11 skipped. No redundant test edit.
+- Step 2: **`a2885bb` pushed successfully**; audit tooling and 200-run evidence complete; 12 focused audit/observation tests and typecheck pass. Historical-policy replays on seeds 1/spam, 35/combo, 22/random match round6 exactly after removing observational fields. Independent random22 witness replay passes. Economy remains frozen.
+- Next: generalization on 1–100 and 101–200, then strategy concentration.
+
+## Night 2 generalization — frozen v5
+
+| Target | Seeds 1–100 | Seeds 101–200 | Combined 1–200 |
+|---|---|---|---|
+| a: combo ≥90%, zero false losses | PASS 98/100, 0 | PASS 96/100, 0 | PASS 194/200, 0 |
+| b: careless failure ≥90% each | PASS spam100, random95 | PASS spam100, random96 | PASS spam200, random191 |
+| c: T4 median ratio ≥1.5× | PASS spam1.9005×, random∞ | PASS spam1.7255×, random∞ | PASS spam1.7980×, random∞ |
+| d: checkpoint stock/cost ≤3× | MISS 101.70× worst | MISS 104.63× worst | MISS 104.30× worst |
+| e: no combo opening stalls | MISS seeds61,93 | MISS seeds105,147,194 | MISS five seeds |
+| f: winning living non-core use65–85% | PASS 74.80% | PASS 74.80% | PASS 74.80% |
+
+Six combo non-wins are affordability stalls: 61 (25 placements), 93 (18), 105 (11), 147 (4), 179 (47, after T2), 194 (26). **No economy tuning:** these are policy/config generalization findings, not proven implementation bugs. All 600 sessions have zero engine soft-lock declarations. T4 c still means population medians, not a per-seed guarantee; matched-seed exception lists and every checkpoint are in `tests/balance/NIGHT2.md`.
+
+Source/archive equality verified. All 150 historical round6 runs (seeds1–50 × 3 policies) exactly match after stripping the new observational fields. Measurement times:75.95s and69.97s; each cohort has exactly one run per seed/policy. Two archives retain full configurations and observations. Scoped suite:159 passed,10 skipped; new range/report tests and typecheck pass. Other owners' work is untouched.
+
+## Night 2 strategy scan
+
+Generalization **`c8a3673` pushed successfully**. Scan covers all200 combo runs, including six non-wins, and all86,941 placements; full24-building tables for each cohort and combined sample are in `tests/balance/STRATEGIES.md`, with machine-readable `night2-strategies.json`.
+
+- No building exceeds25% overall: Lumber Camp16.80%, Sawmill11.42%, Farm9.08%. Per-run concentration is different: Hillside Mine reaches76%, Gatherer's Hut74.47%, Ice Drill55.56%, mostly short stalled runs. The report includes per-run median/max and counts above25%.
+- Five most frequent paid combos: Timber Line10,971; Homestead7,103; Woodland Village6,804; Frontier Outpost5,979; Salt Cure4,674. By resource units: Woodland Village88,452; Timber Line54,855; Homestead42,618; Frontier Outpost35,874; Sun Citadel34,450. Counts are actual paid pair/triple events, not potential recipe matches or adjacency.
+- Starting-biome win rates: **forest63/69 (91.30%), desert70/70 (100%), arctic61/61 (100%)**. All six non-wins begin forest. This is descriptive, not a causal biome-effect claim.
+- **Designer questions only:** should the forest opening's greedy Hillside/Gatherer concentration be mitigated in a future balance pass? Are near-unused premium buildings intended (Frost Kiln1 placement; Resin Works71)? No balance or policy changes made.
+- Strategy aggregation test covers losers, zero-use entries, payout sums, placement accounting and unsampled-biome denominators; range tests/typecheck pass.

@@ -20,6 +20,8 @@ import { installPhotoMode } from './photo';
 import { SlotHighlight } from './slotHighlight';
 import { isCoreHex } from '../sim/economy';
 import { pickHexSlot, renderSlotPick } from './slots';
+import { ModelAssets } from './modelAssets';
+import { illustratedEnabled, installIllustratedStyle, type IllustratedStyle } from './materials';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -46,6 +48,9 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   sun.position.set(-12, 25, 10); scene.add(sun, sun.target);
   const fill = new THREE.DirectionalLight(0xbad9e5, 0.8);
   fill.position.set(15, 12, -12); scene.add(fill);
+  const illustrated = illustratedEnabled(window.location.search);
+  const assets = illustrated ? new ModelAssets() : undefined;
+  let style: IllustratedStyle | null = null;
   let board = new THREE.Group(); scene.add(board);
   let state: Readonly<GameState> | null = null;
   let tops: Instances | null = null;
@@ -81,6 +86,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     buildings?.refresh(hex, p.x, p.z, isCoreHex(current, id));
     decorations?.refresh(hex, p.x, p.z);
     decorations?.refreshFalls(current, id);
+    if (isCoreHex(current, id)) cores?.set(current.cores, current.hexes, positions);
     effects?.refresh(hex); renderer.shadowMap.needsUpdate = true;
     if (slotPick?.hexId === id) slotHighlight?.set(isCoreHex(current, id) ? null : hex, slotPick.slot);
   }
@@ -107,6 +113,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     payouts.clear();
     scene.remove(board); disposeGroup(board);
     board = new THREE.Group(); scene.add(board); state = current;
+    style = illustrated ? installIllustratedStyle(board) : null;
     positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
     slotPick = null; slotHighlight = new SlotHighlight(board);
     const count = current.hexes.length;
@@ -115,8 +122,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     tops = new Instances(board, new THREE.CylinderGeometry(0.95, 0.95, 0.05, 6), 0xffffff, count, { castShadow: true, receiveShadow: true });
     pickSurface = createPickSurface(board, current.hexes);
     natural = new NaturalTerrain(board, count);
-    buildings = new Buildings(board, count);
-    cores = new Cores(board, count);
+    buildings = new Buildings(board, count, assets);
+    cores = new Cores(board, count, assets);
     decorations = new Decorations(board, count);
     effects = new BoardEffects(board, current, window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
     let layer = 0;
@@ -146,8 +153,17 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     controls.target.set(centreX, bounds.maxY / 2, centreZ);
     camera.position.copy(controls.target).add(START_DIRECTION.clone().multiplyScalar(framingDistance));
     controls.update();
+    cores.set(current.cores, current.hexes, positions);
     photo.reset();
   }
+  const offModels = assets?.subscribe(() => {
+    if (disposed || !state) return;
+    // Geometry alone changes; don't reset camera, reveal animation, selection, or state.
+    for (const hex of state.hexes) {
+      const p = positions.get(hex.id); if (p) buildings?.refresh(hex, p.x, p.z, isCoreHex(state, hex.id));
+    }
+    cores?.set(state.cores, state.hexes, positions); renderer.shadowMap.needsUpdate = true;
+  });
   function pick(event: PointerEvent): BoardPick | null {
     if (!pickSurface || !state) return null;
     const rect = renderer.domElement.getBoundingClientRect();
@@ -198,7 +214,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   function resize(): void {
     if (disposed) return;
     const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
-    renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
+    renderer.setSize(width, height, false); style?.ink.uniforms.viewport.value.set(width, height); camera.aspect = width / height; camera.updateProjectionMatrix();
     if (bounds) {
       const { distance, minDistance, maxDistance } = framingFor(bounds, camera.aspect, camera.fov);
       if (framingDistance > 0) {
@@ -225,7 +241,10 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
         natural?.refresh(reveal.hex, p.x, p.z, state ? waterDirections(state, id) : []);
         buildings?.refresh(reveal.hex, p.x, p.z, state ? isCoreHex(state, id) : false);
         decorations?.refresh(reveal.hex, p.x, p.z);
-        if (state) decorations?.refreshFalls(state, id);
+        if (state) {
+          decorations?.refreshFalls(state, id);
+          if (isCoreHex(state, id)) cores?.set(state.cores, state.hexes, positions);
+        }
       }
       if (tween.finished) reveals.delete(id);
     }
@@ -272,7 +291,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     update, resize,
     dispose() {
       if (disposed) return; disposed = true;
-      observer.disconnect(); photo.dispose(); controls.dispose(); payouts.dispose(); disposeGroup(board); sun.shadow.dispose(); untrackRenderer(); renderer.dispose();
+      observer.disconnect(); offModels?.(); assets?.dispose(); photo.dispose(); controls.dispose(); payouts.dispose(); disposeGroup(board); sun.shadow.dispose(); untrackRenderer(); renderer.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move);
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);
