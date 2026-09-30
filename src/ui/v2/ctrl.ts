@@ -4,9 +4,6 @@ import { legalCoreSites } from '../../sim/spread/spread';
 
 export type Card = { kind: 'core' } | { kind: 'building'; id: BuildingId } | null;
 
-/** Optional slot highlight (opus adds it to BoardView additively). Until then the hex 'selected' highlight stands in. */
-type SlotHighlightBoard = BoardView & { setSlotHighlight?: (pick: { hexId: HexId; slot: SlotIndex } | null) => void };
-
 /** Terraformed placeable tiles with an empty slot, the empty-slot count and total slots. Reads state only. */
 export function slotSummary(state: Readonly<GameState>): { hexes: HexId[]; empty: number; total: number } {
   const hexes: HexId[] = [];
@@ -42,9 +39,11 @@ export class Ctrl {
   private readonly changeCbs: (() => void)[] = [];
   private readonly noticeCbs: ((m: string) => void)[] = [];
   private readonly hoverCbs: (() => void)[] = [];
+  isBlocked: () => boolean = () => this.state.pendingOffer !== null || this.state.status !== 'playing';
+  private invalidTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly off: (() => void)[] = [];
 
-  constructor(readonly session: GameSession, private readonly board: SlotHighlightBoard) {
+  constructor(readonly session: GameSession, private readonly board: BoardView) {
     this.biome = session.state.pendingOffer ? null : session.state.coreStack[0] ?? null;
     this.off.push(board.onPointer((pick, kind) => this.onPointer(pick, kind)));
     const keydown = (ev: KeyboardEvent) => this.onKey(ev, true);
@@ -68,7 +67,7 @@ export class Ctrl {
   onChange(cb: () => void): void { this.changeCbs.push(cb); }
   onNotice(cb: (m: string) => void): void { this.noticeCbs.push(cb); }
   onHover(cb: () => void): void { this.hoverCbs.push(cb); }
-  dispose(): void { for (const o of this.off) o(); }
+  dispose(): void { this.clearInvalid(); for (const o of this.off) o(); }
 
   // ----- core placement availability (for the core card) -----
   /** Why the core card can't be used right now, or null if it can. */
@@ -92,6 +91,7 @@ export class Ctrl {
   }
 
   selectHex(id: HexId | null): void {
+    this.card = null;
     this.hex = id;
     this.slot = null;
     this.followBiome();
@@ -99,6 +99,7 @@ export class Ctrl {
   }
 
   selectSlot(hexId: HexId, slot: SlotIndex): void {
+    this.card = null;
     this.hex = hexId;
     this.slot = slot;
     this.followBiome();
@@ -130,10 +131,7 @@ export class Ctrl {
   }
 
   esc(): void {
-    if (this.card) this.card = null;
-    else if (this.slot !== null) this.slot = null;
-    else if (this.hex !== null) { this.hex = null; }
-    else return;
+    this.card = null; this.hex = null; this.slot = null; this.biome = null;
     this.sync();
   }
 
@@ -148,7 +146,7 @@ export class Ctrl {
   /** Shift+click / R: place exactly the last building (idle only: never with a core card selected). */
   quickBuild(pick: BoardPick): void {
     const s = this.state;
-    if (this.lastBuilt === null || this.card?.kind === 'core' || s.pendingOffer || s.status !== 'playing') return;
+    if (this.isBlocked() || this.lastBuilt === null || this.card?.kind === 'core' || s.pendingOffer || s.status !== 'playing') return;
     const slot = this.targetSlot(pick);
     if (slot === null) { this.fail(pick.hexId, 'All slots on this tile are full.'); return; }
     this.place(pick.hexId, slot, this.lastBuilt);
@@ -190,8 +188,14 @@ export class Ctrl {
 
   private fail(hexId: HexId, reason: string): void {
     this.board.setHighlights('invalid', [hexId]);
-    setTimeout(() => this.board.setHighlights('invalid', []), 400);
+    if (this.invalidTimer) clearTimeout(this.invalidTimer);
+    this.invalidTimer = setTimeout(() => { this.invalidTimer = null; this.board.setHighlights('invalid', []); }, 400);
     this.notice(reason);
+  }
+
+  private clearInvalid(): void {
+    if (this.invalidTimer) clearTimeout(this.invalidTimer);
+    this.invalidTimer = null; this.board.setHighlights('invalid', []);
   }
 
   private notice(m: string): void { for (const c of this.noticeCbs) c(m); }
@@ -203,6 +207,7 @@ export class Ctrl {
       for (const c of this.hoverCbs) c();
       return;
     }
+    if (this.isBlocked()) return;
     if (kind === 'secondary') { this.esc(); return; }
     if (!pick) return;
     const s = this.state;
@@ -215,10 +220,11 @@ export class Ctrl {
       return;
     }
     if (this.shiftHeld && this.lastBuilt !== null) { this.quickBuild(pick); return; }
+    if (pick.slot !== null && s.hexes[pick.hexId]?.slots[pick.slot]?.building !== null) { this.selectSlot(pick.hexId, pick.slot); return; }
     if (this.card?.kind === 'building') {
       const slot = this.targetSlot(pick);
       if (slot === null) { this.fail(pick.hexId, 'All slots on this tile are full.'); return; }
-      this.hex = pick.hexId;
+      this.hex = pick.hexId; this.slot = null;
       this.followBiome();
       this.place(pick.hexId, slot, this.card.id);
       this.sync();
@@ -236,9 +242,9 @@ export class Ctrl {
 
   private onKey(ev: KeyboardEvent, down: boolean): void {
     if (ev.key === 'Shift') { this.shiftHeld = down; for (const c of this.hoverCbs) c(); return; }
-    if (typing(ev.target) || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (this.isBlocked() || typing(ev.target) || ev.ctrlKey || ev.metaKey || ev.altKey) return;
     if (ev.key === 'Tab') { if (down) ev.preventDefault(); this.setTab(down); return; }
-    if (!down) return;
+    if (!down || ev.repeat) return;
     if (ev.key === 'Escape') this.esc();
     else if ((ev.key === 'r' || ev.key === 'R') && this.hovered) this.quickBuild(this.hovered);
   }
@@ -246,11 +252,14 @@ export class Ctrl {
   handleEvent(e: SessionEvent): void {
     switch (e.type) {
       case 'runStarted':
+        this.clearInvalid(); this.shiftHeld = false; this.hovered = null;
         this.card = null; this.hex = null; this.slot = null; this.biome = null; this.lastBuilt = null;
         this.finderToggled = false; this.tabHeld = false;
         break;
       case 'offerResolved': this.biome = e.biome; break;
-      case 'offerShown': case 'spreadStarted': case 'runEnded':
+      case 'runEnded':
+        this.clearInvalid(); this.card = null; this.hex = null; this.slot = null; this.biome = null; this.finderToggled = false; this.tabHeld = false; break;
+      case 'offerShown': case 'spreadStarted':
         if (this.card?.kind === 'core') this.card = null;
         break;
       case 'hexChanged': case 'tilesRevealed': case 'spreadFinished': this.followBiome(); break;

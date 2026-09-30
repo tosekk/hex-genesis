@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
 import { createGameSession } from '../../game/session';
+import { legalCoreSites } from '../../sim/spread/spread';
 import { createJournalHud } from './journalHud';
 
 const disposals: (() => void)[] = [];
@@ -10,7 +11,7 @@ export function fixture(startBefore = false) {
   const session = createGameSession({ now: () => 0 });
   let pointer: ((pick: BoardPick | null, kind: PointerKind) => void) | null = null;
   const board: BoardView = { setBoard: vi.fn(), refreshHex: vi.fn(), playReveal: vi.fn(), setCores: vi.fn(),
-    setHighlights: vi.fn(), update: vi.fn(), resize: vi.fn(), dispose: vi.fn(),
+    setHighlights: vi.fn(), setSlotHighlight: vi.fn(), update: vi.fn(), resize: vi.fn(), dispose: vi.fn(),
     onPointer(cb) { pointer = cb; return () => { pointer = null; }; } };
   const root = document.createElement('div'); root.id = 'ui'; document.body.append(root);
   if (startBefore) session.newRun(1);
@@ -102,4 +103,61 @@ it('keeps the empty detail card at its full reservation before and after selecti
   expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(false);
   s.click('.j-card.building');
   expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(true);
+});
+
+
+function restoredFixture() {
+  const s = fixture(); s.click('.offer-overlay [data-index="0"]');
+  s.click('[data-card="core"]'); s.pointer({ hexId: legalCoreSites(s.session.state)[0], slot: null });
+  s.session.advance(s.session.state.config.animation.spreadMaxMs);
+  const tile = s.session.state.hexes.find(h => h.placeable && h.biome !== null && h.slots.length === 3)!;
+  const id = s.session.state.config.rosters[tile.biome!][0];
+  return { ...s, tile, id };
+}
+
+describe('journal placement flows through real session commands', () => {
+  it('keeps a building card sticky, selects filled slots for demolition, and clears everything on Escape', () => {
+    const s = restoredFixture(); s.click(`[data-building="${s.id}"]`);
+    s.pointer({ hexId: s.tile.id, slot: 0 });
+    expect(s.tile.slots[0].building).toBe(s.id); expect(s.root.querySelector('.j-card.building.selected')).not.toBeNull();
+    s.pointer({ hexId: s.tile.id, slot: 1 }); expect(s.tile.slots[1].building).toBe(s.id);
+    s.pointer({ hexId: s.tile.id, slot: 0 });
+    expect(s.root.querySelector('.j-card.building.selected')).toBeNull(); expect(s.root.querySelector('.demolish')).not.toBeNull();
+    s.click('.demolish'); expect(s.tile.slots[0].building).toBeNull();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(s.root.querySelector('.j-chip.selected')).toBeNull(); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+    expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null);
+  });
+  it('builds immediately from a selected empty slot and advances through all three slots', () => {
+    const s = restoredFixture(); s.pointer({ hexId: s.tile.id, slot: 0 });
+    for (const slot of [0, 1, 2]) {
+      expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith({ hexId: s.tile.id, slot });
+      s.click(`[data-building="${s.id}"]`); expect(s.tile.slots[slot].building).toBe(s.id);
+      expect(s.root.querySelector('.j-card.building.selected')).toBeNull();
+    }
+    expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null);
+  });
+  it('retains the slot and card on failed placements and cancels invalid timers on restart', () => {
+    vi.useFakeTimers(); const s = restoredFixture();
+    s.pointer({ hexId: s.tile.id, slot: 0 });
+    const id = s.session.state.config.rosters[s.tile.biome!].find(id => Object.entries(s.session.state.config.buildings[id].cost).some(([r, v]) => (s.session.state.resources[r] ?? 0) < v))!;
+    expect(id).toBeTruthy(); s.click(`[data-building="${id}"]`);
+    expect(s.tile.slots[0].building).toBeNull(); expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith({ hexId: s.tile.id, slot: 0 });
+    const notice = s.root.querySelector<HTMLElement>('.j-notice')!; expect(notice.hidden).toBe(false);
+    s.session.newRun(1); expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null);
+    vi.advanceTimersByTime(401); expect(s.board.setHighlights).toHaveBeenLastCalledWith('selected', []);
+  });
+  it('keeps Tab finder, R and Shift-click, and blocks repeats while help is open', () => {
+    const s = restoredFixture(); s.pointer({ hexId: s.tile.id, slot: 0 }); s.click(`[data-building="${s.id}"]`);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    expect(s.root.querySelector('.j-slots.active')).not.toBeNull();
+    document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Tab', bubbles: true })); expect(s.root.querySelector('.j-slots.active')).toBeNull();
+    s.pointer({ hexId: s.tile.id, slot: 1 }, 'move'); document.dispatchEvent(new KeyboardEvent('keydown', { key: 'r', bubbles: true }));
+    expect(s.tile.slots[1].building).toBe(s.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'h', bubbles: true }));
+    s.pointer({ hexId: s.tile.id, slot: 2 }); expect(s.tile.slots[2].building).toBeNull();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); s.pointer({ hexId: s.tile.id, slot: 2 });
+    document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })); expect(s.tile.slots[2].building).toBe(s.id);
+  });
 });

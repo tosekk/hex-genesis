@@ -81,6 +81,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
     };
   })();
   ctrl.onNotice((m) => notice.show(m));
+  ctrl.isBlocked = () => session.state.status !== 'playing' || session.state.pendingOffer !== null || help.isOpen() || topRight.isOpen() || (journal?.isOpen() ?? false);
 
   // J opens/closes the journal (U2); the help overlay's own capture handler swallows keys while it is open.
   const onKey = (ev: KeyboardEvent) => {

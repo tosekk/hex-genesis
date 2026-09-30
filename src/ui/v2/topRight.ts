@@ -76,6 +76,7 @@ export function createTopRight(
   document.addEventListener('mousedown', onDoc);
 
   return {
+    isOpen: () => !menu.hidden || !confirm.hidden,
     hideConfirm() { confirm.hidden = true; },
     setEnabled(v: boolean) { menu.querySelector<HTMLButtonElement>('.menu-end')!.disabled = !v; },
     dispose() { unsub?.(); document.removeEventListener('mousedown', onDoc); bar.remove(); confirm.remove(); },
