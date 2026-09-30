@@ -37,3 +37,22 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   if (text !== undefined) e.textContent = text;
   return e;
 }
+
+const ICON_BASE = `${import.meta.env?.BASE_URL ?? './'}assets/icons/`;
+
+/** Icon from public/assets/icons/<id>.svg (resource ids and biome ids). If it fails to load, shows `fallback` text instead. */
+export function icon(id: string, fallback: string): HTMLElement {
+  const wrap = el('span', 'icon');
+  wrap.dataset.icon = id;
+  wrap.setAttribute('aria-hidden', 'true');
+  const img = document.createElement('img');
+  img.src = `${ICON_BASE}${id}.svg`;
+  img.alt = '';
+  img.draggable = false;
+  img.addEventListener('error', () => {
+    wrap.classList.add('icon-missing');
+    wrap.replaceChildren(document.createTextNode(fallback));
+  });
+  wrap.appendChild(img);
+  return wrap;
+}

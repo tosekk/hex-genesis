@@ -96,3 +96,11 @@ details.slot[open] > summary::before { content:'▾ '; }
 .codex-recipe { display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:12px; margin-top:2px; }
 .codex-chip { background:var(--paper2); border:1px solid var(--ink); border-radius:10px; padding:1px 8px; }
 .codex-reward { color:var(--good); font-weight:800; }
+
+.icon { display:inline-flex; align-items:center; justify-content:center; width:1.25em; height:1.25em; vertical-align:middle; margin-right:.25em; }
+.icon img { width:100%; height:100%; display:block; }
+.icon-missing { width:auto; font-size:.9em; }
+.res-name .icon { width:22px; height:22px; }
+.b-cost .c { display:inline-flex; align-items:center; gap:1px; }
+.b-cost .icon { width:16px; height:16px; margin-right:1px; }
+.card-icon .icon { width:48px; height:48px; margin:0; font-size:42px; }

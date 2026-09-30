@@ -1,7 +1,7 @@
 import type { GameSession } from '../core/contracts';
 import type { SlotIndex } from '../core/types';
 import { demolishRefund, rosterFor } from '../sim/economy';
-import { BIOME_LABEL, buildingName, cap, el, fmtResources } from './format';
+import { BIOME_LABEL, buildingName, cap, el, fmtResources, icon } from './format';
 import type { Interaction } from './interaction';
 import { renderPreview } from './preview';
 
@@ -62,7 +62,10 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
           for (const [r, v] of Object.entries(def.cost)) {
             const short = (s.resources[r] ?? 0) < v;
             if (short) missing.push(`${v - (s.resources[r] ?? 0)} more ${r}`);
-            costs.appendChild(el('span', short ? 'c short' : 'c', `${v} ${r}`));
+            const chip = el('span', short ? 'c short' : 'c');
+            chip.title = `${v} ${r}`;
+            chip.append(icon(r, `${r} `), `${v}`);
+            costs.appendChild(chip);
           }
           btn.appendChild(costs);
           if (missing.length) btn.title = `Need ${missing.join(', ')}`;

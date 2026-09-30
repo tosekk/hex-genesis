@@ -1,6 +1,6 @@
 import type { GameSession } from '../core/contracts';
 import type { BiomeOffer } from '../core/types';
-import { BIOME_ICON, BIOME_LABEL, el } from './format';
+import { BIOME_ICON, BIOME_LABEL, el, icon } from './format';
 
 export function createOfferModal(root: HTMLElement, session: GameSession) {
   const overlay = el('div', 'overlay offer-overlay');
@@ -16,7 +16,9 @@ export function createOfferModal(root: HTMLElement, session: GameSession) {
     offer.options.forEach((biome, i) => {
       const card = el('button', `card biome-${biome}`);
       card.dataset.index = String(i);
-      card.append(el('div', 'card-icon', BIOME_ICON[biome]), el('div', 'card-title', BIOME_LABEL[biome]),
+      const pic = el('div', 'card-icon');
+      pic.appendChild(icon(biome, BIOME_ICON[biome])); // emoji if the icon is missing
+      card.append(pic, el('div', 'card-title', BIOME_LABEL[biome]),
         el('div', 'card-roster', `Buildings: ${cfg.rosters[biome].map((b) => cfg.buildings[b]?.name ?? b).join(', ')}`),
         el('div', 'card-key', `[${i + 1}]`));
       card.addEventListener('click', () => session.chooseOffer(i as 0 | 1));

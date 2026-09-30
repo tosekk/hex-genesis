@@ -1,5 +1,5 @@
 import type { GameSession } from '../core/contracts';
-import { cap, el } from './format';
+import { cap, el, icon } from './format';
 
 /** §39: one line per required resource; never a single combined number. */
 export function createResourceBar(root: HTMLElement, session: GameSession) {
@@ -13,7 +13,9 @@ export function createResourceBar(root: HTMLElement, session: GameSession) {
     for (const r of s.config.resources) {
       const row = el('div', 'res-row');
       row.dataset.resource = r;
-      row.appendChild(el('span', 'res-name', cap(r)));
+      const name = el('span', 'res-name');
+      name.append(icon(r, ''), cap(r));
+      row.appendChild(name);
       row.appendChild(el('span', 'res-amount', String(s.resources[r] ?? 0)));
       row.appendChild(el('span', 'res-life', `lifetime ${s.lifetime[r] ?? 0}`));
       const need = target?.[r];

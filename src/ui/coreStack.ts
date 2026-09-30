@@ -1,5 +1,5 @@
 import type { GameSession } from '../core/contracts';
-import { BIOME_ICON, BIOME_LABEL, el } from './format';
+import { BIOME_ICON, BIOME_LABEL, el, icon } from './format';
 import type { Interaction } from './interaction';
 
 export function createCoreStack(root: HTMLElement, session: GameSession, ui: Interaction) {
@@ -13,7 +13,8 @@ export function createCoreStack(root: HTMLElement, session: GameSession, ui: Int
     if (s.activeSpread) wrap.appendChild(el('div', 'hint', 'Terraforming…'));
     else if (s.coreStack.length === 0) wrap.appendChild(el('div', 'hint', 'No cores held'));
     s.coreStack.forEach((biome, i) => {
-      const chip = el('button', `chip biome-${biome}`, `${BIOME_ICON[biome]} ${BIOME_LABEL[biome]}`);
+      const chip = el('button', `chip biome-${biome}`);
+      chip.append(icon(biome, BIOME_ICON[biome]), ` ${BIOME_LABEL[biome]}`);
       const placing = ui.mode.kind === 'placeCore' && ui.mode.stackIndex === i;
       if (placing) chip.classList.add('active');
       chip.disabled = !!s.activeSpread || !!s.pendingOffer || s.status !== 'playing';

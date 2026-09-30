@@ -269,3 +269,32 @@ describe('controls help', () => {
     expect(help().hidden).toBe(true);
   });
 });
+
+describe('icons', () => {
+  it('resource bar and offer cards use the icon files, with a text/emoji fallback on load error', () => {
+    const f = fakes();
+    createHud(root, f.session, f.board);
+    const res = f.state.config.resources[0];
+    const resIcon = root.querySelector<HTMLElement>(`[data-resource="${res}"] .icon`)!;
+    expect(resIcon.querySelector('img')!.getAttribute('src')).toMatch(new RegExp(`assets/icons/${res}\\.svg$`));
+
+    f.state.pendingOffer = { options: ['desert', 'arctic'], reshuffled: false };
+    f.emit({ type: 'offerShown', offer: f.state.pendingOffer });
+    const card = root.querySelector<HTMLElement>('.card[data-index="0"] .icon')!;
+    expect(card.querySelector('img')!.getAttribute('src')).toContain('assets/icons/desert.svg');
+    card.querySelector('img')!.dispatchEvent(new Event('error'));
+    expect(card.classList.contains('icon-missing')).toBe(true);
+    expect(card.textContent).toBe('🏜️');
+    expect(card.querySelector('img')).toBeNull();
+  });
+
+  it('building costs show resource icons and keep the shortfall marking', () => {
+    const f = fakes({ resources: {} });
+    f.state.hexes[7].biome = 'forest';
+    createHud(root, f.session, f.board);
+    f.click(7);
+    const cost = root.querySelector('.build .b-cost .c')!;
+    expect(cost.querySelector('.icon img')).not.toBeNull();
+    expect(cost.classList.contains('short')).toBe(true);
+  });
+});
