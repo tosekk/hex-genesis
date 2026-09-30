@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S8 done (rule c63b56d, UI 51cef86). `IDLE — available`. Astra: the calibration can proceed; your W1–W3 acceptance cases (old fill-the-board win rule) fail against the new `checkWin` and need rewriting on your side. Still open from earlier: two complete runs played to a win.
+S9: handover note written (Notes for others → sol); endgame test fixed; browser QA of sol's V15 in progress until 06:00 (findings under "Bugs found in others' modules"). U1 was handed to sol mid-way (WIP commit 07dfbc5); U2/U3 are sol's now. Legacy HUD is frozen (fallback): real bug fixes only.
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -72,6 +72,24 @@ None.
 - opus (dev only) · every source edit by any agent full-reloads the page and drops the run state mid-playtest; harmless in production, just be aware when testing.
 
 ## Notes for others
+### → sol: handover of the journal HUD (`src/ui/v2`, `src/ui/hud.ts`) — state as of 07dfbc5
+**Structure** (all DOM, no framework; everything scoped under `.jhud`; `styles.css` + `fonts.css`, fonts in `v2/fonts/` with OFL files):
+- `journalHud.ts` — `createJournalHud(root, session, board, deps?)`: composes everything, subscribes to `session`, owns the notice bubble near the cursor, the J key hook and help/audio wiring. `deps.audio` (AudioSettingsLike) and `deps.createJournal` (U2 plug-in point, `{toggle, close, isOpen, handleEvent, dispose}`) are injectable for tests; `defaultAudioSettings()` finds `src/audio/settings.ts` through `import.meta.glob` so the build works with or without it.
+- `ctrl.ts` — the selection model (`Ctrl` class): `card` (core | building | null, sticky), `hex`, `slot`, `biome`, `lastBuilt`, shift/Tab state. It is the ONLY thing that calls `placeBuilding/placeCore/demolish` and the only writer of board highlights. `sync()` recomputes highlights (`legalCore`, `selected`, optional `board.setSlotHighlight?.()`) and then fires `onChange`, which re-renders components. Pointer logic is `onPointer`; keys in `onKey`; session events in `handleEvent` (runStarted resets everything incl. `lastBuilt`).
+- Components, one file each, each `{render, dispose}`: `pills.ts` (resource pills, pulse on change), `thresholds.ts` (stack + pinned goal + "Slots left" finder + legal sites), `triangle.ts` (biome triangle; main circles grey with no core held, mixed grey until on the board), `deck.ts` (core card + roster cards, hover note, full `session.preview` when an empty slot is selected), `detail.ts` (portrait + building/core/tile body, slot chips, Demolish), `topRight.ts` (📖 + ⚙ menu: Help, Sound via `audioSettings`, End Run confirm, New Run with seed).
+- Reused from the legacy HUD (same files, shared): `toasts.ts` (now adds `toast-<kind>` classes), `offerModal.ts` (U3 replaces it), `endScreen.ts` (+ exported `startNewRun`), `helpOverlay.ts` (`{variant:'journal'}` hides its own "?" button and uses the journal rows), `preview.ts`, `format.ts` (`icon(path, fallback)`: `icon('buildings/farm', 'F')`).
+- `src/ui/hud.ts` currently exports `createHud` = LEGACY and `createJournalHud`; switch `createHud` to the journal HUD when you are happy (opus wires `?ui=legacy`). `legacyHud.ts` = frozen old HUD.
+**Done:** all of U1 §1–§3.7 and §5 except the offer animation, visually checked once in the browser up to placing a core. Icons: sol's building/terrain/core icons already load (text initials fallback works).
+**Missing / not verified:** NO v2 tests exist (UI_SPEC U1 list: both placement flows incl. auto-advance, core card grey/badge/disabled reasons, triangle following selection, discovered-only pop-up, threshold stack zero targets + pinned goal, menu End Run confirm + mute). No full run played in v2. Journal (U2: `deps.createJournal` hook, J key already calls `journal.toggle()`), offer spheres (U3), end-screen restyle are not done. Detail panel collides with the tutorial panel at the left (it grows upward); audio panel overlaps the triangle if `controls:false` isn't used. Below 1150 px width I shrink the triangle with CSS `zoom:.8` (Chrome-only; fine for itch).
+**Traps:**
+1. `index.html` has `#ui > * { pointer-events:auto }`, which silently made any full-screen container swallow every board click (bit me twice: legacy `.hud`, then `.jhud`). The fix is `#ui > .jhud, .jhud > .j-bottom { pointer-events:none }` in `styles.css`; keep it when you add containers, and test a board click after every layout change.
+2. `.jhud .icon` sizing rules must come BEFORE component icon sizes in `styles.css` (same specificity, later wins).
+3. `Ctrl.selectBiome` for a mixed biome: the deck shows its roster but there is no core card; `effectiveBiome` falls back to the first held core, else forest.
+4. Every source edit full-reloads the dev page and resets the run; use `?seed=N` for repeatable QA.
+5. `placeBuilding` failing keeps the selection (spec) but the `invalid` highlight is a 400 ms timer; `Ctrl` does not cancel it on a new run.
+6. BSD sed on macOS chokes on `\n` in replacements; edit with python.
+7. The legacy tests import `createLegacyHud as createHud` from `./legacyHud`; leave that.
+
 - **New controls (S4, for README/tutorial):** hold **Shift + left-click** a tile, or hover a tile and press **R**, to repeat the last building you built (fills that tile's next empty slot; clicked slot if empty). A **"Repeat: <building> · <cost> · [R / Shift+click]"** chip (bottom-left) shows what will be built; click it to clear. Holding Shift over a tile previews the placement. Failures flash the tile red with a short reason. Idle mode only; R is ignored while typing in an input.
 - HUD needs BoardView to honour highlight styles `legalCore`, `selected`, `hover`, `invalid` (setHighlights replaces the whole set per style; `invalid` is set for 400 ms after a rejected core click).
 - Session emits `offerShown` again on reshuffle.
