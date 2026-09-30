@@ -1,3 +1,5 @@
+Designer QA: Item 3 — at a fresh opening all biome circles are grey/disabled. Pick Forest: its core card is colored, building cards are dimmed and only show cost/yield on hover (click does not select them). Place the core; once Forest land appears, select its circle/tile and building cards work normally. Biomes with no land/core cannot be clicked or tab-focused; New Run clears the selection.
+
 Designer QA: Item 2 — reload without clicking: no voice request until your first click/key. Place a core and let the note collapse: spread/building narration still plays. In ⚙, change Volume during speech, then Sound off: voice/music/SFX stop and new lines stay silent. Select a building card, click dead land: the card/deck stay selected; Esc clears them. Reshuffle/pick spheres: one cue per offer/pick.
 
 Designer QA: Item 1 — reload the game, click once, choose a biome and place a core; music, offer/spread sounds and voice should load. Network MP3 URLs should be hashed assets/ paths, never audio/ paths.
@@ -20,9 +22,10 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-Night item 2 DONE: live Sound mute/volume for narration; first-gesture queue with latest-line-only/policy retry and disposal; collapsed new steps narrate without replay on expand; sticky dead/natural clicks preserve card/deck. Music loop/duck/mute and single sphere pick cues covered by a real-session DOM integration test. 67 audio/tutorial/v2 tests and typecheck pass. N11 helper commit `6e8c7f9` landed during tests; owned test fixtures now choose non-core building tiles and isolate Free/unaffordable cases from parallel cost tuning. Next: item 3, V16(b)(c). No main/app/index/sim/tests edits.
+Night item 3 / V16(b)(c) DONE: circles enabled iff land exists or a main-biome core is held; absent circles grey/disabled/tabIndex -1 with reason; lost availability clears selection/deck. A core-only deck keeps the core colored and buildings dimmed/aria-disabled with hover/focus cost/yield, until visible land exists. 71 audio/tutorial/v2 tests + typecheck pass. Night 1 `206e815`; Night 2 `1a502c6`. Next: item 4 via Astra N11 `6e8c7f9`, including legacy text. No app/main/index/sim/tests edits.
 
 ## Done
+- Night 2 — global Sound controls voice live, collapsed new steps narrate, gesture queue/policy retry/disposal, sticky dead/natural deck preserved, music+FX single cue integration; 67 audio/tutorial/v2 tests/typecheck — `1a502c6`.
 - Night 1 — source audio relocation (19 MP3s + manifest), both discovery globs, all-file resolution regression; 22 audio/tutorial tests + typecheck; Vite build 5.88 MB, SHA-256 proves one emitted copy per recording, no public-directory warnings — `206e815`.
 - V15 verification — missing-audio tutorial test supplies an empty recording map, independent of designer VO file drops; no runtime/audio/asset changes. All 91 owned tests / 20 files, typecheck pass — `e1457f2`.
 - V15 — committed sphere module integrated, measured triangle/corner, reshuffle update, single choose command, resolve input guard, cancellation epoch, simple modal fallback; 35 UI tests/typecheck/main production build — `feefa3d`.
@@ -67,6 +70,7 @@ Night item 2 DONE: live Sound mute/volume for narration; first-gesture queue wit
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
+- Night 3 / designer V16 overrides UI_SPEC §3.3: main circles with visible land remain enabled/colored even without a held core; absent land+core disables them. Land availability reads visible hex.biome only, never future spread claims. Building cards with no land remain hover/focus readable, but Ctrl rejects selecting them. A transient unavailable selection is cleared while a core awaits its first reveal.
 - Night 2 / §46: collapse changes visual expansion only; each new step narrates once, while expanding does not replay it. Global mute or zero volume stops/drops the active/queued line; unmute does not replay stale guidance. Policy rejection keeps only the current line for the next gesture. Next/Skip/run end/dispose cancel it.
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
 - V14 / UI_SPEC §1/§6: reuse Sonnet's already committed `src/ui/v2/fonts.css` (Patrick Hand/Nunito + adjacent OFL licenses); fonts currently live in his bundled UI directory, not `public/assets/fonts/`. CSS imports the existing faces without duplicating assets or changing his paths. System font fallbacks remain. No tutorial copy, VO IDs, commands, triggers, mute/collapse semantics changed.

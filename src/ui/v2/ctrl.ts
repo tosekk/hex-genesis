@@ -63,6 +63,10 @@ export class Ctrl {
   get finderOn(): boolean { return this.tabHeld || this.finderToggled; }
   /** A cleared triangle also clears the deck; no implicit biome is shown. */
   get effectiveBiome(): Biome | null { return this.biome; }
+  hasBiomeLand(biome: Biome): boolean { return this.state.hexes.some(hex => hex.biome === biome); }
+  biomeEnabled(biome: Biome): boolean {
+    return this.hasBiomeLand(biome) || ((biome === 'forest' || biome === 'desert' || biome === 'arctic') && this.state.coreStack.includes(biome));
+  }
 
   onChange(cb: () => void): void { this.changeCbs.push(cb); }
   onNotice(cb: (m: string) => void): void { this.noticeCbs.push(cb); }
@@ -83,7 +87,7 @@ export class Ctrl {
 
   // ----- selection commands -----
   selectBiome(b: Biome | null): void {
-    if (this.isBlocked()) return;
+    if (this.isBlocked() || (b !== null && !this.biomeEnabled(b))) return;
     this.biome = b;
     this.hex = null; this.slot = null;
     if (this.card?.kind === 'building' && (b === null || !this.state.config.rosters[b].includes(this.card.id))) this.card = null;
@@ -121,6 +125,7 @@ export class Ctrl {
       this.sync();
       return;
     }
+    if (this.effectiveBiome === null || !this.hasBiomeLand(this.effectiveBiome)) return;
     // Slot-first flow: a selected empty slot receives the building immediately.
     const h = this.hex !== null ? this.state.hexes[this.hex] : null;
     if (h && this.slot !== null && h.slots[this.slot].building === null) {
@@ -284,6 +289,7 @@ export class Ctrl {
   /** Recompute board highlights from the selection, then tell components to re-render. */
   sync(): void {
     const s = this.state;
+    if (this.biome !== null && !this.biomeEnabled(this.biome)) { this.biome = null; this.card = null; }
     const playing = s.status === 'playing';
     this.board.setHighlights('legalCore', this.card?.kind === 'core' && playing ? legalCoreSites(s) : []);
     const marks = new Set<HexId>();

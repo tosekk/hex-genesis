@@ -52,7 +52,7 @@ describe('journal component contract states', () => {
     tile.biome = null; s.ctrl.selectHex(tile.id); tri.render(); expect(s.root.querySelector('.j-biome.selected')).toBeNull();
   });
   it('labels zero-cost buildings Free in detail and hover notes', () => {
-    const s = setup(); s.state.config.buildings.hillside_mine.cost = {}; s.ctrl.selectBiome('forest'); s.ctrl.clickCard({ kind: 'building', id: 'hillside_mine' });
+    const s = setup(); s.state.hexes[0].biome = 'forest'; s.state.config.buildings.hillside_mine.cost = {}; s.ctrl.selectBiome('forest'); s.ctrl.clickCard({ kind: 'building', id: 'hillside_mine' });
     const detail = createDetail(s.root, s.session, s.ctrl), deck = createDeck(s.root, s.session, s.ctrl); disposals.push(detail.dispose, deck.dispose);
     expect(s.root.querySelector('.j-detail')?.textContent).toContain('Cost: Free');
     s.root.querySelector<HTMLButtonElement>('[data-building="hillside_mine"]')!.focus();
@@ -95,5 +95,52 @@ describe('journal component contract states', () => {
     const visibleCtrl = new Ctrl(visibleSession, s.board); disposals.push(() => visibleCtrl.dispose()); visibleCtrl.selectBiome('forest'); visibleCtrl.clickCard({ kind: 'building', id: 'sawmill' });
     const visibleDetail = createDetail(s.root, visibleSession, visibleCtrl); disposals.push(visibleDetail.dispose);
     expect(s.root.querySelectorAll('.j-combo')).toHaveLength(1);
+  });
+});
+
+describe('V16 useful biome circles and core-only deck', () => {
+  it('disables absent biomes for clicks and keyboard focus, with a clear tooltip', () => {
+    const s = setup(); s.state.coreStack = []; s.ctrl.sync();
+    const tri = createTriangle(s.root, s.session, s.ctrl), deck = createDeck(s.root, s.session, s.ctrl); disposals.push(tri.dispose, deck.dispose);
+    for (const circle of s.root.querySelectorAll<HTMLButtonElement>('.j-biome')) {
+      expect(circle.disabled).toBe(true); expect(circle.tabIndex).toBe(-1); expect(circle.classList.contains('grey')).toBe(true);
+      expect(circle.title).toMatch(/^No .* land yet$/); circle.click(); expect(s.ctrl.biome).toBeNull();
+    }
+    s.ctrl.selectBiome('forest'); expect(s.ctrl.biome).toBeNull(); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+  });
+  it('unlocks main biomes with land or a held core, and mixed biomes only with land', () => {
+    const s = setup(); s.state.coreStack = ['forest'];
+    const tri = createTriangle(s.root, s.session, s.ctrl); disposals.push(tri.dispose);
+    const circle = (id: string) => s.root.querySelector<HTMLButtonElement>(`[data-biome="${id}"]`)!;
+    expect(circle('forest').disabled).toBe(false); expect(circle('forest').classList.contains('grey')).toBe(false);
+    expect(circle('desert').disabled).toBe(true); expect(circle('steppe').disabled).toBe(true);
+    s.state.hexes[0].biome = 'desert'; s.state.hexes[1].biome = 'steppe'; tri.render();
+    expect(circle('desert').disabled).toBe(false); expect(circle('steppe').disabled).toBe(false); expect(circle('steppe').tabIndex).toBe(0);
+    circle('steppe').click(); tri.render(); expect(circle('steppe').getAttribute('aria-pressed')).toBe('true');
+    s.state.hexes[1].biome = null; s.ctrl.handleEvent({ type: 'hexChanged', hexId: 1 }); tri.render();
+    expect(s.ctrl.biome).toBeNull(); expect(circle('steppe').disabled).toBe(true);
+  });
+  it('keeps the held core colored and building cards dimmed/readable but unselectable until land exists', () => {
+    const s = setup(); s.state.coreStack = ['forest']; s.ctrl.selectBiome('forest');
+    const deck = createDeck(s.root, s.session, s.ctrl); disposals.push(deck.dispose);
+    expect(s.root.querySelector('.j-card.core.grey')).toBeNull();
+    for (const card of s.root.querySelectorAll<HTMLButtonElement>('.j-card.building')) {
+      expect(card.classList.contains('grey')).toBe(true); expect(card.getAttribute('aria-disabled')).toBe('true');
+      expect(card.title).toContain('Place a Forest core first'); card.focus();
+      expect(s.root.querySelector('.j-note')?.textContent).toContain('Cost:'); expect(s.root.querySelector('.j-note')?.textContent).toContain('Yields:');
+      card.click(); expect(s.ctrl.card).toBeNull();
+    }
+    s.state.hexes[0].biome = 'forest'; s.ctrl.handleEvent({ type: 'tilesRevealed', hexIds: [0] }); deck.render();
+    const building = s.root.querySelector<HTMLButtonElement>('.j-card.building')!;
+    expect(building.classList.contains('grey')).toBe(false); expect(building.getAttribute('aria-disabled')).toBe('false');
+    building.click(); expect(s.ctrl.card?.kind).toBe('building');
+  });
+  it('clears the selected biome/card and shows the prompt when the last land/core disappears', () => {
+    const s = setup(); s.state.coreStack = ['forest']; s.state.hexes[0].biome = 'forest'; s.ctrl.selectBiome('forest');
+    const deck = createDeck(s.root, s.session, s.ctrl); disposals.push(deck.dispose);
+    s.root.querySelector<HTMLButtonElement>('.j-card.building')!.click(); expect(s.ctrl.card?.kind).toBe('building');
+    s.state.coreStack = []; s.state.hexes[0].biome = null; s.ctrl.handleEvent({ type: 'resourcesChanged' }); deck.render();
+    expect(s.ctrl.biome).toBeNull(); expect(s.ctrl.card).toBeNull(); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+    s.ctrl.handleEvent({ type: 'runStarted', seed: 7 }); expect(s.ctrl.biome).toBeNull();
   });
 });

@@ -73,10 +73,10 @@ describe('journal biome selection', () => {
     s.pointer({ hexId: 0, slot: null });
     expect(s.root.querySelector('.j-biome.selected')).toBeNull();
     expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
-    s.click('[data-biome="forest"]');
-    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome).toBe('forest');
+    s.click(`[data-biome="${biome}"]`);
+    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome).toBe(biome);
     expect(s.root.querySelector('.j-deck-prompt')).toBeNull();
-    s.click('[data-biome="forest"]');
+    s.click(`[data-biome="${biome}"]`);
     expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
   });
 });
@@ -104,9 +104,9 @@ it('keeps the empty detail card at its full reservation before and after selecti
   const s = fixture(), detail = s.root.querySelector<HTMLElement>('.j-detail')!;
   expect(detail.style.width).toBe('248px'); expect(detail.style.height).toBe('176px');
   expect(detail.querySelector('.j-portrait')).not.toBeNull(); expect(detail.classList.contains('empty-state')).toBe(true);
-  s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.building');
+  s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.core');
   expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(false);
-  s.click('.j-card.building');
+  s.click('.j-card.core');
   expect(detail.style.height).toBe('176px'); expect(detail.classList.contains('empty-state')).toBe(true);
 });
 
@@ -117,6 +117,7 @@ function restoredFixture() {
   s.session.advance(s.session.state.config.animation.spreadMaxMs);
   const tile = s.session.state.hexes.find(h => h.placeable && h.biome !== null && !s.session.state.cores.includes(h.id) && h.slots.length === 3)!;
   const id = s.session.state.config.rosters[tile.biome!][0];
+  s.pointer({ hexId: tile.id, slot: null });
   return { ...s, tile, id };
 }
 
@@ -227,14 +228,14 @@ describe('committed journal book integration', () => {
     const s = fixture(false, { createJournal: undefined });
     const book = s.root.querySelector<HTMLElement>('.jr-overlay')!;
     s.click('.journal-btn'); expect(book.hidden).toBe(true); // opening offer blocks the book
-    s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.building');
+    s.click('.offer-overlay [data-index="0"]'); s.click('.j-card.core');
     s.click('.journal-btn'); expect(book.hidden).toBe(false);
     expect(s.root.querySelectorAll('.jr-overlay')).toHaveLength(1);
     key('J'); expect(book.hidden).toBe(true);
     key('j'); expect(book.hidden).toBe(false);
     key('Escape'); expect(book.hidden).toBe(true);
-    expect(s.root.querySelector('.j-card.building.selected')).not.toBeNull();
-    key('Escape'); expect(s.root.querySelector('.j-card.building.selected')).toBeNull();
+    expect(s.root.querySelector('.j-card.core.selected')).not.toBeNull();
+    key('Escape'); expect(s.root.querySelector('.j-card.core.selected')).toBeNull();
   });
   it('blocks core placement and help while open, then restores input when closed', () => {
     const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]');

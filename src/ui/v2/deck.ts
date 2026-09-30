@@ -39,7 +39,7 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
     strip.replaceChildren();
     hideNote();
 
-    if (biome === null) {
+    if (biome === null || !ctrl.biomeEnabled(biome)) {
       strip.appendChild(el('div', 'j-deck-prompt', 'Pick a biome or a tile'));
       strip.scrollLeft = scroll; return;
     }
@@ -64,6 +64,8 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
       strip.appendChild(card);
     }
 
+    const noLand = !ctrl.hasBiomeLand(biome);
+    const landReason = `Place a ${BIOME_LABEL[biome]} core first to create ${BIOME_LABEL[biome]} land`;
     for (const id of cfg.rosters[biome]) {
       const def = cfg.buildings[id];
       if (!def) continue;
@@ -71,10 +73,14 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
       const card = el('button', 'j-card building');
       card.dataset.building = id; card.setAttribute('aria-pressed', String(ctrl.card?.kind === 'building' && ctrl.card.id === id));
       card.classList.toggle('unaffordable', !affordable);
+      card.classList.toggle('grey', noLand); card.classList.toggle('disabled', noLand);
+      card.setAttribute('aria-disabled', String(noLand));
+      if (noLand) card.title = landReason;
       card.classList.toggle('selected', ctrl.card?.kind === 'building' && ctrl.card.id === id);
       card.append(icon(`buildings/${id}`, initials(def.name)), el('span', 'j-card-name', def.name));
       card.addEventListener('click', () => ctrl.clickCard({ kind: 'building', id }));
       card.addEventListener('mouseenter', () => showNote(card, (b) => {
+        if (noLand) b.append(el('div', undefined, landReason));
         const slotSel = ctrl.hex !== null && ctrl.slot !== null && s.hexes[ctrl.hex].slots[ctrl.slot].building === null;
         if (slotSel) {
           const box = el('div', 'preview');

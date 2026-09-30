@@ -34,29 +34,26 @@ export function createTriangle(root: HTMLElement, session: GameSession, ctrl: Ct
     svg.appendChild(line);
     box.appendChild(svg);
 
-    const onBoard = new Set<Biome>();
-    for (const h of s.hexes) if (h.biome) onBoard.add(h.biome);
     const held: Record<string, number> = {};
     for (const b of s.coreStack) held[b] = (held[b] ?? 0) + 1;
 
     for (const b of [...MAIN, ...MIXED]) {
       const main = MAIN.includes(b);
-      const active = main ? (held[b] ?? 0) > 0 : onBoard.has(b);
+      const active = ctrl.biomeEnabled(b);
       const btn = el('button', `j-biome ${main ? 'main' : 'mixed'}`);
       btn.dataset.biome = b;
       btn.style.left = `${TRIANGLE_POS[b][0]}px`;
       btn.style.top = `${TRIANGLE_POS[b][1]}px`;
       btn.classList.toggle('grey', !active);
-      btn.classList.toggle('selected', ctrl.biome === b);
+      btn.classList.toggle('selected', active && ctrl.biome === b);
       if (active) btn.style.setProperty('--biome', hex(BIOME_COLORS[b]));
-      btn.title = `${BIOME_LABEL[b]}${main ? ` · ${held[b] ?? 0} core${(held[b] ?? 0) === 1 ? '' : 's'} held` : active ? '' : ' (not on the board yet)'}`;
+      btn.title = active ? `${BIOME_LABEL[b]}${main ? ` · ${held[b] ?? 0} core${(held[b] ?? 0) === 1 ? '' : 's'} held` : ''}` : `No ${BIOME_LABEL[b]} land yet`;
       btn.setAttribute('aria-label', btn.title); btn.setAttribute('aria-pressed', String(ctrl.biome === b));
       btn.appendChild(icon(b, BIOME_ICON[b]));
       const label = el('span', 'j-biome-name', BIOME_LABEL[b]), lp = TRIANGLE_LABELS[b];
       Object.assign(label.style, { left: `${lp.x}px`, top: `${lp.y}px`, width: `${lp.width}px` });
       if (main && (held[b] ?? 0) > 1) btn.appendChild(el('span', 'j-badge', String(held[b])));
-      // Main circles are always clickable (browsing); mixed ones only once they exist.
-      if (!main && !active) btn.disabled = true;
+      btn.disabled = !active; btn.tabIndex = active ? 0 : -1;
       btn.addEventListener('click', () => ctrl.selectBiome(ctrl.biome === b ? null : b));
       box.append(btn, label);
     }
