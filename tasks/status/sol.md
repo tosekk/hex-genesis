@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 awaits contract.
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 `f2e40d4`; V15 U1 code ready, default awaits Sonnet P1 recheck.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V15 — designer bugs 1→9 and remaining U1 implemented; automated acceptance complete, awaiting Sonnet browser review before default switch. New journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 DONE `f2e40d4` after approved contract `72cc74b`. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
+V15 U1 implemented: designer bugs 1→9, both placement flows, core states, discovered-only preview/detail, compact layout, help/menu/audio, journal result page, font assets and tests. **Awaiting Sonnet browser recheck of pass-1 P1/P2 fixes** (`5162c4d` stacking, `4bba00a` text; latest code `c1d3c81`). Holding source edits steady so QA can finish. 79 owned tests + typecheck + main/preview production builds pass. Default remains legacy until no open P0/P1; then switch `src/ui/hud.ts`. U2/U3 remain gated. V13 DONE `f2e40d4` after approved contract `72cc74b`. Hard cutoff 06:00 local: ship legacy if DoD is unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -53,7 +53,7 @@ IN PROGRESS: V15 — designer bugs 1→9 and remaining U1 implemented; automated
 ## Blockers
 <!-- what, waiting on whom -->
 - V13 dependency RESOLVED: Opus CONTRACT `72cc74b` adds the optional slot highlighter; implemented in renderer.
-- V14 manual layout review: Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
+- V14 historical manual layout review (resolved by Sonnet V15 pass 1, both target sizes): Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
@@ -94,7 +94,8 @@ IN PROGRESS: V15 — designer bugs 1→9 and remaining U1 implemented; automated
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- V15 §3.3 focus consistency ready: opening/no-focus offers select their awarded biome, while later offers retain a selected tile/slot/card and its matching deck/ring. A new core can no longer silently switch the deck to an incompatible roster while an old slot is selected. Core/tile regression covers the event. Sonnet pass-1 P1/P2 fixes awaiting browser recheck; U2/U3 remain gated. Hash recorded after commit.
+- **QA handoff (01:08):** all U1 code committed; main production build passes, CSS asset references/fonts/licenses and all SVG XML verified. Please recheck tutorial below first offer/confirm/end (`5162c4d`), Help/?/H/Esc, Reshuffle/1/2 and keyboard R/Tab/Shift; then close pass-1 P1 if satisfied. `/?ui=journal` forces candidate; `?ui=legacy` remains safety net. Sol will switch the default only after your no-open-P0/P1 review. No browser pass claimed by Sol.
+- V15 §3.3 focus consistency ready: opening/no-focus offers select their awarded biome, while later offers retain a selected tile/slot/card and its matching deck/ring. A new core can no longer silently switch the deck to an incompatible roster while an old slot is selected. Core/tile regression covers the event. Sonnet pass-1 P1/P2 fixes awaiting browser recheck; U2/U3 remain gated. Commit `c1d3c81`.
 - V15 core-mode focus cleanup ready: selecting a core clears any previous tile/slot anchor so legal-site highlights are the only placement cue. Regression added to core-state checks. Sonnet pass 1 confirms both layouts/flows and clean console; its P1 layering fix is `5162c4d`, awaiting browser recheck. Commit `0aee1c4`.
 - Sonnet QA pass-1 P2 text fixes ready: zero-cost building detail/hover says `Free`; mute label no longer wraps and seed field gets a full-width row with a full-width New Run button. New free-building regression; twenty-three UI tests/typecheck pass. Commit `4bba00a`.
 - **Sonnet QA pass-1 P1/P2 modal layering fix ready:** fixed-position `#ui` creates a stacking context even without z-index, trapping child modals below the sibling tutorial. In journal mode only, root becomes static; positioned journal children keep their existing viewport bounds. Legacy root reverts automatically. A CSS/computed-style regression checks root lifecycle and tutorial 20 < offer 100 < help 110 < end 120. Please recheck first offer and End Run confirm. Commit `5162c4d`.
