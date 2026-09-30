@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 contract approved `72cc74b`, renderer implementation ready. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
+IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 DONE `f2e40d4` after approved contract `72cc74b`. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -94,7 +94,8 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- **V15 bug 4 ready:** compact one-line future-threshold chips/pinned goal; ResizeObserver places tutorial below the measured stack. Later guidance auto-collapses once; explicit expansion uses the free board area (left of triangle, above deck), avoiding long-note scrolling and detail collisions. Fixed 1280×720 / 1024×640 panel reservations tested pairwise; real observer used in browser. No CSS zoom for layout math (triangle cleanup next). First note remains expanded; user expansion persists. Tutorial/VO text unchanged. Hash recorded after commit.
+- V15 bug 5 ready: triangle has a fixed 232×224 reservation with a 16 px board-edge margin; all six labels sit outside their circles, mixed circles are smaller, and the selected yellow ring remains colored even when its icon is grey. Pure bounds tests cover every circle and label. Six UI tests and typecheck pass. Hash recorded after commit.
+- **V15 bug 4 ready:** compact one-line future-threshold chips/pinned goal; ResizeObserver places tutorial below the measured stack. Later guidance auto-collapses once; explicit expansion uses the free board area (left of triangle, above deck), avoiding long-note scrolling and detail collisions. Fixed 1280×720 / 1024×640 panel reservations tested pairwise; real observer used in browser. No CSS zoom for layout math (triangle cleanup next). First note remains expanded; user expansion persists. Tutorial/VO text unchanged. Commit `2a65fa8`.
 
 - **V15 bug 3 ready:** explicit stacking layers: panels 10, tutorial root 20, toasts/notices 30, offer/confirm 100, help 110, end 120. Fullscreen HUD remains a pass-through container (no stacking context/z-index); border-box sizing is scoped. Panel non-overlap follows in bug 4. Commit `e982b1a`.
 

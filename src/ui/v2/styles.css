@@ -124,16 +124,17 @@
 .j-badge { position:absolute; top:-6px; right:-6px; background:var(--accent); color:#fff; border:1.5px solid var(--ink); border-radius:10px; font-size:11px; font-weight:800; min-width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
 .j-note { position:fixed; z-index:8; background:#fffaf0; border:1.5px solid var(--ink); padding:6px 9px; font-size:12px; box-shadow:2px 3px 0 rgba(46,42,37,.3); pointer-events:none !important; transform:rotate(-.8deg); max-width:240px; }
 
-.j-triangle { position:relative; width:220px; height:200px; flex:none; }
+.j-triangle { position:relative; width:232px; height:224px; flex:none; }
 .j-tri-lines { position:absolute; inset:0; width:100%; height:100%; }
 .j-tri-lines polygon { fill:none; stroke:var(--ink2); stroke-width:1.5; stroke-dasharray:4 4; }
-.j-biome { position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px; border-radius:50%; border:2px solid var(--ink); background:var(--biome, #b9b1a2); cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; font:inherit; color:var(--ink); }
-.j-biome.mixed { width:44px; height:44px; margin:-22px 0 0 -22px; }
+.j-biome { position:absolute; width:48px; height:48px; margin:-24px 0 0 -24px; border-radius:50%; border:2px solid var(--ink); background:var(--biome, #b9b1a2); cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; font:inherit; color:var(--ink); }
+.j-biome.mixed { width:36px; height:36px; margin:-18px 0 0 -18px; }
 .j-biome .icon { width:60%; height:60%; margin:0; }
-.j-biome.grey { filter:grayscale(1); opacity:.55; }
+.j-biome.grey { background:#b9b1a2; }
+.j-biome.grey > .icon { filter:grayscale(1); opacity:.6; }
 .j-biome.selected { box-shadow:0 0 0 4px var(--marker); }
 .j-biome:disabled { cursor:default; }
-.j-biome-name { position:absolute; top:100%; font-size:11px; font-weight:800; white-space:nowrap; color:var(--ink); text-shadow:0 0 3px var(--paper), 0 0 3px var(--paper); }
+.j-biome-name { position:absolute; font-size:12px; font-weight:800; line-height:16px; text-align:center; white-space:nowrap; color:var(--ink); text-shadow:0 0 3px var(--paper), 0 0 3px var(--paper); pointer-events:none; }
 
 /* --- shared bits --- */
 .j-notice { position:fixed; background:var(--bad); color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700; pointer-events:none !important; z-index:30; }
@@ -154,4 +155,4 @@
 .jhud .cards { display:flex; gap:14px; justify-content:center; }
 .jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }
 
-@media (max-width:1150px) { .j-triangle { zoom:.8; } .j-card { width:84px; height:84px; } }
+@media (max-width:1150px) { .j-card { width:84px; height:84px; } }
