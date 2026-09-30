@@ -1,6 +1,6 @@
 # itch.io page copy: Hex Genesis
 
-Paste-ready. Everything in `[CHECK]` or `[CHECK BEFORE PUBLISHING]` needs a decision from you. Written against the code at HEAD `857086a`.
+Paste-ready. Everything in `[CHECK]` or `[CHECK BEFORE PUBLISHING]` needs a decision from you. Written against the code at `main` `a752b06` (journal HUD, v5 economy, audio in the build).
 
 ---
 
@@ -80,8 +80,8 @@ It's a desktop browser game, and it's built for mouse and keyboard.
 ## 3. How to play
 
 1. **Choose a biome.** Each new core comes with two offered biomes: Forest, Desert or Arctic. You can reshuffle the offer once per run.
-2. **Place the core** on a highlighted dead tile. The biome spreads out over the terrain. Wait for the wave to finish before you build.
-3. **Build** on restored tiles. Each has three slots. Pick a building, then click a slot. Every building pays out once when it's placed.
+2. **Place the core:** click the core card in the deck, then a highlighted dead tile. The biome spreads out over the terrain. Wait for the wave to finish before you build.
+3. **Build** on restored tiles. Each has three slots. Pick a biome in the triangle (or click a tile), pick a building card from the deck, then click empty slots. Every building pays out once when it's placed.
 4. **Look for combinations.** Some buildings work better together on the same tile, and some finished tiles pay a bonus next to each other. Discovered combos go into the journal.
 5. **Watch the thresholds.** Each resource target you pass earns another core and another biome offer.
 6. **Reach the last threshold (8 of 8) to win,** even if slots are still empty. If the board runs out of room first, the run is lost.
@@ -90,21 +90,22 @@ It's a desktop browser game, and it's built for mouse and keyboard.
 
 ## 4. Controls
 
-Both HUDs are in the code. Everything below is in both unless it's marked. Click the game once first so it receives keystrokes.
+Click the game once first so it receives keystrokes.
 
-- **Left-click:** select a tile, place a core, or place a building
-- **Shift + click**, or **R** while hovering a tile: repeat your last building
-- **1 / 2:** pick the left / right biome in an offer
+- **Biome triangle** (bottom): click a biome to show its building deck. Forest, Desert and Arctic light up when that land exists or you hold a core of it; the mixed biomes light up once they appear on the board.
+- **Building deck:** click a building card, then click empty slots to keep placing it. Or click an empty slot first, then a card.
+- **Core card** (first card of a Forest, Desert or Arctic deck): click it, then a highlighted tile, to place a held core.
+- **Click a tile** to see its slots and buildings. Demolish from there for half the cost back.
+- **R** over a tile, or **Shift + click:** repeat your last building
 - **Hold Tab**, or click "Slots left": highlight every tile that still has an empty slot
-- **Esc**, or right-click: cancel or deselect
+- **1 / 2**, or click a sphere: pick the left / right biome in a core offer
+- **J**, or the 📖 button: open or close the journal (discovered combos, adjacency log, terrain and zone effects)
+- **Esc**, or right-click: clear the selection; closes the journal, help or menu
+- **? or H:** show or hide the controls help
+- **⚙ menu:** help, sound on/off and volume (remembered in your browser), end the run, or start a new run with an optional seed
 - **Right-drag**, or **Q / E:** rotate the camera
 - **Mouse wheel:** zoom
 - **Middle-drag**, or **W A S D:** pan the camera
-- **? or H:** show or hide the controls help
-- **J:** open or close the journal (journal HUD only)
-- **Audio:** a mute button and volume slider on screen. The setting is remembered in your browser.
-
-`[CHECK BEFORE PUBLISHING]` The default HUD is still the legacy one in `src/ui/hud.ts` (`createHud` = `createLegacyHud`). The journal HUD is reachable with `?ui=journal`, and the legacy HUD with `?ui=legacy`. Until O10's 06:00 go/no-go is settled, decide which controls list to keep. If legacy ships, delete the J line. If the journal ships, describe the building deck and biome triangle (click a building card, then a slot; the core card places cores) and mention the journal. Opus's packaged zip `release/terraform-jam-2026-09-30.zip` is the legacy build.
 
 ---
 
@@ -134,9 +135,9 @@ This game was made for the GenAI Game Jam. AI was used in these parts of product
 
 **Design review:** `[CHECK: the repo doesn't record an AI design review. If you had an AI (which model?) review or stress-test GAME_DESIGN.md, say so here in one or two sentences, or delete this paragraph.]`
 
-**Voice, sound effects and music: planned, not in this build.** `public/audio/` has a full list of the 14 sound cues and the looped music track (with generation prompts), but no audio files are in the repo, and `public/audio/vo/` is empty. The game runs silent. `[CHECK BEFORE PUBLISHING: if you add audio, name the tool, e.g. ElevenLabs for the voice lines (the README plans this), and something for music/SFX. If you don't, remove the audio controls line from Controls and the "audio tools" credit.]`
+**Voice, sound effects and music: ElevenLabs.** The assistant's five voice lines, the 13 sound effects and the looped music track were generated with ElevenLabs before release and ship as MP3 files in the build.
 
-**Nothing is generated while you play.** There's no AI at runtime.
+**Nothing is generated while you play.** There's no AI at runtime and no text-to-speech.
 
 **What I did:** I designed the game (the rules, the biomes, the combo and economy ideas, and the win/lose rule), wrote the specs the agents worked from, playtested the builds, directed the art and UI style (the field-journal look), and made the balance calls. I also decided when a change was needed. The win condition, for example, changed after my own playtest, where the board was covered long before the run ended.
 
@@ -148,10 +149,10 @@ This game was made for the GenAI Game Jam. AI was used in these parts of product
 - **Code:** Claude Opus 5.5 and Claude Sonnet 5.5 (Anthropic, in Claude Code); GPT-6 Astra (OpenAI, in Codex); GPT-6.1 Sol (OpenAI, in Zed)
 - **Producer session:** Claude Opus (Anthropic)
 - **Libraries:** [Three.js](https://threejs.org/) (3D rendering); [Vite](https://vite.dev/) (build) and [Vitest](https://vitest.dev/) (tests) during development. `[CHECK: Three.js is MIT; add its licence text or a link if the jam asks]`
-- **Fonts** (only in the journal HUD), both under the SIL Open Font License 1.1:
+- **Fonts** (journal HUD), both under the SIL Open Font License 1.1:
   - [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand) by Patrick Wagesreiter
   - [Nunito](https://fonts.google.com/specimen/Nunito) by The Nunito Project Authors
-- **Audio tools:** `[CHECK: none in this build; fill in if you add audio]`
+- **Voice, sound effects and music:** generated with [ElevenLabs](https://elevenlabs.io/)
 - **Jam:** GenAI Game Jam `[CHECK: exact jam name]`
 
 ---
@@ -161,7 +162,6 @@ This game was made for the GenAI Game Jam. AI was used in these parts of product
 - **Desktop browsers only.** Keyboard and mouse are needed. There's no mobile or touch support.
 - **Browsers:** `[CHECK: name what you actually tested. The QA notes mention Brave and Safari, and the itch-style iframe test is in the release notes, but nothing in the repo lists a supported set. A current Chrome, Edge or Firefox is the usual claim.]`
 - **Click the game once** before using keys. The browser only sends keys to the game after it has focus. If the page embeds in itch.io, use the fullscreen button for the best view.
-- **Some openings are slow.** The first threshold needs stone only, and on some seeds the starting biome yields little of it (the notes mention seeds 3, 4, 35 and 37). Reshuffling the offer or choosing a stone-friendly biome helps. This is a known, accepted limit.
-- **Tutorial panel:** in the legacy HUD it can stay on its first step until you press Next, and it can cover part of the board (sonnet's QA notes). `[CHECK: recheck on the build you ship]`
-- **Audio:** this build has no sound files, so it's silent. `[CHECK BEFORE PUBLISHING]`
+- **Some openings are slow.** The first threshold needs stone only, and on some seeds the starting biome yields little of it (the notes mention seeds 3, 4, 35 and 37). Reshuffling the offer or choosing a stone-friendly biome helps. This is a known, accepted limit. `[CHECK: these seeds are from the v4 economy; confirm against astra's v5 result]`
+- **Tutorial notes:** the assistant's first line opens in full; later lines arrive collapsed as short notes (they still speak unless sound is off). Voice starts after your first click or key press, because browsers block audio until then.
 - **Screenshots and cover image** aren't captured yet. See section 1.
