@@ -119,3 +119,10 @@ The loop is now playable on the flat stub map (real terrain arrives with astra's
 
 ## S3 — UI polish (P2, only after M3)
 Combo codex styling, end-screen presentation, offer card presentation (biome color/icon), keyboard shortcuts (1/2 pick offer, Esc cancel), tooltip on locked tiles. Cut order: AGENT_TASKS §55.
+
+## S6 — Morning fixes (P1, designer-assigned) — `src/ui/**`
+
+1. **Fix the failing HUD test** `src/ui/hud.test.ts:203` (astra's report): T1 now has a wood target of 0, so the fixture expects `4 / 0`. Derive a positive target from the config (or assert `min(have, need)`) so tuning can't break it again. Make sure the resource bar hides or greys requirements whose target is 0.
+2. **Icons:** sol's icons are in `public/assets/icons/` (wood, stone, water, food and the 6 biomes). Use them in the resource bar, building costs and offer cards, with a text fallback if an icon fails to load.
+3. **Held cores with no legal site:** the economy now awards 9 cores (8 thresholds), so players will often hold cores after every legal site is gone (harmless for the win, §41). When `legalCoreSites(state)` is empty, core chips must show a clear disabled state, e.g. "No legal site left". Clicking one must not enter placement mode with nothing highlighted.
+4. Tests for 1–3. Commit each as `[sonnet] S6: …`, and refresh your status "Current".

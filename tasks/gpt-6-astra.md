@@ -162,3 +162,15 @@ At the top of your status file, write a "**Morning summary**" of at most 15 line
 ## N6 — Stretch, only if time remains
 - `previewPlacement` performance: avoid a full `structuredClone` per call (opus measured ~1 ms). Clone only the touched hex(es) and the resource maps, or compute the preview analytically. Results must stay identical: add a property test comparing old and new over random states.
 - More balance seeds (1–50) to confirm the medians are stable.
+
+---
+
+## N7 — Economy v3: thresholds T7/T8 (P0, designer decision A) — `src/config/economy.ts`, `tests/balance/**`
+
+Read the **"v3 changes"** section at the top of `tasks/ECONOMY_SPEC.md`.
+1. Start from the committed round-4 config. Append **T7 and T8** (steeper than T6, all four resources). Update `config.test.ts` to require **exactly 8** thresholds, non-decreasing per resource.
+2. Extend the balance harness report to T7/T8: placements at T7/T8, fill % at each, wins, and "legal core sites left at the end" per run.
+3. Calibrate on **seeds 1–50** against the v3 targets (priority 4 > 2 > 1 > 3), at most 4 rounds. Log each round in the Balance log and commit it separately (`[astra] N7 round <n>: …`). Starting stock and costs stay frozen. Openings that starve (35, 37) are a known limitation; don't try to fix them.
+4. Update `tests/balance/REPORT.md` and put a short "**v3 result**" block at the top of your status file: wins out of 50, the T1–T8 medians, which targets pass or miss, and which seeds still can't be won and why.
+
+Report failures in other agents' tests to their owners; don't edit their files.

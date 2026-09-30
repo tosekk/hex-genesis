@@ -165,3 +165,18 @@ Only if you can capture from a browser. Otherwise skip and log it.
 
 ## V6 — Morning summary
 At the top of `tasks/status/sol.md`, at most 12 lines: commits with hashes, fps table, the main.ts wiring request for opus, anything the designer should look at first.
+
+---
+
+## V7 — Photo mode for the release kit + open verifications (P2, designer-assigned) — `src/render/**`
+
+1. **Photo mode** so the designer can take itch.io screenshots themselves (V5 couldn't capture). It's active only with `?photo=1`:
+   - **F1–F4** jump to 4 good camera presets (overview 3/4, low dramatic angle, close-up on a filled hex, top-down);
+   - **P** saves a PNG of the 3D canvas at the current size (render a frame, then `toDataURL`, then download);
+   - **Shift+P** saves a 630×500 cover crop.
+
+   Don't hide or edit the HUD (sonnet's); the designer can hide it via devtools if needed. Photo mode must not interfere with normal controls, and number keys 1/2 stay the offer hotkeys.
+2. **Verify what V6 left open,** in the sandbox or dev server: FPS during an active spread wave on 20×14 and 30×20, and a clean console after a full run. Record the numbers in your status.
+3. Update `release-kit/README.md` with how to use photo mode (URL flag, keys, output sizes).
+
+Commit `[sol] V7: …` and refresh your status "Current".

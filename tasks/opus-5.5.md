@@ -117,3 +117,13 @@ Start once `session`, `boardView`, and `hud` are no longer stubs. Iterate as the
 
 - At each task boundary, read all `tasks/status/*.md`. Answer contract requests in "Contract changelog". Prefer **additive** changes (new optional fields or functions). When you change `types.ts`/`contracts.ts`, commit with `[opus] CONTRACT: …` and log it.
 - After the freeze, approve fixes one at a time in your status file.
+
+---
+
+## O6 — Morning integration pass (P0, designer-assigned)
+
+1. **Finish O4 packaging:** `scripts/package.mjs` doesn't exist yet. Implement it and `npm run package` (build → zip with `index.html` at the root → `release/`). Verify the zip in `npm run preview`. Update `README.md` with controls: camera, **R / Shift+click** quick build, **1/2** offers, **Esc**, **? / H** help, and audio mute.
+2. **Wire audio:** sol's V3 module. In `src/main.ts`, `import { createAudio } from './audio/audio'` and call `createAudio(document.getElementById('ui')!, session)` before `newRun`, disposing it on teardown (see sol's status Morning summary). It must stay silent with no errors while the MP3s are missing.
+3. **Independent review (O5)** of astra's D4 `0b7f609` and N4 `0642114` (map variety, plateau drainage, area-scaled clusters), and of the N6 preview optimization `4eacde4` (a pure-function speedup; check equivalence). Log PASS/FAIL in your Integration log.
+4. **After astra commits N7 (8 thresholds):** re-run autoplay and pacing, then **play one full run in the browser to a win** on a seed astra recommends. Route any bugs to their owners.
+5. Log everything in your status file and refresh "Current".

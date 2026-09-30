@@ -1,3 +1,21 @@
+# Economy Spec v3 — designer-approved values + tuning guardrails
+
+## v3 changes (2026-09-30 11:35) — these override the v2 sections below
+
+The v2 overnight calibration (astra, `72ced76`, round 4) is the **baseline**. Only one designer decision changes it:
+
+- **Decision A (approved): 8 thresholds instead of 6** (9 cores in total). On 9 of 50 seeds the combo bot filled every living slot while 1–2 legal core sites remained and no cores were left, so the run could never be won (§41). Surplus cores are harmless: once no legal core site remains, held cores are ignored for the win (§41). T7 and T8 exist to cover those leftover sites.
+- **Decision B (declined):** starting stock and building costs stay **frozen**. T1 stays stone-only (first core after ~2 placements), which is accepted. Openings that starve (seeds 35, 37) remain a known limitation.
+
+**Guardrail change:** thresholds = **exactly 8 entries** (was 6). T1–T6 may be re-tuned, but keep the v2-round-4 pacing unless T7/T8 require a change. All other guardrails are unchanged.
+
+**Balance targets v3** (priority order unchanged: 4 > 2 > 1 > 3):
+- **Target 4 (primary), now measured on seeds 1–50:** the combo bot **wins in ≥ 45/50**, reaches T6 in ≥ 48/50, and there are zero soft-lock declarations.
+- **Target 1 (pacing):** T1–T6 as in v2 (7/22/45/90/160/270, T1 exempt). Add T7 at **~360** and T8 at **~450** cumulative combo-bot placements (±20%). Both must arrive **before** the combo bot fills the board in the median run.
+- **Targets 2 and 3:** as in v2, measured on seeds 1–50. Report honestly if they're unmeasurable (spam never reaching T6 counts as passing target 3).
+
+---
+
 # Economy Spec v2 — designer-approved starting values + tuning guardrails
 
 **History:** v1 (2026-09-30 early) → **v2** (2026-09-30 04:40). v1 playtest and pacing: players could win progression by spamming the highest-yield building, combos barely mattered, and all cores arrived at about 32% board fill.
