@@ -104,3 +104,5 @@ details.slot[open] > summary::before { content:'▾ '; }
 .b-cost .c { display:inline-flex; align-items:center; gap:1px; }
 .b-cost .icon { width:16px; height:16px; margin-right:1px; }
 .card-icon .icon { width:48px; height:48px; margin:0; font-size:42px; }
+.chip.no-site { opacity:.6; background:var(--paper); }
+.chip-note { display:block; font-size:10px; font-weight:700; color:var(--bad); }

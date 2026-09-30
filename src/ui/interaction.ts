@@ -78,7 +78,8 @@ export function createInteraction(session: GameSession, board: BoardView): Inter
 
   const canPlaceCore = () => {
     const s = session.state;
-    return s.status === 'playing' && !s.pendingOffer && !s.activeSpread && s.coreStack.length > 0;
+    return s.status === 'playing' && !s.pendingOffer && !s.activeSpread && s.coreStack.length > 0
+      && legalCoreSites(s).length > 0; // nothing to highlight → never enter placement mode
   };
 
   const setMode = (m: Mode) => {

@@ -298,3 +298,33 @@ describe('icons', () => {
     expect(cost.classList.contains('short')).toBe(true);
   });
 });
+
+describe('held cores with no legal site', () => {
+  it('chips are disabled with a clear label and never enter placement mode', () => {
+    const f = fakes({ hex: () => ({ biome: 'forest' }) }); // every tile terraformed → no legal site
+    f.state.coreStack.push('desert', 'arctic');
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'offerResolved', biome: 'arctic' });
+    const chips = root.querySelectorAll<HTMLButtonElement>('.core-stack .chip');
+    expect(chips.length).toBe(2);
+    for (const c of chips) {
+      expect(c.disabled).toBe(true);
+      expect(c.classList.contains('no-site')).toBe(true);
+      expect(c.textContent).toContain('No legal site left');
+    }
+    chips[0].click();
+    expect(f.board.setHighlights.mock.calls.filter((c) => c[0] === 'legalCore' && (c[1] as number[]).length > 0)).toHaveLength(0);
+    f.click(5);
+    expect(f.session.placeCore).not.toHaveBeenCalled();
+  });
+
+  it('with legal sites the chips stay enabled and unlabelled', () => {
+    const f = fakes();
+    f.state.coreStack.push('desert');
+    createHud(root, f.session, f.board);
+    f.emit({ type: 'offerResolved', biome: 'desert' });
+    const chip = root.querySelector<HTMLButtonElement>('.core-stack .chip')!;
+    expect(chip.disabled).toBe(false);
+    expect(chip.textContent).not.toContain('No legal site');
+  });
+});
