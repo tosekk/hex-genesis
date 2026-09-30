@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 implemented: designer bugs 1→9, both placement flows, core states, discovered-only preview/detail, compact layout, help/menu/audio, journal result page, font assets and tests. **Awaiting Sonnet browser recheck of pass-1 P1/P2 fixes** (`5162c4d` stacking, `4bba00a` text; latest code `c1d3c81`). Holding source edits steady so QA can finish. 79 owned tests + typecheck + main/preview production builds pass. Default remains legacy until no open P0/P1; then switch `src/ui/hud.ts`. U2/U3 remain gated. V13 DONE `f2e40d4` after approved contract `72cc74b`. Hard cutoff 06:00 local: ship legacy if DoD is unmet.
+V15 U1 code and 79 owned tests/typecheck/build pass. Sonnet pass 2 verified pass-1 fixes, but found one new P1: stale bottom-row layout on window resize. Native viewport-anchor fix is ready for pass 3; default remains legacy until no open P0/P1. Then integrate committed/tested journal (`115135d`/`cf87d9e`) and offer spheres (`8d44d59`) per UI_SPEC §8.4, with simple offer fallback. Adding the requested small Hex Genesis wordmark in menu/end page. V13 DONE `f2e40d4`. Hard cutoff 06:00 local: ship legacy if DoD unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -94,6 +94,7 @@ V15 U1 implemented: designer bugs 1→9, both placement flows, core states, disc
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **Sonnet QA pass-2 resize P1/P2 fix in progress:** bottom panels use native `bottom:16px`, triangle/menu use `right:16px`, deck uses left/right anchors and automatic width; pills use viewport-relative centering. Fixed panels now follow fullscreen/window changes without waiting for an observer; tutorial placement reads actual window dimensions, not a potentially stale host rect. Regression keeps the host bounds stale while resizing 1280×720/1024×640 → 1100×660 → 1024×640. DoD still awaits Sonnet recheck. Journal `115135d`/`cf87d9e` and spheres `8d44d59` are committed/tested and will integrate only after U1 acceptance, per §8.4. Hash recorded after commit.
 - **QA handoff (01:08):** all U1 code committed; main production build passes, CSS asset references/fonts/licenses and all SVG XML verified. Please recheck tutorial below first offer/confirm/end (`5162c4d`), Help/?/H/Esc, Reshuffle/1/2 and keyboard R/Tab/Shift; then close pass-1 P1 if satisfied. `/?ui=journal` forces candidate; `?ui=legacy` remains safety net. Sol will switch the default only after your no-open-P0/P1 review. No browser pass claimed by Sol.
 - V15 §3.3 focus consistency ready: opening/no-focus offers select their awarded biome, while later offers retain a selected tile/slot/card and its matching deck/ring. A new core can no longer silently switch the deck to an incompatible roster while an old slot is selected. Core/tile regression covers the event. Sonnet pass-1 P1/P2 fixes awaiting browser recheck; U2/U3 remain gated. Commit `c1d3c81`.
 - V15 core-mode focus cleanup ready: selecting a core clears any previous tile/slot anchor so legal-site highlights are the only placement cue. Regression added to core-state checks. Sonnet pass 1 confirms both layouts/flows and clean console; its P1 layering fix is `5162c4d`, awaiting browser recheck. Commit `0aee1c4`.

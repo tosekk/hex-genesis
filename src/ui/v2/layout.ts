@@ -27,10 +27,15 @@ export function installJournalLayout(host: HTMLElement, stack: HTMLElement): () 
   const rect = (selector: string, value: PanelRect) => {
     const node = host.querySelector<HTMLElement>(selector); if (!node) return;
     Object.assign(node.style, { position: 'fixed', left: `${value.x}px`, top: `${value.y}px`, right: 'auto', bottom: 'auto', width: `${value.width}px`, height: `${value.height}px` });
+    // Native anchors remain responsive even before a ResizeObserver/event callback runs.
+    if (['.j-detail', '.j-deck', '.j-triangle'].includes(selector)) { node.style.top = 'auto'; node.style.bottom = '16px'; }
+    if (selector === '.j-triangle' || selector === '.j-topright') { node.style.left = 'auto'; node.style.right = '16px'; }
+    if (selector === '.j-deck') { node.style.right = '260px'; node.style.width = 'auto'; }
+    if (selector === '.j-top') node.style.left = 'calc(50vw - 148px)';
   };
   let observedNote: HTMLElement | null = null, firstNoteInBoard = false;
   function update(): void {
-    const bounds = host.getBoundingClientRect(), w = bounds.width || window.innerWidth, h = bounds.height || window.innerHeight;
+    const w = window.innerWidth, h = window.innerHeight;
     const note = tutorial?.querySelector<HTMLElement>('.assistant-panel');
     if (note !== observedNote) { if (observedNote) resize.unobserve(observedNote); observedNote = note ?? null; if (note) resize.observe(note); }
     const expanded = note?.dataset.collapsed === 'false', first = note?.dataset.line === 'biomes';
