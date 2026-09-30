@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 awaits Opus CONTRACT. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
+IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 contract approved `72cc74b`, renderer implementation ready. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -52,7 +52,7 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 
 ## Blockers
 <!-- what, waiting on whom -->
-- V13: `src/core/contracts.ts` still lacks `setSlotHighlight`; Opus's Current says PAUSED (usage limit), O9 not started. Waiting for the required `[opus] CONTRACT` commit; no renderer API workaround or edits to core.
+- V13 dependency RESOLVED: Opus CONTRACT `72cc74b` adds the optional slot highlighter; implemented in renderer.
 - V14 manual layout review: Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
@@ -79,7 +79,7 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
-- V13 / UI_SPEC §6 — awaiting Opus's committed additive optional `BoardView` method in `src/core/contracts.ts`:
+- V13 / UI_SPEC §6 — APPROVED `72cc74b`, additive optional `BoardView` method in `src/core/contracts.ts`:
   ```ts
   setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void;
   ```
@@ -94,7 +94,9 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- **V15 bug 2 ready:** centered journal-only help with backdrop, close/focus handling and Esc/?/H; no automatic opening, hint shown after offer. No shared legacy help edits. Three journal tests/typecheck pass. **QA entry point: `/src/ui/v2/preview.html?seed=1`** — real board/session/bindBoard, journal HUD, tutorial, audio with controls false; DEV `window.__session` hook. Default still legacy. Hash recorded after commit.
+- **V13 ready:** yellow `#F5D547` slot ring with dark backing for every biome, real 3D anchor geometry follows visible flip/lift/camera; null/new board clears, group teardown disposes. Approved contract `72cc74b`; 35 render tests/typecheck pass (2 new placement/flip/clear regressions). HUD calls the optional method directly. Hash recorded after commit.
+
+- **V15 bug 2 ready:** centered journal-only help with backdrop, close/focus handling and Esc/?/H; no automatic opening, hint shown after offer. No shared legacy help edits. Three journal tests/typecheck pass. **QA entry point: `/src/ui/v2/preview.html?seed=1`** — real board/session/bindBoard, journal HUD, tutorial, audio with controls false; DEV `window.__session` hook. Default still legacy. Commit `521d49d`.
 
 - **V15 bug 1 ready for Sonnet QA:** opening offers have their own fullscreen dimmed modal geometry, hide help when shown, and recover pending offers when mounted after newRun. Two real-session happy-dom tests cover both mount orders, 1/2 choice and Reshuffle; typecheck passes. `createHud` remains legacy while U1 is under repair; preview with `createJournalHud`. Commit `24f2730`.
 

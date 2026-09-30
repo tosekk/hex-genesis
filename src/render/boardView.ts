@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { BoardPick, BoardView, HighlightStyle, PointerKind } from '../core/contracts';
-import type { GameConfig, GameState, Hex, HexId } from '../core/types';
+import type { GameConfig, GameState, Hex, HexId, SlotIndex } from '../core/types';
 import { hexToWorld } from '../core/hex';
 import { disposeGroup, Instances } from './instances';
 import { HEX_SIZE, LAYER_HEIGHT, pickSlot, topHeight } from './layout';
@@ -17,6 +17,7 @@ import { boardBounds, boundedPan, framingFor, START_DIRECTION, type BoardBounds 
 import { trackRenderer } from './diagnostics';
 import { BoardEffects } from './effects';
 import { installPhotoMode } from './photo';
+import { SlotHighlight } from './slotHighlight';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -52,6 +53,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let cores: Cores | null = null;
   let decorations: Decorations | null = null;
   let effects: BoardEffects | null = null;
+  let slotHighlight: SlotHighlight | null = null;
+  let slotPick: { hexId: HexId; slot: SlotIndex } | null = null;
   let framingDistance = 0;
   let bounds: BoardBounds | null = null;
   const reveals = new Map<HexId, { hex: Hex; elapsed: number; swapped: boolean }>();
@@ -77,6 +80,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     decorations?.refresh(hex, p.x, p.z);
     decorations?.refreshFalls(current, id);
     effects?.refresh(hex); renderer.shadowMap.needsUpdate = true;
+    if (slotPick?.hexId === id) slotHighlight?.set(hex, slotPick.slot);
   }
   function playReveal(current: Readonly<GameState>, ids: HexId[]): void {
     for (const id of ids) {
@@ -102,6 +106,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     scene.remove(board); disposeGroup(board);
     board = new THREE.Group(); scene.add(board); state = current;
     positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
+    slotPick = null; slotHighlight = new SlotHighlight(board);
     const count = current.hexes.length;
     const layers = new Instances(board, new THREE.CylinderGeometry(0.97, 0.97, LAYER_HEIGHT - 0.025, 6),
       LAYER_COLOR, current.hexes.reduce((n, h) => n + h.elevation + 1, 0), { castShadow: true, receiveShadow: true });
@@ -211,6 +216,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       const tween = sampleReveal(reveal.elapsed, config.animation.tileFlipMs);
       const p = positions.get(id)!;
       tops!.set(id, p.x, topHeight(reveal.hex.elevation) - 0.025 + tween.lift, p.z, 1, 1, 1, tween.angle);
+      if (slotPick?.hexId === id) slotHighlight?.set(reveal.hex, slotPick.slot, tween.angle, tween.lift);
       if (tween.showTarget && !reveal.swapped) {
         reveal.swapped = true;
         tops!.color(id, tileColor(reveal.hex.biome));
@@ -243,6 +249,12 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   resize();
   return {
     setBoard, refreshHex, setHighlights, playReveal,
+    setSlotHighlight(pick) {
+      slotPick = pick && state?.hexes[pick.hexId] && [0, 1, 2].includes(pick.slot) ? { ...pick } : null;
+      const reveal = slotPick ? reveals.get(slotPick.hexId) : null;
+      const tween = reveal ? sampleReveal(reveal.elapsed, config.animation.tileFlipMs) : null;
+      slotHighlight?.set(slotPick && state ? state.hexes[slotPick.hexId] : null, slotPick?.slot ?? null, tween?.angle ?? 0, tween?.lift ?? 0);
+    },
     showPayouts(current, events) { payouts.show(current, events); },
     setCores(ids) { if (state) { cores?.set(ids, state.hexes, positions); effects?.setCores(ids, state); renderer.shadowMap.needsUpdate = true; } },
     onPointer(cb) { listeners.add(cb); return () => { listeners.delete(cb); }; },
