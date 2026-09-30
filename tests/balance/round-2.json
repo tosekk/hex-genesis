@@ -1,0 +1,3575 @@
+{
+  "label": "N3 round 2 — opening producer yields",
+  "config": {
+    "resources": [
+      "wood",
+      "stone",
+      "water",
+      "food"
+    ],
+    "startingResources": {
+      "wood": 6,
+      "stone": 6
+    },
+    "buildings": {
+      "lumber_camp": {
+        "id": "lumber_camp",
+        "name": "Lumber Camp",
+        "cost": {
+          "wood": 2
+        },
+        "baseYield": {
+          "wood": 5
+        }
+      },
+      "hillside_mine": {
+        "id": "hillside_mine",
+        "name": "Hillside Mine",
+        "cost": {
+          "wood": 2
+        },
+        "baseYield": {
+          "stone": 2
+        }
+      },
+      "sawmill": {
+        "id": "sawmill",
+        "name": "Sawmill",
+        "cost": {
+          "wood": 2,
+          "stone": 2
+        },
+        "baseYield": {
+          "wood": 6
+        }
+      },
+      "gatherers_hut": {
+        "id": "gatherers_hut",
+        "name": "Gatherer's Hut",
+        "cost": {
+          "wood": 2
+        },
+        "baseYield": {
+          "food": 2,
+          "wood": 1
+        }
+      },
+      "farm": {
+        "id": "farm",
+        "name": "Farm",
+        "cost": {
+          "wood": 3,
+          "stone": 1
+        },
+        "baseYield": {
+          "food": 4
+        }
+      },
+      "quarry": {
+        "id": "quarry",
+        "name": "Quarry",
+        "cost": {
+          "stone": 2
+        },
+        "baseYield": {
+          "stone": 4
+        }
+      },
+      "palm_grove": {
+        "id": "palm_grove",
+        "name": "Palm Grove",
+        "cost": {
+          "stone": 2
+        },
+        "baseYield": {
+          "wood": 4
+        }
+      },
+      "stonemason": {
+        "id": "stonemason",
+        "name": "Stonemason",
+        "cost": {
+          "wood": 2,
+          "stone": 2
+        },
+        "baseYield": {
+          "stone": 5
+        }
+      },
+      "oasis_well": {
+        "id": "oasis_well",
+        "name": "Oasis Well",
+        "cost": {
+          "stone": 3
+        },
+        "baseYield": {
+          "water": 3,
+          "stone": 1
+        }
+      },
+      "glass_kiln": {
+        "id": "glass_kiln",
+        "name": "Glass Kiln",
+        "cost": {
+          "stone": 4,
+          "water": 2
+        },
+        "baseYield": {
+          "stone": 3,
+          "water": 3
+        }
+      },
+      "driftwood_camp": {
+        "id": "driftwood_camp",
+        "name": "Driftwood Camp",
+        "cost": {
+          "stone": 2
+        },
+        "baseYield": {
+          "wood": 4
+        }
+      },
+      "scree_quarry": {
+        "id": "scree_quarry",
+        "name": "Scree Quarry",
+        "cost": {
+          "wood": 2
+        },
+        "baseYield": {
+          "stone": 4
+        }
+      },
+      "ice_drill": {
+        "id": "ice_drill",
+        "name": "Ice Drill",
+        "cost": {
+          "wood": 1,
+          "stone": 1
+        },
+        "baseYield": {
+          "water": 4
+        }
+      },
+      "glacier_pump": {
+        "id": "glacier_pump",
+        "name": "Glacier Pump",
+        "cost": {
+          "wood": 2,
+          "stone": 2
+        },
+        "baseYield": {
+          "water": 4
+        }
+      },
+      "ice_fishery": {
+        "id": "ice_fishery",
+        "name": "Ice Fishery",
+        "cost": {
+          "wood": 2,
+          "stone": 1
+        },
+        "baseYield": {
+          "food": 2,
+          "water": 1
+        }
+      },
+      "grain_fields": {
+        "id": "grain_fields",
+        "name": "Grain Fields",
+        "cost": {
+          "wood": 2,
+          "stone": 1
+        },
+        "baseYield": {
+          "food": 4
+        }
+      },
+      "windmill": {
+        "id": "windmill",
+        "name": "Windmill",
+        "cost": {
+          "wood": 3,
+          "stone": 1
+        },
+        "baseYield": {
+          "food": 3,
+          "stone": 2
+        }
+      },
+      "caravanserai": {
+        "id": "caravanserai",
+        "name": "Caravanserai",
+        "cost": {
+          "wood": 2,
+          "stone": 2,
+          "food": 1
+        },
+        "baseYield": {
+          "wood": 3,
+          "stone": 3
+        }
+      },
+      "trapper_lodge": {
+        "id": "trapper_lodge",
+        "name": "Trapper Lodge",
+        "cost": {
+          "wood": 2
+        },
+        "baseYield": {
+          "food": 3,
+          "wood": 1
+        }
+      },
+      "resin_works": {
+        "id": "resin_works",
+        "name": "Resin Works",
+        "cost": {
+          "stone": 2,
+          "water": 1
+        },
+        "baseYield": {
+          "wood": 5
+        }
+      },
+      "hot_spring": {
+        "id": "hot_spring",
+        "name": "Hot Spring",
+        "cost": {
+          "stone": 3
+        },
+        "baseYield": {
+          "water": 3,
+          "food": 2
+        }
+      },
+      "lichen_farm": {
+        "id": "lichen_farm",
+        "name": "Lichen Farm",
+        "cost": {
+          "stone": 2,
+          "water": 1
+        },
+        "baseYield": {
+          "food": 4
+        }
+      },
+      "salt_mine": {
+        "id": "salt_mine",
+        "name": "Salt Mine",
+        "cost": {
+          "wood": 3
+        },
+        "baseYield": {
+          "stone": 4,
+          "food": 1
+        }
+      },
+      "frost_kiln": {
+        "id": "frost_kiln",
+        "name": "Frost Kiln",
+        "cost": {
+          "wood": 2,
+          "stone": 2
+        },
+        "baseYield": {
+          "stone": 2,
+          "water": 3
+        }
+      }
+    },
+    "rosters": {
+      "forest": [
+        "lumber_camp",
+        "hillside_mine",
+        "sawmill",
+        "gatherers_hut",
+        "farm"
+      ],
+      "desert": [
+        "quarry",
+        "palm_grove",
+        "stonemason",
+        "oasis_well",
+        "glass_kiln"
+      ],
+      "arctic": [
+        "driftwood_camp",
+        "scree_quarry",
+        "ice_drill",
+        "glacier_pump",
+        "ice_fishery"
+      ],
+      "steppe": [
+        "lumber_camp",
+        "sawmill",
+        "farm",
+        "quarry",
+        "stonemason",
+        "oasis_well",
+        "grain_fields",
+        "windmill",
+        "caravanserai"
+      ],
+      "taiga": [
+        "lumber_camp",
+        "sawmill",
+        "gatherers_hut",
+        "ice_drill",
+        "glacier_pump",
+        "scree_quarry",
+        "trapper_lodge",
+        "resin_works",
+        "hot_spring"
+      ],
+      "polarDesert": [
+        "quarry",
+        "stonemason",
+        "oasis_well",
+        "ice_drill",
+        "glacier_pump",
+        "driftwood_camp",
+        "lichen_farm",
+        "salt_mine",
+        "frost_kiln"
+      ]
+    },
+    "combos": [
+      {
+        "id": "timber_line",
+        "name": "Timber Line",
+        "buildings": [
+          "lumber_camp",
+          "sawmill"
+        ],
+        "amount": {
+          "wood": 5
+        }
+      },
+      {
+        "id": "homestead",
+        "name": "Homestead",
+        "buildings": [
+          "sawmill",
+          "farm"
+        ],
+        "amount": {
+          "wood": 3,
+          "food": 3
+        }
+      },
+      {
+        "id": "forest_camp",
+        "name": "Forest Camp",
+        "buildings": [
+          "lumber_camp",
+          "gatherers_hut"
+        ],
+        "amount": {
+          "wood": 3,
+          "food": 3
+        }
+      },
+      {
+        "id": "woodland_village",
+        "name": "Woodland Village",
+        "buildings": [
+          "lumber_camp",
+          "sawmill",
+          "farm"
+        ],
+        "amount": {
+          "wood": 7,
+          "food": 6
+        }
+      },
+      {
+        "id": "cut_stone",
+        "name": "Cut Stone",
+        "buildings": [
+          "quarry",
+          "stonemason"
+        ],
+        "amount": {
+          "stone": 5
+        }
+      },
+      {
+        "id": "oasis_town",
+        "name": "Oasis Town",
+        "buildings": [
+          "oasis_well",
+          "palm_grove"
+        ],
+        "amount": {
+          "water": 3,
+          "wood": 3
+        }
+      },
+      {
+        "id": "desert_outpost",
+        "name": "Desert Outpost",
+        "buildings": [
+          "quarry",
+          "palm_grove"
+        ],
+        "amount": {
+          "stone": 3,
+          "wood": 2
+        }
+      },
+      {
+        "id": "sun_citadel",
+        "name": "Sun Citadel",
+        "buildings": [
+          "quarry",
+          "stonemason",
+          "glass_kiln"
+        ],
+        "amount": {
+          "stone": 8,
+          "water": 5
+        }
+      },
+      {
+        "id": "ice_mine",
+        "name": "Ice Mine",
+        "buildings": [
+          "ice_drill",
+          "scree_quarry"
+        ],
+        "amount": {
+          "water": 3,
+          "stone": 3
+        }
+      },
+      {
+        "id": "harbor",
+        "name": "Harbor",
+        "buildings": [
+          "ice_fishery",
+          "ice_drill"
+        ],
+        "amount": {
+          "food": 3,
+          "water": 3
+        }
+      },
+      {
+        "id": "frontier_outpost",
+        "name": "Frontier Outpost",
+        "buildings": [
+          "driftwood_camp",
+          "scree_quarry"
+        ],
+        "amount": {
+          "wood": 3,
+          "stone": 3
+        }
+      },
+      {
+        "id": "polar_base",
+        "name": "Polar Base",
+        "buildings": [
+          "ice_drill",
+          "glacier_pump",
+          "ice_fishery"
+        ],
+        "amount": {
+          "water": 8,
+          "food": 4
+        }
+      },
+      {
+        "id": "bread_road",
+        "name": "Bread Road",
+        "buildings": [
+          "grain_fields",
+          "windmill"
+        ],
+        "amount": {
+          "food": 6
+        }
+      },
+      {
+        "id": "frontier_farm",
+        "name": "Frontier Farm",
+        "buildings": [
+          "farm",
+          "grain_fields"
+        ],
+        "amount": {
+          "food": 4,
+          "wood": 2
+        }
+      },
+      {
+        "id": "market_town",
+        "name": "Market Town",
+        "buildings": [
+          "caravanserai",
+          "sawmill",
+          "quarry"
+        ],
+        "amount": {
+          "wood": 5,
+          "stone": 5,
+          "food": 4
+        }
+      },
+      {
+        "id": "fur_trade",
+        "name": "Fur Trade",
+        "buildings": [
+          "trapper_lodge",
+          "gatherers_hut"
+        ],
+        "amount": {
+          "food": 6
+        }
+      },
+      {
+        "id": "resin_mill",
+        "name": "Resin Mill",
+        "buildings": [
+          "resin_works",
+          "sawmill"
+        ],
+        "amount": {
+          "wood": 6
+        }
+      },
+      {
+        "id": "spa_village",
+        "name": "Spa Village",
+        "buildings": [
+          "hot_spring",
+          "ice_drill",
+          "gatherers_hut"
+        ],
+        "amount": {
+          "water": 6,
+          "food": 7
+        }
+      },
+      {
+        "id": "salt_cure",
+        "name": "Salt Cure",
+        "buildings": [
+          "salt_mine",
+          "lichen_farm"
+        ],
+        "amount": {
+          "food": 4,
+          "stone": 2
+        }
+      },
+      {
+        "id": "frost_glass",
+        "name": "Frost Glass",
+        "buildings": [
+          "frost_kiln",
+          "oasis_well"
+        ],
+        "amount": {
+          "water": 4,
+          "stone": 2
+        }
+      },
+      {
+        "id": "lichen_terraces",
+        "name": "Lichen Terraces",
+        "buildings": [
+          "lichen_farm",
+          "oasis_well",
+          "frost_kiln"
+        ],
+        "amount": {
+          "food": 7,
+          "water": 6
+        }
+      }
+    ],
+    "terrainBonuses": [
+      {
+        "adjacentTerrain": [
+          "mountain"
+        ],
+        "buildings": [
+          "hillside_mine",
+          "quarry",
+          "scree_quarry",
+          "salt_mine"
+        ],
+        "bonus": {
+          "stone": 2
+        }
+      },
+      {
+        "adjacentTerrain": [
+          "riverbed",
+          "basin"
+        ],
+        "buildings": [
+          "oasis_well",
+          "ice_drill",
+          "glacier_pump",
+          "hot_spring"
+        ],
+        "bonus": {
+          "water": 2
+        }
+      },
+      {
+        "adjacentTerrain": [
+          "riverbed",
+          "basin"
+        ],
+        "buildings": [
+          "farm",
+          "grain_fields",
+          "lichen_farm",
+          "ice_fishery"
+        ],
+        "bonus": {
+          "food": 1
+        }
+      },
+      {
+        "adjacentTerrain": [
+          "woods"
+        ],
+        "buildings": [
+          "lumber_camp",
+          "sawmill",
+          "driftwood_camp",
+          "resin_works"
+        ],
+        "bonus": {
+          "wood": 1
+        }
+      },
+      {
+        "adjacentTerrain": [
+          "marsh"
+        ],
+        "buildings": "any",
+        "bonus": {
+          "food": 1
+        }
+      }
+    ],
+    "zoneModifiers": {
+      "steppe": [
+        {
+          "buildings": [
+            "grain_fields"
+          ],
+          "delta": {
+            "food": 1
+          }
+        },
+        {
+          "buildings": [
+            "sawmill"
+          ],
+          "delta": {
+            "wood": -1
+          }
+        }
+      ],
+      "taiga": [
+        {
+          "buildings": [
+            "lumber_camp"
+          ],
+          "delta": {
+            "wood": 1
+          }
+        },
+        {
+          "buildings": [
+            "ice_drill"
+          ],
+          "delta": {
+            "water": -1
+          }
+        }
+      ],
+      "polarDesert": [
+        {
+          "buildings": [
+            "salt_mine"
+          ],
+          "delta": {
+            "stone": 1
+          }
+        },
+        {
+          "buildings": [
+            "oasis_well"
+          ],
+          "delta": {
+            "water": -1
+          }
+        }
+      ]
+    },
+    "adjacencyAmount": {
+      "wood": 2,
+      "stone": 2,
+      "water": 2,
+      "food": 2
+    },
+    "thresholds": [
+      {
+        "wood": 7,
+        "stone": 7
+      },
+      {
+        "wood": 28,
+        "stone": 23
+      },
+      {
+        "wood": 76,
+        "stone": 64,
+        "water": 26
+      },
+      {
+        "wood": 240,
+        "stone": 200,
+        "water": 112,
+        "food": 88
+      },
+      {
+        "wood": 320,
+        "stone": 270,
+        "water": 150,
+        "food": 120
+      },
+      {
+        "wood": 650,
+        "stone": 550,
+        "water": 310,
+        "food": 255
+      }
+    ],
+    "demolishRefundRatio": 0.5,
+    "reshufflesPerRun": 1,
+    "spread": {
+      "poolRadius": 4,
+      "costUnit": 4,
+      "uphillPerLevel": 4,
+      "downhillPerLevel": 2,
+      "minStepCost": 1,
+      "naturalMultiplier": 2,
+      "conversionMultiplier": 0.5,
+      "maxConversionDepth": 2,
+      "minCoreDistance": 6
+    },
+    "map": {
+      "cols": 20,
+      "rows": 14,
+      "levels": 5,
+      "params": {
+        "noiseSpacing": 5,
+        "mountainClustersMin": 1,
+        "mountainClustersMax": 4,
+        "mountainSizeMin": 3,
+        "mountainSizeMax": 10,
+        "mountainRadius": 2,
+        "mountainInset": 3,
+        "mountainSeparation": 7,
+        "hillShareMin": 150,
+        "hillShareMax": 250,
+        "riverPlateauSteps": 8,
+        "riverSourceMinElevation": 1,
+        "riverSourceChance": 70,
+        "basinChance": 50,
+        "woodsChance": 70,
+        "woodsMidBonus": 60,
+        "marshChance": 20,
+        "marshLowBonus": 30,
+        "marshWaterBonus": 100
+      }
+    },
+    "animation": {
+      "spreadMaxMs": 5000,
+      "tileFlipMs": 350
+    }
+  },
+  "elapsedMs": 76782.63991700001,
+  "runs": [
+    {
+      "seed": 1,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 76,
+      "actions": 79,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 235,
+        "water": 281,
+        "food": 15
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 1,
+        "water": 227,
+        "food": 15
+      },
+      "livingSlots": 189,
+      "buildings": {
+        "quarry": 15,
+        "oasis_well": 34,
+        "glass_kiln": 27
+      },
+      "legalSitesRemaining": 151,
+      "heldCores": 0,
+      "emptySlots": 113
+    },
+    {
+      "seed": 1,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 633,
+      "actions": 654,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 5,
+          "fill": 0.026455026455026454,
+          "lifetime": {
+            "stone": 36,
+            "water": 10,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 12,
+          "fill": 0.03418803418803419,
+          "lifetime": {
+            "stone": 41,
+            "water": 60,
+            "wood": 30
+          }
+        },
+        {
+          "placements": 32,
+          "fill": 0.0642570281124498,
+          "lifetime": {
+            "stone": 158,
+            "water": 116,
+            "wood": 78
+          }
+        },
+        {
+          "placements": 75,
+          "fill": 0.12626262626262627,
+          "lifetime": {
+            "stone": 334,
+            "water": 180,
+            "wood": 280,
+            "food": 89
+          }
+        },
+        {
+          "placements": 93,
+          "fill": 0.15196078431372548,
+          "lifetime": {
+            "stone": 404,
+            "water": 218,
+            "wood": 382,
+            "food": 120
+          }
+        },
+        {
+          "placements": 174,
+          "fill": 0.2761904761904762,
+          "lifetime": {
+            "stone": 550,
+            "water": 363,
+            "wood": 956,
+            "food": 436
+          }
+        }
+      ],
+      "winPlacements": 633,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2165,
+        "water": 1495,
+        "wood": 3834,
+        "food": 1634
+      },
+      "resources": {
+        "wood": 2968,
+        "stone": 1244,
+        "water": 1378,
+        "food": 1601
+      },
+      "livingSlots": 633,
+      "buildings": {
+        "quarry": 15,
+        "stonemason": 11,
+        "oasis_well": 32,
+        "palm_grove": 16,
+        "scree_quarry": 71,
+        "driftwood_camp": 82,
+        "glass_kiln": 58,
+        "ice_drill": 30,
+        "sawmill": 83,
+        "lumber_camp": 106,
+        "farm": 60,
+        "hot_spring": 9,
+        "caravanserai": 33,
+        "hillside_mine": 24,
+        "salt_mine": 2,
+        "lichen_farm": 1
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 2,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 123,
+      "actions": 129,
+      "cores": 2,
+      "thresholds": [
+        {
+          "placements": 8,
+          "fill": 0.04040404040404041,
+          "lifetime": {
+            "stone": 46,
+            "wood": 10,
+            "water": 6,
+            "food": 1
+          }
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 405,
+        "wood": 10,
+        "water": 383,
+        "food": 20
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 1,
+        "water": 225,
+        "food": 20
+      },
+      "livingSlots": 360,
+      "buildings": {
+        "scree_quarry": 7,
+        "driftwood_camp": 2,
+        "ice_drill": 2,
+        "oasis_well": 22,
+        "quarry": 11,
+        "glass_kiln": 79
+      },
+      "legalSitesRemaining": 91,
+      "heldCores": 0,
+      "emptySlots": 237
+    },
+    {
+      "seed": 2,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 633,
+      "actions": 650,
+      "cores": 5,
+      "thresholds": [
+        {
+          "placements": 2,
+          "fill": 0.010101010101010102,
+          "lifetime": {
+            "stone": 13,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 9,
+          "fill": 0.025,
+          "lifetime": {
+            "stone": 32,
+            "wood": 32,
+            "water": 42,
+            "food": 2
+          }
+        },
+        {
+          "placements": 39,
+          "fill": 0.08024691358024691,
+          "lifetime": {
+            "stone": 66,
+            "wood": 264,
+            "water": 99,
+            "food": 90
+          }
+        },
+        {
+          "placements": 58,
+          "fill": 0.09666666666666666,
+          "lifetime": {
+            "stone": 201,
+            "wood": 300,
+            "water": 142,
+            "food": 96
+          }
+        },
+        {
+          "placements": 118,
+          "fill": 0.18641390205371247,
+          "lifetime": {
+            "stone": 275,
+            "wood": 454,
+            "water": 456,
+            "food": 270
+          }
+        },
+        {
+          "placements": 255,
+          "fill": 0.4028436018957346,
+          "lifetime": {
+            "stone": 551,
+            "wood": 1185,
+            "water": 778,
+            "food": 694
+          }
+        }
+      ],
+      "winPlacements": 633,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2146,
+        "wood": 3529,
+        "water": 1616,
+        "food": 1778
+      },
+      "resources": {
+        "wood": 2708,
+        "stone": 1196,
+        "water": 1464,
+        "food": 1766
+      },
+      "livingSlots": 633,
+      "buildings": {
+        "scree_quarry": 70,
+        "driftwood_camp": 89,
+        "oasis_well": 16,
+        "palm_grove": 8,
+        "sawmill": 74,
+        "lumber_camp": 95,
+        "farm": 55,
+        "gatherers_hut": 1,
+        "ice_drill": 30,
+        "quarry": 11,
+        "stonemason": 7,
+        "glass_kiln": 72,
+        "hillside_mine": 27,
+        "hot_spring": 36,
+        "ice_fishery": 3,
+        "glacier_pump": 3,
+        "caravanserai": 12,
+        "salt_mine": 16,
+        "lichen_farm": 8
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 2,
+      "emptySlots": 0
+    },
+    {
+      "seed": 3,
+      "strategy": "spam",
+      "stop": "won",
+      "placements": 609,
+      "actions": 628,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 8,
+          "fill": 0.041666666666666664,
+          "lifetime": {
+            "wood": 42,
+            "stone": 12
+          }
+        },
+        {
+          "placements": 10,
+          "fill": 0.0273224043715847,
+          "lifetime": {
+            "wood": 42,
+            "stone": 32
+          }
+        },
+        {
+          "placements": 47,
+          "fill": 0.09494949494949495,
+          "lifetime": {
+            "wood": 78,
+            "stone": 180,
+            "water": 96,
+            "food": 12
+          }
+        },
+        {
+          "placements": 268,
+          "fill": 0.46286701208981,
+          "lifetime": {
+            "wood": 500,
+            "stone": 654,
+            "water": 526,
+            "food": 90
+          }
+        },
+        {
+          "placements": 319,
+          "fill": 0.5290215588723052,
+          "lifetime": {
+            "wood": 622,
+            "stone": 711,
+            "water": 669,
+            "food": 122
+          }
+        },
+        {
+          "placements": 504,
+          "fill": 0.8275862068965517,
+          "lifetime": {
+            "wood": 1573,
+            "stone": 941,
+            "water": 797,
+            "food": 256
+          }
+        }
+      ],
+      "winPlacements": 609,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 2089,
+        "stone": 1086,
+        "water": 838,
+        "food": 316
+      },
+      "resources": {
+        "wood": 1359,
+        "stone": 2,
+        "water": 604,
+        "food": 307
+      },
+      "livingSlots": 609,
+      "buildings": {
+        "sawmill": 137,
+        "hillside_mine": 12,
+        "scree_quarry": 73,
+        "oasis_well": 30,
+        "glass_kiln": 117,
+        "driftwood_camp": 80,
+        "ice_drill": 21,
+        "hot_spring": 13,
+        "lumber_camp": 86,
+        "grain_fields": 11,
+        "caravanserai": 9,
+        "farm": 7,
+        "glacier_pump": 1,
+        "salt_mine": 12
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 3,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 609,
+      "actions": 628,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 15,
+          "fill": 0.078125,
+          "lifetime": {
+            "wood": 151,
+            "food": 34,
+            "stone": 8,
+            "water": 8
+          }
+        },
+        {
+          "placements": 18,
+          "fill": 0.04918032786885246,
+          "lifetime": {
+            "wood": 161,
+            "food": 34,
+            "stone": 34,
+            "water": 8
+          }
+        },
+        {
+          "placements": 25,
+          "fill": 0.050505050505050504,
+          "lifetime": {
+            "wood": 183,
+            "food": 36,
+            "stone": 68,
+            "water": 34
+          }
+        },
+        {
+          "placements": 78,
+          "fill": 0.13471502590673576,
+          "lifetime": {
+            "wood": 472,
+            "food": 170,
+            "stone": 201,
+            "water": 151
+          }
+        },
+        {
+          "placements": 103,
+          "fill": 0.17081260364842454,
+          "lifetime": {
+            "wood": 486,
+            "food": 241,
+            "stone": 270,
+            "water": 298
+          }
+        },
+        {
+          "placements": 226,
+          "fill": 0.37110016420361247,
+          "lifetime": {
+            "wood": 845,
+            "food": 427,
+            "stone": 551,
+            "water": 660
+          }
+        }
+      ],
+      "winPlacements": 609,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 3324,
+        "food": 1742,
+        "stone": 1883,
+        "water": 1469
+      },
+      "resources": {
+        "wood": 2565,
+        "stone": 871,
+        "food": 1736,
+        "water": 1261
+      },
+      "livingSlots": 609,
+      "buildings": {
+        "sawmill": 74,
+        "lumber_camp": 84,
+        "farm": 64,
+        "scree_quarry": 70,
+        "driftwood_camp": 86,
+        "oasis_well": 38,
+        "palm_grove": 4,
+        "hot_spring": 21,
+        "ice_drill": 21,
+        "glass_kiln": 99,
+        "salt_mine": 20,
+        "lichen_farm": 10,
+        "caravanserai": 6,
+        "hillside_mine": 12
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 4,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 213,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 121,
+      "heldCores": 0,
+      "emptySlots": 210
+    },
+    {
+      "seed": 4,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 213,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 121,
+      "heldCores": 0,
+      "emptySlots": 210
+    },
+    {
+      "seed": 5,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 58,
+      "actions": 61,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 193,
+        "water": 197,
+        "food": 15
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 1,
+        "water": 131,
+        "food": 15
+      },
+      "livingSlots": 222,
+      "buildings": {
+        "quarry": 9,
+        "oasis_well": 16,
+        "glass_kiln": 33
+      },
+      "legalSitesRemaining": 133,
+      "heldCores": 0,
+      "emptySlots": 164
+    },
+    {
+      "seed": 5,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 627,
+      "actions": 648,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 5,
+          "fill": 0.02252252252252252,
+          "lifetime": {
+            "stone": 36,
+            "water": 10,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 12,
+          "fill": 0.03125,
+          "lifetime": {
+            "stone": 47,
+            "water": 48,
+            "wood": 28,
+            "food": 20
+          }
+        },
+        {
+          "placements": 38,
+          "fill": 0.07279693486590039,
+          "lifetime": {
+            "stone": 66,
+            "water": 177,
+            "wood": 81,
+            "food": 74
+          }
+        },
+        {
+          "placements": 140,
+          "fill": 0.23931623931623933,
+          "lifetime": {
+            "stone": 294,
+            "water": 686,
+            "wood": 244,
+            "food": 271
+          }
+        },
+        {
+          "placements": 155,
+          "fill": 0.25203252032520324,
+          "lifetime": {
+            "stone": 346,
+            "water": 714,
+            "wood": 325,
+            "food": 307
+          }
+        },
+        {
+          "placements": 243,
+          "fill": 0.3894230769230769,
+          "lifetime": {
+            "stone": 565,
+            "water": 968,
+            "wood": 651,
+            "food": 494
+          }
+        }
+      ],
+      "winPlacements": 627,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 1804,
+        "water": 2126,
+        "wood": 2469,
+        "food": 1500
+      },
+      "resources": {
+        "wood": 1886,
+        "stone": 419,
+        "water": 1753,
+        "food": 1485
+      },
+      "livingSlots": 627,
+      "buildings": {
+        "quarry": 12,
+        "stonemason": 11,
+        "oasis_well": 62,
+        "palm_grove": 22,
+        "ice_drill": 40,
+        "ice_fishery": 4,
+        "glacier_pump": 5,
+        "driftwood_camp": 39,
+        "scree_quarry": 22,
+        "hot_spring": 19,
+        "lumber_camp": 63,
+        "gatherers_hut": 2,
+        "salt_mine": 21,
+        "lichen_farm": 11,
+        "glass_kiln": 181,
+        "sawmill": 52,
+        "farm": 46,
+        "caravanserai": 15
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 6,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 100,
+      "actions": 103,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 340,
+        "water": 284,
+        "food": 27
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 1,
+        "water": 158,
+        "food": 27
+      },
+      "livingSlots": 183,
+      "buildings": {
+        "quarry": 18,
+        "oasis_well": 19,
+        "glass_kiln": 63
+      },
+      "legalSitesRemaining": 150,
+      "heldCores": 0,
+      "emptySlots": 83
+    },
+    {
+      "seed": 6,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 630,
+      "actions": 651,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 11,
+          "fill": 0.060109289617486336,
+          "lifetime": {
+            "stone": 98,
+            "water": 8,
+            "food": 2,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 14,
+          "fill": 0.04242424242424243,
+          "lifetime": {
+            "stone": 99,
+            "water": 16,
+            "food": 3,
+            "wood": 30
+          }
+        },
+        {
+          "placements": 46,
+          "fill": 0.09643605870020965,
+          "lifetime": {
+            "stone": 217,
+            "water": 32,
+            "food": 91,
+            "wood": 249
+          }
+        },
+        {
+          "placements": 61,
+          "fill": 0.1026936026936027,
+          "lifetime": {
+            "stone": 289,
+            "water": 118,
+            "food": 114,
+            "wood": 265
+          }
+        },
+        {
+          "placements": 90,
+          "fill": 0.1477832512315271,
+          "lifetime": {
+            "stone": 420,
+            "water": 238,
+            "food": 189,
+            "wood": 327
+          }
+        },
+        {
+          "placements": 147,
+          "fill": 0.23671497584541062,
+          "lifetime": {
+            "stone": 552,
+            "water": 343,
+            "food": 438,
+            "wood": 775
+          }
+        }
+      ],
+      "winPlacements": 630,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2483,
+        "water": 1712,
+        "food": 1554,
+        "wood": 2796
+      },
+      "resources": {
+        "wood": 2152,
+        "stone": 1254,
+        "water": 1387,
+        "food": 1545
+      },
+      "livingSlots": 630,
+      "buildings": {
+        "quarry": 24,
+        "stonemason": 17,
+        "oasis_well": 32,
+        "palm_grove": 16,
+        "sawmill": 49,
+        "lumber_camp": 52,
+        "farm": 46,
+        "scree_quarry": 65,
+        "driftwood_camp": 87,
+        "ice_drill": 24,
+        "ice_fishery": 5,
+        "glacier_pump": 5,
+        "glass_kiln": 157,
+        "salt_mine": 22,
+        "lichen_farm": 11,
+        "caravanserai": 9,
+        "hillside_mine": 9
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 7,
+      "strategy": "spam",
+      "stop": "won",
+      "placements": 612,
+      "actions": 631,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 8,
+          "fill": 0.03463203463203463,
+          "lifetime": {
+            "stone": 40,
+            "wood": 10,
+            "water": 8
+          }
+        },
+        {
+          "placements": 11,
+          "fill": 0.028645833333333332,
+          "lifetime": {
+            "stone": 40,
+            "wood": 34,
+            "water": 8,
+            "food": 3
+          }
+        },
+        {
+          "placements": 34,
+          "fill": 0.06952965235173825,
+          "lifetime": {
+            "stone": 64,
+            "wood": 82,
+            "water": 132,
+            "food": 12
+          }
+        },
+        {
+          "placements": 126,
+          "fill": 0.22340425531914893,
+          "lifetime": {
+            "stone": 201,
+            "wood": 244,
+            "water": 411,
+            "food": 112
+          }
+        },
+        {
+          "placements": 222,
+          "fill": 0.37373737373737376,
+          "lifetime": {
+            "stone": 270,
+            "wood": 805,
+            "water": 459,
+            "food": 177
+          }
+        },
+        {
+          "placements": 600,
+          "fill": 0.9803921568627451,
+          "lifetime": {
+            "stone": 888,
+            "wood": 1542,
+            "water": 1253,
+            "food": 258
+          }
+        }
+      ],
+      "winPlacements": 612,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 910,
+        "wood": 1596,
+        "water": 1255,
+        "food": 260
+      },
+      "resources": {
+        "wood": 835,
+        "stone": 7,
+        "water": 1153,
+        "food": 260
+      },
+      "livingSlots": 612,
+      "buildings": {
+        "scree_quarry": 64,
+        "driftwood_camp": 52,
+        "ice_drill": 51,
+        "sawmill": 74,
+        "oasis_well": 120,
+        "lumber_camp": 133,
+        "farm": 12,
+        "salt_mine": 40,
+        "grain_fields": 6,
+        "hot_spring": 6,
+        "glass_kiln": 51,
+        "stonemason": 3
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 7,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 612,
+      "actions": 631,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 2,
+          "fill": 0.008658008658008658,
+          "lifetime": {
+            "stone": 11,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 10,
+          "fill": 0.026041666666666668,
+          "lifetime": {
+            "stone": 30,
+            "wood": 70,
+            "food": 32
+          }
+        },
+        {
+          "placements": 34,
+          "fill": 0.06952965235173825,
+          "lifetime": {
+            "stone": 65,
+            "wood": 161,
+            "food": 52,
+            "water": 131
+          }
+        },
+        {
+          "placements": 138,
+          "fill": 0.24468085106382978,
+          "lifetime": {
+            "stone": 200,
+            "wood": 789,
+            "food": 347,
+            "water": 432
+          }
+        },
+        {
+          "placements": 206,
+          "fill": 0.3468013468013468,
+          "lifetime": {
+            "stone": 272,
+            "wood": 1286,
+            "food": 535,
+            "water": 554
+          }
+        },
+        {
+          "placements": 306,
+          "fill": 0.5,
+          "lifetime": {
+            "stone": 556,
+            "wood": 1783,
+            "food": 746,
+            "water": 949
+          }
+        }
+      ],
+      "winPlacements": 612,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 1723,
+        "wood": 3425,
+        "food": 1598,
+        "water": 2042
+      },
+      "resources": {
+        "wood": 2712,
+        "stone": 776,
+        "food": 1586,
+        "water": 1930
+      },
+      "livingSlots": 612,
+      "buildings": {
+        "scree_quarry": 59,
+        "driftwood_camp": 66,
+        "sawmill": 57,
+        "lumber_camp": 99,
+        "farm": 42,
+        "oasis_well": 90,
+        "palm_grove": 42,
+        "ice_drill": 43,
+        "ice_fishery": 3,
+        "glacier_pump": 3,
+        "gatherers_hut": 10,
+        "salt_mine": 20,
+        "lichen_farm": 10,
+        "hot_spring": 3,
+        "grain_fields": 2,
+        "glass_kiln": 51,
+        "caravanserai": 12
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 8,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 192,
+      "actions": 195,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 717,
+        "water": 495,
+        "food": 12
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 90,
+        "water": 279,
+        "food": 12
+      },
+      "livingSlots": 192,
+      "buildings": {
+        "quarry": 51,
+        "oasis_well": 33,
+        "glass_kiln": 108
+      },
+      "legalSitesRemaining": 116,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 8,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 564,
+      "actions": 583,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 8,
+          "fill": 0.041666666666666664,
+          "lifetime": {
+            "stone": 71,
+            "water": 10,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 11,
+          "fill": 0.03559870550161812,
+          "lifetime": {
+            "stone": 72,
+            "water": 20,
+            "wood": 28,
+            "food": 4
+          }
+        },
+        {
+          "placements": 27,
+          "fill": 0.06569343065693431,
+          "lifetime": {
+            "stone": 103,
+            "water": 30,
+            "wood": 154,
+            "food": 87
+          }
+        },
+        {
+          "placements": 63,
+          "fill": 0.1242603550295858,
+          "lifetime": {
+            "stone": 201,
+            "water": 172,
+            "wood": 264,
+            "food": 243
+          }
+        },
+        {
+          "placements": 87,
+          "fill": 0.15846994535519127,
+          "lifetime": {
+            "stone": 289,
+            "water": 280,
+            "wood": 330,
+            "food": 320
+          }
+        },
+        {
+          "placements": 228,
+          "fill": 0.40425531914893614,
+          "lifetime": {
+            "stone": 552,
+            "water": 776,
+            "wood": 1076,
+            "food": 892
+          }
+        }
+      ],
+      "winPlacements": 564,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2033,
+        "water": 1600,
+        "wood": 2815,
+        "food": 1995
+      },
+      "resources": {
+        "wood": 2040,
+        "stone": 1212,
+        "water": 1478,
+        "food": 1992
+      },
+      "livingSlots": 564,
+      "buildings": {
+        "quarry": 18,
+        "stonemason": 14,
+        "oasis_well": 45,
+        "palm_grove": 9,
+        "sawmill": 62,
+        "lumber_camp": 66,
+        "farm": 58,
+        "glass_kiln": 49,
+        "salt_mine": 48,
+        "lichen_farm": 24,
+        "ice_drill": 45,
+        "ice_fishery": 5,
+        "glacier_pump": 5,
+        "scree_quarry": 42,
+        "driftwood_camp": 59,
+        "caravanserai": 3,
+        "hillside_mine": 12
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 9,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 165,
+      "actions": 168,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 582,
+        "water": 456
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 18,
+        "water": 240
+      },
+      "livingSlots": 165,
+      "buildings": {
+        "quarry": 33,
+        "oasis_well": 24,
+        "glass_kiln": 108
+      },
+      "legalSitesRemaining": 124,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 9,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 567,
+      "actions": 586,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 5,
+          "fill": 0.030303030303030304,
+          "lifetime": {
+            "stone": 32,
+            "water": 10,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 11,
+          "fill": 0.03559870550161812,
+          "lifetime": {
+            "stone": 72,
+            "water": 20,
+            "wood": 28
+          }
+        },
+        {
+          "placements": 30,
+          "fill": 0.06756756756756757,
+          "lifetime": {
+            "stone": 140,
+            "water": 32,
+            "wood": 167,
+            "food": 65
+          }
+        },
+        {
+          "placements": 63,
+          "fill": 0.12574850299401197,
+          "lifetime": {
+            "stone": 206,
+            "water": 137,
+            "wood": 347,
+            "food": 122
+          }
+        },
+        {
+          "placements": 100,
+          "fill": 0.18214936247723132,
+          "lifetime": {
+            "stone": 271,
+            "water": 421,
+            "wood": 357,
+            "food": 221
+          }
+        },
+        {
+          "placements": 290,
+          "fill": 0.5114638447971781,
+          "lifetime": {
+            "stone": 555,
+            "water": 717,
+            "wood": 1877,
+            "food": 1024
+          }
+        }
+      ],
+      "winPlacements": 567,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 1731,
+        "water": 1584,
+        "wood": 3407,
+        "food": 1925
+      },
+      "resources": {
+        "wood": 2581,
+        "stone": 943,
+        "water": 1472,
+        "food": 1922
+      },
+      "livingSlots": 567,
+      "buildings": {
+        "quarry": 11,
+        "stonemason": 10,
+        "oasis_well": 10,
+        "palm_grove": 5,
+        "scree_quarry": 56,
+        "driftwood_camp": 61,
+        "sawmill": 81,
+        "lumber_camp": 91,
+        "farm": 71,
+        "glass_kiln": 51,
+        "hot_spring": 18,
+        "ice_drill": 61,
+        "ice_fishery": 4,
+        "glacier_pump": 4,
+        "salt_mine": 20,
+        "lichen_farm": 10,
+        "caravanserai": 3
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 10,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 201,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 119,
+      "heldCores": 0,
+      "emptySlots": 198
+    },
+    {
+      "seed": 10,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 201,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 119,
+      "heldCores": 0,
+      "emptySlots": 198
+    },
+    {
+      "seed": 11,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 231,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 129,
+      "heldCores": 0,
+      "emptySlots": 228
+    },
+    {
+      "seed": 11,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 231,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 129,
+      "heldCores": 0,
+      "emptySlots": 228
+    },
+    {
+      "seed": 12,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 180,
+      "actions": 183,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 1017
+      },
+      "resources": {
+        "wood": 663,
+        "stone": 0
+      },
+      "livingSlots": 180,
+      "buildings": {
+        "sawmill": 3,
+        "lumber_camp": 177
+      },
+      "legalSitesRemaining": 138,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 12,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 597,
+      "actions": 618,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 18,
+          "fill": 0.1,
+          "lifetime": {
+            "wood": 170,
+            "food": 76,
+            "stone": 8,
+            "water": 8
+          }
+        },
+        {
+          "placements": 20,
+          "fill": 0.05555555555555555,
+          "lifetime": {
+            "wood": 170,
+            "food": 76,
+            "stone": 28,
+            "water": 8
+          }
+        },
+        {
+          "placements": 27,
+          "fill": 0.059602649006622516,
+          "lifetime": {
+            "wood": 170,
+            "food": 82,
+            "stone": 78,
+            "water": 29
+          }
+        },
+        {
+          "placements": 76,
+          "fill": 0.13693693693693693,
+          "lifetime": {
+            "wood": 246,
+            "food": 165,
+            "stone": 276,
+            "water": 244
+          }
+        },
+        {
+          "placements": 93,
+          "fill": 0.16145833333333334,
+          "lifetime": {
+            "wood": 333,
+            "food": 244,
+            "stone": 280,
+            "water": 311
+          }
+        },
+        {
+          "placements": 217,
+          "fill": 0.36717428087986465,
+          "lifetime": {
+            "wood": 1141,
+            "food": 699,
+            "stone": 550,
+            "water": 593
+          }
+        }
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 2733,
+        "food": 1553,
+        "stone": 2005,
+        "water": 1818
+      },
+      "resources": {
+        "wood": 2091,
+        "stone": 781,
+        "food": 1529,
+        "water": 1528
+      },
+      "livingSlots": 597,
+      "buildings": {
+        "sawmill": 60,
+        "lumber_camp": 73,
+        "farm": 51,
+        "gatherers_hut": 2,
+        "quarry": 23,
+        "stonemason": 16,
+        "hot_spring": 21,
+        "oasis_well": 57,
+        "palm_grove": 15,
+        "ice_drill": 23,
+        "scree_quarry": 33,
+        "ice_fishery": 2,
+        "glacier_pump": 2,
+        "driftwood_camp": 30,
+        "salt_mine": 16,
+        "lichen_farm": 8,
+        "glass_kiln": 141,
+        "caravanserai": 24
+      },
+      "legalSitesRemaining": 1,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 13,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 275,
+      "actions": 284,
+      "cores": 3,
+      "thresholds": [
+        {
+          "placements": 9,
+          "fill": 0.046153846153846156,
+          "lifetime": {
+            "water": 32,
+            "food": 5,
+            "stone": 24,
+            "wood": 8
+          }
+        },
+        {
+          "placements": 178,
+          "fill": 0.5297619047619048,
+          "lifetime": {
+            "water": 519,
+            "food": 41,
+            "stone": 574,
+            "wood": 28
+          }
+        },
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "water": 872,
+        "food": 70,
+        "stone": 843,
+        "wood": 32
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 1,
+        "water": 606,
+        "food": 70
+      },
+      "livingSlots": 474,
+      "buildings": {
+        "ice_drill": 14,
+        "scree_quarry": 3,
+        "driftwood_camp": 8,
+        "salt_mine": 6,
+        "oasis_well": 64,
+        "quarry": 47,
+        "glass_kiln": 133
+      },
+      "legalSitesRemaining": 33,
+      "heldCores": 0,
+      "emptySlots": 199
+    },
+    {
+      "seed": 13,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 4,
+      "actions": 7,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "water": 36,
+        "food": 14
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 1,
+        "water": 36,
+        "food": 14
+      },
+      "livingSlots": 195,
+      "buildings": {
+        "ice_drill": 2,
+        "ice_fishery": 1,
+        "glacier_pump": 1
+      },
+      "legalSitesRemaining": 124,
+      "heldCores": 0,
+      "emptySlots": 191
+    },
+    {
+      "seed": 14,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 171,
+      "actions": 174,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 879
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 543
+      },
+      "livingSlots": 171,
+      "buildings": {
+        "quarry": 168,
+        "stonemason": 3
+      },
+      "legalSitesRemaining": 129,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 14,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 552,
+      "actions": 573,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 12,
+          "fill": 0.07017543859649122,
+          "lifetime": {
+            "stone": 123,
+            "wood": 8
+          }
+        },
+        {
+          "placements": 32,
+          "fill": 0.10256410256410256,
+          "lifetime": {
+            "stone": 204,
+            "wood": 34,
+            "water": 108,
+            "food": 42
+          }
+        },
+        {
+          "placements": 44,
+          "fill": 0.10628019323671498,
+          "lifetime": {
+            "stone": 215,
+            "wood": 86,
+            "water": 150,
+            "food": 70
+          }
+        },
+        {
+          "placements": 99,
+          "fill": 0.20496894409937888,
+          "lifetime": {
+            "stone": 449,
+            "wood": 243,
+            "water": 386,
+            "food": 155
+          }
+        },
+        {
+          "placements": 138,
+          "fill": 0.25555555555555554,
+          "lifetime": {
+            "stone": 661,
+            "wood": 327,
+            "water": 509,
+            "food": 230
+          }
+        },
+        {
+          "placements": 199,
+          "fill": 0.36446886446886445,
+          "lifetime": {
+            "stone": 809,
+            "wood": 651,
+            "water": 711,
+            "food": 436
+          }
+        }
+      ],
+      "winPlacements": 552,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2277,
+        "wood": 2238,
+        "water": 1705,
+        "food": 1386
+      },
+      "resources": {
+        "wood": 1621,
+        "stone": 1314,
+        "water": 1499,
+        "food": 1374
+      },
+      "livingSlots": 552,
+      "buildings": {
+        "quarry": 27,
+        "stonemason": 17,
+        "palm_grove": 17,
+        "ice_drill": 44,
+        "ice_fishery": 4,
+        "glacier_pump": 4,
+        "scree_quarry": 59,
+        "driftwood_camp": 48,
+        "hot_spring": 12,
+        "lumber_camp": 49,
+        "sawmill": 41,
+        "farm": 33,
+        "oasis_well": 36,
+        "glass_kiln": 95,
+        "salt_mine": 32,
+        "lichen_farm": 16,
+        "caravanserai": 12,
+        "hillside_mine": 6
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 15,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 73,
+      "actions": 82,
+      "cores": 3,
+      "thresholds": [
+        {
+          "placements": 10,
+          "fill": 0.050505050505050504,
+          "lifetime": {
+            "stone": 38,
+            "wood": 12,
+            "water": 30,
+            "food": 1
+          }
+        },
+        {
+          "placements": 23,
+          "fill": 0.06442577030812324,
+          "lifetime": {
+            "stone": 78,
+            "wood": 30,
+            "water": 36,
+            "food": 29
+          }
+        },
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 176,
+        "wood": 30,
+        "water": 248,
+        "food": 71
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 1,
+        "water": 214,
+        "food": 71
+      },
+      "livingSlots": 447,
+      "buildings": {
+        "scree_quarry": 11,
+        "driftwood_camp": 6,
+        "ice_drill": 5,
+        "farm": 3,
+        "oasis_well": 31,
+        "glass_kiln": 17
+      },
+      "legalSitesRemaining": 39,
+      "heldCores": 0,
+      "emptySlots": 374
+    },
+    {
+      "seed": 15,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 576,
+      "actions": 595,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 2,
+          "fill": 0.010101010101010102,
+          "lifetime": {
+            "stone": 13,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 9,
+          "fill": 0.025210084033613446,
+          "lifetime": {
+            "stone": 26,
+            "wood": 36,
+            "water": 28,
+            "food": 30
+          }
+        },
+        {
+          "placements": 27,
+          "fill": 0.06040268456375839,
+          "lifetime": {
+            "stone": 108,
+            "wood": 78,
+            "water": 76,
+            "food": 44
+          }
+        },
+        {
+          "placements": 104,
+          "fill": 0.1958568738229755,
+          "lifetime": {
+            "stone": 200,
+            "wood": 381,
+            "water": 490,
+            "food": 179
+          }
+        },
+        {
+          "placements": 179,
+          "fill": 0.31239092495637,
+          "lifetime": {
+            "stone": 272,
+            "wood": 602,
+            "water": 826,
+            "food": 364
+          }
+        },
+        {
+          "placements": 296,
+          "fill": 0.5138888888888888,
+          "lifetime": {
+            "stone": 550,
+            "wood": 993,
+            "water": 1301,
+            "food": 612
+          }
+        }
+      ],
+      "winPlacements": 576,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 1830,
+        "wood": 2365,
+        "water": 1928,
+        "food": 1429
+      },
+      "resources": {
+        "wood": 1775,
+        "stone": 882,
+        "water": 1751,
+        "food": 1418
+      },
+      "livingSlots": 576,
+      "buildings": {
+        "scree_quarry": 67,
+        "driftwood_camp": 83,
+        "ice_drill": 46,
+        "ice_fishery": 6,
+        "glacier_pump": 3,
+        "farm": 22,
+        "sawmill": 23,
+        "lumber_camp": 60,
+        "oasis_well": 58,
+        "glass_kiln": 78,
+        "palm_grove": 27,
+        "salt_mine": 40,
+        "lichen_farm": 21,
+        "caravanserai": 11,
+        "hot_spring": 19,
+        "gatherers_hut": 11,
+        "grain_fields": 1
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 16,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 186,
+      "actions": 189,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 696,
+        "water": 480
+      },
+      "resources": {
+        "wood": 6,
+        "stone": 84,
+        "water": 264
+      },
+      "livingSlots": 186,
+      "buildings": {
+        "quarry": 48,
+        "oasis_well": 30,
+        "glass_kiln": 108
+      },
+      "legalSitesRemaining": 123,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 16,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 585,
+      "actions": 604,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 12,
+          "fill": 0.06451612903225806,
+          "lifetime": {
+            "stone": 119,
+            "wood": 8
+          }
+        },
+        {
+          "placements": 22,
+          "fill": 0.06853582554517133,
+          "lifetime": {
+            "stone": 203,
+            "wood": 28,
+            "food": 7
+          }
+        },
+        {
+          "placements": 44,
+          "fill": 0.1004566210045662,
+          "lifetime": {
+            "stone": 310,
+            "wood": 77,
+            "food": 29,
+            "water": 67
+          }
+        },
+        {
+          "placements": 86,
+          "fill": 0.15925925925925927,
+          "lifetime": {
+            "stone": 434,
+            "wood": 250,
+            "food": 145,
+            "water": 204
+          }
+        },
+        {
+          "placements": 131,
+          "fill": 0.22625215889464595,
+          "lifetime": {
+            "stone": 459,
+            "wood": 320,
+            "food": 263,
+            "water": 540
+          }
+        },
+        {
+          "placements": 199,
+          "fill": 0.3401709401709402,
+          "lifetime": {
+            "stone": 577,
+            "wood": 652,
+            "food": 523,
+            "water": 710
+          }
+        }
+      ],
+      "winPlacements": 585,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2224,
+        "wood": 2001,
+        "food": 1340,
+        "water": 1923
+      },
+      "resources": {
+        "wood": 1394,
+        "stone": 1102,
+        "food": 1322,
+        "water": 1642
+      },
+      "livingSlots": 585,
+      "buildings": {
+        "quarry": 23,
+        "stonemason": 17,
+        "palm_grove": 9,
+        "salt_mine": 36,
+        "scree_quarry": 50,
+        "driftwood_camp": 50,
+        "oasis_well": 31,
+        "glass_kiln": 133,
+        "sawmill": 36,
+        "lumber_camp": 42,
+        "farm": 30,
+        "lichen_farm": 15,
+        "ice_drill": 65,
+        "ice_fishery": 6,
+        "glacier_pump": 6,
+        "hot_spring": 18,
+        "caravanserai": 18
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 17,
+      "strategy": "spam",
+      "stop": "won",
+      "placements": 597,
+      "actions": 616,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 7,
+          "fill": 0.03286384976525822,
+          "lifetime": {
+            "stone": 50,
+            "wood": 8,
+            "food": 2
+          }
+        },
+        {
+          "placements": 17,
+          "fill": 0.04358974358974359,
+          "lifetime": {
+            "stone": 60,
+            "wood": 34,
+            "food": 13,
+            "water": 31
+          }
+        },
+        {
+          "placements": 38,
+          "fill": 0.07321772639691715,
+          "lifetime": {
+            "stone": 75,
+            "wood": 76,
+            "food": 19,
+            "water": 154
+          }
+        },
+        {
+          "placements": 186,
+          "fill": 0.328042328042328,
+          "lifetime": {
+            "stone": 202,
+            "wood": 786,
+            "food": 170,
+            "water": 296
+          }
+        },
+        {
+          "placements": 241,
+          "fill": 0.4098639455782313,
+          "lifetime": {
+            "stone": 273,
+            "wood": 793,
+            "food": 215,
+            "water": 647
+          }
+        },
+        {
+          "placements": 391,
+          "fill": 0.6549413735343383,
+          "lifetime": {
+            "stone": 550,
+            "wood": 1156,
+            "food": 314,
+            "water": 906
+          }
+        }
+      ],
+      "winPlacements": 597,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 872,
+        "wood": 2109,
+        "food": 386,
+        "water": 1065
+      },
+      "resources": {
+        "wood": 1316,
+        "stone": 11,
+        "food": 380,
+        "water": 926
+      },
+      "livingSlots": 597,
+      "buildings": {
+        "scree_quarry": 49,
+        "driftwood_camp": 70,
+        "ice_drill": 46,
+        "hot_spring": 26,
+        "resin_works": 1,
+        "sawmill": 106,
+        "oasis_well": 29,
+        "grain_fields": 1,
+        "lumber_camp": 150,
+        "caravanserai": 6,
+        "farm": 7,
+        "glass_kiln": 69,
+        "salt_mine": 34,
+        "glacier_pump": 3
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 17,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 597,
+      "actions": 616,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 2,
+          "fill": 0.009389671361502348,
+          "lifetime": {
+            "stone": 13,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 11,
+          "fill": 0.028205128205128206,
+          "lifetime": {
+            "stone": 52,
+            "wood": 38,
+            "water": 28,
+            "food": 16
+          }
+        },
+        {
+          "placements": 27,
+          "fill": 0.05202312138728324,
+          "lifetime": {
+            "stone": 66,
+            "wood": 122,
+            "water": 126,
+            "food": 52
+          }
+        },
+        {
+          "placements": 132,
+          "fill": 0.2328042328042328,
+          "lifetime": {
+            "stone": 208,
+            "wood": 692,
+            "water": 356,
+            "food": 385
+          }
+        },
+        {
+          "placements": 171,
+          "fill": 0.29081632653061223,
+          "lifetime": {
+            "stone": 271,
+            "wood": 724,
+            "water": 698,
+            "food": 494
+          }
+        },
+        {
+          "placements": 330,
+          "fill": 0.5527638190954773,
+          "lifetime": {
+            "stone": 556,
+            "wood": 1635,
+            "water": 1050,
+            "food": 1074
+          }
+        }
+      ],
+      "winPlacements": 597,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 1652,
+        "wood": 3508,
+        "water": 1737,
+        "food": 1983
+      },
+      "resources": {
+        "wood": 2697,
+        "stone": 749,
+        "water": 1595,
+        "food": 1971
+      },
+      "livingSlots": 597,
+      "buildings": {
+        "scree_quarry": 61,
+        "driftwood_camp": 70,
+        "ice_drill": 32,
+        "ice_fishery": 7,
+        "glacier_pump": 6,
+        "sawmill": 75,
+        "lumber_camp": 105,
+        "farm": 64,
+        "oasis_well": 24,
+        "palm_grove": 9,
+        "hot_spring": 34,
+        "caravanserai": 12,
+        "glass_kiln": 67,
+        "gatherers_hut": 6,
+        "stonemason": 2,
+        "salt_mine": 15,
+        "lichen_farm": 8
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    },
+    {
+      "seed": 18,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 63,
+      "actions": 66,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 227,
+        "food": 15,
+        "water": 166
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 1,
+        "food": 15,
+        "water": 62
+      },
+      "livingSlots": 171,
+      "buildings": {
+        "quarry": 6,
+        "stonemason": 3,
+        "oasis_well": 2,
+        "glass_kiln": 52
+      },
+      "legalSitesRemaining": 151,
+      "heldCores": 0,
+      "emptySlots": 108
+    },
+    {
+      "seed": 18,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 609,
+      "actions": 630,
+      "cores": 7,
+      "thresholds": [
+        {
+          "placements": 11,
+          "fill": 0.06432748538011696,
+          "lifetime": {
+            "stone": 90,
+            "food": 3,
+            "water": 8,
+            "wood": 7
+          }
+        },
+        {
+          "placements": 15,
+          "fill": 0.045871559633027525,
+          "lifetime": {
+            "stone": 91,
+            "food": 25,
+            "water": 16,
+            "wood": 36
+          }
+        },
+        {
+          "placements": 23,
+          "fill": 0.049145299145299144,
+          "lifetime": {
+            "stone": 101,
+            "food": 55,
+            "water": 34,
+            "wood": 80
+          }
+        },
+        {
+          "placements": 68,
+          "fill": 0.12056737588652482,
+          "lifetime": {
+            "stone": 269,
+            "food": 249,
+            "water": 112,
+            "wood": 298
+          }
+        },
+        {
+          "placements": 81,
+          "fill": 0.13989637305699482,
+          "lifetime": {
+            "stone": 274,
+            "food": 279,
+            "water": 204,
+            "wood": 331
+          }
+        },
+        {
+          "placements": 213,
+          "fill": 0.35858585858585856,
+          "lifetime": {
+            "stone": 552,
+            "food": 730,
+            "water": 485,
+            "wood": 1025
+          }
+        }
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 2118,
+        "food": 1676,
+        "water": 1476,
+        "wood": 2820
+      },
+      "resources": {
+        "wood": 2122,
+        "stone": 1033,
+        "food": 1655,
+        "water": 1195
+      },
+      "livingSlots": 609,
+      "buildings": {
+        "quarry": 8,
+        "stonemason": 5,
+        "oasis_well": 8,
+        "palm_grove": 1,
+        "sawmill": 55,
+        "lumber_camp": 64,
+        "farm": 46,
+        "ice_drill": 36,
+        "scree_quarry": 67,
+        "driftwood_camp": 93,
+        "hillside_mine": 12,
+        "salt_mine": 26,
+        "lichen_farm": 13,
+        "ice_fishery": 1,
+        "glacier_pump": 1,
+        "glass_kiln": 134,
+        "hot_spring": 18,
+        "caravanserai": 21
+      },
+      "legalSitesRemaining": 1,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 19,
+      "strategy": "spam",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 195,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 137,
+      "heldCores": 0,
+      "emptySlots": 192
+    },
+    {
+      "seed": 19,
+      "strategy": "combo",
+      "stop": "stuck",
+      "placements": 3,
+      "actions": 6,
+      "cores": 1,
+      "thresholds": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "winPlacements": null,
+      "softLocks": 0,
+      "lifetime": {
+        "stone": 24
+      },
+      "resources": {
+        "wood": 0,
+        "stone": 30
+      },
+      "livingSlots": 195,
+      "buildings": {
+        "hillside_mine": 3
+      },
+      "legalSitesRemaining": 137,
+      "heldCores": 0,
+      "emptySlots": 192
+    },
+    {
+      "seed": 20,
+      "strategy": "spam",
+      "stop": "won",
+      "placements": 621,
+      "actions": 639,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 4,
+          "fill": 0.021505376344086023,
+          "lifetime": {
+            "wood": 24,
+            "food": 3,
+            "stone": 8
+          }
+        },
+        {
+          "placements": 8,
+          "fill": 0.022792022792022793,
+          "lifetime": {
+            "wood": 32,
+            "food": 3,
+            "stone": 38
+          }
+        },
+        {
+          "placements": 77,
+          "fill": 0.16559139784946236,
+          "lifetime": {
+            "wood": 78,
+            "food": 48,
+            "stone": 360,
+            "water": 162
+          }
+        },
+        {
+          "placements": 128,
+          "fill": 0.2281639928698752,
+          "lifetime": {
+            "wood": 240,
+            "food": 88,
+            "stone": 516,
+            "water": 213
+          }
+        },
+        {
+          "placements": 163,
+          "fill": 0.26375404530744334,
+          "lifetime": {
+            "wood": 428,
+            "food": 120,
+            "stone": 543,
+            "water": 249
+          }
+        },
+        null
+      ],
+      "winPlacements": 621,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 2053,
+        "food": 245,
+        "stone": 1160,
+        "water": 647
+      },
+      "resources": {
+        "wood": 1337,
+        "stone": 98,
+        "food": 236,
+        "water": 551
+      },
+      "livingSlots": 621,
+      "buildings": {
+        "sawmill": 178,
+        "hillside_mine": 12,
+        "scree_quarry": 50,
+        "oasis_well": 36,
+        "quarry": 48,
+        "salt_mine": 27,
+        "glass_kiln": 48,
+        "ice_drill": 31,
+        "driftwood_camp": 111,
+        "hot_spring": 15,
+        "lumber_camp": 56,
+        "caravanserai": 9
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 0,
+      "emptySlots": 0
+    },
+    {
+      "seed": 20,
+      "strategy": "combo",
+      "stop": "won",
+      "placements": 621,
+      "actions": 640,
+      "cores": 6,
+      "thresholds": [
+        {
+          "placements": 7,
+          "fill": 0.03763440860215054,
+          "lifetime": {
+            "wood": 60,
+            "food": 30,
+            "stone": 8
+          }
+        },
+        {
+          "placements": 10,
+          "fill": 0.02849002849002849,
+          "lifetime": {
+            "wood": 70,
+            "food": 30,
+            "stone": 34
+          }
+        },
+        {
+          "placements": 19,
+          "fill": 0.04086021505376344,
+          "lifetime": {
+            "wood": 90,
+            "food": 33,
+            "stone": 73,
+            "water": 48
+          }
+        },
+        {
+          "placements": 98,
+          "fill": 0.1746880570409982,
+          "lifetime": {
+            "wood": 243,
+            "food": 150,
+            "stone": 520,
+            "water": 258
+          }
+        },
+        {
+          "placements": 110,
+          "fill": 0.1779935275080906,
+          "lifetime": {
+            "wood": 324,
+            "food": 196,
+            "stone": 538,
+            "water": 285
+          }
+        },
+        {
+          "placements": 160,
+          "fill": 0.2576489533011272,
+          "lifetime": {
+            "wood": 655,
+            "food": 403,
+            "stone": 657,
+            "water": 380
+          }
+        }
+      ],
+      "winPlacements": 621,
+      "softLocks": 0,
+      "lifetime": {
+        "wood": 3713,
+        "food": 1853,
+        "stone": 2389,
+        "water": 1433
+      },
+      "resources": {
+        "wood": 2874,
+        "stone": 1498,
+        "food": 1844,
+        "water": 1310
+      },
+      "livingSlots": 621,
+      "buildings": {
+        "sawmill": 79,
+        "lumber_camp": 97,
+        "farm": 61,
+        "hillside_mine": 10,
+        "scree_quarry": 80,
+        "driftwood_camp": 88,
+        "oasis_well": 26,
+        "palm_grove": 10,
+        "quarry": 23,
+        "stonemason": 16,
+        "salt_mine": 18,
+        "lichen_farm": 9,
+        "glass_kiln": 57,
+        "ice_drill": 26,
+        "hot_spring": 12,
+        "caravanserai": 9
+      },
+      "legalSitesRemaining": 0,
+      "heldCores": 1,
+      "emptySlots": 0
+    }
+  ]
+}

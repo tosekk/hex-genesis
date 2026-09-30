@@ -4,8 +4,8 @@ import { DEFAULT_CONFIG } from '../../src/config';
 import { makeTestState } from '../../src/core/testing';
 import { placeBuilding } from '../../src/sim/economy';
 import { PayoutScorer, runBalance } from './bot';
-import type { RunReport } from './bot';
 import { renderReport } from './report';
+import { measure } from './measure';
 
 const enabled = process.env.BALANCE === '1';
 describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
@@ -24,7 +24,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
       expect(scored.base + scored.bonus).toBe(outcome.value.payouts.reduce((s, p) => s + Object.values(p.amount).reduce((a, b) => a + b, 0), 0));
     }
   });
-  it('measures both deterministic bots and writes the reviewable report', () => {
+  it('measures both deterministic bots and writes the reviewable report', async () => {
     const count = Number(process.env.BALANCE_SEEDS ?? 20);
     const width = Number(process.env.BALANCE_COLS ?? DEFAULT_CONFIG.map.cols);
     const height = Number(process.env.BALANCE_ROWS ?? DEFAULT_CONFIG.map.rows);
@@ -32,12 +32,8 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     const label = process.env.BALANCE_LABEL ?? 'Current v2 calibration';
     const file = process.env.BALANCE_FILE ?? 'current';
     if (!/^[a-z0-9-]+$/.test(file)) throw new Error('Invalid balance report file suffix');
-    const started = performance.now(), runs: RunReport[] = [];
-    for (let seed = 1; seed <= count; seed++) for (const strategy of ['spam', 'combo'] as const) {
-      const run = runBalance(seed, strategy, config);
-      runs.push(run);
-      process.stdout.write(`balance ${width}x${height} ${strategy} seed ${seed}: ${run.stop}, ${run.placements} placements, T=${run.thresholds.map(t => t?.placements ?? '-').join('/')}\n`);
-    }
+    const started = performance.now();
+    const runs = await measure(config, count);
     const elapsed = performance.now() - started;
     const section = renderReport(runs, label, width, height, elapsed);
     writeFileSync(`tests/balance/${file}.json`, JSON.stringify({ label, config, elapsedMs: elapsed, runs }, null, 2) + '\n');

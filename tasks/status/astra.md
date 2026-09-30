@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 1 — thresholds first, using reached-run pacing as a diagnostic while retaining all-seed failures in target checks. N2 committed `fd23f08`.
+IN PROGRESS: N3 round 2 — allowed producer yields to reduce opening resource starvation. Round 1 committed `922c134`; threshold-only tuning did not improve the 9/20 T6, 7/20 win rate.
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,8 @@ IN PROGRESS: N3 round 1 — thresholds first, using reached-run pacing as a diag
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 harness runtime: round 2's serial measurement exceeded 120 s after more bots survived. Run the unchanged simulation/scorer in four bounded local Node test workers, with a tiny extension resolver for Vite-style TypeScript imports. All 40 serial/worker results match exactly; the ordinary Vitest replay remains as a cross-runtime check. This is measurement parallelism, not delegation or a gameplay change.
+- N3 round 2: round 1 proves threshold scaling cannot repair openings earning zero required wood/stone. Increase wood producers and Arctic pair participants within ±1, lower Hillside Mine by one and Glacier Pump from 5 to 4 (Ice Drill rises 3 to 4) so the cheaper drill can tie the pump and enable Ice Mine/Harbor. Keep recipes, costs, terrain bonuses and bot strategies fixed.
 - N3: prioritize target 4, then 2, 1, 3. Round 1 changes thresholds only, approximately scaling the untuned completers' pacing toward targets; this is not evidence that the censored seeds succeed. Stop after six measured rounds and keep the best reachable/winnable result rather than disguise stuck runs as favorable spam ratios.
 - N2 measurement: both bots score every affordable building on each eligible hex, using its first empty slot (equivalent empty slots because these bots never demolish). Highest immediate total payout wins; combo bot ties favor more occupied hexes, then HexId/roster order. No resource weighting, cost penalty, lookahead, reshuffle, or rescue actions are added. Offer choice previews each option at its maximum-dead-placeable site and favors a newly represented mixed biome there, then fewer main-biome tiles, then option 0. Unreached thresholds are censored as infinity for all-seed medians, never silently dropped; reached-only ranges/counts are also reported. Stuck-without-affordable-action is distinct from a game soft-lock declaration.
 - Overnight: follow N1–N5 sequentially, commit each item/round using explicit owned paths, and report outside-owner failures without edits. N0 already complete. Treat v2 table sparse yield keys as the permitted yield channels (±1 on listed resources); keep missing resources at zero unless a later designer decision authorizes a new channel.
@@ -191,3 +193,22 @@ Threshold-only round scales the reached-run baseline toward 7/22/45/90/160/270. 
 Before: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached.
 
 After: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached. Measurement 80.47 s. Exact configuration/run archive: `tests/balance/round-1.json`.
+
+### N3 round 2 — opening producer yields
+
+Within ±1 of v2, improve wood production and cheap Arctic recipe starters. This rescues six wins versus round 1 and reaches T6 in 15/20. Serial measurement exceeded the two-minute budget; four native Node test workers reduce it to the recorded time with identical results for all 40 runs. The suite cross-checks worker seed 1 against a real Vitest-session replay. No engine mocks, model agents, or outside-owner changes.
+
+| Value | Before → after |
+|---|---|
+| `lumber_camp` yield | wood 4 → wood 5 |
+| `hillside_mine` yield | stone 3 → stone 2 |
+| `sawmill` yield | wood 5 → wood 6 |
+| `palm_grove` yield | wood 3 → wood 4 |
+| `driftwood_camp` yield | wood 3 → wood 4 |
+| `scree_quarry` yield | stone 3 → stone 4 |
+| `ice_drill` yield | water 3 → water 4 |
+| `glacier_pump` yield | water 5 → water 4 |
+
+Before: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached.
+
+After: combo T6 15/20, wins 13/20; spam T6 3/20; 0 soft-lock declarations; combo all-seed medians 11.0 / 14.5 / 36.0 / 98.5 / 134.5 / 249.0. Measurement 76.78 s. Exact configuration/run archive: `tests/balance/round-2.json`.

@@ -15,6 +15,7 @@ export interface RunReport {
   placements: number; actions: number; cores: number; thresholds: (ThresholdRecord | null)[];
   winPlacements: number | null; softLocks: number; lifetime: Resources; resources: Resources;
   livingSlots: number; buildings: Record<string, number>;
+  legalSitesRemaining: number; heldCores: number; emptySlots: number;
 }
 const total = (r: Resources) => Object.values(r).reduce((sum, value) => sum + value, 0);
 const recipeKey = (ids: string[]) => [...ids].sort().join('|');
@@ -24,7 +25,9 @@ export class PayoutScorer {
   private readonly recipes = new Map<string, { id: string; amount: number }>();
   private readonly adjacency: number[][];
   private readonly bases = new Map<string, number>();
-  constructor(private readonly state: Readonly<GameState>) {
+  private readonly state: Readonly<GameState>;
+  constructor(state: Readonly<GameState>) {
+    this.state = state;
     for (const recipe of state.config.combos) this.recipes.set(recipeKey(recipe.buildings), { id: recipe.id, amount: total(recipe.amount) });
     this.adjacency = state.hexes.map(h => neighbors(h.id, state.cols, state.rows));
   }
@@ -103,7 +106,8 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
   const session = createGameSession({ config, now: () => 0 });
   session.newRun(seed);
   const report: RunReport = { seed, strategy, stop: 'action-cap', placements: 0, actions: 0, cores: 0,
-    thresholds: config.thresholds.map(() => null), winPlacements: null, softLocks: 0, lifetime: {}, resources: {}, livingSlots: 0, buildings: {} };
+    thresholds: config.thresholds.map(() => null), winPlacements: null, softLocks: 0, lifetime: {}, resources: {}, livingSlots: 0, buildings: {},
+    legalSitesRemaining: 0, heldCores: 0, emptySlots: 0 };
   let scorer = new PayoutScorer(session.state);
   for (; report.actions < maxActions; report.actions++) {
     const state = session.state;
@@ -163,5 +167,9 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
   if (final.status === 'lost' && report.softLocks === 0) { report.stop = 'soft-lock'; report.softLocks++; }
   report.lifetime = { ...final.lifetime }; report.resources = { ...final.resources };
   report.livingSlots = final.hexes.filter(h => h.placeable && h.biome !== null).length * 3;
+  report.legalSitesRemaining = legalCoreSites(final).length;
+  report.heldCores = final.coreStack.length;
+  report.emptySlots = final.hexes.filter(h => h.placeable && h.biome !== null)
+    .reduce((sum, h) => sum + h.slots.filter(s => s.building === null).length, 0);
   return report;
 }
