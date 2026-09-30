@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { RunReport } from './bot';
-import { assess, renderReport, TARGETS } from './report';
+import { assess, renderV4Report, TARGETS } from './report';
 
 function sample(strategy: RunReport['strategy'], seed: number): RunReport {
   return { seed, strategy, stop: strategy === 'combo' ? 'won' : 'board-full', outcome: strategy === 'combo' ? 'win' : 'loss', placements: 450, actions: 475, cores: 8, winPlacements: strategy === 'combo' ? 450 : null, softLocks: 0,
@@ -63,7 +63,7 @@ describe.skipIf(process.env.BALANCE !== '1')('v4 balance report acceptance', () 
     const runs = samples();
     for (const r of runs.filter(r => r.strategy === 'combo' && r.seed > 25)) r.thresholds = TARGETS.map(() => null);
     expect(assess(runs).combo).toEqual(TARGETS.map(() => Infinity));
-    const report = renderReport(runs, 'v4 fixture', 20, 14, 10);
+    const report = renderV4Report(runs, 'v4 fixture', 20, 14, 10);
     for (const value of ['| T8 |', '6. T7 before', 'Opening stall', 'Board use / map slots', 'T7 stock : cost', 'unproven stalls']) expect(report).toContain(value);
   });
 });

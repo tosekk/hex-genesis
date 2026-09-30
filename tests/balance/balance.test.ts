@@ -38,12 +38,12 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     state.hexes[0].everCompleted = true;
     expect(hasYieldEscape(state)).toBe(false);
   });
-  it('measures both deterministic bots and writes the reviewable report', async () => {
+  it('measures three deterministic bots and writes the reviewable report', async () => {
     const count = Number(process.env.BALANCE_SEEDS ?? 50);
     const width = Number(process.env.BALANCE_COLS ?? DEFAULT_CONFIG.map.cols);
     const height = Number(process.env.BALANCE_ROWS ?? DEFAULT_CONFIG.map.rows);
     const config = { ...DEFAULT_CONFIG, map: { ...DEFAULT_CONFIG.map, cols: width, rows: height } };
-    const label = process.env.BALANCE_LABEL ?? 'Current v4 calibration';
+    const label = process.env.BALANCE_LABEL ?? 'Current v5 calibration';
     const file = process.env.BALANCE_FILE ?? 'current';
     if (!/^[a-z0-9-]+$/.test(file)) throw new Error('Invalid balance report file suffix');
     const started = performance.now();
@@ -55,7 +55,7 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     const prior = process.env.BALANCE_APPEND === '1' && existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '# Economy balance report\n\n';
     writeFileSync(reportPath, (prior.trimEnd() + '\n\n' + section).trimEnd() + '\n');
     console.info(section.split('| Seed |')[0]);
-    expect(runBalance(1, 'combo', config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === 'combo'));
+    for (const strategy of ['combo', 'random'] as const) expect(runBalance(1, strategy, config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === strategy));
     // Standard-board budget stays two minutes; larger informational previews scale with search area.
     const areaScale = Math.max(1, width * height / (DEFAULT_CONFIG.map.cols * DEFAULT_CONFIG.map.rows));
     expect(elapsed, 'standard 20-seed measurement budget is two minutes').toBeLessThan(count / 20 * 120_000 * areaScale * areaScale);

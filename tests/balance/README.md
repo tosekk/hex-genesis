@@ -1,3 +1,9 @@
+## V5 night calibration
+
+Three policies: combo, spam, and seeded random (uniform eligible empty physical slot, then uniform affordable roster building). V5 uses slotCounts for terraformed placeable non-core capacity. `assessV5` evaluates a–f; legacy `assess` / `renderV4Report` remain for historical evidence. Careless stalls count as failures only in v5, not as engine proofs.
+
+Run `BALANCE=1 BALANCE_SEEDS=50 BALANCE_LABEL="V5 round 1" BALANCE_FILE=v5-round-1 BALANCE_APPEND=1 npx vitest run tests/balance`. Each archive captures the exact config and 150 real-session runs. RNG replay and payout scores are checked against actual commands.
+
 # Balance harness
 
 Run the opt-in real-session measurement (50 seeds × spam/combo, no dependencies added):

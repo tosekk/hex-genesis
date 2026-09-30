@@ -1,14 +1,16 @@
 import { DEFAULT_CONFIG } from '../../src/config';
 import { neighbors, pairKey } from '../../src/core/hex';
+import { createRng, deriveSeed } from '../../src/core/rng';
+import type { Rng } from '../../src/core/rng';
 import { addRes, canAfford } from '../../src/core/resources';
 import { SLOT_PAIRS } from '../../src/core/types';
 import type { BuildingId, GameConfig, GameState, Hex, MainBiome, Resources, SlotIndex } from '../../src/core/types';
 import { createGameSession } from '../../src/game/session';
-import { demolishRefund } from '../../src/sim/economy';
+import { demolishRefund, isCoreHex, slotCounts } from '../../src/sim/economy';
 import { isProvablySoftLocked } from '../../src/sim/endgame';
 import { computeSpread, isHexLocked, legalCoreSites } from '../../src/sim/spread/spread';
 
-export type Strategy = 'spam' | 'combo';
+export type Strategy = 'spam' | 'combo' | 'random';
 export interface Candidate { hexId: number; slot: SlotIndex; building: BuildingId; base: number; bonus: number; occupied: number; }
 export interface ThresholdRecord { placements: number; fill: number; boardUse: number; lifetime: Resources; stock: Resources; biome: string; maxCost: Resources; }
 export interface RunReport {
@@ -74,10 +76,10 @@ export class PayoutScorer {
     }
     return { hexId: hex.id, slot, building, occupied, base: hex.slots[slot].yieldPaid ? 0 : this.base(hex, building), bonus };
   }
-  choose(strategy: Strategy): Candidate | null {
+  choose(strategy: 'spam' | 'combo'): Candidate | null {
     let best: Candidate | null = null, bestScore = -1;
     for (const hex of this.state.hexes) {
-      if (!hex.placeable || hex.biome === null || isHexLocked(this.state, hex.id)) continue;
+      if (!hex.placeable || hex.biome === null || isCoreHex(this.state, hex.id) || isHexLocked(this.state, hex.id)) continue;
       const slot = hex.slots.findIndex(s => s.building === null);
       if (slot === -1) continue;
       for (const building of this.state.config.rosters[hex.biome]) {
@@ -91,6 +93,20 @@ export class PayoutScorer {
     }
     return best;
   }
+  /** Uniform over eligible physical slots, then uniform over that slot's affordable roster. */
+  chooseRandom(rng: Rng): Candidate | null {
+    const choices: { hex: Hex; slot: SlotIndex; buildings: BuildingId[] }[] = [];
+    for (const hex of this.state.hexes) {
+      if (!hex.placeable || hex.biome === null || isCoreHex(this.state, hex.id) || isHexLocked(this.state, hex.id)) continue;
+      const buildings = this.state.config.rosters[hex.biome].filter(id => canAfford(this.state.resources, this.state.config.buildings[id].cost));
+      if (!buildings.length) continue;
+      for (const slot of [0, 1, 2] as const) if (hex.slots[slot].building === null) choices.push({ hex, slot, buildings });
+    }
+    if (!choices.length) return null;
+    const { hex, slot, buildings } = choices[rng.nextInt(choices.length)];
+    return this.score(hex, slot, buildings[rng.nextInt(buildings.length)]);
+  }
+
 }
 
 export function bestCoreSite(state: Readonly<GameState>, biome: MainBiome) {
@@ -109,9 +125,9 @@ export function hasYieldEscape(state: Readonly<GameState>): boolean {
   if (state.activeSpread || state.pendingOffer || (state.coreStack.length && legalCoreSites(state).length)) return true;
   const scorer = new PayoutScorer(state);
   let refunded = { ...state.resources };
-  for (const h of state.hexes) if (h.placeable && h.biome) for (const slot of h.slots) if (slot.building) refunded = addRes(refunded, demolishRefund(state, slot.building));
+  for (const h of state.hexes) if (h.placeable && h.biome && !isCoreHex(state, h.id)) for (const slot of h.slots) if (slot.building) refunded = addRes(refunded, demolishRefund(state, slot.building));
   for (const h of state.hexes) {
-    if (!h.placeable || !h.biome || isHexLocked(state, h.id)) continue;
+    if (!h.placeable || !h.biome || isCoreHex(state, h.id) || isHexLocked(state, h.id)) continue;
     for (const slot of [0, 1, 2] as const) {
       const old = h.slots[slot].building;
       const wallet = old ? addRes(state.resources, demolishRefund(state, old)) : state.resources;
@@ -130,6 +146,7 @@ export function hasYieldEscape(state: Readonly<GameState>): boolean {
 export function runBalance(seed: number, strategy: Strategy, config: GameConfig = DEFAULT_CONFIG, maxActions = 1500): RunReport {
   const session = createGameSession({ config, now: () => 0 });
   session.newRun(seed);
+  const rng = createRng(deriveSeed(seed, 'balance-random'));
   const report: RunReport = { seed, strategy, stop: 'action-cap', placements: 0, actions: 0, cores: 0,
     thresholds: config.thresholds.map(() => null), winPlacements: null, softLocks: 0, lifetime: {}, resources: {}, livingSlots: 0, buildings: {},
     legalSitesRemaining: 0, heldCores: 0, emptySlots: 0, outcome: 'cap', mapSlots: session.state.hexes.filter(h => h.placeable).length * 3, boardUse: 0, openingStall: false, falseSoftLocks: 0 };
@@ -165,10 +182,10 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
         continue;
       }
     }
-    const candidate = scorer.choose(strategy);
+    const candidate = strategy === 'random' ? scorer.chooseRandom(rng) : scorer.choose(strategy);
     if (!candidate) {
       const locked = isProvablySoftLocked(state);
-      const empty = state.hexes.some(h => h.placeable && h.biome && h.slots.some(s => s.building === null));
+      const empty = slotCounts(state).empty > 0;
       report.stop = locked ? 'soft-lock' : empty ? 'stuck' : 'board-full';
       report.openingStall = empty && state.thresholdIndex < 2;
       report.softLocks += Number(locked);
@@ -185,10 +202,10 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
     report.placements++;
     report.buildings[candidate.building] = (report.buildings[candidate.building] ?? 0) + 1;
     if (state.thresholdIndex > previousThreshold) {
-      const slots = state.hexes.filter(h => h.placeable && h.biome !== null).length * 3;
+      const slots = slotCounts(state).total;
       const biome = state.hexes[candidate.hexId].biome!;
       const maxCost = Object.fromEntries(config.resources.map(r => [r, Math.max(...config.rosters[biome].map(b => config.buildings[b].cost[r] ?? 0))]));
-      report.thresholds[previousThreshold] = { placements: report.placements, fill: report.placements / slots, boardUse: report.placements / report.mapSlots, lifetime: { ...state.lifetime }, stock: { ...state.resources }, biome, maxCost };
+      report.thresholds[previousThreshold] = { placements: report.placements, fill: report.placements / slots, boardUse: report.placements / slots, lifetime: { ...state.lifetime }, stock: { ...state.resources }, biome, maxCost };
     }
   }
   const final = session.state;
@@ -197,13 +214,14 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
   if (report.stop === 'won' && (final.thresholdIndex < config.thresholds.length || !canAfford(final.lifetime, config.thresholds.at(-1)!))) throw new Error('S8 required: win before final threshold');
   if (report.softLocks && hasYieldEscape(final)) report.falseSoftLocks++;
   report.outcome = report.stop === 'won' ? 'win' : report.stop === 'soft-lock' || report.stop === 'board-full' ? 'loss' : report.stop === 'stuck' ? 'stuck' : 'cap';
-  report.boardUse = report.placements / report.mapSlots;
+  report.mapSlots = final.hexes.filter(h => h.placeable && !isCoreHex(final, h.id)).length * 3;
+  const counts = slotCounts(final);
+  report.boardUse = counts.total ? (counts.total - counts.empty) / counts.total : 0;
   report.lifetime = { ...final.lifetime }; report.resources = { ...final.resources };
-  report.livingSlots = final.hexes.filter(h => h.placeable && h.biome !== null).length * 3;
+  report.livingSlots = counts.total;
   report.legalSitesRemaining = legalCoreSites(final).length;
   report.heldCores = final.coreStack.length;
-  report.emptySlots = final.hexes.filter(h => h.placeable && h.biome !== null)
-    .reduce((sum, h) => sum + h.slots.filter(s => s.building === null).length, 0);
-  report.openingStall ||= report.stop !== 'won' && final.thresholdIndex < 2 && report.emptySlots > 0 && !new PayoutScorer(final).choose(strategy);
+  report.emptySlots = counts.empty;
+  report.openingStall ||= report.stop !== 'won' && final.thresholdIndex < 2 && report.emptySlots > 0 && !new PayoutScorer(final).choose('spam');
   return report;
 }

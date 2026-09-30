@@ -30,7 +30,7 @@ export function assess(runs: RunReport[]) {
       pressure.every(p => p.count >= Math.ceil(combo.length * .9) && p.count > 0 && p.ratio <= 3),
       combo.length > 0 && t7.length >= Math.ceil(combo.length * .9) && t7.every(use => use < .6)] };
 }
-export function renderReport(runs: RunReport[], label: string, width: number, height: number, elapsedMs: number): string {
+export function renderV4Report(runs: RunReport[], label: string, width: number, height: number, elapsedMs: number): string {
   const a = assess(runs), count = runs.filter(r => r.strategy === 'combo').length;
   let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds 1–${count}, ${Math.round(elapsedMs)} ms for both bots. No demolition, reshuffle, resource weighting, or lookahead. Offer/core scoring and tie rules are unchanged.\n\n`;
   text += 'V4: T8 wins immediately. Loss means engine proof or no empty living slots after usable cores/offers/spread are exhausted (board-full bot loss; replacement escape may still exist). An unproven empty-slot stall is not a loss. Board use includes ALL map placeable slots, including dead land. All-seed threshold medians censor unreached thresholds as infinity. Stock pressure samples the T3–T7 payout transactions, against the current placement biome roster; positive stock against zero cost has infinite ratio. T7 requires ≥90% completion and EVERY completer below 60%, not only the median. False-loss audits check direct productive replacements and refund-funded unpaid base yields; they are a constructive check, not an exhaustive search of all future replacement sequences.\n\n';
@@ -55,5 +55,39 @@ export function renderReport(runs: RunReport[], label: string, width: number, he
   for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.outcome} / ${r.stop} | ${r.placements} | ${fmt(r.boardUse * 100)}% / ${r.mapSlots} | ${r.thresholds.map(t => t?.placements ?? '—').join(' / ')} | ${r.openingStall ? 'yes' : 'no'} | ${r.falseSoftLocks} | ${r.legalSitesRemaining} | ${vector(r.lifetime)} | ${vector(r.resources)} |\n`;
   text += '\nPer-run checkpoint vectors below use **wood/stone/water/food**; each cell is `held : max cost (biome)`. The JSON retains unrounded values, lifetime totals, and living-slot fill at every threshold.\n\n| Seed | Bot | T3 stock : cost | T4 stock : cost | T5 stock : cost | T6 stock : cost | T7 stock : cost |\n|---|---|---|---|---|---|---|\n';
   for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.thresholds.slice(2, 7).map(t => t ? `${vector(t.stock)} : ${vector(t.maxCost)} (${t.biome})` : '—').join(' | ')} |\n`;
+  return text;
+}
+
+/** V5 counts careless-bot stalls as failures, not as proofs of engine loss. */
+export function assessV5(runs: RunReport[]) {
+  const old = assess(runs);
+  const combo = runs.filter(r => r.strategy === 'combo');
+  const random = runs.filter(r => r.strategy === 'random');
+  const spam = runs.filter(r => r.strategy === 'spam');
+  const failures = (group: RunReport[]) => group.filter(r => ['stuck', 'board-full', 'soft-lock'].includes(r.stop) && !r.thresholds[7]).length;
+  const medians = (group: RunReport[]) => TARGETS.map((_, i) => median(group.map(r => r.thresholds[i]?.placements ?? Infinity)));
+  const randomMedians = medians(random);
+  const ratio = (value: number) => Number.isFinite(old.combo[3]) ? value / old.combo[3] : NaN;
+  const tension = { spam: ratio(old.spam[3]), random: ratio(randomMedians[3]) };
+  const enough = (group: RunReport[]) => group.length > 0 && failures(group) >= Math.ceil(group.length * .9);
+  return { ...old, random: randomMedians, spamFailures: failures(spam), randomFailures: failures(random), tension,
+    targets: [old.targets[0], enough(spam) && enough(random), tension.spam >= 1.5 && tension.random >= 1.5,
+      old.targets[4], old.targets[3], old.targets[2]] };
+}
+
+export function renderReport(runs: RunReport[], label: string, width: number, height: number, elapsedMs: number): string {
+  const a = assessV5(runs), count = runs.filter(r => r.strategy === 'combo').length;
+  let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds 1–${count}, ${Math.round(elapsedMs)} ms for three bots.\n\n`;
+  text += 'V5: no demolition, lookahead or resource weighting. Combo/spam scoring and core choices unchanged. Random uses an independent seeded stream: uniform eligible empty physical slot, then uniform affordable building in its roster. Core hexes are excluded from choices, false-loss audits and slot counts. Board use = occupied / terraformed placeable non-core slots via slotCounts; all-map non-core capacity is also reported separately. Careless stalls count as target-b failures, not engine loss proofs. Threshold medians include unreached seeds as infinity; T4 tension compares these medians. Stock ratios retain positive stock / zero cost = infinity. False-loss audit is constructive, not exhaustive.\n\n';
+  const evidence = [`${a.wins}/${count} wins; ${a.falseSoftLocks} detected false declarations`, `${a.spamFailures}/${count} spam and ${a.randomFailures}/${count} random failures`, `T4 spam/combo ${fmt(a.tension.spam)}×; random/combo ${fmt(a.tension.random)}×`, `worst median held/max cost ${fmt(Math.max(...a.pressure.map(p => p.ratio)))}×`, a.openingStalls.length ? `seeds ${a.openingStalls.join(', ')}` : 'zero opening stalls', `${fmt(a.medianBoardUse * 100)}% median winning board use`];
+  const names = ['a. Combo wins ≥90%; zero false loss', 'b. Both careless bots fail ≥90%', 'c. Both T4 placement ratios ≥1.5× or never', 'd. T3–T7 stock ≤3× biome max cost', 'e. No combo opening stalls before T2', 'f. Winning board use 65–85%'];
+  text += '| Target | Result | Evidence |\n|---|---|---|\n';
+  a.targets.forEach((pass, i) => { text += `| ${names[i]} | ${pass ? 'PASS' : 'MISS'} | ${evidence[i]} |\n`; });
+  text += '\n| Threshold | Combo median | Spam median | Random median |\n|---|---:|---:|---:|\n';
+  for (let i = 0; i < 8; i++) text += `| T${i + 1} | ${fmt(a.combo[i])} | ${fmt(a.spam[i])} | ${fmt(a.random[i])} |\n`;
+  text += '\n| Combo checkpoint | Resource | Samples | Median stock | Median max cost | Median stock/cost |\n|---|---|---:|---:|---:|---:|\n';
+  for (const p of a.pressure) text += `| T${p.threshold} | ${p.resource} | ${p.count}/${count} | ${fmt(p.held)} | ${fmt(p.maxCost)} | ${fmt(p.ratio)}× |\n`;
+  text += '\n| Seed | Bot | Outcome / stop | Placements | Board use | Living / map non-core slots | T1–T8 placements | Opening stall | False loss | Final stock W/S/A/F |\n|---|---|---|---:|---:|---|---|---|---:|---|\n';
+  for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.outcome} / ${r.stop} | ${r.placements} | ${fmt(r.boardUse * 100)}% | ${r.livingSlots} / ${r.mapSlots} | ${r.thresholds.map(t => t?.placements ?? '—').join(' / ')} | ${r.openingStall ? 'yes' : 'no'} | ${r.falseSoftLocks} | ${RESOURCES.map(k => r.resources[k] ?? 0).join('/')} |\n`;
   return text;
 }

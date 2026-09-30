@@ -47,12 +47,12 @@ export async function measure(config: GameConfig, count: number): Promise<RunRep
         child.on('close', code => {
           children.delete(child);
           clearTimeout(timer);
-          if (code !== 0 || runs.length !== (end - start + 1) * 2) reject(new Error(`Balance worker failed (${code}): ${errors}`));
+          if (code !== 0 || runs.length !== (end - start + 1) * 3) reject(new Error(`Balance worker failed (${code}): ${errors}`));
           else resolve(runs);
         });
       });
     }));
-    return batches.flat().sort((a, b) => a.seed - b.seed || (a.strategy === 'spam' ? -1 : 1));
+    return batches.flat().sort((a, b) => a.seed - b.seed || a.strategy.localeCompare(b.strategy));
   } finally {
     for (const child of children) child.kill();
     rmSync(directory, { recursive: true, force: true });
