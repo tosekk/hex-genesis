@@ -171,6 +171,12 @@ D4 regressions cover connected mountain count/size variety, hill/placeable distr
 
 ## Balance log
 
+### N8 v4 round 4 — food/water spending
+- Round3 committed `6168e56` and passes all higher-priority targets. Keep thresholds, yields and rewards unchanged. Starting water/food **0/0→8/8**; wood/stone remain6/6. For food/water producers, set the corresponding cost to at least its raw yield. This spends produced stock while retaining existing wood/stone access costs; the reserve covers initial costs and negative polar-oasis modifiers. This is literal data tuning, not a new upkeep rule.
+- Exact cost edits: gatherers_hut food 0→2; farm food 0→4; oasis_well water 0→3; glass_kiln water 2→3; ice_drill water 0→4; glacier_pump water 0→4; ice_fishery water 0→1; ice_fishery food 0→2; grain_fields food 0→4; windmill food 0→3; trapper_lodge food 0→3; hot_spring water 0→3; hot_spring food 0→2; lichen_farm food 0→4; salt_mine food 0→1; frost_kiln water 0→3.
+
+- Results: **50/50 combo wins, 46/50 spam losses**, zero combo opening stalls/false declarations; median winning board use **68.76%**. Targets **1/2/3/4/6 PASS**, **5 MISS**. T7 median stock W/S/A/F **665.5/266.5/657/596→665.5/262/458.5/479**; worst checkpoint median ratio becomes finite **300.5×**, still far above3×. T7 max remains59.80%. Ten harness checks, ten guardrail checks and typecheck pass (measurement135.05s with replay).
+
 ### N8 v4 round 3 — last-core wood gate
 - Round 2 committed `d010e37`. T7 wood **650→550**; every other number unchanged. Seed41 is the only late T7 run, with wood556 and all other T7 requirements already met at its T6 (356/597 slots). Matching T6 wood while retaining higher T7 stone/water/food allows its next transaction to award the last core just under60%. Non-decreasing thresholds explicitly permit equality.
 
