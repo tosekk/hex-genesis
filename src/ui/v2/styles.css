@@ -156,3 +156,5 @@
 .jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }
 
 @media (max-width:1150px) { .j-card { width:84px; height:84px; } }
+
+.j-deck-prompt { display:flex; align-items:center; justify-content:center; width:100%; min-height:92px; color:var(--ink2); font-size:14px; }

@@ -45,6 +45,7 @@ export class Ctrl {
   private readonly off: (() => void)[] = [];
 
   constructor(readonly session: GameSession, private readonly board: SlotHighlightBoard) {
+    this.biome = session.state.pendingOffer ? null : session.state.coreStack[0] ?? null;
     this.off.push(board.onPointer((pick, kind) => this.onPointer(pick, kind)));
     const keydown = (ev: KeyboardEvent) => this.onKey(ev, true);
     const keyup = (ev: KeyboardEvent) => this.onKey(ev, false);
@@ -61,10 +62,8 @@ export class Ctrl {
 
   get state(): Readonly<GameState> { return this.session.state; }
   get finderOn(): boolean { return this.tabHeld || this.finderToggled; }
-  /** Biome whose cards the deck shows: the selection, else the first held core, else forest. */
-  get effectiveBiome(): Biome {
-    return this.biome ?? this.state.coreStack[0] ?? 'forest';
-  }
+  /** A cleared triangle also clears the deck; no implicit biome is shown. */
+  get effectiveBiome(): Biome | null { return this.biome; }
 
   onChange(cb: () => void): void { this.changeCbs.push(cb); }
   onNotice(cb: (m: string) => void): void { this.noticeCbs.push(cb); }
@@ -86,6 +85,8 @@ export class Ctrl {
   // ----- selection commands -----
   selectBiome(b: Biome | null): void {
     this.biome = b;
+    this.hex = null; this.slot = null;
+    if (this.card?.kind === 'building' && (b === null || !this.state.config.rosters[b].includes(this.card.id))) this.card = null;
     if (this.card?.kind === 'core' && (b === null || this.coreDisabledReason(b as MainBiome) !== null)) this.card = null;
     this.sync();
   }
@@ -248,6 +249,7 @@ export class Ctrl {
         this.card = null; this.hex = null; this.slot = null; this.biome = null; this.lastBuilt = null;
         this.finderToggled = false; this.tabHeld = false;
         break;
+      case 'offerResolved': this.biome = e.biome; break;
       case 'offerShown': case 'spreadStarted': case 'runEnded':
         if (this.card?.kind === 'core') this.card = null;
         break;

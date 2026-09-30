@@ -45,7 +45,7 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
     const s = session.state;
     const cfg = s.config;
     const def = cfg.buildings[id];
-    panel.appendChild(head(icon(`buildings/${id}`, initials(def.name)), def.name, BIOME_LABEL[ctrl.effectiveBiome]));
+    panel.appendChild(head(icon(`buildings/${id}`, initials(def.name)), def.name, ctrl.effectiveBiome ? BIOME_LABEL[ctrl.effectiveBiome] : undefined));
     panel.appendChild(row(`Cost: ${fmtResources(def.cost)}`));
     panel.appendChild(row(`Base yield: ${fmtResources(def.baseYield, true)}`));
     for (const line of ruleLines(cfg, id)) panel.appendChild(row(line, 'j-rule'));
@@ -63,6 +63,7 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
   function renderCore(): void {
     const s = session.state;
     const b = ctrl.effectiveBiome;
+    if (b === null) return;
     const held = s.coreStack.filter((x) => x === b).length;
     panel.appendChild(head(icon('core', '◎'), `${BIOME_LABEL[b]} core`, BIOME_LABEL[b]));
     panel.appendChild(row(`Cores held: ${held}`));

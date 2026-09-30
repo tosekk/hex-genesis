@@ -54,3 +54,23 @@ describe('journal HUD opening offer', () => {
     expect(s.session.state.pendingOffer).toBeNull(); expect(s.session.state.coreStack).toContain(chosen);
   });
 });
+
+
+describe('journal biome selection', () => {
+  it('starts with a prompt, highlights the awarded biome, and clears both on a dead tile', () => {
+    const s = fixture();
+    expect(s.root.querySelector('.j-deck-prompt')?.textContent).toBe('Pick a biome or a tile');
+    expect(s.root.querySelector('.j-biome.selected')).toBeNull();
+    const biome = s.session.state.pendingOffer!.options[0]; s.click('.offer-overlay [data-index="0"]');
+    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome).toBe(biome);
+    expect(s.root.querySelector('[data-card="core"]')?.textContent).toContain(biome[0].toUpperCase() + biome.slice(1));
+    s.pointer({ hexId: 0, slot: null });
+    expect(s.root.querySelector('.j-biome.selected')).toBeNull();
+    expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+    s.click('[data-biome="forest"]');
+    expect(s.root.querySelector<HTMLElement>('.j-biome.selected')!.dataset.biome).toBe('forest');
+    expect(s.root.querySelector('.j-deck-prompt')).toBeNull();
+    s.click('[data-biome="forest"]');
+    expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+  });
+});

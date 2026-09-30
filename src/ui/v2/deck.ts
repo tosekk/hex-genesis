@@ -4,7 +4,7 @@ import { BIOME_LABEL, el, fmtResources, icon } from '../format';
 import { renderPreview } from '../preview';
 import type { Ctrl } from './ctrl';
 
-const isMain = (b: string): b is MainBiome => b === 'forest' || b === 'desert' || b === 'arctic';
+const isMain = (b: string | null): b is MainBiome => b === 'forest' || b === 'desert' || b === 'arctic';
 
 /** Short text stand-in when a building icon is missing (UI_SPEC §1). */
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 3).toUpperCase();
@@ -35,6 +35,10 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
     strip.replaceChildren();
     hideNote();
 
+    if (biome === null) {
+      strip.appendChild(el('div', 'j-deck-prompt', 'Pick a biome or a tile'));
+      return;
+    }
     if (isMain(biome)) {
       const held = s.coreStack.filter((b) => b === biome).length;
       const why = ctrl.coreDisabledReason(biome);
