@@ -1,11 +1,27 @@
+## Morning summary
+- Committed: N1 `457a221`; N2 `fd23f08`; N3 selected round 4 `72ced76`; N4 `0642114`; N0/D4 `0b7f609`.
+- Six calibration rounds: `922c134`, `f284644`, `9b84564`, `7b2aa4c`, `b9fdfe4`, `fefe6aa`; priority 4 > 2 > 1 > 3 retained.
+| Target (20 seeds, 20×14) | Final result |
+|---|---|
+| Pacing 7/22/45/90/160/270 ±20% | **MISS T1 only:** 2/21/44/93/173.5/299 |
+| T4–T6 spam/combo ≥1.5× | **PASS:** 2.94× / 2.51× / 1.90× |
+| Every spam T6 fill ≥70% | **MISS:** minimum 64.70%; early seeds 3,8,18,19 |
+| Combo ≥18/20 T6 and wins, zero soft-locks | **PASS:** 20/20 T6, 18/20 wins, zero declarations |
+- Designer choices: later mine-only openings need more starting wood/lower frozen costs for the retained yield channels; seeds 12/18 need an eighth core beyond six frozen thresholds. Six rounds are not an exhaustive impossibility proof; details below.
+- N4: both larger sizes pass §6/determinism/performance; default 200-map hash unchanged. 26×18 preview has 17/20 T6 and 0 wins: seven cores leave 9–32 legal sites in completers. Keep shipping size 20×14.
+- Validation: 162 scoped tests pass, 5 opt-in skipped; typecheck passes. N1 full run found Sol’s obsolete duplicate-pair tutorial fixture; Sol reports fixed in `925ad36`, final rerun pending.
+- Playtest seed **3** for full progression and early spam T6; **13** for Arctic Polar Base recovery and a clear combo-vs-spam difference. Reports: `tests/balance/REPORT.md`; all round inputs/results archived beside it.
+- N5 handoff complete; N6 preview optimization and 50-seed confirmation follow while time remains.
+
 # Status — `astra`
 
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-N4 complete: larger-map tests and informational preview pass; preparing N5 morning handoff. N3 selected round 4 in `72ced76`.
+N5 complete; N6 next. N1–N4 committed, standard-board calibration remains selected round 4.
 
 ## Done
+- N4 — size-aware cluster density, 400 larger-map invariant checks, unchanged default terrain, 26×18 balance preview — `0642114`.
 - N3 — six committed calibration rounds; round 4 selected by priority, targets 4 and 2 pass, remaining misses documented — selection `72ced76` (rounds `922c134`, `f284644`, `9b84564`, `7b2aa4c`, `b9fdfe4`, `fefe6aa`).
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
 - N1 — exact v2 economy, immutable v2 guardrail fixture, six-threshold/recipe/yield checks — `457a221`.
