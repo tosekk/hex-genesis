@@ -16,10 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V12 committed `ace4f00`. V13 WAITING for Opus's committed optional slot-highlight contract; V14 journal tutorial presentation can proceed independently while it lands.
+V11 `5f84c07`, V12 `ace4f00`, V14 COMPLETE (journal tutorial CSS; 53 owned tests/typecheck/scoped build pass). V13 BLOCKED: Opus usage-limited, O9 not started; no committed slot-highlight contract. Journal tutorial browser layout review remains pending after native browser windows became unavailable.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
+- V14 — journal paper/ink note at left/top 300px, 250px wide, handwritten heading and sketch device face; collapsible behavior unchanged, body scrolls within reserved bottom-deck space. Nine tutorial tests and scoped production build pass; new fonts bundle successfully. Browser review blocked by `cgWindowNotFound` in both Safari and Brave. Hash recorded after commit.
 - V12 — `ace4f00` — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass.
 - V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Commit `5f84c07`.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
@@ -51,10 +52,13 @@ V12 committed `ace4f00`. V13 WAITING for Opus's committed optional slot-highligh
 
 ## Blockers
 <!-- what, waiting on whom -->
+- V13: `src/core/contracts.ts` still lacks `setSlotHighlight`; Opus's Current says PAUSED (usage limit), O9 not started. Waiting for the required `[opus] CONTRACT` commit; no renderer API workaround or edits to core.
+- V14 manual layout review: Safari icon sheet was reviewed successfully for V11, but later both Safari and Brave window bindings returned `cgWindowNotFound`, including fresh inventory/rebind attempts. 1280×720 / 1024×640 integrated tutorial review remains pending; no browser pass claimed. Temporary owned QA pages removed.
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
+- V14 / UI_SPEC §1/§6: reuse Sonnet's already committed `src/ui/v2/fonts.css` (Patrick Hand/Nunito + adjacent OFL licenses); fonts currently live in his bundled UI directory, not `public/assets/fonts/`. CSS imports the existing faces without duplicating assets or changing his paths. System font fallbacks remain. No tutorial copy, VO IDs, commands, triggers, mute/collapse semantics changed.
 - §2/§7: presentation dimensions, colors, and placeholder shapes live only in renderer helpers; no simulation or config values are changed.
 - R1-fix / §4: picking uses an invisible full-radius hex at each fixed tile elevation, independent of inset visual tops and reveal flips. The surface follows the exact board footprint, so points outside the board remain unpicked. It adds no draw call and is disposed with the board.
 - §19: a building's instanced shape/color is chosen on placement and retained until its BuildingId changes or it is demolished; biome conversion never rebuilds it.
@@ -90,6 +94,8 @@ V12 committed `ace4f00`. V13 WAITING for Opus's committed optional slot-highligh
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **Sonnet / V14 layout:** tutorial is left 10px, top 300px, width 250px at 720px height (and 640px). It reserves 220px below for your bottom detail/deck, scrolls long notes, and collapses to a title row. To adjust stack clearance without a Sol edit, set inherited `--tutorial-top` on `#tutorial` (e.g. `320px`) and/or `--tutorial-bottom-clearance`. At heights below 600px it uses top 240px and 140px bottom clearance. Fonts share your committed OFL faces. Please check the actual journal stack overlap at 1280×720 / 1024×640 when browser control is available; Sol's native windows became unavailable before that check.
+
 - **Sonnet / Opus V12 ready:** `import { audioSettings } from './audio/settings'` (adjust relative path). Read `audioSettings.muted` / `.volume`, call `.setMuted(boolean)` / `.setVolume(0…1)`, `.subscribe(() => syncMenu())` returns an unsubscribe; callbacks fire on changes only, so sync once initially. Existing `terraform.audio.v1` preferences preserved. `createAudio(root, session, { controls: false })` omits its widget; omitted options keep the legacy widget. Global settings update every live audio instance and active SFX; unsubscribe on disposal. Tutorial VO keeps its existing separate mute.
 
 - **Sonnet / V11 icon files ready:** `public/assets/icons/buildings/lumber_camp.svg`, `public/assets/icons/buildings/hillside_mine.svg`, `public/assets/icons/buildings/sawmill.svg`, `public/assets/icons/buildings/gatherers_hut.svg`, `public/assets/icons/buildings/farm.svg`, `public/assets/icons/buildings/quarry.svg`, `public/assets/icons/buildings/palm_grove.svg`, `public/assets/icons/buildings/stonemason.svg`, `public/assets/icons/buildings/oasis_well.svg`, `public/assets/icons/buildings/glass_kiln.svg`, `public/assets/icons/buildings/driftwood_camp.svg`, `public/assets/icons/buildings/scree_quarry.svg`, `public/assets/icons/buildings/ice_drill.svg`, `public/assets/icons/buildings/glacier_pump.svg`, `public/assets/icons/buildings/ice_fishery.svg`, `public/assets/icons/buildings/grain_fields.svg`, `public/assets/icons/buildings/windmill.svg`, `public/assets/icons/buildings/caravanserai.svg`, `public/assets/icons/buildings/trapper_lodge.svg`, `public/assets/icons/buildings/resin_works.svg`, `public/assets/icons/buildings/hot_spring.svg`, `public/assets/icons/buildings/lichen_farm.svg`, `public/assets/icons/buildings/salt_mine.svg`, `public/assets/icons/buildings/frost_kiln.svg`; `public/assets/icons/terrain/mountain.svg`, `public/assets/icons/terrain/water.svg`, `public/assets/icons/terrain/woods.svg`, `public/assets/icons/terrain/marsh.svg`; `public/assets/icons/core.svg`. Use `import.meta.env.BASE_URL + 'assets/icons/…'` for itch subpaths, retain text fallback per UI_SPEC. Preview: `/src/render/iconPreview.html` (24/32/64 px on `#F4EAD5`). No asset dependencies.
