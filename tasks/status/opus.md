@@ -3,8 +3,7 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O6.4, waiting for astra's FINAL N7 round + recommended seed. Round 1 was checked as a preliminary (see Integration log); round 2 `1a2c142` has landed, and N7 is still in progress.
-O7 (release readiness) ✅ this commit. O6.1–O6.3 ✅.
+IDLE — available. O6 (O6.1–O6.4) and O7 complete. Final N7 `d5910a1` verified: autoplay + pacing green, full browser run on seed 1 WON. Ready for release packaging (`npm run package`) whenever the designer calls it.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -66,6 +65,22 @@ O7 (release readiness) ✅ this commit. O6.1–O6.3 ✅.
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O6.4 FINAL: N7 `d5910a1` (astra kept round 3 `f6b6d45`).** All checks ran on a clean `git archive d5910a1` export, so no uncommitted work from others is included.
+  - **Autoplay (real map): PASS.** Seeds 1–5 all WIN (591–639 placements, 5–7 cores), `assertInvariants` holds after every action, and replay-determinism passes.
+  - **Pacing:** cumulative placements per threshold, median of seeds 1–5, my sensible-greedy bot:
+
+    | | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | board full |
+    |---|---|---|---|---|---|---|---|---|---|
+    | v3 target (±20%, T1 exempt) | 7 | 22 | 45 | 90 | 160 | 270 | 360 | 450 | — |
+    | **real map, final** | 6 | 18 | 45 | **114** | 176 | 321 | 377 | 465 | 591–639 |
+    | flat map (`npm run pacing`) | 5 | 16 | 35 | 81 | 199 | 347 | 393 | 507 | 840 |
+
+    Within ±20% except T4 (+27%). T6 +19%, T7 +5%, T8 +3%. T8 comes before board fill on every seed (v3 requirement ✅). This matches astra's combo-bot report (T6 323, T7/T8 362.5/433.5) to within a few %. T1 is still 4–17: seeds 3/4 open slowly because T1 is stone-only.
+  - **Browser run to a WIN: PASS.** Clean release build of `d5910a1`, served statically (`vite preview`), **seed 1** (astra's pick), played entirely through the real UI (canvas pointer events + HUD buttons, real-time spreads).
+    - Desert/Arctic offers alternated; thresholds reached at placements 2/14/27/96/161/298/357/429; 7 cores placed, the last 2 held with "No legal site left" (S6 chip state).
+    - The S7 win-progress readout counted down to "Empty slots: 0 (0 tiles) · Legal core sites: 0", then the **"Planet terraformed!"** end screen: Wood 2035 / Stone 1472 / Water 895 / Food 434, time 2:11, seed 1.
+    - 639 placements, identical to the autoplay bot's seed-1 result. 0 console errors, 0 uncaught exceptions.
+    - Overlays checked: toasts and floating payout labels are `pointer-events: none`, so they never block board clicks.
 - **O7 itch.io embed test** (`npm run itch-test` → `http://127.0.0.1:4197/itch-frame.html`).
   - The page mimics itch: a 1280×720 iframe with itch-style `allow` attributes, inside a tall scrolling page, CROSS-SITE by default (page on 127.0.0.1, game on localhost; `?same=1` for an inspectable same-origin frame; `?game=<url>` for A/B against another build).
   - Results on the RELEASE=1 build of the working tree:
@@ -131,6 +146,7 @@ O7 (release readiness) ✅ this commit. O6.1–O6.3 ✅.
 - to sonnet (cosmetic): after a win, the hex panel stays open behind the end screen with live "Demolish" buttons (the session rejects them, since the run is over). Close/hide the panel on `runEnded`.
 - to sonnet (minor): "New Run" with a typed seed on the end screen doesn't update `?seed=` in the URL, so a reload replays the previous seed.
 - to sol (UX nit): the first tutorial card ("Choose Forest, Desert, or Arctic…") stays up for the whole run unless the player clicks Next. Consider auto-advancing when the next queued event arrives.
+- **to sol (P2, minor):** R7 floating payout labels queue up during fast building, and the backlog keeps playing long after the actions, including over the win screen. Seed 1 run: 207 `.board-payout` nodes queued at the win, draining at ~7/s with 9 visible, so ~30 s of labels over "Planet terraformed!". Suggest capping the queue (drop or merge the oldest when the backlog exceeds ~20) and clearing it on `runEnded`/`runStarted`. They are pointer-events: none, so this is cosmetic only.
 - **to sonnet (test fixture, not a session bug):** 6 tests in `src/game/session.unit.test.ts` (2, 3, 4, 4b, 4c, 5) fail on HEAD since D1 landed. `ORIGIN = 3*20+3` on seed 1 is now a `basin` (unplaceable), so `startSpreadAt` → `placeCore` is correctly rejected. Pick the origin from `legalCoreSites(session.state)` (or a fixed seed/tile verified to be plain) instead of a hard-coded id. Reproduced on a clean `git archive HEAD` export, so it's unrelated to `c357845`.
 - to astra (perf FYI, not a rule bug): `previewPlacement` `structuredClone`s the whole GameState per call (~1 ms each). Fine for HUD hover. Avoid calling it in loops over the whole board.
 - ~~to deepseek (blocker): `awardCore` NOT_IMPLEMENTED stops `session.newRun`.~~ Resolved: deepseek dropped, D2 by astra (`0daa072`), D3 by sonnet (`c23be27`).
