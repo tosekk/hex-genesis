@@ -2,9 +2,9 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
-## MORNING SUMMARY (opus, night 2) — updated 03:40 GMT+5
+## MORNING SUMMARY (opus, night 2) — updated 04:25 GMT+5
 
-**Ship candidate: `opus/night` @ `e124f51`** = `main` `d151c8e` + opus's production crash note. All green: `npm test` 416 passed / 0 failed (~30 s); package + verify OK. **Content sha256 `bf832a18d2bb6edc3cf4952f6ac271ab938637b18c4504e3b19f9cdebb167a35`, 5,241,107 bytes (5.00 MB), 67 files, 19 MP3s each once.**
+**Ship candidate: `opus/night` @ `07a2985`** = `main` `b0abf4f` (incl. sol V18 behind `?style=illustrated`, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 450 passed / 0 failed (~27 s); package + verify OK. **Content sha256 `63b103dedafab554c9a728ef579b244426d4c9b0d0d581ca3432674950ff94f1`, 5,266,707 bytes (5.02 MB), 68 files (+ the lazy GLTFLoader chunk), 19 MP3s each once.** Headless-Chromium smoke of this build in the itch frame: offer → core → spread, no exceptions, no crash note (only a harmless `favicon.ico` 404).
 
 **Designer, locally:**
 ```bash
@@ -13,24 +13,28 @@ git merge origin/opus/night          # into your local main; merge, not rebase
 npm ci                               # only if package-lock.json changed
 npm test                             # expect 0 failed
 npm run package                      # builds, then runs verify-zip automatically
-# compare the "content sha256" line with bf832a18…b167a35 (the zip's own sha256 may differ: deflate differs by Node version)
+# compare the "content sha256" line with 63b103de…50ff94f1 (the zip's own sha256 may differ: deflate differs by Node version)
 npm run itch-test                    # optional: http://127.0.0.1:4197/itch-frame.html
 ```
 Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen button on. The page copy is `itch/PAGE.md`; only designer-only `[CHECK]`s remain.
 
-**Done tonight (opus):** review of every sol/astra commit (P1-A and P1-B both closed, no open P0/P1); release gate; production crash note (`168c4c5`: "Something went wrong", Reload (seed N) / Keep playing, checked in the itch frame).
+**Done tonight (opus):** review of every sol/astra commit (P1-A and P1-B closed); release gate; production crash note (`168c4c5`: "Something went wrong", Reload (seed N) / Keep playing, checked in the itch frame); soft-lock fix (`07a2985`): astra's audit found **no** missed dead states, but its fixtures showed two cases where the detector declared a loss while a rebuild still paid; fixed conservatively (it can only declare less), with regression tests.
 
-**Open risks:** see the end of this block (updated as the night goes on).
+**Open risks:**
+- **`npm test` on your Mac:** sol's `src/render/shaderCheck.test.ts` runs only on macOS and calls `/usr/bin/clang` unguarded. Without Xcode Command Line Tools it fails with a clang error. It isn't a game bug; install the CLT or ignore that one test (P1-C → sol).
+- A spammer who fills the board still gets no loss screen (§42 vs §44, known): every such state has a real rebuild payout (astra's audit, 195/195 recoverable), so End Run is the exit. A HUD hint when "Slots left 0" would help (designer call).
+- The build's zip bytes differ by Node version; compare the content sha256.
 
 **Needs a designer decision:** v5 target d (stock pressure) is still missed (worst 108.83×, T7 stone); astra's v5 result has the options. The itch page `[CHECK]`s (jam name/tag, your name, cover and screenshots, browsers tested).
 
-> **RELEASE READY at `e124f51`** (`opus/night`: `main` `d151c8e` + opus crash note `168c4c5`; later status-only commits change no build input). `npm test`: 58 files, 416 passed, 0 failed (~30 s). `npm run package` + `verify-zip`: 67 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,241,107 bytes (5.00 MB). Content sha256 `bf832a18d2bb6edc3cf4952f6ac271ab938637b18c4504e3b19f9cdebb167a35`.** The zip sha256 here is `8cde4e01…9dd567` (Node 22.22.0); a local zip may differ byte-wise (deflate), so compare the content sha256. Previous good: `988875f` (content `af3370c2…`), before the crash note.
+> **RELEASE READY at `07a2985`** (`opus/night`: `main` `b0abf4f` + opus crash note `168c4c5` + soft-lock fix `07a2985`; later status-only commits change no build input). `npm test`: 450 passed, 0 failed (~27 s). `npm run package` + `verify-zip`: 68 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,266,707 bytes (5.02 MB). Content sha256 `63b103dedafab554c9a728ef579b244426d4c9b0d0d581ca3432674950ff94f1`.** zip sha256 here `56f397d6…98668e05` (Node 22.22.0). Previous good: `e124f51` (content `bf832a18…`).
 
 ## Current
-**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock audit: waiting for astra's stuck-state audit (`tests/balance/stuck/` not on `main` yet) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work (V18 shader, GLB, `?journal=paper`): review as it lands · 6 morning summary by 06:15.
+**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock ✅ `07a2985` (audit: 0 missed dead states; fixed 2 over-declarations its fixtures exposed) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work: V18 reviewed (notes in Bugs routed); `?journal=paper` not landed yet · 6 morning summary by 06:15.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
+- Night 2 step 3 — astra's audit (`a2885bb`, `tests/balance/stuck/REPORT.md`): 200 terminal states (spam + random, seeds 1–100), **0 proven dead, 0 missed dead states, 0 false positives on real states**, and every stall has a replayed recovery funded by refunds. So nothing new needed declaring. Its unit fixtures showed that my detector **over-declared** in two constructed cases (a §44 violation): (1) a full board whose first combo needs two replacements; (2) an empty, already-paid slot whose first completion pays adjacency, fundable only by refunds elsewhere. Fix in `isProvablySoftLocked`: the optimistic wallet (resources + every refund) is used everywhere, including simulations. An explicit pass keeps any unpaid pair/triple position alive when its recipe is in the roster and fundable (cost counts only the recipe buildings not already standing). It can only turn "dead" into "not dead". Two regression tests, each with a dead control; both fail on the old detector. Full suite 450/0; e2e runtime unchanged — `07a2985`.
 - Night 2 step 4 — `src/app/crashScreen.ts` (+6 tests), installed only in production (`main.ts`: DEV keeps `errorOverlay`). An uncaught error or unhandled rejection shows a journal-paper note, "Something went wrong", with the error text, **Reload (seed N)** (sets `?seed=N` and keeps `?ui=` and every other param) and **Keep playing**. Repeats update one counter instead of stacking. It ignores cross-origin "Script error.", ResizeObserver warnings, other-origin files (extensions) and NotAllowed/Abort/NotSupported media errors, so optional audio can never trigger it. Verified in the release build: the bundle contains the note and not the dev overlay. In headless Chromium inside `npm run itch-test`'s frame (same-origin, seed 7): the benign rejection → no note; a thrown error → the note; Keep playing → dismissed, game still running; Reload → `index.html?seed=7` — `168c4c5`.
 - O13.1 — `isProvablySoftLocked` skips core hexes (refund estimate + candidate scan). New test: full except three empty unpaid core hexes, rich, T8 unmet → loss; same board without the cores → not a loss (fails on the old endgame). `fullBoard()` fixture no longer builds on core hexes — `105fab2`.
 - O13.2 — `assertInvariants`: no building on a core hex (independent `state.cores` oracle) + a negative test; loss check and board-used stats skip core hexes; both bots skip core hexes; the spread-lock probe uses a revealed non-origin claim. Default autoplay = greedy 1–3, spam 1, replay 1; `E2E_FULL=1` / `npm run test:e2e-full` = the old full set. `npm test`: 52 files, 380 passed, **30 s** (was 83 s) — `18ba0b1`.
@@ -203,7 +207,17 @@ Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen b
 
 ## Bugs routed
 <!-- - to <tag>: <report> -->
-### Night 2 re-review (commits `f8e53fb`..`988875f`)
+### Night 2 re-review, part 2 (commits `38757d5`..`b0abf4f`)
+- **P2-D CLOSED** by sol `38757d5` (Escape no longer counts as the voice-unlock gesture; tests added).
+- **P1-C → sol (test robustness; affects the designer's morning `npm test`):** `src/render/shaderCheck.test.ts` "compiles and links fill + hull…" runs whenever `process.platform === 'darwin'` and calls `execFileSync('/usr/bin/clang', …)`. On a Mac without Xcode Command Line Tools, `/usr/bin/clang` is a stub that exits non-zero, so the test **fails** instead of skipping. Fix: wrap the compile step in try/catch → `ctx.skip('clang unavailable')`, as is already done for exit 77 (no GL context). Nothing ships from it (the `.c` file isn't bundled).
+- **V18 (`c44481b`, `0454fda`), flag-only review. Not approved for default; that's the designer's call:**
+  - Gating is correct: `?style=illustrated` gates the material, the ink hulls, the kiln emissive attribute and `ModelAssets`; the default path creates none of them. `GLTFLoader` is a **dynamic import**, a separate 44 kB chunk that is never fetched in the default mode, and no `.glb` files exist yet.
+  - **Default-path change:** `boardView` now calls `cores.set(...)` on `setBoard` and when a core hex refreshes/reveals. I smoke-tested it in headless Chromium: the core renders, the spread animates, no errors.
+  - **Perf risks (illustrated only):** each instanced batch gets a second `InstancedMesh` ink hull (2× draw calls, 2× vertex work), and `toNonIndexed()` roughly triples vertex count per building geometry. `frustumCulled = false` on the hulls. Fine at 20×14 if sol's fps log holds; re-measure with real GLBs, which are capped at 600 tris/building and 1,500/core by `BUILDING_LIMITS`/`CORE_LIMITS`.
+  - The GLB validator is sound: glTF 2.0 binary only, no textures/images, embedded buffers, no skins/animations/morphs, COLOR_0 required, ≤ 4 materials, triangle/size limits. A failed model falls back to procedural (`failures` map).
+  - Shader normal transform divides by squared column lengths (the inverse-transpose for non-uniform scale): correct.
+- astra `a2885bb`, `c8a3673`, `b0abf4f`: `tests/balance/**` only (audit, 200-seed generalization, strategy reports). No config/default change. `performance.now` there only times the report.
+
 - **P1-A CLOSED** by astra `f8e53fb` (W3 is `it` now and passes).
 - **P1-B CLOSED** by sol `8d13729`: `slotSummary` / `emptySlotSummary` take their numbers from `slotCounts` and skip core hexes in the finder list; the end screen uses `slotCounts`; the Tab finder never marks a core hex; the journal detail panel and legacy hex panel say the core occupies the tile; the renderer hides slot anchors and buildings on core hexes, and slot picks and slot highlights skip them. Tests cover the journal HUD, `winProgress` and `render/slots`. `src/render` imports `isCoreHex` from `src/sim/economy`. That's read-only and allowed (render → sim; never sim → render).
 - **v5 economy (rounds 2–6, `b76c051` final) + result `e2ce6b1`:** I re-checked R1–R4 independently on the final config: **0 violations** (every cost 1–10, no water/food producer charges its own output, no cost above its own yield, starting stock affords each main biome's cheapest building). `config.test.ts` still enforces R1–R3, and round 6 also freezes the terrain/zone modifiers at v3 exactly (stricter than before, fine). T8 food rose to 1200 (thresholds stay non-decreasing).
