@@ -65,8 +65,6 @@ varying vec3 vView;
 varying vec3 vKey;
 varying float vAO;
 varying float vEmit;
-#include <tonemapping_pars_fragment>
-#include <colorspace_pars_fragment>
 void main() {
   vec3 n = normalize(vNormal);
   float key = dot(n, normalize(vKey));
@@ -103,7 +101,6 @@ void main() {
 }`,
     fragmentShader: `
 uniform vec3 ink;
-#include <colorspace_pars_fragment>
 void main() {
   gl_FragColor = vec4(ink, 1.0);
   #include <colorspace_fragment>
