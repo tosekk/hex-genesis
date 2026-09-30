@@ -121,12 +121,14 @@
 .j-card .icon { width:40px; height:40px; margin:0; }
 .j-card-name { font-size:12px; font-weight:700; line-height:1.15; }
 .j-card.core { border-color:var(--accent); background:color-mix(in srgb, var(--biome, #ccc) 35%, var(--paper2)); }
-.j-card.grey { filter:grayscale(1); opacity:.6; }
+.j-card.grey > .icon { filter:grayscale(1); opacity:.6; }
+.j-card.grey { background:var(--paper2); color:var(--ink2); }
 .j-card.disabled { cursor:not-allowed; }
 .j-card.unaffordable { opacity:.55; }
-.j-card-why { position:absolute; bottom:2px; font-size:10px; font-weight:800; color:var(--bad); }
-.j-badge { position:absolute; top:-6px; right:-6px; background:var(--accent); color:#fff; border:1.5px solid var(--ink); border-radius:10px; font-size:11px; font-weight:800; min-width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
-.j-note { position:fixed; z-index:8; background:#fffaf0; border:1.5px solid var(--ink); padding:6px 9px; font-size:12px; box-shadow:2px 3px 0 rgba(46,42,37,.3); pointer-events:none !important; transform:rotate(-.8deg); max-width:240px; }
+.j-card-why { font-size:12px; font-weight:800; line-height:1; color:var(--bad); }
+.jhud .j-card.core.disabled .icon { width:26px; height:26px; }
+.j-badge { position:absolute; top:2px; right:2px; background:var(--accent); color:#fff; border:1.5px solid var(--ink); border-radius:10px; font-size:12px; font-weight:800; min-width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+.j-note { position:fixed; z-index:30; background:#fffaf0; border:1.5px solid var(--ink); padding:6px 9px; font-size:12px; box-shadow:2px 3px 0 rgba(46,42,37,.3); pointer-events:none !important; max-width:240px; overflow:auto; }
 
 .j-triangle { position:relative; width:232px; height:224px; flex:none; }
 .j-tri-lines { position:absolute; inset:0; width:100%; height:100%; }

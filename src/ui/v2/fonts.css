@@ -1,5 +1,5 @@
 /* Bundled OFL fonts (licenses next to the files): Patrick Hand (headings), Nunito (body). */
 @font-face { font-family: 'Patrick Hand'; font-style: normal; font-weight: 400; font-display: swap;
-  src: url('./fonts/patrick-hand.woff2') format('woff2'); }
+  src: url('/assets/fonts/patrick-hand.woff2') format('woff2'); }
 @font-face { font-family: 'Nunito'; font-style: normal; font-weight: 200 1000; font-display: swap;
-  src: url('./fonts/nunito.woff2') format('woff2'); }
+  src: url('/assets/fonts/nunito.woff2') format('woff2'); }

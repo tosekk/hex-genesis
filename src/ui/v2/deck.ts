@@ -16,15 +16,18 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
   const note = el('div', 'j-note');
   note.hidden = true;
   deck.appendChild(strip);
-  root.append(deck, note);
+  root.append(deck); (root.closest('.jhud') ?? root).append(note);
 
   function showNote(card: HTMLElement, fill: (box: HTMLElement) => void): void {
     note.replaceChildren();
     fill(note);
     note.hidden = false;
     const r = card.getBoundingClientRect();
-    note.style.left = `${Math.max(8, r.left + r.width / 2 - note.offsetWidth / 2)}px`;
-    note.style.top = `${Math.max(8, r.top - note.offsetHeight - 8)}px`;
+    const d = deck.getBoundingClientRect(), width = Math.min(240, d.width || 240);
+    note.style.width = `${width}px`;
+    note.style.maxHeight = `${Math.max(120, d.top - 120)}px`;
+    const left = Math.max(d.left, Math.min(d.right - width, r.left + r.width / 2 - width / 2));
+    note.style.left = `${left}px`; note.style.top = `${Math.max(108, r.top - note.offsetHeight - 12)}px`;
   }
   const hideNote = () => { note.hidden = true; };
 
@@ -32,18 +35,19 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
     const s = session.state;
     const cfg = s.config;
     const biome = ctrl.effectiveBiome;
+    const scroll = strip.scrollLeft;
     strip.replaceChildren();
     hideNote();
 
     if (biome === null) {
       strip.appendChild(el('div', 'j-deck-prompt', 'Pick a biome or a tile'));
-      return;
+      strip.scrollLeft = scroll; return;
     }
     if (isMain(biome)) {
       const held = s.coreStack.filter((b) => b === biome).length;
       const why = ctrl.coreDisabledReason(biome);
       const card = el('button', 'j-card core');
-      card.dataset.card = 'core';
+      card.dataset.card = 'core'; card.setAttribute('aria-disabled', String(why !== null)); card.setAttribute('aria-pressed', String(ctrl.card?.kind === 'core'));
       card.classList.toggle('grey', held === 0);
       card.classList.toggle('disabled', why !== null);
       card.classList.toggle('selected', ctrl.card?.kind === 'core');
@@ -56,6 +60,7 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
         el('b', undefined, `${BIOME_LABEL[biome]} core`),
         el('div', undefined, why ?? 'Click, then pick a highlighted tile.'))));
       card.addEventListener('mouseleave', hideNote);
+      card.addEventListener('focus', () => card.dispatchEvent(new MouseEvent('mouseenter'))); card.addEventListener('blur', hideNote);
       strip.appendChild(card);
     }
 
@@ -64,7 +69,7 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
       if (!def) continue;
       const affordable = Object.entries(def.cost).every(([r, v]) => (s.resources[r] ?? 0) >= v);
       const card = el('button', 'j-card building');
-      card.dataset.building = id;
+      card.dataset.building = id; card.setAttribute('aria-pressed', String(ctrl.card?.kind === 'building' && ctrl.card.id === id));
       card.classList.toggle('unaffordable', !affordable);
       card.classList.toggle('selected', ctrl.card?.kind === 'building' && ctrl.card.id === id);
       card.append(icon(`buildings/${id}`, initials(def.name)), el('span', 'j-card-name', def.name));
@@ -73,7 +78,8 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
         const slotSel = ctrl.hex !== null && ctrl.slot !== null && s.hexes[ctrl.hex].slots[ctrl.slot].building === null;
         if (slotSel) {
           const box = el('div', 'preview');
-          renderPreview(box, session.preview(ctrl.hex!, ctrl.slot!, id), cfg); // discovered combos only
+          const preview = session.preview(ctrl.hex!, ctrl.slot!, id);
+          renderPreview(box, preview ? { ...preview, combos: preview.combos.filter(c => s.discoveredCombos.includes(c.match.comboId)) } : null, cfg);
           b.append(el('b', undefined, def.name), box);
         } else {
           b.append(el('b', undefined, def.name),
@@ -82,8 +88,10 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
         }
       }));
       card.addEventListener('mouseleave', hideNote);
+      card.addEventListener('focus', () => card.dispatchEvent(new MouseEvent('mouseenter'))); card.addEventListener('blur', hideNote);
       strip.appendChild(card);
     }
+    strip.scrollLeft = scroll;
   }
 
   render();
