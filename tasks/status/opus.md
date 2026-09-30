@@ -2,9 +2,9 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
-## MORNING SUMMARY (opus, night 2) — updated 03:50 GMT+5
+## MORNING SUMMARY (opus, night 2) — updated 04:20 GMT+5
 
-**Ship candidate: `opus/night` @ `07a2985`** = `main` `b0abf4f` (incl. sol V18 behind `?style=illustrated`, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 450 passed / 0 failed (~27 s); package + verify OK. **Content sha256 `63b103dedafab554c9a728ef579b244426d4c9b0d0d581ca3432674950ff94f1`, 5,266,707 bytes (5.02 MB), 68 files (+ the lazy GLTFLoader chunk), 19 MP3s each once.** Headless-Chromium smoke of this build in the itch frame: offer → core → spread, no exceptions, no crash note (only a harmless `favicon.ico` 404).
+**Ship candidate: `opus/night` @ `6fc9c4b`** = `main` `3b66b00` (incl. sol's payout-label fix, V18 and `?journal=paper` behind flags, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 461 passed / 0 failed (~30 s); package + verify OK. **Content sha256 `c9033ca29121769737d36f72cc54633991c948ade0390cf4aca9e30e7a37a2ce`, 5,269,370 bytes (5.03 MB), 68 files, 19 MP3s each once.** Headless-Chromium smoke of the default build in the itch frame (at `07a2985`): offer → core → spread, no exceptions, no crash note.
 
 **Designer, locally:**
 ```bash
@@ -13,7 +13,7 @@ git merge origin/opus/night          # into your local main; merge, not rebase
 npm ci                               # only if package-lock.json changed
 npm test                             # expect 0 failed
 npm run package                      # builds, then runs verify-zip automatically
-# compare the "content sha256" line with 63b103de…50ff94f1 (the zip's own sha256 may differ: deflate differs by Node version)
+# compare the "content sha256" line with c9033ca2…7a37a2ce (the zip's own sha256 may differ: deflate differs by Node version)
 npm run itch-test                    # optional: http://127.0.0.1:4197/itch-frame.html
 ```
 Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen button on. The page copy is `itch/PAGE.md`; only designer-only `[CHECK]`s remain.
@@ -27,10 +27,10 @@ Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen b
 
 **Needs a designer decision:** v5 target d (stock pressure) is still missed (worst 108.83×, T7 stone); astra's v5 result has the options. The itch page `[CHECK]`s (jam name/tag, your name, cover and screenshots, browsers tested).
 
-> **RELEASE READY at `07a2985`** (`opus/night`: `main` `b0abf4f` + opus crash note `168c4c5` + soft-lock fix `07a2985`; later status-only commits change no build input). `npm test`: 450 passed, 0 failed (~27 s). `npm run package` + `verify-zip`: 68 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,266,707 bytes (5.02 MB). Content sha256 `63b103dedafab554c9a728ef579b244426d4c9b0d0d581ca3432674950ff94f1`.** zip sha256 here `56f397d6…98668e05` (Node 22.22.0). Previous good: `e124f51` (content `bf832a18…`).
+> **RELEASE READY at `6fc9c4b`** (`opus/night`: `main` `3b66b00` + opus `168c4c5` crash note + `07a2985` soft-lock fix; later status-only commits change no build input). `npm test`: 461 passed, 0 failed. `npm run package` + `verify-zip`: 68 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,269,370 bytes (5.03 MB). Content sha256 `c9033ca29121769737d36f72cc54633991c948ade0390cf4aca9e30e7a37a2ce`.** zip sha256 here `adc960e7…d5312f43` (Node 22.22.0). Previous good: `07a2985` (content `63b103de…`).
 
 ## Current
-**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock ✅ `07a2985` (audit: 0 missed dead states; fixed 2 over-declarations its fixtures exposed) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work: V18 reviewed (notes in Bugs routed); `?journal=paper` not landed yet · 6 morning summary by 06:15.
+**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock ✅ `07a2985` (audit: 0 missed dead states; fixed 2 over-declarations its fixtures exposed) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work: V18 + `?journal=paper` reviewed (notes in Bugs routed) · 6 morning summary by 06:15.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -207,7 +207,12 @@ Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen b
 
 ## Bugs routed
 <!-- - to <tag>: <report> -->
-### Night 2 re-review, part 2 (commits `38757d5`..`b0abf4f`)
+### Night 2 re-review, part 3 (commits `7424160`..`3b66b00`)
+- **P1-C still open** (sol's `shaderCheck.test.ts` has no clang guard on macOS; see part 2).
+- `07946d2` payout labels (default-affecting bug fix; closes my old R7 backlog P2): at most 20 queued labels (the oldest are dropped, the remaining wait is re-bounded, the rise offset is capped), `show()` ignores non-playing states, and a new state object (new run) or a run end clears everything. Correct; tests cover the cap and the clear. The gate was re-run after it.
+- `7424160` `?journal=paper` (flag-only, not for default without the designer): static, data-free inline SVG ornaments (binding + page corners), `aria-hidden`, no game data read. Undiscovered recipe pages still come from `comboPages` locked entries, so there's no §32/§38 leak. `paper.css` is imported unconditionally (default bundle +~2 kB) but only matches `.jr-paper`. No perf risk (DOM only when the book is open).
+- `36639ae` (sol regressions for full-board V18 materials/model limits) and astra `3f14efa` (session-level replay of audit witnesses) are tests/docs only.
+
 - **P2-D CLOSED** by sol `38757d5` (Escape no longer counts as the voice-unlock gesture; tests added).
 - **P1-C → sol (test robustness; affects the designer's morning `npm test`):** `src/render/shaderCheck.test.ts` "compiles and links fill + hull…" runs whenever `process.platform === 'darwin'` and calls `execFileSync('/usr/bin/clang', …)`. On a Mac without Xcode Command Line Tools, `/usr/bin/clang` is a stub that exits non-zero, so the test **fails** instead of skipping. Fix: wrap the compile step in try/catch → `ctx.skip('clang unavailable')`, as is already done for exit 77 (no GL context). Nothing ships from it (the `.c` file isn't bundled).
 - **V18 (`c44481b`, `0454fda`), flag-only review. Not approved for default; that's the designer's call:**
