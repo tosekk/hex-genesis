@@ -1,3 +1,49 @@
+# Economy Spec v5 — costs that make sense, tension throughout the run
+
+## v5 changes (2026-10-01 02:35) — these override everything below
+
+**Why:** in the designer's playtest of v4:
+- **Hillside Mine was free** (cost 0);
+- **water and food producers cost their own output** (Oasis Well: 5 water → yields 3 water; Ice Drill: 7 water → 4; Farm: 8 food → 4; Gatherer's Hut: 5 food → 2);
+- **spamming still reached thresholds easily.** Lifetime yield only grows and stockpiles stay huge, so costs never bite. Board space (the v4 goal) only mattered at the very end.
+
+**Start from** the current config (v4 + N9). The win rule (§41) and the core-hex rule (§10, N11) stay.
+
+### Hard rules (enforce as `config.test.ts` checks; tuning may never break them)
+- **R1:** a building that yields **water** never costs water; a building that yields **food** never costs food (designer rule). Example direction: Oasis Well ≈ 2 wood + 5 stone.
+- **R2:** no building costs more of a resource than it yields of that same resource. (Lumber Camp and Quarry may keep "invest 2, get more back".)
+- **R3:** no free buildings: every building's total cost ≥ 2, and every cost entry ≥ 1 when present (no `0` keys).
+- **R4:** §45 still holds: starting stock affords the cheapest building of each main biome. Starting water/food may drop to 0 if nothing basic needs them.
+
+### Tunable (guardrails)
+Ids, names, rosters, recipes, payout rules, the win rule and the map are **frozen**.
+
+| Item | Allowed |
+|---|---|
+| Costs | 1–10 per resource, subject to R1–R3 |
+| Base yields | 1–8 total |
+| Pair / triple amounts | 3–12 / 8–20 total |
+| Adjacency | 0–4 each |
+| Starting stock | free, subject to R4 |
+| Thresholds | exactly 8, non-decreasing |
+
+**Design intent:** base yield roughly pays back its cost (slightly positive for basic producers, about break-even or negative for premium ones), and **the profit comes from combos, terrain bonuses and completed hexes.** Careless building should run you short of resources mid-game.
+
+### Bots
+Keep the combo bot and the spam bot, and **add a random bot**: a careless human, who places a uniformly random affordable building into a random empty slot using a seeded RNG (no `Math.random`), and places cores like the other bots.
+
+### Targets (seeds 1–50; priority a > b > e > c > d > f)
+- **a.** Combo bot wins **≥ 45/50**. Zero false soft-lock declarations.
+- **b.** Spam bot **and** random bot each fail (stall, board full, or provably dead) before T8 in **≥ 45/50**.
+- **c. Tension mid-game:** the spam bot reaches T4 at **≥ 1.5×** the combo bot's placements, or never; same for the random bot.
+- **d. Spending matters:** median held stock per resource at T3–T7 **≤ 3×** the most expensive cost in that biome's roster.
+- **e.** No combo-bot opening stalls before T2.
+- **f.** Median board use at a combo win: 65–85% of placeable non-core slots (via `slotCounts`).
+
+At most **6 rounds.** Log each round and commit it separately. If targets conflict, keep the best round by priority and write down exactly which frozen rule is in the way.
+
+---
+
 # Economy Spec v4 — new win rule ("reach the final threshold before you run out of room")
 
 ## v4 changes (2026-09-30 16:30) — these override everything below

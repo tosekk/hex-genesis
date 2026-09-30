@@ -223,3 +223,10 @@ GAME_DESIGN §10/§20 changed: **a core's own hex can never hold buildings** and
 3. Tests: placement on a core hex is rejected; `slotCounts` excludes core hexes; acceptance case AGENT_TASKS §57 Win/end 5.
 4. **Balance re-check** on seeds 1–50 with the harness (it loses roughly 3 slots per core): report the v4 targets. If target 1 (≥ 45/50 combo wins) or 2 fails, apply the **smallest threshold-only fix** within the v4 guardrails (e.g. lower T8 slightly), with at most 2 rounds.
 5. Commit `[astra] N11: …` and put an "N11 result" line at the top of your status. **Commit step 1–3 first** (others wait on the helper), then do the balance check.
+
+## N12 — Economy v5 (P0, designer, 2026-10-01 02:35) — after N11 steps 1–3
+Read the **"v5 changes"** section at the top of `tasks/ECONOMY_SPEC.md`: hard rules R1–R4, new guardrails, a random bot, and targets a–f.
+1. **First commit:** the config fix for R1–R4 (strip water/food from water/food producers and pay in wood/stone instead; give Hillside Mine a real cost; no `0` cost keys), plus `config.test.ts` checks for R1–R4 that fail on the old config. Commit `[astra] N12: cost rules R1-R4`. The designer wants to playtest this quickly.
+2. **Add the seeded random bot** to the harness, and targets a–f to `REPORT.md`.
+3. **Calibrate:** max 6 rounds, priority a > b > e > c > d > f, one commit per round. N11's balance re-check (core hexes hold no buildings) is folded into this: measure with core hexes excluded.
+4. Put a "**v5 result**" block at the top of your status: all targets on 50 seeds, 2–3 playtest seeds (one a tight combo win, one where random or spam building clearly stalls mid-game), and any rule conflicts.
