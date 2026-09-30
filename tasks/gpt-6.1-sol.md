@@ -282,3 +282,11 @@ Temporary extra ownership: `src/ui/journal/**`, the legacy HUD `src/ui/*.ts` (fi
 - Test: missing files fall back without errors.
 
 > **Revision 02:45:** opus is back (cloud session). `src/main.ts`, `src/app/**` and `index.html` go back to opus, and **the adjacency-log integration test (night item 5) moves to opus.** Your night queue is items **1–4 and 6** (audio move, pass-4 fixes, V16 b/c, V16 a plus the legacy slot text, optional GLB models).
+
+## V18 — Illustrated vertex-color shader (designer, 2026-10-01 03:05; after the night queue)
+Implement `tasks/RENDER_STYLE_SPEC.md` behind `?style=illustrated`:
+- one shared `createIllustratedMaterial()` (vertex colors, stepped warm/cool lighting, baked AO from vertex alpha, rim light, emissive flag, ink outlines via inverted hull *or* a screen-space edge pass, whichever holds 60 fps on a full board);
+- switch the procedural buildings and cores to it;
+- load GLB models (`<buildingId>.glb`, `core_<biome>.glb`) with a procedural fallback.
+
+The default look is unchanged until the designer approves. Add a "Designer QA:" line with URLs to compare `?style=illustrated` against the default. Log fps. Commit `[sol] V18: …`.
