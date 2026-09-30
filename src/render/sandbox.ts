@@ -5,10 +5,15 @@ import { hexDistance } from '../core/hex';
 import type { BoardPick } from '../core/contracts';
 import type { Biome, Terrain } from '../core/types';
 import { mountTutorialSandbox } from '../tutorial/sandbox';
+import { sandboxConfig } from './sandboxConfig';
+import { rendererStats } from './diagnostics';
 
-const seed = Number(new URLSearchParams(location.search).get('seed') ?? 42);
-let state = createInitialState(seed, DEFAULT_CONFIG, 0);
-const board = createBoardView(document.querySelector<HTMLElement>('#board')!, DEFAULT_CONFIG);
+const query = new URLSearchParams(location.search), config = sandboxConfig(DEFAULT_CONFIG, query);
+const seed = Number(query.get('seed') ?? 42);
+const container = document.querySelector<HTMLElement>('#board')!;
+if (query.get('viewport') === '1280x720') container.style.cssText = 'width:1280px;height:720px';
+let state = createInitialState(seed, config, 0);
+const board = createBoardView(container, config);
 board.setBoard(state);
 const disposeTutorial = mountTutorialSandbox(document.querySelector<HTMLElement>('#tutorial')!,
   document.querySelector<HTMLButtonElement>('#tutorial-step')!);
@@ -43,7 +48,7 @@ function reveal(): void {
   board.setHighlights('locked', ids);
 }
 function reset(): void {
-  wave = null; state = createInitialState(seed, DEFAULT_CONFIG, 0); board.setBoard(state);
+  wave = null; state = createInitialState(seed, config, 0); board.setBoard(state);
   document.querySelector<HTMLElement>('#gallery-list')!.hidden = true;
 }
 function terrainDemo(): void {
@@ -91,12 +96,12 @@ function gallery(): void {
 }
 function loadTest(): void {
   wave = null;
-  const { cols, rows, levels } = DEFAULT_CONFIG.map;
+  const { cols, rows, levels } = config.map;
   const hexes = Array.from({ length: cols * rows }, (_, id) => {
     const hex = createHex(id, id % cols, Math.floor(id / cols), levels - 1, 'plain', id);
     hex.biome = biomes[id % biomes.length]; return hex;
   });
-  state = stateFromHexes(seed, DEFAULT_CONFIG, cols, rows, hexes, 0);
+  state = stateFromHexes(seed, config, cols, rows, hexes, 0);
   board.setBoard(state); populate();
   document.querySelector<HTMLElement>('#gallery-list')!.hidden = true;
   readout.textContent = `${cols * rows * 3} buildings · ${levels} tile layers · synthetic load test`;
@@ -107,6 +112,8 @@ document.querySelector('#terrain')!.addEventListener('click', terrainDemo);
 document.querySelector('#populate')!.addEventListener('click', populate);
 document.querySelector('#gallery')!.addEventListener('click', gallery);
 document.querySelector('#load')!.addEventListener('click', loadTest);
+document.querySelector('#load')!.textContent = `${config.map.cols * config.map.rows * 3}-building load test`;
+document.querySelector('#size')!.textContent = `${config.map.cols} × ${config.map.rows} · ${config.map.cols * config.map.rows * 3} slots · F: payout demo`;
 window.addEventListener('keydown', event => {
   if (event.repeat) return;
   switch (event.key.toLowerCase()) {
@@ -125,9 +132,10 @@ window.addEventListener('keydown', event => {
     case 'c': if (hovered) { state.cores.push(hovered.hexId); board.setCores(state.cores); } break;
   }
 });
+if (query.has('load')) loadTest();
 let previous = performance.now(), frames = 0, sampleMs = 0;
 function frame(now: number): void {
-  const dt = Math.min(now - previous, 100); previous = now;
+  const elapsed = now - previous, dt = Math.min(elapsed, 100); previous = now;
   if (wave) {
     wave.elapsed += dt;
     const cadence = (DEFAULT_CONFIG.animation.spreadMaxMs - DEFAULT_CONFIG.animation.tileFlipMs) / Math.max(wave.ids.length - 1, 1);
@@ -136,8 +144,12 @@ function frame(now: number): void {
     }
     if (wave.elapsed >= DEFAULT_CONFIG.animation.spreadMaxMs) { wave = null; board.setHighlights('locked', []); }
   }
-  board.update(dt); frames++; sampleMs += dt;
-  if (sampleMs > 1000) { document.querySelector('#fps')!.textContent = `${Math.round(frames * 1000 / sampleMs)} fps`; frames = 0; sampleMs = 0; }
+  board.update(dt); frames++; sampleMs += elapsed;
+  if (sampleMs > 1000) {
+    const stats = rendererStats(container);
+    document.querySelector('#fps')!.textContent = `${Math.round(frames * 1000 / sampleMs)} fps · ${stats?.calls ?? '—'} draw calls · ${stats?.triangles.toLocaleString() ?? '—'} triangles`;
+    frames = 0; sampleMs = 0;
+  }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

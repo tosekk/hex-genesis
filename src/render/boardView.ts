@@ -13,6 +13,8 @@ import { addTable, Decorations } from './decorations';
 import { createPickSurface } from './picking';
 import { PayoutLabels } from './payouts';
 import { waterDirections } from './water';
+import { boardBounds, boundedPan, framingFor, START_DIRECTION, type BoardBounds } from './framing';
+import { trackRenderer } from './diagnostics';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -23,6 +25,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label', 'Terraforming board. Right drag or Q/E to rotate, wheel to zoom, middle drag or WASD to pan.');
   container.append(renderer.domElement);
+  const untrackRenderer = trackRenderer(renderer.domElement, renderer);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 250);
   const payouts = new PayoutLabels(container, camera, renderer.domElement);
@@ -45,6 +48,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   let cores: Cores | null = null;
   let decorations: Decorations | null = null;
   let framingDistance = 0;
+  let bounds: BoardBounds | null = null;
   const reveals = new Map<HexId, { hex: Hex; elapsed: number; swapped: boolean }>();
   const positions = new Map<HexId, { x: number; z: number }>();
   const highlights = new Map<HighlightStyle, Instances>();
@@ -115,12 +119,13 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       (ring.mesh.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide;
       highlights.set(style, ring);
     }
-    const far = hexToWorld(current.cols - 1, current.rows - 1, HEX_SIZE);
-    addTable(board, far.x + 2, far.z + 2, far.x / 2, far.z / 2);
+    bounds = boardBounds(current.hexes);
+    const centreX = (bounds.minX + bounds.maxX) / 2, centreZ = (bounds.minZ + bounds.maxZ) / 2;
+    addTable(board, bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ, centreX, centreZ);
     framingDistance = 0;
     resize();
-    controls.target.set(far.x / 2, 0.6, far.z / 2);
-    camera.position.copy(controls.target).add(new THREE.Vector3(0.35, 0.9, 0.95).normalize().multiplyScalar(framingDistance));
+    controls.target.set(centreX, bounds.maxY / 2, centreZ);
+    camera.position.copy(controls.target).add(START_DIRECTION.clone().multiplyScalar(framingDistance));
     controls.update();
   }
   function pick(event: PointerEvent): BoardPick | null {
@@ -174,18 +179,15 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     if (disposed) return;
     const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
     renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
-    if (state) {
-      const far = hexToWorld(state.cols - 1, state.rows - 1, HEX_SIZE);
-      const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
-      const radius = Math.hypot(far.x + 4, far.z + 4) / 2 + 1;
-      const distance = radius / Math.sin(Math.min(verticalFov, horizontalFov) / 2) * 1.05;
+    if (bounds) {
+      const { distance, minDistance, maxDistance } = framingFor(bounds, camera.aspect, camera.fov);
       if (framingDistance > 0) {
         const offset = camera.position.clone().sub(controls.target).multiplyScalar(distance / framingDistance);
         camera.position.copy(controls.target).add(offset);
       }
       framingDistance = distance;
-      controls.maxDistance = Math.max(65, distance * 1.5);
+      controls.minDistance = minDistance; controls.maxDistance = maxDistance;
+      camera.far = Math.max(250, maxDistance * 2.5); camera.updateProjectionMatrix();
     }
   }
   function update(dtMs: number): void {
@@ -216,7 +218,13 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     const shift = forward.multiplyScalar((Number(keys.has('w')) - Number(keys.has('s'))) * dt * 9)
       .add(right.multiplyScalar((Number(keys.has('d')) - Number(keys.has('a'))) * dt * 9));
     camera.position.add(shift); controls.target.add(shift);
-    controls.update(); payouts.update(dtMs); renderer.render(scene, camera);
+    controls.update();
+    if (bounds) {
+      const target = boundedPan(controls.target, bounds);
+      camera.position.x += target.x - controls.target.x; camera.position.z += target.z - controls.target.z;
+      controls.target.x = target.x; controls.target.z = target.z;
+    }
+    payouts.update(dtMs); renderer.render(scene, camera);
   }
   resize();
   return {
@@ -227,7 +235,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     update, resize,
     dispose() {
       if (disposed) return; disposed = true;
-      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); renderer.dispose();
+      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); untrackRenderer(); renderer.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move);
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);

@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V1 verified — committing terrain QA fixes before V2 bigger-world readiness.
+IN PROGRESS: V2 verified — committing larger-board framing/diagnostics before V3 audio.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -19,6 +19,7 @@ IN PROGRESS: V1 verified — committing terrain QA fixes before V2 bigger-world 
 - R1-fix — invisible full-size tile footprint picking closes corner gaps; elevation/off-board regressions, 14 renderer tests and typecheck pass — `c26b7c3`.
 - R4-check — Opus's routed first-card auto-advance report is already covered by `28d632e`; confirmed direct event replacement and reran all 9 tutorial tests, including the real seed-1 five-step sequence. No further tutorial edits required — verification/status commit `e8a1be6`.
 - R7 — approved `showPayouts` implemented with ordered, camera-projected rise/fade labels; 26 scoped tests/typecheck/build pass — `0d6afd8`.
+- V1 — reviewed D4 seeds 1–20, connected bends/branches and water-only falls; live-recipe tutorial regression, 27 scoped tests/typecheck pass — `925ad36`.
 
 ## Blockers
 <!-- what, waiting on whom -->
@@ -34,6 +35,7 @@ IN PROGRESS: V1 verified — committing terrain QA fixes before V2 bigger-world 
 - R5/§19: named models use their building's home biome, never the current tile biome. Unknown ids retain the generic hash-colored fallback. Parts are merged with vertex colors into one instanced batch per model; densely packed active instances keep the rendered building count at ≤840.
 - R7/§29: one decorative text label per payout event, scheduled in received order across calls with 140 ms staggering and a 1.2 s rise/fade. Resource text follows config order. Same-hex lines separate vertically; camera/viewport projection follows the board. No state, commands, payout calculation, or HUD notifications are changed. Clear on `setBoard` and dispose; overlays never intercept input or duplicate accessibility announcements.
 - V1 / §46: the real-session tutorial regression chooses a two-building recipe from the live offered biome's roster instead of assuming duplicate recipes exist. Astra removed twin_quarries/meltwater during overnight balance work; all event-driven coverage remains real and unchanged.
+- V2 / §3–§4: `cols`/`rows` overrides are sandbox-only copies of the config, bounded to 2–60 / 2–40; production MAP remains unchanged. Camera framing fits all board/frame corners at the start angle, includes peaks, preserves zoom ratio on resize, and scales near/far zoom limits and pan margins. Picking retains exact per-tile footprints. Renderer diagnostics are a canvas WeakMap helper, not a new BoardView contract.
 
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
@@ -47,6 +49,16 @@ IN PROGRESS: V1 verified — committing terrain QA fixes before V2 bigger-world 
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- V2: use `/render-sandbox.html?seed=7&cols=30&rows=20&load=1&viewport=1280x720` for an all-plain five-layer stress board with all 1,800 slots occupied. Remove `load` for the generated map; remove `viewport` to fit the browser window. L uses the current dimensions, not a hard-coded 840. Diagnostics report actual rAF FPS and Three render calls/triangles.
+- V2 browser measurements in Brave on this machine, 1280×720 CSS canvas, renderer pixel ratio capped at 2, settled one-second samples at default camera (synthetic all-plain five-layer boards, all 24 model types):
+
+  | Board | Buildings | FPS | Draw calls | Triangles |
+  |---|---:|---:|---:|---:|
+  | 20×14 | 840 | 120 | 59 | 383,102 |
+  | 26×18 | 1,404 | 120 | 59 | 640,682 |
+  | 30×20 | 1,800 | 120 | 59 | 821,634 |
+
+  V2 checks: 33 render/tutorial tests and typecheck pass. Includes elevated-corner framing for landscape/narrow views, row parity, all four edge corner-gap picks, pan bounds, and config immutability. This is one workstation measurement, not a cross-hardware guarantee.
 - V1: browser reviewed every D4 run seed 1–20 at `/src/render/qa.html` in five four-map sheets. Fixed north–south-only river channels to follow water neighbors, narrowed banks and removed fencing on dense junctions, restricted falls to water outlets. No broken peaks/decor overlap observed; six visible color bands distinguish mixed biomes at the default view. QA bands are explicitly synthetic presentation state, not a played run. 27 render/tutorial tests and typecheck pass; new branch/dry-land waterfall regression included.
 - R7 / Opus handoff: renderer now implements your approved `showPayouts` method; your existing `bindBoard` payout hook needs no edits. F in `/render-sandbox.html` shows a synthetic base/pair/triple/adjacency sequence over the hovered hex (or first placeable hex). Three payout tests verify sequence across calls, readable same-hex spacing, camera tracking, lifetime/reset/disposal, off-screen clipping, and unchanged state/event inputs. All 26 render/tutorial tests, typecheck, and scoped sandbox production build pass (existing Three.js chunk-size warning only). Fresh browser verification is not claimed because the shared native browser remains in another ongoing playthrough.
 - R4-check / Opus routed UX nit: `28d632e` removes the queue and invokes `showStep` directly on each first R4 event, so the first card is replaced by `spreadStarted` without Next. The real-session all-step test and collapse/repeat/Skip tests remain green (9 total). This is the same bug Sonnet reported, already fixed.
