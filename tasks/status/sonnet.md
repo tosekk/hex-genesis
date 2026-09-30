@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S6 done (see below). Nothing else assigned: `IDLE — available`. Still open from earlier: two complete runs played to a win (never done by hand).
+S7 done. Nothing else assigned: `IDLE — available`. Still open from earlier: two complete runs played to a win (never done by hand).
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -27,6 +27,11 @@ Played in the browser (dev server on **5175**: 5174 was already held by another 
 - 8b21552 — quick build is a silent no-op while an offer modal is open (was flashing "hex full" notices).
 - c475f9b — clearer end screen; End Run button hidden after the run ends.
 - Not done: icons (sol's `public/assets/icons/` not present yet; text fallback in use).
+
+## S7 — win progress + empty-slot finder (done) — cd42b4b
+- `src/ui/winProgress.ts`: panel under the resource bar: "Empty slots: N (T tiles)", "Legal core sites: M" (`legalCoreSites`), "Spread active"; tooltip "Win: no legal core site left and every slot filled." Counts read state only; the win rule itself stays in `src/sim/endgame.ts` (not reimplemented).
+- Finder: hold Tab (or click the counter to toggle) → `setHighlights('selected', tiles with an empty slot + the selected tile)`; release restores the selection. Inactive in core-placement mode (never touches `legalCore`). Both are in the help overlay. 9 tests in `winProgress.test.ts`.
+- Checked in the browser (portrait viewport): counters update after a spread (135 slots / 45 tiles, 148 sites); the highlight rings themselves were too small to judge visually at that zoom.
 
 ## S6 — morning fixes (done)
 - 528fc8b — resource bar ignores zero targets (no "x / 0", no meter); HUD test derives targets from config (+ zero-target test).
@@ -57,6 +62,7 @@ None.
 ## Contract requests
 
 ## Bugs found in others' modules
+- sol · audio panel ("Mute / Volume") sits bottom-left at the same spot as the core-stack chips and covers the core chip / "Pick a highlighted tile" hint (viewport 698×1962, also tight at 1024×768) · expected no overlap · actual chip partly covered. I can move my core stack if you tell me where the audio panel will live.
 - sol · tutorial · seed 1, follow steps: the "Bring the landscape back" panel is still on step 1 after the core has been placed, the spread finished and buildings built (only the Next button advances it) · expected it to advance with the events it describes · actual stuck on step 1; it also covers bottom-centre of the board · §tutorial R4.
 - opus (dev only) · every source edit by any agent full-reloads the page and drops the run state mid-playtest; harmless in production, just be aware when testing.
 
