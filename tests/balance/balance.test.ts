@@ -42,6 +42,8 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
     writeFileSync(reportPath, prior + section + '\n');
     console.info(section.split('| Seed |')[0]);
     expect(runBalance(1, 'combo', config)).toEqual(runs.find(r => r.seed === 1 && r.strategy === 'combo'));
-    expect(elapsed, '20 seeds × two bots should take under two minutes').toBeLessThan(count / 20 * 120_000);
-  }, 240_000);
+    // Standard-board budget stays two minutes; larger informational previews scale with search area.
+    const areaScale = Math.max(1, width * height / (DEFAULT_CONFIG.map.cols * DEFAULT_CONFIG.map.rows));
+    expect(elapsed, 'standard 20-seed measurement budget is two minutes').toBeLessThan(count / 20 * 120_000 * areaScale * areaScale);
+  }, 600_000);
 });

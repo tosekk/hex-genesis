@@ -9,6 +9,7 @@ export const MAP: MapConfig = {
     noiseSpacing: 5,
     mountainClustersMin: 1,
     mountainClustersMax: 4,
+    mountainReferenceArea: 280,
     mountainSizeMin: 3,
     mountainSizeMax: 10,
     mountainRadius: 2,

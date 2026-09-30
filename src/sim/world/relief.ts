@@ -30,7 +30,11 @@ export function generateRelief(rng: Rng, map: MapConfig): Relief {
   const terrain: Terrain[] = noise.map(() => 'plain');
   const peaks: number[] = [];
   const between = (min: number, max: number) => min + rng.nextInt(max - min + 1);
-  const clusterCount = between(map.params.mountainClustersMin, map.params.mountainClustersMax);
+  // Keep patch density across board sizes without changing the default seed stream.
+  const clusterCount = between(
+    Math.ceil(map.params.mountainClustersMin * noise.length / map.params.mountainReferenceArea),
+    Math.ceil(map.params.mountainClustersMax * noise.length / map.params.mountainReferenceArea),
+  );
   // Clamp the optional inset for small fixture boards; construct once, never retry.
   const insetX = Math.min(map.params.mountainInset, Math.floor((map.cols - 1) / 2));
   const insetY = Math.min(map.params.mountainInset, Math.floor((map.rows - 1) / 2));

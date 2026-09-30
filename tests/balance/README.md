@@ -17,3 +17,5 @@ Core sites maximize dead placeable claims, tied by HexId. Offers prefer a new mi
 Threshold medians cover **all** seeds, with unreached thresholds censored as infinity. Reached-only medians/ranges and sample counts are also printed. Ratios without finite medians and T6 fill with no completers are unmeasurable, never claimed as passes. T6 fill is measured at award time, before deploying the new core. Runtime excludes the additional seed-1 deterministic replay test.
 
 Measurements use four bounded local Node subprocesses (native type stripping plus a local extension resolver, no mocks or extra npm dependencies). The test compares worker seed 1 against a Vitest-run real session. Temporary worker configuration files are cleaned up on success or failure.
+
+Larger-map informational previews scale the runtime allowance by squared board-area ratio; the standard 20×14, 20-seed budget remains 120 seconds. Extra seeds scale the allowance linearly. The suite timeout accommodates these opt-in larger runs.

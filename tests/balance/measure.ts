@@ -4,11 +4,13 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { MAP } from '../../src/config/map';
 import type { GameConfig } from '../../src/core/types';
 import type { RunReport } from './bot';
 
 /** Four independent CPU workers keep the 40 real-session runs within the two-minute budget. */
 export async function measure(config: GameConfig, count: number): Promise<RunReport[]> {
+  const areaScale = Math.max(1, config.map.cols * config.map.rows / (MAP.cols * MAP.rows));
   const directory = mkdtempSync(join(tmpdir(), 'astra-balance-'));
   const configPath = join(directory, 'config.json');
   writeFileSync(configPath, JSON.stringify(config));
@@ -25,7 +27,7 @@ export async function measure(config: GameConfig, count: number): Promise<RunRep
         children.add(child);
         const runs: RunReport[] = [];
         let pending = '', errors = '';
-        const timer = setTimeout(() => { child.kill(); reject(new Error('Balance worker exceeded its time budget')); }, Math.max(110_000, count / 20 * 110_000));
+        const timer = setTimeout(() => { child.kill(); reject(new Error('Balance worker exceeded its time budget')); }, Math.max(110_000, count / 20 * 110_000 * areaScale * areaScale));
         child.stdout.setEncoding('utf8');
         child.stderr.setEncoding('utf8');
         child.stdout.on('data', (chunk: string) => {
