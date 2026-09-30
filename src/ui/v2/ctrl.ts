@@ -83,6 +83,7 @@ export class Ctrl {
 
   // ----- selection commands -----
   selectBiome(b: Biome | null): void {
+    if (this.isBlocked()) return;
     this.biome = b;
     this.hex = null; this.slot = null;
     if (this.card?.kind === 'building' && (b === null || !this.state.config.rosters[b].includes(this.card.id))) this.card = null;
@@ -91,6 +92,7 @@ export class Ctrl {
   }
 
   selectHex(id: HexId | null): void {
+    if (this.isBlocked()) return;
     this.card = null;
     this.hex = id;
     this.slot = null;
@@ -99,6 +101,7 @@ export class Ctrl {
   }
 
   selectSlot(hexId: HexId, slot: SlotIndex): void {
+    if (this.isBlocked()) return;
     this.card = null;
     this.hex = hexId;
     this.slot = slot;
@@ -107,6 +110,7 @@ export class Ctrl {
   }
 
   clickCard(card: NonNullable<Card>): void {
+    if (this.isBlocked()) return;
     if (card.kind === 'core') {
       if (this.card?.kind === 'core') { this.card = null; this.sync(); return; }
       const b = this.effectiveBiome;
@@ -136,12 +140,13 @@ export class Ctrl {
   }
 
   demolish(hexId: HexId, slot: SlotIndex): void {
+    if (this.isBlocked()) return;
     const r = this.session.demolish(hexId, slot);
     if (!r.ok) this.fail(hexId, r.reason);
     this.sync();
   }
 
-  toggleFinder(): void { this.finderToggled = !this.finderToggled; this.sync(); }
+  toggleFinder(): void { if (this.isBlocked()) return; this.finderToggled = !this.finderToggled; this.sync(); }
 
   /** Shift+click / R: place exactly the last building (idle only: never with a core card selected). */
   quickBuild(pick: BoardPick): void {

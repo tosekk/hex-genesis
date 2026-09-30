@@ -3,13 +3,14 @@ import { readFileSync } from 'node:fs';
 const journalStyles = readFileSync('src/ui/v2/styles.css', 'utf8');
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
+import { createOfferFx, FX_TIMING, type OfferFx } from '../../fx/offerSpheres';
 import { createGameSession } from '../../game/session';
 import { legalCoreSites } from '../../sim/spread/spread';
 import { createJournalHud, type JournalDeps } from './journalHud';
 import { createHud, createLegacyHud } from '../hud';
 
 const disposals: (() => void)[] = [];
-afterEach(() => { disposals.splice(0).forEach(off => off()); document.body.replaceChildren(); vi.useRealTimers(); });
+afterEach(() => { disposals.splice(0).forEach(off => off()); document.body.replaceChildren(); vi.useRealTimers(); vi.restoreAllMocks(); });
 export function fixture(startBefore = false, deps: JournalDeps = {}) {
   const session = createGameSession({ now: () => 0 });
   let pointer: ((pick: BoardPick | null, kind: PointerKind) => void) | null = null;
@@ -18,7 +19,7 @@ export function fixture(startBefore = false, deps: JournalDeps = {}) {
     onPointer(cb) { pointer = cb; return () => { pointer = null; }; } };
   const root = document.createElement('div'); root.id = 'ui'; document.body.append(root);
   if (startBefore) session.newRun(1);
-  const hud = createJournalHud(root, session, board, { createJournal: null, ...deps }); disposals.push(() => hud.dispose());
+  const hud = createJournalHud(root, session, board, { createJournal: null, createOfferFx: null, ...deps }); disposals.push(() => hud.dispose());
   if (!startBefore) session.newRun(1);
   return { root, session, board, hud, pointer: (pick: BoardPick | null, kind: PointerKind = 'click') => pointer?.(pick, kind),
     click: (selector: string) => root.querySelector<HTMLButtonElement>(selector)!.click() };
@@ -259,5 +260,80 @@ describe('committed journal book integration', () => {
     const s = fixture(false, { createJournal: undefined }); s.click('.offer-overlay [data-index="0"]'); s.click('.menu-btn');
     s.click('.journal-btn'); expect(s.root.querySelector<HTMLElement>('.j-menu')!.hidden).toBe(true);
     expect(s.root.querySelector<HTMLElement>('.jr-overlay')!.hidden).toBe(false);
+  });
+});
+
+describe('committed offer sphere integration', () => {
+  const factory = (root: HTMLElement) => createOfferFx(root, { reducedMotion: true });
+  const key = (name: string) => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }));
+  it('presents the real opening offer once, updates after reshuffle and resolves by key 2 exactly once', async () => {
+    vi.useFakeTimers();
+    const style = document.createElement('style'); style.textContent = journalStyles; document.head.append(style); disposals.push(() => style.remove());
+    const s = fixture(false, { createOfferFx: factory, createJournal: undefined });
+    expect(getComputedStyle(s.root.querySelector('.ofx')!).zIndex).toBe('100');
+    const choose = vi.spyOn(s.session, 'chooseOffer');
+    expect(s.root.querySelectorAll('.ofx')).toHaveLength(1);
+    expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(true);
+    const firstHost = s.root.querySelector('.ofx'); s.click('.ofx-reshuffle');
+    expect(s.root.querySelector('.ofx')).toBe(firstHost); expect(s.session.state.reshufflesUsed).toBe(1);
+    expect(s.root.querySelector<HTMLButtonElement>('.ofx-reshuffle')!.disabled).toBe(true);
+    const chosen = s.session.state.pendingOffer!.options[1];
+    expect([...s.root.querySelectorAll<HTMLElement>('.ofx-sphere')].map(n => n.dataset.biome)).toEqual(s.session.state.pendingOffer!.options);
+    key('2'); key('1'); expect(choose).toHaveBeenCalledTimes(1); expect(choose).toHaveBeenCalledWith(1);
+    expect(s.session.state.pendingOffer).toBeNull(); expect(s.session.state.coreStack).toContain(chosen);
+    expect(s.root.querySelector<HTMLElement>('.ofx')!.classList.contains('busy')).toBe(true);
+    // The session has resolved; HUD input still waits for the visual fade.
+    key('h'); key('j'); s.click('.menu-btn'); s.click('[data-card="core"]');
+    expect(s.root.querySelector<HTMLElement>('.help-overlay')!.hidden).toBe(true);
+    expect(s.root.querySelector<HTMLElement>('.jr-overlay')!.hidden).toBe(true);
+    expect(s.root.querySelector<HTMLElement>('.j-menu')!.hidden).toBe(true);
+    expect(s.root.querySelector('.j-card.core.selected')).toBeNull();
+    s.pointer({ hexId: legalCoreSites(s.session.state)[0], slot: null }); expect(s.session.state.cores).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(FX_TIMING.fade + 1); expect(s.root.querySelector('.ofx')).toBeNull();
+    s.click('[data-card="core"]'); s.pointer({ hexId: legalCoreSites(s.session.state)[0], slot: null });
+    expect(s.session.state.cores).toHaveLength(1); key('1'); expect(choose).toHaveBeenCalledTimes(1);
+  });
+  it('recovers a pending offer after mount using the laid-out triangle and resolves toward the awarded corner', async () => {
+    vi.useFakeTimers(); let effect!: OfferFx;
+    const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+    bounds.mockImplementation(function(this: HTMLElement) {
+      if (this.matches('.j-triangle')) { expect(this.style.bottom).toBe('16px'); return new DOMRect(776, 400, 232, 224); }
+      if (this.matches('.j-biome.main')) return new DOMRect(850, 440, 60, 60);
+      return new DOMRect();
+    });
+    const s = fixture(true, { createOfferFx(root) { effect = factory(root); vi.spyOn(effect, 'present'); vi.spyOn(effect, 'resolve'); return effect; } });
+    expect(effect.present).toHaveBeenCalledWith(expect.objectContaining({ from: new DOMRect(776, 400, 232, 224) }));
+    s.click('.ofx-sphere'); expect(effect.resolve).toHaveBeenCalledWith(0, new DOMRect(850, 440, 60, 60));
+    await vi.advanceTimersByTimeAsync(FX_TIMING.fade + 1); expect(s.root.querySelector('.ofx')).toBeNull();
+  });
+  it('cancels an old resolve without unlocking a new offer, and clears FX on end/dispose', async () => {
+    vi.useFakeTimers(); const s = fixture(false, { createOfferFx: factory, createJournal: undefined });
+    key('1'); s.session.newRun(7); await Promise.resolve();
+    expect(s.root.querySelectorAll('.ofx')).toHaveLength(1);
+    expect(s.session.state.pendingOffer).not.toBeNull();
+    await vi.advanceTimersByTimeAsync(FX_TIMING.fade + 1); expect(s.root.querySelector('.ofx')).not.toBeNull();
+    s.session.endRun(); expect(s.root.querySelector('.ofx')).toBeNull();
+    expect(s.root.querySelector<HTMLElement>('.end-overlay')!.hidden).toBe(false);
+    s.session.newRun(1); key('2'); s.hud.dispose(); await vi.advanceTimersByTimeAsync(1601);
+    expect(s.root.querySelector('.ofx')).toBeNull(); expect(document.head.querySelector('[data-owner="offer-spheres"]')).toBeNull();
+  });
+  it('falls back to the simple modal when the FX factory throws', () => {
+    const s = fixture(false, { createOfferFx() { throw new Error('FX unavailable'); } });
+    expect(s.root.querySelector('.ofx')).toBeNull();
+    expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false);
+    s.click('.reshuffle'); const chosen = s.session.state.pendingOffer!.options[0]; key('1');
+    expect(s.session.state.pendingOffer).toBeNull(); expect(s.session.state.coreStack).toContain(chosen);
+    expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(true);
+  });
+  it('recovers from present and resolve failures without stranding a pending offer or input', async () => {
+    const failed = { present: vi.fn(() => { throw new Error('present failed'); }), update: vi.fn(),
+      resolve: vi.fn(), hide: vi.fn(), dispose: vi.fn() };
+    const s = fixture(false, { createOfferFx: () => failed });
+    expect(failed.dispose).toHaveBeenCalledOnce(); s.click('.offer-overlay [data-index="0"]');
+    expect(s.session.state.pendingOffer).toBeNull();
+    const t = fixture(false, { createOfferFx(root) { const fx = factory(root); fx.resolve = () => Promise.reject(new Error('resolve failed')); return fx; } });
+    t.click('.ofx-sphere'); await Promise.resolve(); expect(t.root.querySelector('.ofx')).toBeNull();
+    t.click('[data-card="core"]'); expect(t.root.querySelector('.j-card.core.selected')).not.toBeNull();
+    t.session.newRun(7); expect(t.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false);
   });
 });

@@ -2,7 +2,6 @@ import type { BoardView, GameSession, Hud } from '../../core/contracts';
 import { BIOME_COLORS } from '../../render/palette';
 import { createEndScreen } from '../endScreen';
 import { el } from '../format';
-import { createOfferModal } from '../offerModal';
 import { createToasts } from '../toasts';
 import { createJournal, type Journal } from '../journal';
 import { Ctrl } from './ctrl';
@@ -14,11 +13,14 @@ import { createTopRight, type AudioSettingsLike } from './topRight';
 import { createTriangle } from './triangle';
 import { createJournalHelp } from './help';
 import { installJournalLayout } from './layout';
+import { createHudOffer, type OfferFxFactory } from './offer';
 import './fonts.css';
 import './styles.css';
 
 export interface JournalDeps {
   audio?: AudioSettingsLike;
+  /** Override the committed sphere factory; null exercises the simple modal fallback. */
+  createOfferFx?: OfferFxFactory | null;
   /** Override the committed book factory; null keeps the coming-soon fallback. */
   createJournal?: ((root: HTMLElement, session: GameSession) => Journal) | null;
 }
@@ -52,14 +54,18 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   const deck = createDeck(bottom, session, ctrl);
   const triangle = createTriangle(bottom, session, ctrl);
   const toasts = createToasts(host, session);
-  const offer = createOfferModal(host, session);
+  const offer = createHudOffer(host, session, {
+    from: () => host.querySelector('.j-triangle')?.getBoundingClientRect() ?? null,
+    to: biome => host.querySelector(`.j-triangle [data-biome="${biome}"]`)?.getBoundingClientRect() ?? null,
+  }, deps.createOfferFx);
   const end = createEndScreen(host, session);
   const journal = (deps.createJournal === undefined ? createJournal : deps.createJournal)?.(host, session);
-  const help = createJournalHelp(host, () => (journal?.isOpen() ?? false) || session.state.pendingOffer !== null || session.state.status !== 'playing' || [...host.querySelectorAll<HTMLElement>('.overlay')].some(node => !node.hidden && !node.classList.contains('help-overlay')));
+  const help = createJournalHelp(host, () => offer.isOpen() || (journal?.isOpen() ?? false) || session.state.pendingOffer !== null || session.state.status !== 'playing' || [...host.querySelectorAll<HTMLElement>('.overlay')].some(node => !node.hidden && !node.classList.contains('help-overlay')));
   top.append(el('small', 'j-controls-hint', 'Press ? for controls'));
   const topRight = createTopRight(host, session, {
     openHelp: () => help.open(),
     toggleJournal,
+    isBlocked: () => offer.isOpen() || help.isOpen() || (journal?.isOpen() ?? false),
     audio: deps.audio ?? defaultAudioSettings(),
   });
 
@@ -84,10 +90,10 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
     };
   })();
   ctrl.onNotice((m) => notice.show(m));
-  ctrl.isBlocked = () => session.state.status !== 'playing' || session.state.pendingOffer !== null || help.isOpen() || topRight.isOpen() || (journal?.isOpen() ?? false);
+  ctrl.isBlocked = () => offer.isOpen() || session.state.status !== 'playing' || session.state.pendingOffer !== null || help.isOpen() || topRight.isOpen() || (journal?.isOpen() ?? false);
 
   function toggleJournal(): void {
-    if (session.state.status !== 'playing' || session.state.pendingOffer || help.isOpen() || topRight.isOpen()) return;
+    if (session.state.status !== 'playing' || offer.isOpen() || session.state.pendingOffer || help.isOpen() || topRight.isOpen()) return;
     if (journal) {
       if (journal.isOpen()) journal.close(); else { notice.hide(); journal.open(); }
     } else notice.show('Journal coming soon.');
@@ -113,7 +119,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
         help.hide();
         break;
       case 'offerShown': help.hide(); journal?.close(); topRight.close(); offer.show(e.offer); renderAll(); break;
-      case 'offerResolved': offer.hide(); renderAll(); break;
+      case 'offerResolved': renderAll(); offer.resolve(e.biome); break;
       case 'payouts': toasts.push(e.events); pills.render(); break;
       case 'runEnded': offer.hide(); help.hide(); journal?.close(); topRight.close(); topRight.setEnabled(false); notice.hide(); toasts.clear(); renderAll(); end.show(e.stats);
         host.querySelector('.end-screen')?.prepend(el('div', 'j-wordmark', 'Hex Genesis')); break;
@@ -123,8 +129,8 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
 
   // Mounting after newRun must recover the current modal, not wait for another event.
   topRight.setEnabled(session.state.status === 'playing');
-  if (session.state.pendingOffer) offer.show(session.state.pendingOffer);
   const disposeLayout = installJournalLayout(host, stackHost);
+  if (session.state.pendingOffer) offer.show(session.state.pendingOffer);
 
   return {
     dispose() {

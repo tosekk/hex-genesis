@@ -194,3 +194,6 @@
 .jhud .jr-slots .icon { width:44px; height:44px; }
 .jhud .jr-overlay .icon-missing { width:auto; }
 @media (max-width:1000px) { .jhud .jr-book { max-width:calc(100vw - 90px); } }
+
+/* Sphere backdrop shares the modal layer and dims tutorial/toasts during resolution. */
+.jhud .ofx { z-index:100; }

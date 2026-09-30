@@ -12,7 +12,7 @@ export interface AudioSettingsLike {
 
 /** Persistent controls preserve focus and range dragging when sound settings change. */
 export function createTopRight(root: HTMLElement, session: GameSession,
-  opts: { openHelp(): void; toggleJournal(): void; audio?: AudioSettingsLike }) {
+  opts: { openHelp(): void; toggleJournal(): void; isBlocked?(): boolean; audio?: AudioSettingsLike }) {
   const bar = el('div', 'j-topright');
   const journalBtn = el('button', 'j-btn j-icon-btn journal-btn');
   journalBtn.title = 'Journal (J)'; journalBtn.setAttribute('aria-label', journalBtn.title);
@@ -50,7 +50,7 @@ export function createTopRight(root: HTMLElement, session: GameSession,
   confirm.addEventListener('click', event => { if (event.target === confirm) hideConfirm(); });
   end.addEventListener('click', () => { hideMenu(); confirm.hidden = false; no.focus(); });
   journalBtn.addEventListener('click', () => { hideMenu(); opts.toggleJournal(); });
-  menuBtn.addEventListener('click', () => { menu.hidden = !menu.hidden; menuBtn.setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) help.focus(); });
+  menuBtn.addEventListener('click', () => { if (opts.isBlocked?.()) return; menu.hidden = !menu.hidden; menuBtn.setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) help.focus(); });
   const onDoc = (event: MouseEvent) => { if (!bar.contains(event.target as Node) && !menu.contains(event.target as Node)) hideMenu(); };
   const onKey = (event: KeyboardEvent) => {
     if (confirm.hidden && menu.hidden) return;
