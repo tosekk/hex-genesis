@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GameSession, SessionEvent } from '../core/contracts';
 import { makeTestState } from '../core/testing';
 import { createAudio } from './audio';
+import { audioSettings } from './settings';
 
 const optional = vi.hoisted(() => ({ assets: {} as Record<string, string> }));
 vi.mock('./assets', () => ({ AUDIO_ASSETS: optional.assets }));
@@ -21,19 +22,20 @@ class FakeAudio {
 }
 beforeEach(() => {
   localStorage.clear(); players.length = 0; clock = 0; rejection = null;
+  audioSettings.setMuted(false); audioSettings.setVolume(0.55);
   Object.keys(optional.assets).forEach(key => delete optional.assets[key]);
   for (const file of files) optional.assets[`/public/audio/${file}`] = `/audio/${file}`;
   vi.stubGlobal('Audio', FakeAudio); vi.spyOn(performance, 'now').mockImplementation(() => clock); vi.spyOn(console, 'debug').mockImplementation(() => {});
 });
 afterEach(() => { disposals.splice(0).forEach(dispose => dispose()); document.body.replaceChildren(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
-function setup(unlock = true) {
+function setup(unlock = true, controls = true) {
   const state = makeTestState({ cols: 2, rows: 1 }), listeners = new Set<(event: SessionEvent) => void>();
   const command = vi.fn(() => { throw new Error('Audio must not command the game'); });
   const session: GameSession = { state, newRun: command, chooseOffer: command, reshuffleOffer: command,
     placeCore: command, placeBuilding: command, demolish: command, preview: command, endRun: command, advance: command,
     subscribe(listener) { listeners.add(listener); return () => { listeners.delete(listener); }; } };
   const root = document.createElement('div'); document.body.append(root);
-  const audio = createAudio(root, session); disposals.push(() => audio.dispose());
+  const audio = createAudio(root, session, { controls }); disposals.push(() => audio.dispose());
   if (unlock) window.dispatchEvent(new Event('pointerdown'));
   return { state, root, audio, command, listeners, emit: (event: SessionEvent) => listeners.forEach(listener => listener(event)),
     mute: () => root.querySelector<HTMLButtonElement>('.audio-mute')!.click() };
@@ -42,6 +44,29 @@ const sources = () => players.map(player => player.source);
 const end = (status: 'won' | 'ended' | 'lost'): SessionEvent => ({ type: 'runEnded', status, stats: { status, seed: 1, elapsedMs: 100, lifetime: {} } });
 
 describe('optional game audio', () => {
+  it('accepts menu settings with no controls and applies changes to music and in-flight effects', () => {
+    const s = setup(true, false), music = players[0];
+    expect(s.root.children).toHaveLength(0);
+    s.emit({ type: 'spreadFinished' }); const effect = players.at(-1)!;
+    audioSettings.setVolume(0.2);
+    expect(music.volume).toBeCloseTo(0.2 * 0.32); expect(effect.volume).toBe(0.2);
+    audioSettings.setMuted(true);
+    expect(music.paused).toBe(true); expect(effect.paused).toBe(true);
+    const count = players.length; s.emit({ type: 'coreAwarded' }); expect(players).toHaveLength(count);
+    audioSettings.setMuted(false); expect(music.paused).toBe(false);
+    s.audio.dispose(); audioSettings.setVolume(0.8); audioSettings.setMuted(true); audioSettings.setMuted(false);
+    expect(players).toHaveLength(count); expect(music.paused).toBe(true);
+  });
+  it('keeps legacy controls in sync with menu settings and shares changes between instances', () => {
+    const legacy = setup(false), menu = setup(false, false);
+    audioSettings.setVolume(0.37); audioSettings.setMuted(true);
+    expect(legacy.root.querySelector<HTMLInputElement>('.audio-volume')!.value).toBe('37');
+    expect(legacy.root.querySelector('.audio-mute')!.getAttribute('aria-pressed')).toBe('true');
+    window.dispatchEvent(new Event('pointerdown')); expect(players).toHaveLength(0);
+    legacy.mute(); expect(audioSettings.muted).toBe(false);
+    expect(players.filter(player => player.loop)).toHaveLength(2);
+    expect(menu.root.children).toHaveLength(0);
+  });
   it('waits for a user gesture and starts only current music/offer rather than replaying old events', () => {
     const s = setup(false); s.emit({ type: 'runStarted', seed: 1 }); s.emit({ type: 'coreAwarded' });
     s.emit({ type: 'offerShown', offer: { options: ['forest', 'desert'], reshuffled: false } });

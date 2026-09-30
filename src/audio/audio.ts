@@ -1,29 +1,24 @@
 import type { GameSession, SessionEvent } from '../core/contracts';
 import type { BuildingId, HexId } from '../core/types';
 import { AUDIO_ASSETS } from './assets';
+import { audioSettings } from './settings';
 import './styles.css';
 
-const SETTINGS_KEY = 'terraform.audio.v1';
 const MUSIC = 'music/main_loop.mp3';
 const FLIP_INTERVAL_MS = 1000 / 12;
-interface Settings { muted: boolean; volume: number; }
-function readSettings(): Settings {
-  try {
-    const value = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? 'null');
-    return { muted: value?.muted === true, volume: typeof value?.volume === 'number' && Number.isFinite(value.volume)
-      ? Math.max(0, Math.min(1, value.volume)) : 0.55 };
-  } catch { return { muted: false, volume: 0.55 }; }
-}
 
 /** Self-contained optional audio. No game commands, state mutations, or runtime generation. */
-export function createAudio(root: HTMLElement, session: GameSession): { dispose(): void } {
-  const settings = readSettings(), active = new Set<HTMLAudioElement>(), failed = new Set<string>(), logged = new Set<string>();
+export function createAudio(root: HTMLElement, session: GameSession, options: { controls?: boolean } = {}): { dispose(): void } {
+  const settings = audioSettings, active = new Set<HTMLAudioElement>(), failed = new Set<string>(), logged = new Set<string>();
   const slots = new Map<HexId, (BuildingId | null)[]>();
-  const controls = document.createElement('div'); controls.className = 'audio-controls';
-  controls.setAttribute('role', 'group'); controls.setAttribute('aria-label', 'Game audio');
-  controls.innerHTML = '<button type="button" class="audio-mute"></button><label>Volume <input class="audio-volume" type="range" min="0" max="100" step="1" aria-label="Audio volume"></label>';
-  root.append(controls);
-  const mute = controls.querySelector<HTMLButtonElement>('.audio-mute')!, volume = controls.querySelector<HTMLInputElement>('.audio-volume')!;
+  const controls = options.controls === false ? null : document.createElement('div');
+  if (controls) {
+    controls.className = 'audio-controls';
+    controls.setAttribute('role', 'group'); controls.setAttribute('aria-label', 'Game audio');
+    controls.innerHTML = '<button type="button" class="audio-mute"></button><label>Volume <input class="audio-volume" type="range" min="0" max="100" step="1" aria-label="Audio volume"></label>';
+    root.append(controls);
+  }
+  const mute = controls?.querySelector<HTMLButtonElement>('.audio-mute'), volume = controls?.querySelector<HTMLInputElement>('.audio-volume');
   let unlocked = false, disposed = false, running = session.state.status === 'playing';
   let offerOpen = session.state.pendingOffer !== null, music: HTMLAudioElement | null = null;
   let pendingCue: string | null = offerOpen ? 'sfx/offer_open.mp3' : null, lastFlip = -Infinity;
@@ -83,15 +78,16 @@ export function createAudio(root: HTMLElement, session: GameSession): { dispose(
     } catch { failed.add(file); debugOnce(file, `Cannot create optional audio: ${file}`); }
   }
   function syncControls(): void {
+    if (!mute || !volume) return;
     mute.textContent = settings.muted ? 'Unmute' : 'Mute'; mute.setAttribute('aria-label', settings.muted ? 'Unmute audio' : 'Mute audio');
     mute.setAttribute('aria-pressed', String(settings.muted)); volume.value = String(Math.round(settings.volume * 100));
   }
-  function save(): void { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch { /* Storage may be disabled/full. */ } }
-  function onMute(): void { settings.muted = !settings.muted; save(); syncControls(); if (settings.muted) stopEffects(); updateMusic(); }
-  function onVolume(): void {
-    settings.volume = Math.max(0, Math.min(1, Number(volume.value) / 100)); save();
+  function onMute(): void { settings.setMuted(!settings.muted); }
+  function onVolume(): void { if (volume) settings.setVolume(Number(volume.value) / 100); }
+  function onSettings(): void {
+    syncControls();
     for (const audio of active) audio.volume = settings.volume;
-    if (settings.volume === 0) stopEffects(); updateMusic();
+    if (settings.muted || settings.volume === 0) stopEffects(); updateMusic();
   }
   function unlock(event: Event): void {
     if (event instanceof KeyboardEvent && (event.ctrlKey || event.metaKey || event.altKey)) return;
@@ -134,13 +130,14 @@ export function createAudio(root: HTMLElement, session: GameSession): { dispose(
         play(event.status === 'won' ? 'sfx/win.mp3' : 'sfx/end.mp3'); break;
     }
   }
-  syncControls(); mute.addEventListener('click', onMute); volume.addEventListener('input', onVolume);
+  syncControls(); mute?.addEventListener('click', onMute); volume?.addEventListener('input', onVolume);
   window.addEventListener('pointerdown', unlock, true); window.addEventListener('keydown', unlock, true);
   const unsubscribe = session.subscribe(onEvent);
+  const unsubscribeSettings = settings.subscribe(onSettings);
   return { dispose() {
     if (disposed) return; disposed = true;
-    unsubscribe(); window.removeEventListener('pointerdown', unlock, true); window.removeEventListener('keydown', unlock, true);
-    mute.removeEventListener('click', onMute); volume.removeEventListener('input', onVolume);
-    stopEffects(); stopMusic(true); slots.clear(); controls.remove();
+    unsubscribe(); unsubscribeSettings(); window.removeEventListener('pointerdown', unlock, true); window.removeEventListener('keydown', unlock, true);
+    mute?.removeEventListener('click', onMute); volume?.removeEventListener('input', onVolume);
+    stopEffects(); stopMusic(true); slots.clear(); controls?.remove();
   } };
 }

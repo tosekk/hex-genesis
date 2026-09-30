@@ -16,10 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V12 audio settings API. V11 committed `5f84c07`; V13 (committed contract required) → V14 remain.
+V12 COMPLETE — shared persistent audioSettings and optional controls, 53 owned tests/typecheck pass. NEXT: V13 (committed contract required) → V14.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
+- V12 — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass. Hash recorded after commit.
 - V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Commit `5f84c07`.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
@@ -84,6 +85,8 @@ IN PROGRESS: V12 audio settings API. V11 committed `5f84c07`; V13 (committed con
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **Sonnet / Opus V12 ready:** `import { audioSettings } from './audio/settings'` (adjust relative path). Read `audioSettings.muted` / `.volume`, call `.setMuted(boolean)` / `.setVolume(0…1)`, `.subscribe(() => syncMenu())` returns an unsubscribe; callbacks fire on changes only, so sync once initially. Existing `terraform.audio.v1` preferences preserved. `createAudio(root, session, { controls: false })` omits its widget; omitted options keep the legacy widget. Global settings update every live audio instance and active SFX; unsubscribe on disposal. Tutorial VO keeps its existing separate mute.
+
 - **Sonnet / V11 icon files ready:** `public/assets/icons/buildings/lumber_camp.svg`, `public/assets/icons/buildings/hillside_mine.svg`, `public/assets/icons/buildings/sawmill.svg`, `public/assets/icons/buildings/gatherers_hut.svg`, `public/assets/icons/buildings/farm.svg`, `public/assets/icons/buildings/quarry.svg`, `public/assets/icons/buildings/palm_grove.svg`, `public/assets/icons/buildings/stonemason.svg`, `public/assets/icons/buildings/oasis_well.svg`, `public/assets/icons/buildings/glass_kiln.svg`, `public/assets/icons/buildings/driftwood_camp.svg`, `public/assets/icons/buildings/scree_quarry.svg`, `public/assets/icons/buildings/ice_drill.svg`, `public/assets/icons/buildings/glacier_pump.svg`, `public/assets/icons/buildings/ice_fishery.svg`, `public/assets/icons/buildings/grain_fields.svg`, `public/assets/icons/buildings/windmill.svg`, `public/assets/icons/buildings/caravanserai.svg`, `public/assets/icons/buildings/trapper_lodge.svg`, `public/assets/icons/buildings/resin_works.svg`, `public/assets/icons/buildings/hot_spring.svg`, `public/assets/icons/buildings/lichen_farm.svg`, `public/assets/icons/buildings/salt_mine.svg`, `public/assets/icons/buildings/frost_kiln.svg`; `public/assets/icons/terrain/mountain.svg`, `public/assets/icons/terrain/water.svg`, `public/assets/icons/terrain/woods.svg`, `public/assets/icons/terrain/marsh.svg`; `public/assets/icons/core.svg`. Use `import.meta.env.BASE_URL + 'assets/icons/…'` for itch subpaths, retain text fallback per UI_SPEC. Preview: `/src/render/iconPreview.html` (24/32/64 px on `#F4EAD5`). No asset dependencies.
 
 - **Designer / V9 VO regeneration: changed line ids are `combos` and `progression`** (`combos.mp3`, `progression.mp3`). All other line texts are unchanged. `src/tutorial/VO_SCRIPT.md` exactly matches all five texts in `lines.ts`; read “T8” as “threshold eight”. Final threshold wins and awards no core; earlier thresholds award cores. Typecheck currently fails only in Astra's parallel `src/sim/economy/config.test.ts:114,120` (TS2352 sparse Resources casts); no owned-file errors, no edits there.
