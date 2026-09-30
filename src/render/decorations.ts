@@ -3,6 +3,7 @@ import { WATER_TERRAIN, type GameState, type Hex, type HexId } from '../core/typ
 import { hexToWorld, neighbors } from '../core/hex';
 import { Instances } from './instances';
 import { HEX_SIZE, topHeight } from './layout';
+import { DEAD_TERRAIN_COLORS } from './palette';
 
 /** All placement variants come from immutable map decoration bits. Outside the slot triangle. */
 export function decorationPoint(decoration: number): { x: number; z: number; scale: number } {
@@ -40,7 +41,7 @@ export class Decorations {
     x += p.x; z += p.z;
     if (!hex.biome || hex.biome === 'arctic' || hex.biome === 'polarDesert') {
       this.rocks.set(id, x, y + 0.06 * s, z, s, s * 0.55, s, 0, hex.decoration % 6);
-      this.rocks.color(id, !hex.biome ? 0x655c51 : hex.biome === 'arctic' ? 0xe0e5dc : 0xa7b6ad);
+      this.rocks.color(id, !hex.biome ? DEAD_TERRAIN_COLORS.rubble : hex.biome === 'arctic' ? 0xe0e5dc : 0xa7b6ad);
     } else if (hex.biome === 'forest' || hex.biome === 'taiga') {
       this.stems.set(id, x, y + 0.1 * s, z, s, s * 0.67, s); this.stems.color(id, 0x715740);
       this.crowns.set(id, x, y + 0.32 * s, z, s, s, s);

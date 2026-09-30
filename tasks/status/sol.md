@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V7 COMPLETE (`7e47e0d`) — photo mode and capture guide implemented; both active-wave stress checks and real-session win console check pass. IDLE — available. Dev server uses port 5175.
+V8 COMPLETE — darker grey dead tops, both layer bands and dry natural tiles; reviewed seeds 1/7/15 with all five highlights. 48 owned tests/typecheck/scoped build pass. IDLE — available.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -43,6 +43,8 @@ V7 COMPLETE (`7e47e0d`) — photo mode and capture guide implemented; both activ
 
 - V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. `7e47e0d`.
 
+- V8 — darker neutral-grey dead land/layers, matching dry channels/woods/marsh/rubble and readable stone-grey peaks; three seeded sandbox reviews with every highlight, 48 owned tests/typecheck/scoped build pass. Hash recorded after commit.
+
 ## Blockers
 <!-- what, waiting on whom -->
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
@@ -65,6 +67,8 @@ V7 COMPLETE (`7e47e0d`) — photo mode and capture guide implemented; both activ
 
 - V7 / §3/§15: opt-in photo controls live inside the renderer factory with no BoardView contract change or HUD edits. Camera presets fit actual bounds; close-up ranks only occupied visible placeable tiles. P reads the current WebGL drawing buffer synchronously after a render; Shift+P crops its center to 630×500 without stretching or title text. Downloads omit DOM overlays. Input fields/modifier shortcuts/repeats/1–2 offer keys remain untouched; photo P replaces sandbox populate only while enabled. Reset restores camera filename preset 1.
 
+- V8 / §6–§8 (designer override): dead tops `#50545a`, layer bands `#373b40` / `#44484d`; dry channel/basin, banks, stumps, marsh/cracks and rubble share cool neutral greys. Alternating layers had a separate brown literal and are now centralized in the palette. Mountains use lighter `#b0b4b8` for silhouette contrast. Restored natural colors and all five existing highlight hues/opacity remain intact. No simulation/config changes.
+
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 - R7 — APPROVED and committed by Opus as `c357845` (`[opus] CONTRACT`): additive optional member in `src/core/contracts.ts` → `BoardView`:
@@ -77,6 +81,8 @@ V7 COMPLETE (`7e47e0d`) — photo mode and capture guide implemented; both activ
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- V8 visual check: `/render-sandbox.html?seed=1&photo=1&highlights=1`, seed 7 (overview + top-down) in Brave, then seed 15 in Safari after native Brave control collided with active designer browsing. All three boards show darker neutral grey tops/layers and matching dry natural tiles; light stone mountains stand out, and legalCore/selected/hover/locked/invalid rings remain visible and distinct. `highlights=1` is an explicitly labeled sandbox color QA overlay, unrelated to legal/locked simulation state. Existing 48 owned tests, typecheck and scoped sandbox production build pass; no new tests for this reversible visual-only palette change.
+
 - V7 final integrated-page smoke check: `/?seed=7&photo=1` with the final photo code loads successfully; key 1 resolves the offer to an Arctic core, and F4 applies the top-down preset without consuming an offer key. Opus's live main.ts now imports/creates/disposes audio; the earlier V3 wiring request is fulfilled in his working copy.
 - V7 browser checks on port 5175 (Brave, 1280×720 CSS canvas, DPR 2, default F1 camera, seed 7). Active **five-second 69-tile waves** on synthetic five-layer boards with every slot filled: **20×14 / 840 buildings = 120.0 FPS, peak 92 draw calls**; **30×20 / 1,800 buildings = 120.0 FPS, peak 92 calls**. Settled rendering returns to 59 calls. Samples cover the entire active wave and use actual rAF wall time, not clamped animation time; the sandbox retains the result under its FPS readout. This is one workstation, not a hardware guarantee.
 - V7 full-run check: temporary browser-only QA harness composed the real GameSession + bindBoard + BoardView + HUD + tutorial + audio, drove real commands with Astra's read-only combo scorer, and reached **seed 7 won, 612 placements, six placed cores, eight thresholds, 35 s elapsed**. Six real session waves measured **119.8 / 120.0 / 120.0 / 120.0 / 120.0 / 120.0 FPS**. DevTools default levels show **0 messages**, hence zero warnings/errors; 10 optional missing-audio/debug messages remain hidden. PCF shadow warning is gone and event effect shaders compile through a full run. This is automated browser QA, not a manual gameplay or balance claim; other agents' morning economy/UI work is live. The temporary harness is removed before commit.

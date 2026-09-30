@@ -2,7 +2,7 @@ import { createBoardView } from './boardView';
 import { createInitialState, createHex, stateFromHexes } from '../core/state';
 import { DEFAULT_CONFIG } from '../config';
 import { hexDistance } from '../core/hex';
-import type { BoardPick } from '../core/contracts';
+import type { BoardPick, HighlightStyle } from '../core/contracts';
 import type { Biome, Terrain } from '../core/types';
 import { mountTutorialSandbox } from '../tutorial/sandbox';
 import { sandboxConfig } from './sandboxConfig';
@@ -26,7 +26,7 @@ const readout = document.querySelector<HTMLElement>('#readout')!;
 readout.textContent += ' · F: floating payout demo';
 board.onPointer((pick, kind) => {
   hovered = pick;
-  board.setHighlights('hover', pick ? [pick.hexId] : []);
+  if (!query.has('highlights')) board.setHighlights('hover', pick ? [pick.hexId] : []);
   const building = pick && pick.slot !== null ? state.hexes[pick.hexId]?.slots[pick.slot]?.building : null;
   readout.textContent = pick ? `${kind} · hex ${pick.hexId} · slot ${pick.slot ?? '—'}${building ? ` · ${state.config.buildings[building]?.name ?? building}` : ''}` : 'Off board';
   if (kind !== 'move') { console.info('board pick', kind, pick); board.setHighlights('selected', pick ? [pick.hexId] : []); }
@@ -152,6 +152,15 @@ window.addEventListener('keydown', event => {
   }
 });
 if (query.has('load')) loadTest();
+if (query.has('highlights')) {
+  // Explicit presentation QA samples, unrelated to legal/locked simulation state.
+  const centre = Math.floor(state.rows / 2) * state.cols + Math.floor(state.cols / 2);
+  const ids = state.hexes.filter(hex => hex.placeable).sort((a, b) =>
+    hexDistance(a.id, centre, state.cols) - hexDistance(b.id, centre, state.cols) || a.id - b.id).slice(0, 5).map(hex => hex.id);
+  const styles: HighlightStyle[] = ['legalCore', 'selected', 'hover', 'locked', 'invalid'];
+  styles.forEach((style, index) => board.setHighlights(style, ids[index] === undefined ? [] : [ids[index]]));
+  readout.textContent = `Highlight color QA: ${styles.map((style, index) => `${style}=${ids[index] ?? '—'}`).join(' · ')}`;
+}
 let previous = performance.now(), frames = 0, sampleMs = 0;
 function frame(now: number): void {
   const elapsed = now - previous, dt = Math.min(elapsed, 100); previous = now;

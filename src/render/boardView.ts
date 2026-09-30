@@ -5,7 +5,7 @@ import type { GameConfig, GameState, Hex, HexId } from '../core/types';
 import { hexToWorld } from '../core/hex';
 import { disposeGroup, Instances } from './instances';
 import { HEX_SIZE, LAYER_HEIGHT, pickSlot, topHeight } from './layout';
-import { HIGHLIGHT_COLORS, LAYER_COLOR, tileColor } from './palette';
+import { HIGHLIGHT_COLORS, LAYER_COLOR, LAYER_ALT_COLOR, tileColor } from './palette';
 import { NaturalTerrain } from './terrain';
 import { Buildings, Cores } from './buildings';
 import { sampleReveal } from './reveal';
@@ -117,7 +117,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       const p = hexToWorld(hex.col, hex.row, HEX_SIZE); positions.set(hex.id, p);
       for (let level = 0; level <= hex.elevation; level++) {
         layers.set(layer, p.x, level * LAYER_HEIGHT + (LAYER_HEIGHT - 0.025) / 2, p.z);
-        layers.color(layer++, level % 2 ? 0x70675a : LAYER_COLOR);
+        layers.color(layer++, level % 2 ? LAYER_ALT_COLOR : LAYER_COLOR);
       }
       refreshHex(current, hex.id);
     }
