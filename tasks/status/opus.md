@@ -2,7 +2,7 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
-## MORNING SUMMARY (opus, night 2) — updated 04:25 GMT+5
+## MORNING SUMMARY (opus, night 2) — updated 03:50 GMT+5
 
 **Ship candidate: `opus/night` @ `07a2985`** = `main` `b0abf4f` (incl. sol V18 behind `?style=illustrated`, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 450 passed / 0 failed (~27 s); package + verify OK. **Content sha256 `63b103dedafab554c9a728ef579b244426d4c9b0d0d581ca3432674950ff94f1`, 5,266,707 bytes (5.02 MB), 68 files (+ the lazy GLTFLoader chunk), 19 MP3s each once.** Headless-Chromium smoke of this build in the itch frame: offer → core → spread, no exceptions, no crash note (only a harmless `favicon.ico` 404).
 
