@@ -121,6 +121,15 @@ describe('designer GLB drop-in pipeline', () => {
     const changed = vi.fn(); assets.subscribe(changed); assets.dispose(); finish(tinyGLB()); await assets.ready;
     expect(assets.get('farm')).toBeUndefined(); expect(changed).not.toHaveBeenCalled(); assets.dispose();
   });
+  it('keeps authored flat face colors and shading stable when a node is mirrored', () => {
+    const scene = new THREE.Group(), geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([0,0,0, 1,0,0, 0,1,0], 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute([.2,.4,.6, .2,.4,.6, .2,.4,.6], 3));
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial()); mesh.scale.x = -1; scene.add(mesh);
+    const model = normalizeModel(scene, 'farm', BUILDING_LIMITS);
+    expect(model.parts[0].getAttribute('normal').getZ(0)).toBeCloseTo(1);
+    expect(model.parts[0].getAttribute('color').getX(0)).toBeCloseTo(.2); model.parts.forEach(g => g.dispose()); disposeGroup(scene);
+  });
   it('uses the footprint limits specified for buildings and cores', () => {
     expect(BUILDING_LIMITS).toEqual({ radius: .28, height: .5, triangles: 600 });
     expect(CORE_LIMITS).toEqual({ radius: .8, height: 1.2, triangles: 1500 });
