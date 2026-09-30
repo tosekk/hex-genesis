@@ -2,6 +2,28 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
+## MORNING SUMMARY (opus, night 2) — updated 03:40 GMT+5
+
+**Ship candidate: `opus/night` @ `e124f51`** = `main` `d151c8e` + opus's production crash note. All green: `npm test` 416 passed / 0 failed (~30 s); package + verify OK. **Content sha256 `bf832a18d2bb6edc3cf4952f6ac271ab938637b18c4504e3b19f9cdebb167a35`, 5,241,107 bytes (5.00 MB), 67 files, 19 MP3s each once.**
+
+**Designer, locally:**
+```bash
+git fetch origin
+git merge origin/opus/night          # into your local main; merge, not rebase
+npm ci                               # only if package-lock.json changed
+npm test                             # expect 0 failed
+npm run package                      # builds, then runs verify-zip automatically
+# compare the "content sha256" line with bf832a18…b167a35 (the zip's own sha256 may differ: deflate differs by Node version)
+npm run itch-test                    # optional: http://127.0.0.1:4197/itch-frame.html
+```
+Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen button on. The page copy is `itch/PAGE.md`; only designer-only `[CHECK]`s remain.
+
+**Done tonight (opus):** review of every sol/astra commit (P1-A and P1-B both closed, no open P0/P1); release gate; production crash note (`168c4c5`: "Something went wrong", Reload (seed N) / Keep playing, checked in the itch frame).
+
+**Open risks:** see the end of this block (updated as the night goes on).
+
+**Needs a designer decision:** v5 target d (stock pressure) is still missed (worst 108.83×, T7 stone); astra's v5 result has the options. The itch page `[CHECK]`s (jam name/tag, your name, cover and screenshots, browsers tested).
+
 > **RELEASE READY at `e124f51`** (`opus/night`: `main` `d151c8e` + opus crash note `168c4c5`; later status-only commits change no build input). `npm test`: 58 files, 416 passed, 0 failed (~30 s). `npm run package` + `verify-zip`: 67 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,241,107 bytes (5.00 MB). Content sha256 `bf832a18d2bb6edc3cf4952f6ac271ab938637b18c4504e3b19f9cdebb167a35`.** The zip sha256 here is `8cde4e01…9dd567` (Node 22.22.0); a local zip may differ byte-wise (deflate), so compare the content sha256. Previous good: `988875f` (content `af3370c2…`), before the crash note.
 
 ## Current
