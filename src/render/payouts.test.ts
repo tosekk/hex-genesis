@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeTestState } from '../core/testing';
 import type { PayoutEvent } from '../core/types';
-import { PayoutLabels, PAYOUT_LIFETIME_MS, PAYOUT_STAGGER_MS } from './payouts';
+import { PayoutLabels, MAX_PAYOUT_LABELS, PAYOUT_LIFETIME_MS, PAYOUT_STAGGER_MS } from './payouts';
 
 const disposals: (() => void)[] = [];
 afterEach(() => { disposals.splice(0).forEach(dispose => dispose()); document.body.replaceChildren(); vi.restoreAllMocks(); });
@@ -49,6 +49,21 @@ describe('floating board payouts', () => {
     s.labels.update(PAYOUT_LIFETIME_MS / 2);
     expect(s.root.querySelectorAll('.board-payout')).toHaveLength(0);
     s.labels.show(s.state, [events[1]]); s.labels.update(0);
+    expect(s.root.querySelector<HTMLElement>('.board-payout')!.hidden).toBe(false);
+  });
+  it('bounds rapid-build backlog and drains it within four seconds while retaining newest order', () => {
+    const s = setup();
+    s.labels.show(s.state, Array.from({ length: 207 }, (_, index) => ({ kind: 'base', hexId: 0, amount: { wood: index + 1 } })));
+    const rows = [...s.root.querySelectorAll('.board-payout')];
+    expect(rows).toHaveLength(MAX_PAYOUT_LABELS); expect(rows[0].textContent).toBe('+188 wood'); expect(rows.at(-1)!.textContent).toBe('+207 wood');
+    s.labels.update(MAX_PAYOUT_LABELS * PAYOUT_STAGGER_MS + PAYOUT_LIFETIME_MS);
+    expect(s.root.querySelectorAll('.board-payout')).toHaveLength(0);
+  });
+  it('clears queued/active payouts when the run ends and ignores late ended-run payouts', () => {
+    const s = setup(); s.labels.show(s.state, events); s.labels.update(0);
+    s.state.status = 'won'; s.labels.update(0); expect(s.root.querySelectorAll('.board-payout')).toHaveLength(0);
+    s.labels.show(s.state, events); expect(s.root.querySelectorAll('.board-payout')).toHaveLength(0);
+    s.state.status = 'playing'; s.labels.show(s.state, [events[0]]); s.labels.update(0);
     expect(s.root.querySelector<HTMLElement>('.board-payout')!.hidden).toBe(false);
   });
   it('ignores empty or missing-hex events, clips off-screen labels, and clears on rebuild/disposal', () => {

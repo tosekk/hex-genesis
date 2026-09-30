@@ -3,6 +3,7 @@ import type { GameState, PayoutEvent } from '../core/types';
 import { hexToWorld } from '../core/hex';
 import { HEX_SIZE, topHeight } from './layout';
 
+export const MAX_PAYOUT_LABELS = 20;
 export const PAYOUT_STAGGER_MS = 140;
 export const PAYOUT_LIFETIME_MS = 1200;
 interface FloatingLabel { element: HTMLSpanElement; point: THREE.Vector3; hexId: number; startsAt: number; riseOffset: number; }
@@ -15,6 +16,7 @@ export class PayoutLabels {
   private elapsed = 0;
   private nextStart = 0;
   private disposed = false;
+  private state: Readonly<GameState> | null = null;
 
   constructor(root: HTMLElement, private readonly camera: THREE.Camera, private readonly viewport: HTMLElement = root) {
     this.layer.className = 'board-payouts';
@@ -25,7 +27,9 @@ export class PayoutLabels {
   }
 
   show(state: Readonly<GameState>, events: PayoutEvent[]): void {
-    if (this.disposed) return;
+    if (this.disposed || state.status !== 'playing') return;
+    if (this.state !== null && this.state !== state) this.clear();
+    this.state = state;
     for (const event of events) {
       const hex = state.hexes[event.hexId];
       if (!hex) continue;
@@ -33,6 +37,12 @@ export class PayoutLabels {
       const text = resources.filter(id => (event.amount[id] ?? 0) !== 0)
         .map(id => `${event.amount[id] > 0 ? '+' : ''}${event.amount[id]} ${id}`).join(' · ');
       if (!text) continue;
+      if (this.labels.length >= MAX_PAYOUT_LABELS) {
+        this.labels.shift()!.element.remove();
+        // Bound the wait as well as DOM count. Preserve active ages and surviving order.
+        this.labels.forEach((label, index) => { label.startsAt = Math.min(label.startsAt, this.elapsed + index * PAYOUT_STAGGER_MS); });
+        this.nextStart = this.elapsed + this.labels.length * PAYOUT_STAGGER_MS;
+      }
       const element = document.createElement('span');
       element.className = 'board-payout'; element.textContent = text; element.hidden = true;
       element.style.cssText = 'position:absolute;pointer-events:none;transform:translate(-50%,-100%);white-space:nowrap;padding:3px 6px;border-radius:5px;background:#24372bef;border:1px solid #afc791;color:#edf0d9;font:600 12px/1.4 system-ui,sans-serif;box-shadow:0 2px 5px #0004';
@@ -46,6 +56,7 @@ export class PayoutLabels {
         if (label.hexId === hex.id && age < PAYOUT_LIFETIME_MS)
           riseOffset = Math.max(riseOffset, label.riseOffset + age / PAYOUT_LIFETIME_MS * 30 + 26);
       }
+      riseOffset = Math.min(riseOffset, 8 * 26);
       this.labels.push({ element, point: new THREE.Vector3(p.x, topHeight(hex.elevation) + 0.6, p.z), hexId: hex.id, startsAt, riseOffset });
       this.layer.append(element); this.layer.hidden = false;
     }
@@ -53,6 +64,7 @@ export class PayoutLabels {
 
   update(dtMs: number): void {
     if (this.disposed) return;
+    if (this.state && this.state.status !== 'playing') { this.clear(); return; }
     this.elapsed += Math.max(0, dtMs);
     if (!this.labels.length) return;
     const rect = this.viewport.getBoundingClientRect();
@@ -74,7 +86,7 @@ export class PayoutLabels {
   }
 
   clear(): void {
-    this.labels.length = 0; this.layer.replaceChildren(); this.layer.hidden = true; this.nextStart = this.elapsed;
+    this.labels.length = 0; this.layer.replaceChildren(); this.layer.hidden = true; this.nextStart = this.elapsed; this.state = null;
   }
 
   dispose(): void {
