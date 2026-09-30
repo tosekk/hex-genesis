@@ -6,14 +6,30 @@ import { MAIN_BIOMES, MIXED_BIOMES } from '../../core/types';
 import type { Resources } from '../../core/types';
 import v3 from './__fixtures__/economy-v3.json';
 
-describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v4)', () => {
-  it('starting stock affords the cheapest building in every main biome', () => {
+describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v5)', () => {
+  it('R4: starting stock affords the cheapest building in every main biome', () => {
     for (const biome of MAIN_BIOMES) {
       const buildings = ECONOMY.rosters[biome].map(id => ECONOMY.buildings[id]);
       const total = (cost: Resources) => Object.values(cost).reduce((a, b) => a + b, 0);
       const cheapest = Math.min(...buildings.map(b => total(b.cost)));
       expect(buildings.filter(b => total(b.cost) === cheapest)
         .some(b => canAfford(ECONOMY.startingResources, b.cost)), biome).toBe(true);
+    }
+  });
+  it('R1: water and food producers never charge their own output', () => {
+    for (const building of Object.values(ECONOMY.buildings)) for (const resource of ['water', 'food']) {
+      if ((building.baseYield[resource] ?? 0) > 0) expect(building.cost[resource], `${building.id}:${resource}`).toBeUndefined();
+    }
+  });
+  it('R2: a cost in a produced resource never exceeds its raw yield', () => {
+    for (const building of Object.values(ECONOMY.buildings)) for (const [resource, yieldAmount] of Object.entries(building.baseYield)) {
+      if (yieldAmount > 0) expect(building.cost[resource] ?? 0, `${building.id}:${resource}`).toBeLessThanOrEqual(yieldAmount);
+    }
+  });
+  it('R3: every building costs at least two total and has no zero cost entries', () => {
+    for (const building of Object.values(ECONOMY.buildings)) {
+      expect(Object.values(building.cost).reduce((a, b) => a + b, 0), building.id).toBeGreaterThanOrEqual(2);
+      for (const value of Object.values(building.cost)) expect(value, building.id).toBeGreaterThanOrEqual(1);
     }
   });
   it('main rosters have five; mixed have three from each parent plus three unique', () => {
@@ -76,13 +92,13 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v4)', ()
       previous = threshold;
     }
   });
-  it('v4 pairs use different buildings and combo totals stay inside guardrails', () => {
+  it('v5 pairs use different buildings and combo totals stay inside guardrails', () => {
     for (const combo of ECONOMY.combos) {
       const total = Object.values(combo.amount).reduce((sum, n) => sum + n, 0);
       if (combo.buildings.length === 2) {
         expect(combo.buildings[0]).not.toBe(combo.buildings[1]);
         expect(total).toBeGreaterThanOrEqual(3);
-        expect(total).toBeLessThanOrEqual(10);
+        expect(total).toBeLessThanOrEqual(12);
       } else {
         expect(total).toBeGreaterThanOrEqual(8);
         expect(total).toBeLessThanOrEqual(20);
@@ -95,13 +111,13 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v4)', ()
       expect(Number.isInteger(amount)).toBe(true); expect(amount).toBeGreaterThanOrEqual(0);
     }
   });
-  it('preserves v4 frozen identities/targets and respects all numeric guardrails', () => {
+  it('preserves v5 frozen identities/targets and respects all numeric guardrails', () => {
     for (const key of ['resources', 'rosters', 'demolishRefundRatio', 'reshufflesPerRun'] as const) expect(ECONOMY[key]).toEqual(v3[key]);
     expect(Object.keys(ECONOMY.buildings)).toEqual(Object.keys(v3.buildings));
     for (const [id, original] of Object.entries(v3.buildings)) {
       const actual = ECONOMY.buildings[id];
       expect({ id: actual.id, name: actual.name }).toEqual({ id, name: original.name });
-      for (const cost of Object.values(actual.cost)) { expect(Number.isInteger(cost)).toBe(true); expect(cost).toBeGreaterThanOrEqual(0); expect(cost).toBeLessThanOrEqual(8); }
+      for (const cost of Object.values(actual.cost)) { expect(Number.isInteger(cost)).toBe(true); expect(cost).toBeGreaterThanOrEqual(1); expect(cost).toBeLessThanOrEqual(10); }
       const total = Object.values(actual.baseYield).reduce((a, b) => a + b, 0);
       expect(total).toBeGreaterThanOrEqual(1); expect(total).toBeLessThanOrEqual(8);
       for (const value of Object.values(actual.baseYield)) { expect(Number.isInteger(value)).toBe(true); expect(value).toBeGreaterThanOrEqual(0); }

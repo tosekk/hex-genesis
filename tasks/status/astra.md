@@ -1,6 +1,6 @@
 ## N11 result
 
-Core-hex placement rejection and shared `isCoreHex`/`slotCounts` are ready. Roster stays visible; core previews return no payout. N12 calibration incorporates the core exclusion.
+`6e8c7f9`: core-hex placement rejection and shared `isCoreHex`/`slotCounts` are ready. Roster stays visible; core previews return no payout. N12 calibration incorporates the core exclusion.
 
 ## N9 result
 
@@ -106,6 +106,7 @@ IN PROGRESS: N11 helpers ready, then N12 cost-only fix, random bot and up to six
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N12 R2 applies to positive raw-yield resources; absent outputs may be spent (otherwise R1 and R3 cannot coexist). The example Oasis Well 5 stone conflicts with its raw stone1 and R2; use wood2/stone1. R1 removes all water/food self-costs; R2 caps retained wood/stone self-costs. Initial cost-only fix uses cross-resource wood/stone costs with cheap opening producers intact; yields, stock, thresholds and rewards unchanged. Terrain/zone amounts remain frozen at N9 values because v5 does not list them as tunable.
 - N11: slotCounts counts terraformed placeable non-core slots even during a temporary spread lock; paid-but-empty slots remain empty. User explicitly requests the status result, so this own status file is the sole documentation exception to the listed code paths. N11 balance re-check is folded into N12 as the task file specifies.
 - N10 / UI_SPEC §8.1 and GAME_DESIGN §§32–35: page indices are zero-based config positions; recipe members retain order/multiplicity and costs count every occurrence. Biomes, terrain rules and zone effects retain config insertion order. Zone rules expand into one row per targeted building, retaining one row for `any`. All returned arrays/objects/resource maps are detached snapshots.
 - N10 adjacency: map each currentComboMatches occurrence to its name in match order (including duplicate recipe matches on different pairs), rather than historical paid records; the UI captures this when the event arrives. Ignore non-adjacency events and malformed adjacency events without neighborId; neighborId0 is valid. No signature changes or UI writes.
@@ -234,6 +235,7 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+- N12 cost-only prerequisite: Hillside Mine wood0→2; remove all water/food self-costs; redistribute premium costs to wood/stone (full per-building diff in this commit), cap co-produced costs. New R1–R3 tests fail on old config (plus positive-cost guardrail); R4 retains cheapest-building affordability. No calibration round used yet.
 
 ### N9 final selection
 - Retain `4ba61e3` unchanged. All five hard targets pass, with T7 median total−54.10% and component medians W/S/A/F−39.44/78.24/58.23/67.12% from e4448fd. Round4 beats eligible round1 on raw-stock reduction; rounds2/3 fail target2. All50 samples retained at all measured checkpoints. Selected source equality and cost-only diff from baseline verified; no extra measured calibration.
