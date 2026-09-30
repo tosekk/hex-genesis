@@ -200,3 +200,16 @@ Tests: an undiscovered combo reveals nothing (no name, buildings or amounts in t
 
 ## U3 — Biome offer spheres (target ~02:00)
 UI_SPEC §5 "Biome offer": the simple version first (spheres fly out of the triangle, the chosen one glows and returns, the other fades), commit it, then god-rays and shatter/dissolve (CSS + a small 2D canvas). Input stays blocked until it's resolved; 1/2 and reshuffle still work. Respect `prefers-reduced-motion` (skip to the simple version). Commit as `[sonnet] U3: …`.
+
+---
+
+## S9 — Handover of the new HUD to sol + browser QA (designer decision, 2026-10-01 00:00)
+
+**The new journal HUD (`src/ui/v2/**`, `src/ui/hud.ts`, fonts) now belongs to sol** (task V15 in `tasks/gpt-6.1-sol.md`). Don't edit those files. Your legacy HUD is **frozen**: it's the fallback we ship if the new one isn't ready by 06:00. Only fix real bugs in it.
+1. **Handover note (first, ~10 min):** in your status file under "Notes for others → sol", explain how `src/ui/v2` is structured (`ctrl.ts`, `journalHud.ts`, etc.), what's done, what's missing, and any traps. Refresh your "Current" section.
+2. **Fix the failing test** `src/sim/endgame.test.ts:122` (it assumes every Forest building costs something; the v4 economy has a zero-cost one). Take the building from config. Commit.
+3. **Browser QA loop until 06:00:**
+   - Run the dev server on port 5174, and use `npm run itch-test` for the embedded check.
+   - After each `[sol] V15` commit, test the new HUD at 1280×720 and 1024×640: start → offer → core → build → threshold → end.
+   - File bugs under "Bugs found in others' modules" with P0/P1/P2, repro steps, and what you see vs. what's expected. Mark them fixed when sol's commit resolves them.
+   - Watch for overlaps, clipped text, unreadable numbers, input that's blocked or leaks through to the board, and console errors.

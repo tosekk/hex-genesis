@@ -66,8 +66,9 @@ A path's owner is the **only** agent that may create, edit, or delete files unde
 | `src/config/index.ts`, `src/config/spread.ts` | opus |
 | `src/sim/spread/**` | opus |
 | `src/main.ts`, `src/app/**`, `tests/e2e/**`, `scripts/**` | opus |
-| `src/game/**`, `public/assets/fonts/**` | sonnet |
-| `src/ui/**` | sonnet |
+| `src/game/**` | sonnet |
+| `src/ui/**` except below (legacy HUD, **frozen**: fixes only) | sonnet |
+| `src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**` (new journal HUD) | **sol** (reassigned 2026-10-01 00:00) |
 | `src/sim/economy/**`, `src/config/economy.ts` | astra |
 | `tests/acceptance/**`, `tests/balance/**` | astra |
 | `src/sim/world/**`, `src/config/map.ts` | astra (reassigned from deepseek) |

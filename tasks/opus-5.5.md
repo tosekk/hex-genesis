@@ -162,3 +162,10 @@ GAME_DESIGN §41 changed (win = final threshold; loss = out of room). Sonnet imp
    - `createAudio(…, { controls: false })` for the new HUD (keep `true` for legacy);
    - any new root elements the new HUD needs.
 3. **After U1 lands:** browser check at 1280×720 and 1024×640 (overlaps, click-through to the board, keyboard focus in your itch iframe page), both HUDs working, rebuild `npm run package`. Route issues to their owners.
+
+## O10 — Night plan after the limit reset (designer, 2026-10-01 00:00)
+The new HUD was reassigned to **sol** (V15), and **sonnet** is the browser QA for it. In order:
+1. **Finish O8.3:** rebuild the safety RC from HEAD (legacy HUD is the default), run `npm run itch-test`, and verify there's no parent scroll, focus works, and a full loop plays. Tell the designer in your status that `release/…zip` is **safe to upload**.
+2. **O9 contract now:** optional `BoardView.setSlotHighlight`. Commit `[opus] CONTRACT: …` so sol's V13 is unblocked.
+3. **O9 wiring:** `?ui=legacy` in `src/main.ts` (legacy vs `createHud`), and `createAudio(…, { controls: false })` when the new HUD is active. The new HUD stays opt-in via `?ui=journal` **until** sol switches the default in `src/ui/hud.ts`.
+4. **06:00 go/no-go:** read sonnet's QA bugs. If there are no open P0/P1 on the new HUD, package with the new HUD as default; otherwise package with legacy. Record the decision in your status and tell the designer which zip to upload.

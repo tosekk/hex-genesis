@@ -209,3 +209,34 @@ Implement `setSlotHighlight?(pick | null)`: a highlighter-yellow (`#F5D547`) rin
 
 ## V14 — Tutorial panel in journal style (~40 min) — `src/tutorial/**`
 Per UI_SPEC §6: move it to the left side under sonnet's threshold stack (leave room: top ≈ 300 px from the top at 720 px height; coordinate via "Notes for others" if you need more), restyle it as a journal note (paper `#F4EAD5`, ink `#2E2A25`, handwritten title; fonts from `public/assets/fonts/` once sonnet adds them, with a system fallback), the face as an ink-sketch device screen, and make it collapsible. Commit `[sol] V14: …`.
+
+---
+
+# V15 — Finish the new journal HUD (P0, reassigned from sonnet, 2026-10-01 00:00)
+
+**You now own `src/ui/v2/**`, `src/ui/hud.ts` and `public/assets/fonts/**`.** Sonnet's legacy HUD (`src/ui/*.ts` outside `v2/`) stays sonnet's and is **frozen**: it's the fallback we ship if V15 isn't ready. Spec: `tasks/UI_SPEC.md`. Sonnet's WIP is commit `07dfbc5` (components exist, no tests, not the default). Sonnet **reviews your work in the browser** and files bugs in `tasks/status/sonnet.md`. Read that file often, because you have no browser.
+
+**Cut-off:** if the new HUD doesn't meet the DoD below by **06:00**, we ship the legacy HUD. U2 (the journal book) and U3 (offer spheres) only happen **after** the DoD, and only if time remains (simple versions).
+
+## Designer's bug list from the first browser look (fix in this order)
+1. **No biome offer at run start, so the game can't be played.** The offer must appear on `offerShown`, above everything, with a dimmed background. A simple journal-styled modal is fine (the spheres are U3). Keys 1/2 and Reshuffle work.
+2. **The help overlay renders as a full-width band behind other panels,** clipped on the left, with a stray "? or H" row poking out below the threshold stack. Make it a centered journal-page modal with a backdrop and a close button, topmost, closing on Esc/?/H. Don't auto-open it over the first offer: show it once *after* the first offer resolves, or just show a small "Press ? for controls" hint.
+3. **Stacking order:** board < HUD panels < tutorial < toasts < modals (offer, help, journal, confirm, end screen). Nothing may overlap anything else at 1280×720 or 1024×640.
+4. **The tutorial panel overlaps the threshold stack.** Make the stack compact (collapsed thresholds as one-line chips; the T8 goal card smaller), then position the tutorial below the stack's *measured* height, or collapse the tutorial by default after its first line. Its body must not need scrolling for a normal line.
+5. **The biome triangle is clipped at the bottom edge,** and its labels overlap the circles. Keep a ≥ 16 px margin, put labels outside the circles, make the mixed circles smaller than the main ones, and show the highlighter ring on the selected biome.
+6. **Deck and triangle selection:** the deck showed Forest with no biome highlighted. With nothing selected, show a prompt card ("Pick a biome or a tile"), or default to the biome of the first held core, **with** the ring shown.
+7. **Resource pills:** add the resource name (small label or tooltip), tighten the width, and use the **body font with tabular digits** for numbers (not the handwritten font).
+8. **The top-right journal/menu buttons** are a tiny emoji and glyph. Draw 40 px icons in the icon style.
+9. **The detail panel's empty state** is a thin strip. Keep the full card size, so the panel doesn't jump.
+
+## Then the rest of U1 (UI_SPEC §3 and §5)
+Everything else in U1 that isn't done yet: both placement flows (sticky card; slot-first with auto-advance), the core card states, the hover pop-up (discovered combos only), detail-panel variants with Demolish, the ⚙ menu with Sound via `audioSettings`, End Run and New Run, restyled toasts and end screen, and Tab/R/Shift+click kept.
+
+**Slot highlight (V13):** opus is adding the optional `setSlotHighlight` contract now. Implement it once `[opus] CONTRACT` lands. Until then, fall back to the `'selected'` hex highlight.
+
+## DoD (by 06:00)
+- **Tests** (happy-dom): the offer shows and resolves; help opens and closes; both placement flows; core card states; the pop-up never shows undiscovered combos; no overlap between the main panels (compare bounding boxes at 1280×720 and 1024×640 with a fixed layout).
+- **Make it the default:** switch `src/ui/hud.ts` so `createHud` = the journal HUD, keeping `createLegacyHud` exported (opus wires `?ui=legacy`).
+- **Sonnet's browser review:** **no open P0/P1 bugs** from sonnet.
+
+Commit small and often (`[sol] V15: …`), and record each hash and what changed in your status so sonnet knows what to re-check.
