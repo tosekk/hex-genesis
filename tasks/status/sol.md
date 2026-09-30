@@ -1,5 +1,5 @@
 ## MORNING SUMMARY — Night 2 (ready 03:55, before 06:15)
-- Pushed: review/P1-B + voice P2-D `38757d5`; illustrated shader `c44481b`; GLB pipeline/native shader check `0454fda`; paper journal `7424160`; payout P2 `07946d2`.
+- Pushed: review/P1-B + voice P2-D `38757d5`; illustrated shader `c44481b`; GLB pipeline/native shader check `0454fda`; paper journal `7424160`; payout P2 `07946d2`; final regression/handoff `36639ae`.
 - Designer QA: default http://localhost:5173/?seed=7 → illustrated http://localhost:5173/?seed=7&style=illustrated → paper http://localhost:5173/?seed=7&journal=paper → both http://localhost:5173/?seed=7&style=illustrated&journal=paper (choose offer, then J).
 - Fresh FPS (settled / mid-wave): **20×14 illustrated UNMEASURED / UNMEASURED; 30×20 illustrated UNMEASURED / UNMEASURED**. No browser was available; ≥60 FPS and visual approval are still designer gates.
 - Historical V7 default only: 20×14 and 30×20 **120.0 FPS settled / 120.0 FPS wave**. These are pre-Night-2 numbers, not evidence for the new shader or GLBs.
@@ -18,7 +18,7 @@ Only `sol` edits this file. Everyone else reads it.
 DONE — Night 2 implementation and regression coverage complete. All feature/fix commits pushed to origin/main; morning handoff above. New looks remain behind their flags. Browser visual approval and fresh GPU FPS cannot be performed in this session and are explicitly pending designer QA.
 
 ## Done
-- Final Night 2 coverage: full illustrated 20×14/30×20 packed-batch/material-sharing tests plus mirrored-node GLB regression; 193 owned tests / 31 files, typecheck + production build pass at 03:55. Owner-only staged paths; Opus's journal.adjacency.test.ts excluded from the scoped run.
+- Final Night 2 coverage — `36639ae` (pushed): full illustrated 20×14/30×20 packed-batch/material-sharing tests plus mirrored-node GLB regression; 193 owned tests / 31 files, typecheck + production build pass at 03:55. Owner-only staged paths; Opus's journal.adjacency.test.ts excluded from the scoped run.
 - Older routed payout P2 — `07946d2` (pushed): 20 newest decorative labels maximum, bounded wait, clear on run end/rebuild, ignore late payouts; burst/terminal-status regressions pass.
 - Paper journal — `7424160` (pushed): physical cover/pages/gutter/binding/grain/bookmarks/ink/photo-frame, opt-in only; 45 focused DOM tests including all locked pages and >=4.5:1 actual CSS contrast, typecheck pass.
 - GLB pipeline — `0454fda` (pushed): build-time optional GLB discovery, dynamic GLTFLoader, texture preflight + loaded-material checks, per-material merge/footprint normalization, packed instances + biome core models and fallback. 52 renderer tests / 14 files, typecheck/build pass. Includes native headless shader compile/link regressions.
@@ -222,4 +222,3 @@ Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff
 
 Opus: V3 audio import/call before `newRun` and teardown disposal are now present in your morning `src/main.ts` working copy; no frame-loop call. Sol did not edit main.ts.
 Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/README.md`. V7 closes wave/console gaps: both filled-board sizes 120.0 FPS, real seed-7 win has zero console warnings/errors. 48 owned tests/typecheck/sandbox build pass. Supply the 14 MP3s; V5 release image set still pending.
-
