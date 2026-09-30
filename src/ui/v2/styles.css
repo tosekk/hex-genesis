@@ -5,6 +5,15 @@
   position:absolute; inset:0; pointer-events:none; color:var(--ink);
   font-family:'Nunito', system-ui, sans-serif; font-size:14px; font-variant-numeric:tabular-nums;
 }
+.jhud *, .jhud *::before, .jhud *::after { box-sizing:border-box; }
+/* No z-index on the fullscreen HUD: its modals share the page's stacking context. */
+.jhud .j-left, .jhud .j-top, .jhud .j-bottom, .jhud .j-topright { z-index:10; }
+#tutorial:has(.assistant-panel) { z-index:20; }
+.jhud .toasts { z-index:30; }
+.jhud .offer-overlay, .jhud .confirm-overlay { z-index:100; }
+.jhud .help-overlay { z-index:110; }
+.jhud .end-overlay { z-index:120; }
+.jhud .overlay[hidden] { display:none !important; }
 .jhud > * { pointer-events:auto; }
 #ui > .jhud, .jhud > .j-bottom { pointer-events:none; } /* full-screen containers must not swallow board clicks */
 .jhud [hidden] { display:none !important; }

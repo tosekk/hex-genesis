@@ -94,7 +94,9 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- **V13 ready:** yellow `#F5D547` slot ring with dark backing for every biome, real 3D anchor geometry follows visible flip/lift/camera; null/new board clears, group teardown disposes. Approved contract `72cc74b`; 35 render tests/typecheck pass (2 new placement/flip/clear regressions). HUD calls the optional method directly. Hash recorded after commit.
+- **V15 bug 3 ready:** explicit stacking layers: panels 10, tutorial root 20, toasts/notices 30, offer/confirm 100, help 110, end 120. Fullscreen HUD remains a pass-through container (no stacking context/z-index); border-box sizing is scoped. Panel non-overlap follows in bug 4. Hash recorded after commit.
+
+- **V13 ready:** yellow `#F5D547` slot ring with dark backing for every biome, real 3D anchor geometry follows visible flip/lift/camera; null/new board clears, group teardown disposes. Approved contract `72cc74b`; 35 render tests/typecheck pass (2 new placement/flip/clear regressions). HUD calls the optional method directly. Commit `f2e40d4`.
 
 - **V15 bug 2 ready:** centered journal-only help with backdrop, close/focus handling and Esc/?/H; no automatic opening, hint shown after offer. No shared legacy help edits. Three journal tests/typecheck pass. **QA entry point: `/src/ui/v2/preview.html?seed=1`** — real board/session/bindBoard, journal HUD, tutorial, audio with controls false; DEV `window.__session` hook. Default still legacy. Commit `521d49d`.
 
