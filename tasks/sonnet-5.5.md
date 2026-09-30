@@ -126,3 +126,17 @@ Combo codex styling, end-screen presentation, offer card presentation (biome col
 2. **Icons:** sol's icons are in `public/assets/icons/` (wood, stone, water, food and the 6 biomes). Use them in the resource bar, building costs and offer cards, with a text fallback if an icon fails to load.
 3. **Held cores with no legal site:** the economy now awards 9 cores (8 thresholds), so players will often hold cores after every legal site is gone (harmless for the win, §41). When `legalCoreSites(state)` is empty, core chips must show a clear disabled state, e.g. "No legal site left". Clicking one must not enter placement mode with nothing highlighted.
 4. Tests for 1–3. Commit each as `[sonnet] S6: …`, and refresh your status "Current".
+
+## S7 — Win progress + empty-slot finder (P1, designer-assigned) — `src/ui/**`
+
+The win (§41) needs every slot on every terraformed placeable tile filled, with no legal core site left. Late in a run, players can't see how close they are or where the last empty slots are.
+1. **Win progress** in the HUD (small, near the resource bar), updated on every relevant event:
+   - "Empty slots: **N**" (placeable tiles with `biome !== null` and an empty slot);
+   - "Legal core sites: **M**";
+   - "Spread active" while one is.
+
+   Put a one-line explanation in the tooltip or help overlay: "Win: no legal core site left and every slot filled." UI math only: read state and call `legalCoreSites`. **Don't** duplicate `checkWin` logic in a way that could disagree with it. If you need a helper, import from `src/sim/endgame.ts`.
+2. **Empty-slot finder:** hold **Tab** (or click the "Empty slots" counter) to highlight every hex with an empty slot, via `board.setHighlights('legalCore' | 'selected', …)` or whichever style reads best. Release to clear. Don't fight the core-placement mode highlights.
+3. Add both to the help overlay. Tests for the counters (fake state), the Tab highlight on and off, and no highlight during core-placement mode.
+
+Commit `[sonnet] S7: …` and refresh your status.

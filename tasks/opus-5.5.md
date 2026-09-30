@@ -127,3 +127,18 @@ Start once `session`, `boardView`, and `hud` are no longer stubs. Iterate as the
 3. **Independent review (O5)** of astra's D4 `0b7f609` and N4 `0642114` (map variety, plateau drainage, area-scaled clusters), and of the N6 preview optimization `4eacde4` (a pure-function speedup; check equivalence). Log PASS/FAIL in your Integration log.
 4. **After astra commits N7 (8 thresholds):** re-run autoplay and pacing, then **play one full run in the browser to a win** on a seed astra recommends. Route any bugs to their owners.
 5. Log everything in your status file and refresh "Current".
+
+## O7 — Release readiness while waiting for astra's N7 (P1, designer-assigned)
+
+1. **itch.io iframe test:** add a local page (e.g. `scripts/itch-frame.html` served next to the built `dist/`) that loads the game in a 1280×720 `<iframe>` like itch does. Verify:
+   - relative asset paths;
+   - keyboard focus (clicking the canvas must give keyboard focus: R, Tab, Esc, WASD/QE, 1/2, ?/H);
+   - no page scroll from arrow/space keys;
+   - fullscreen button behavior;
+   - audio starting after the first click;
+   - no console errors.
+
+   Fix anything in your own files (`index.html`, `src/main.ts`, `src/app/**`). Route the rest to its owner.
+2. **Loading feel:** a minimal loading indicator in `index.html` that disappears once the first frame renders (the bundle is > 500 kB).
+3. **itch page draft** in `README.md` under "itch.io page": a 2–3 sentence pitch; how to play (the core loop in 5 bullets); controls; a credits and AI-usage section per GAME_DESIGN §47 (AI-assisted coding by the 4 agents; generated graphics/models if any; ElevenLabs/Suno audio if the designer adds it). Use the placeholder name **"<GAME NAME>"**; the designer hasn't picked one yet.
+4. Then continue with O6.4 once astra's `N7` final commit lands.
