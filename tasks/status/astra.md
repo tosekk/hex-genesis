@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 2 — allowed producer yields to reduce opening resource starvation. Round 1 committed `922c134`; threshold-only tuning did not improve the 9/20 T6, 7/20 win rate.
+IN PROGRESS: N3 round 3 — bootstrap T1 from stone and return two stone from Polar Base, addressing the remaining five opening stalls. Round 2 committed `f284644` (15/20 T6, 13/20 wins).
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,7 @@ IN PROGRESS: N3 round 2 — allowed producer yields to reduce opening resource s
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 round 3: prioritize reachability over early pacing. Four remaining Forest openings earn 24 stone and zero wood before exhausting stock; T1 becomes wood 0 / stone 16 so they unlock a core before the third mine. The Arctic seed-13 triple exhausts wood and leaves stone 1; Polar Base adds stone 2 (total 12→14, within the triple 11–15 guardrail) to fund Driftwood Camp. Combo recipes are frozen, but payout resource allocation is not; this adds an existing resource to a combo amount, not a base-yield channel or mechanic.
 - N3 harness runtime: round 2's serial measurement exceeded 120 s after more bots survived. Run the unchanged simulation/scorer in four bounded local Node test workers, with a tiny extension resolver for Vite-style TypeScript imports. All 40 serial/worker results match exactly; the ordinary Vitest replay remains as a cross-runtime check. This is measurement parallelism, not delegation or a gameplay change.
 - N3 round 2: round 1 proves threshold scaling cannot repair openings earning zero required wood/stone. Increase wood producers and Arctic pair participants within ±1, lower Hillside Mine by one and Glacier Pump from 5 to 4 (Ice Drill rises 3 to 4) so the cheaper drill can tie the pump and enable Ice Mine/Harbor. Keep recipes, costs, terrain bonuses and bot strategies fixed.
 - N3: prioritize target 4, then 2, 1, 3. Round 1 changes thresholds only, approximately scaling the untuned completers' pacing toward targets; this is not evidence that the censored seeds succeed. Stop after six measured rounds and keep the best reachable/winnable result rather than disguise stuck runs as favorable spam ratios.
@@ -212,3 +213,16 @@ Within ±1 of v2, improve wood production and cheap Arctic recipe starters. This
 Before: combo T6 9/20, wins 7/20; spam T6 0/20; 0 soft-lock declarations; combo all-seed medians unreached / unreached / unreached / unreached / unreached / unreached.
 
 After: combo T6 15/20, wins 13/20; spam T6 3/20; 0 soft-lock declarations; combo all-seed medians 11.0 / 14.5 / 36.0 / 98.5 / 134.5 / 249.0. Measurement 76.78 s. Exact configuration/run archive: `tests/balance/round-2.json`.
+
+### N3 round 3 — bootstrap construction resources
+
+Bootstrap T1 on stone alone before Forest construction stock is exhausted; add two stone to Polar Base (14 total) to fund the Arctic seed-13 recovery. Target 4 now PASSES: 20/20 reach T6, 18/20 win, zero declarations. The remaining two runs (12,18) spend all seven available cores, fill every living slot, and each retain exactly one legal core site. Those require one additional core, beyond the frozen six-threshold limit. T1 is deliberately too fast to keep the highest-priority reachability target.
+
+| Value | Before → after |
+|---|---|
+| T1 | wood 7, stone 7 → wood 0, stone 16 |
+| `polar_base` payout | water 8, food 4 → water 8, food 4, stone 2 |
+
+Before: combo T6 15/20, wins 13/20; spam T6 3/20; 0 soft-lock declarations; combo all-seed medians 11.0 / 14.5 / 36.0 / 98.5 / 134.5 / 249.0.
+
+After: combo T6 20/20, wins 18/20; spam T6 6/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 11.5 / 38.0 / 84.0 / 115.0 / 230.5. Measurement 98.75 s. Exact configuration/run archive: `tests/balance/round-3.json`.
