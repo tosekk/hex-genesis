@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:e2e-full": "E2E_FULL=1 vitest run tests/e2e",
     "typecheck": "tsc --noEmit",
     "package": "node scripts/package.mjs && node scripts/verify-zip.mjs",
     "pacing": "PACING=1 vitest run tests/e2e/pacing.test.ts",

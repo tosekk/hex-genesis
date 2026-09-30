@@ -35,7 +35,7 @@ export interface BotReport {
   resources: Resources;
   filledHexes: number;
   livingPlaceableHexes: number;
-  /** §41 end-screen stat: occupied slots / all slots on terraformed placeable hexes. */
+  /** §41 end-screen stat: occupied slots / all slots on terraformed placeable non-core hexes (§10). */
   occupiedSlots: number;
   terraformedSlots: number;
   /** astra's v4 metric: occupied slots / (3 × placeable hexes on the whole map). */
@@ -86,6 +86,12 @@ function chooseCoreSite(s: Readonly<GameState>): Action | null {
   return { t: 'core', hexId: best, stackIndex: 0 };
 }
 
+/** Living, placeable, unlocked, and not a core's own hex (§10: a core hex never holds buildings). */
+const buildable = (s: Readonly<GameState>, id: HexId) => {
+  const h = s.hexes[id];
+  return h.placeable && h.biome !== null && !isHexLocked(s, id) && !s.cores.includes(id);
+};
+
 /**
  * Fill hexes one at a time: the fullest unlocked living hex that has an affordable roster building
  * (ties → lowest HexId), then the best-scoring previewed building for its first empty slot.
@@ -95,7 +101,7 @@ function chooseBuild(session: GameSession): Action | null {
   const s = session.state;
   const occupied = (id: HexId) => s.hexes[id].slots.filter((x) => x.building !== null).length;
   const candidates = s.hexes
-    .filter((h) => h.placeable && h.biome !== null && !isHexLocked(s, h.id) && occupied(h.id) < 3)
+    .filter((h) => buildable(s, h.id) && occupied(h.id) < 3)
     .filter((h) => rosterFor(s, h.id).some((b) => canAfford(s.resources, s.config.buildings[b].cost)))
     .sort((a, b) => occupied(b.id) - occupied(a.id) || a.id - b.id);
   const h = candidates[0];
@@ -125,7 +131,7 @@ function chooseBuild(session: GameSession): Action | null {
 function chooseSpam(session: GameSession): Action | null {
   const s = session.state;
   for (const h of s.hexes) {
-    if (!h.placeable || h.biome === null || isHexLocked(s, h.id)) continue;
+    if (!buildable(s, h.id)) continue;
     const slot = h.slots.findIndex((x) => x.building === null);
     if (slot < 0) continue;
     const affordable = rosterFor(s, h.id)
@@ -174,8 +180,10 @@ export function runBot(session: GameSession, seed: number, opts: BotOptions = {}
     if (s.pendingOffer) { act(chooseOffer(s)); continue; }
     if (s.activeSpread) {
       // §11 / §57 spread 13: locked tiles and a second core are rejected while spreading.
-      const lockedId = s.activeSpread.result.claims.find((c) => c.kind === 'claim')?.hexId;
-      if (lockedId !== undefined && s.activeSpread.revealed > 0) {
+      // A revealed claim other than the origin: the origin is the core's own hex, which rejects buildings
+      // anyway (§10), so it would not prove the lock.
+      const lockedId = s.activeSpread.result.claims.slice(1, s.activeSpread.revealed).find((c) => c.kind === 'claim')?.hexId;
+      if (lockedId !== undefined) {
         const b = rosterFor(s, lockedId)[0];
         if (b) act({ t: 'build', hexId: lockedId, slot: 0, building: b }, false);
       }
@@ -197,7 +205,8 @@ export function runBot(session: GameSession, seed: number, opts: BotOptions = {}
   }
 
   const s = session.state;
-  const living = s.hexes.filter((h) => h.placeable && h.biome !== null);
+  // Core hexes are not building slots anywhere, board-used stats included (§10).
+  const living = s.hexes.filter((h) => h.placeable && h.biome !== null && !s.cores.includes(h.id));
   return {
     seed, strategy, status: s.status, stop, actions, placements, coresPlaced,
     thresholdsReached: s.thresholdIndex,

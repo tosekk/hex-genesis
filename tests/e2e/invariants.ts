@@ -32,6 +32,12 @@ export function assertInvariants(s: Readonly<GameState>, prev?: Readonly<GameSta
     }
   }
 
+  // §10 (2026-10-01): a core's own hex never holds buildings. Checked against state.cores directly,
+  // independent of the economy's isCoreHex, so the two definitions cross-check each other.
+  for (const id of s.cores) {
+    if (s.hexes[id].slots.some((x) => x.building !== null)) fail(`hex ${id}: building on a core hex (§10)`);
+  }
+
   // ---- economy ----
   for (const [k, v] of Object.entries(s.resources)) if (v < 0) fail(`resource ${k} negative`);
   for (const [k, v] of Object.entries(s.lifetime)) if (v < 0) fail(`lifetime ${k} negative`);
@@ -57,7 +63,7 @@ export function assertInvariants(s: Readonly<GameState>, prev?: Readonly<GameSta
     if (s.activeSpread) fail('lost during an active spread (§44)');
     if (s.coreStack.length > 0 && legalCoreSites(s).length > 0) fail('lost while holding a core with a legal site (§44)');
     for (const h of s.hexes) {
-      if (!h.placeable || h.biome === null) continue;
+      if (!h.placeable || h.biome === null || s.cores.includes(h.id)) continue;
       h.slots.forEach((slot, i) => {
         if (slot.building !== null || slot.yieldPaid) return;
         for (const b of rosterFor(s, h.id)) {
