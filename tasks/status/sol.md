@@ -3,7 +3,7 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V4 COMPLETE; preparing V5 browser-capture blocker record and V6 morning summary.
+V5 SKIPPED under its explicit browser-access condition; preparing V6 morning summary.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -23,8 +23,12 @@ V4 COMPLETE; preparing V5 browser-capture blocker record and V6 morning summary.
 - V2 — sandbox size overrides, fitted camera/zoom/pan/table, edge picks and live diagnostics; all three filled-board sizes measured 120 FPS / 59 calls; 33 scoped tests/typecheck/build pass — `7edfb22`.
 - V3 — gesture-gated optional audio, persistent controls, all specified event cues and asset generation list; precise main.ts handoff, 39 scoped tests/typecheck/build and missing-asset browser checks pass — `fe7e802`.
 
+- V4 — visible core/completion effects, reduced motion, softened lighting and cached PCF shadows; 42 owned tests/typecheck/scoped build pass, settled 30×20 board stays at 120 FPS — `38367c2`.
+- V5 — browser capture skipped under task allowance; release-kit README records blocker and candidate capture handoff. Commit hash follows in V6.
+
 ## Blockers
 <!-- what, waiting on whom -->
+- V5: CUA cannot locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
