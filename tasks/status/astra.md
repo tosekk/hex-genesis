@@ -171,6 +171,11 @@ D4 regressions cover connected mountain count/size variety, hill/placeable distr
 
 ## Balance log
 
+### N8 v4 round 1 — opening repairs
+- Preparation committed `fb652be`; S8 prerequisite `c63b56d` is present. Starting from selected v3, Hillside Mine cost wood **2→0**, Oasis Well cost stone **3→1**. Starting stock, yields, rewards and thresholds unchanged. These exact failures exhausted seed 35 wood and seed 37 stone after three placements; zero-cost mining and cost-neutral well stone allow the fixed greedy policy to finish high-yield sites and continue. Both are within v4 costs 0–8; lowest-priority spending pressure may worsen and will be reported.
+- Results: **50/50 combo wins**, **46/50 spam losses**, zero detected false soft-locks, zero combo opening stalls (35/37 now win at 440/429 placements), median winning board use **69.47%**. Targets **1/2/3/4 PASS**, **5/6 MISS**; T7 median/max **59.43/89.45%**, 25 late seeds. Spam seeds 5/18 win, 23/35 are unproven stalls and excluded from losses. Stock-pressure worst checkpoint median ratio is infinite (positive stock, zero resource cost).
+- Validation: all 10 opt-in harness checks pass (139.97 s including replay), 125 scoped tests pass, typecheck passed at preparation. Round archive `tests/balance/v4-round-1.json`; no outside-owner failure observed.
+
 ### N7 final selection — round 3 retained
 
 Final verification: **124 owned/scoped tests pass, 8 opt-in skips** (11.20 s); **16 config/report checks pass**; `npm run typecheck` passes. Source diff versus `f6b6d45:src/config/economy.ts` is empty. Deep comparison confirms all selected economy values match `v3-round-3.json` and every non-threshold field matches the original v2 round-4 archive. No new outside-owner issue found; no edits/staging of parallel agents’ files.

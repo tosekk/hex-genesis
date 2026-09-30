@@ -1,6 +1,6 @@
 import type { GameConfig } from '../core/types';
 
-// PLACEHOLDER v3 (ECONOMY_SPEC.md) — designer-approved, tunable within guardrails
+// PLACEHOLDER v4 (ECONOMY_SPEC.md) — designer-approved, tunable within guardrails
 export const ECONOMY: Pick<GameConfig,
   'resources' | 'startingResources' | 'buildings' | 'rosters' | 'combos' | 'terrainBonuses' |
   'zoneModifiers' | 'adjacencyAmount' | 'thresholds' | 'demolishRefundRatio' | 'reshufflesPerRun'> = {
@@ -8,14 +8,14 @@ export const ECONOMY: Pick<GameConfig,
   startingResources: { wood: 6, stone: 6 },
   buildings: {
     lumber_camp: { id: 'lumber_camp', name: 'Lumber Camp', cost: { wood: 2 }, baseYield: { wood: 5 } },
-    hillside_mine: { id: 'hillside_mine', name: 'Hillside Mine', cost: { wood: 2 }, baseYield: { stone: 2 } },
+    hillside_mine: { id: 'hillside_mine', name: 'Hillside Mine', cost: { wood: 0 }, baseYield: { stone: 2 } },
     sawmill: { id: 'sawmill', name: 'Sawmill', cost: { wood: 2, stone: 2 }, baseYield: { wood: 6 } },
     gatherers_hut: { id: 'gatherers_hut', name: "Gatherer's Hut", cost: { wood: 2 }, baseYield: { food: 2, wood: 1 } },
     farm: { id: 'farm', name: 'Farm', cost: { wood: 3, stone: 1 }, baseYield: { food: 4 } },
     quarry: { id: 'quarry', name: 'Quarry', cost: { stone: 2 }, baseYield: { stone: 4 } },
     palm_grove: { id: 'palm_grove', name: 'Palm Grove', cost: { stone: 2 }, baseYield: { wood: 4 } },
     stonemason: { id: 'stonemason', name: 'Stonemason', cost: { wood: 2, stone: 2 }, baseYield: { stone: 5 } },
-    oasis_well: { id: 'oasis_well', name: 'Oasis Well', cost: { stone: 3 }, baseYield: { water: 3, stone: 1 } },
+    oasis_well: { id: 'oasis_well', name: 'Oasis Well', cost: { stone: 1 }, baseYield: { water: 3, stone: 1 } },
     glass_kiln: { id: 'glass_kiln', name: 'Glass Kiln', cost: { stone: 4, water: 2 }, baseYield: { stone: 3, water: 3 } },
     driftwood_camp: { id: 'driftwood_camp', name: 'Driftwood Camp', cost: { stone: 2 }, baseYield: { wood: 4 } },
     scree_quarry: { id: 'scree_quarry', name: 'Scree Quarry', cost: { wood: 2 }, baseYield: { stone: 4 } },
