@@ -1,6 +1,6 @@
 ## Morning summary
 
-Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`).
+Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff `5a6cdcb`; V6 `0e2afd7`; V7 `7e47e0d`; V8 `323833e`; V9 `e048346` (VO ids: `combos`, `progression`); V11 `5f84c07`; V12 `ace4f00`; V14 `6555b8b`; V13 awaits contract.
 
 | Filled board (1280×720 CSS, DPR≤2) | FPS | Draw calls |
 |---|---:|---:|
@@ -16,11 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V11 `5f84c07`, V12 `ace4f00`, V14 COMPLETE (journal tutorial CSS; 53 owned tests/typecheck/scoped build pass). V13 BLOCKED: Opus usage-limited, O9 not started; no committed slot-highlight contract. Journal tutorial browser layout review remains pending after native browser windows became unavailable.
+V11 `5f84c07`, V12 `ace4f00`, V14 `6555b8b` COMPLETE (journal tutorial CSS; 53 owned tests/typecheck/scoped build pass). V13 BLOCKED: Opus usage-limited, O9 not started; no committed slot-highlight contract. Journal tutorial browser layout review remains pending after native browser windows became unavailable.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
-- V14 — journal paper/ink note at left/top 300px, 250px wide, handwritten heading and sketch device face; collapsible behavior unchanged, body scrolls within reserved bottom-deck space. Nine tutorial tests and scoped production build pass; new fonts bundle successfully. Browser review blocked by `cgWindowNotFound` in both Safari and Brave. Hash recorded after commit.
+- V14 — journal paper/ink note at left/top 300px, 250px wide, handwritten heading and sketch device face; collapsible behavior unchanged, body scrolls within reserved bottom-deck space. Nine tutorial tests and scoped production build pass; new fonts bundle successfully. Browser review blocked by `cgWindowNotFound` in both Safari and Brave. Commit `6555b8b`.
 - V12 — `ace4f00` — `audioSettings` shared mute/0–1 volume with subscriptions, safe existing-key persistence; optional `createAudio(..., { controls: false })`, default controls preserved. Five new settings/live-playback regressions; all 53 owned tests/typecheck pass.
 - V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Commit `5f84c07`.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
