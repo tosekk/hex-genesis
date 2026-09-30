@@ -46,6 +46,13 @@ describe('journal component contract states', () => {
     expect(s.root.querySelector('[data-biome="taiga"] .j-badge')).toBeNull();
     tile.biome = null; s.ctrl.selectHex(tile.id); tri.render(); expect(s.root.querySelector('.j-biome.selected')).toBeNull();
   });
+  it('labels zero-cost buildings Free in detail and hover notes', () => {
+    const s = setup(); s.ctrl.selectBiome('forest'); s.ctrl.clickCard({ kind: 'building', id: 'hillside_mine' });
+    const detail = createDetail(s.root, s.session, s.ctrl), deck = createDeck(s.root, s.session, s.ctrl); disposals.push(detail.dispose, deck.dispose);
+    expect(s.root.querySelector('.j-detail')?.textContent).toContain('Cost: Free');
+    s.root.querySelector<HTMLButtonElement>('[data-building="hillside_mine"]')!.focus();
+    expect(s.root.querySelector('.j-note')?.textContent).toContain('Cost: Free');
+  });
   it('filters zero targets while keeping final goal pinned across threshold progress', () => {
     const s = setup(); s.state.config.thresholds[0] = { wood: 0, stone: 16 };
     const stack = createThresholdStack(s.root, s.session, s.ctrl); disposals.push(stack.dispose);

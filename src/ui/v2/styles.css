@@ -92,8 +92,11 @@
 .jhud .j-icon-btn .icon-missing { font-size:12px; }
 .j-menu { position:fixed; top:108px; right:16px; z-index:100; width:230px; display:flex; flex-direction:column; gap:6px; }
 .j-sound { display:flex; gap:6px; align-items:center; }
-.j-sound input { flex:1; }
-.j-newrun { display:flex; gap:6px; }
+.j-sound input { flex:1; min-width:0; }
+.j-sound .menu-mute { white-space:nowrap; flex:none; }
+.j-newrun { display:flex; flex-wrap:wrap; gap:6px; }
+.j-newrun .menu-seed { flex:1 0 100%; width:100%; }
+.j-newrun .menu-new { width:100%; }
 .j-newrun input, .jhud .seed-input { font:inherit; padding:4px 6px; border:1.5px solid var(--ink); border-radius:6px; min-width:0; flex:1; background:#fffaf0; }
 
 /* --- bottom --- */

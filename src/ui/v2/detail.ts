@@ -46,7 +46,7 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
     const cfg = s.config;
     const def = cfg.buildings[id];
     panel.appendChild(head(icon(`buildings/${id}`, initials(def.name)), def.name, ctrl.effectiveBiome ? BIOME_LABEL[ctrl.effectiveBiome] : undefined));
-    panel.appendChild(row(`Cost: ${fmtResources(def.cost)}`));
+    panel.appendChild(row(`Cost: ${Object.values(def.cost).some(v => v > 0) ? fmtResources(def.cost) : 'Free'}`));
     panel.appendChild(row(`Base yield: ${fmtResources(def.baseYield, true)}`));
     for (const line of ruleLines(cfg, id)) panel.appendChild(row(line, 'j-rule'));
     // Discovered combos only (§32, §38).

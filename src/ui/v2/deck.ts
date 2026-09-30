@@ -83,7 +83,7 @@ export function createDeck(root: HTMLElement, session: GameSession, ctrl: Ctrl) 
           b.append(el('b', undefined, def.name), box);
         } else {
           b.append(el('b', undefined, def.name),
-            el('div', affordable ? '' : 'j-neg', `Cost: ${fmtResources(def.cost)}`),
+            el('div', affordable ? '' : 'j-neg', `Cost: ${Object.values(def.cost).some(v => v > 0) ? fmtResources(def.cost) : 'Free'}`),
             el('div', undefined, `Yields: ${fmtResources(def.baseYield, true)}`));
         }
       }));
