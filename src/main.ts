@@ -1,5 +1,6 @@
 import { bindBoard } from './app/bindBoard';
 import { hideLoading, preventScrollKeys, requestFocus } from './app/embed';
+import { installCrashScreen } from './app/crashScreen';
 import { installErrorOverlay } from './app/errorOverlay';
 import { createAudio } from './audio/audio';
 import { DEFAULT_CONFIG } from './config';
@@ -8,7 +9,11 @@ import { createBoardView } from './render/boardView';
 import { createTutorial } from './tutorial/tutorial';
 import { createHud, createJournalHud, createLegacyHud } from './ui/hud';
 
+// Seed of the current run for the production crash note; null until the first run starts.
+let runSeed: number | null = null;
+// Dev: the raw error overlay. Production: a friendly "Something went wrong: reload (seed N)" note.
 if (import.meta.env.DEV) installErrorOverlay();
+else installCrashScreen({ seed: () => runSeed });
 const allowScrollKeys = preventScrollKeys();
 
 function pickSeed(): number {
@@ -33,6 +38,7 @@ function el(id: string): HTMLElement {
 }
 
 const session = createGameSession({ config: DEFAULT_CONFIG, now: () => Date.now() });
+session.subscribe((e) => { if (e.type === 'runStarted') runSeed = e.seed; });
 const board = createBoardView(el('board'), DEFAULT_CONFIG);
 const unbindBoard = bindBoard(session, board);
 const hudFactory = pickHud();
