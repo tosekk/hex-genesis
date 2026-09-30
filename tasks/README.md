@@ -77,7 +77,7 @@ A path's owner is the **only** agent that may create, edit, or delete files unde
 | `src/sim/offers.ts`, `src/sim/offers.test.ts` | astra (reassigned from deepseek) |
 | `src/sim/endgame.ts`, `src/sim/endgame.test.ts` | sonnet (reassigned from deepseek) |
 | `src/render/**`, `render-sandbox.html` | sol |
-| `src/tutorial/**`, `src/audio/**`, `public/audio/**`, `public/assets/**`, `release-kit/**` | sol |
+| `src/tutorial/**`, `src/audio/**`, `src/assets/**` (audio lives in `src/assets/audio/` from 2026-10-01 02:45), `public/audio/**`, `public/assets/**`, `release-kit/**` | sol |
 | `tasks/status/<tag>.md` | that agent |
 | `GAME_DESIGN.md`, `AGENT_TASKS.md`, `AGENTS.md`, `CLAUDE.md`, `tasks/*.md` | human only |
 
