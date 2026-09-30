@@ -1,6 +1,6 @@
 import type { GameSession } from '../../core/contracts';
 import type { BuildingId, GameConfig } from '../../core/types';
-import { demolishRefund } from '../../sim/economy';
+import { demolishRefund, isCoreHex } from '../../sim/economy';
 import { BIOME_ICON, BIOME_LABEL, buildingName, cap, el, fmtResources, icon } from '../format';
 import type { Ctrl } from './ctrl';
 
@@ -74,6 +74,11 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
     const s = session.state;
     const cfg = s.config;
     const h = s.hexes[ctrl.hex!];
+    if (isCoreHex(s, h.id)) {
+      panel.appendChild(head(icon('core', '◎'), 'Terraformer core — no buildings', h.biome ? BIOME_LABEL[h.biome] : undefined));
+      panel.appendChild(row('This tile holds a terraformer core. Its building slots are unavailable.'));
+      return;
+    }
     const locked = s.activeSpread?.locked[h.id] === true;
     panel.appendChild(head(icon(h.biome ?? 'forest', h.biome ? BIOME_ICON[h.biome] : '·'),
       `Tile ${h.col},${h.row}`, h.biome ? BIOME_LABEL[h.biome] : 'Dead land'));

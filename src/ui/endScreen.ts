@@ -1,7 +1,7 @@
 import type { GameSession } from '../core/contracts';
 import type { RunStats } from '../core/types';
 import { cap, el, fmtTime } from './format';
-import { emptySlotSummary } from './winProgress';
+import { slotCounts } from '../sim/economy';
 
 export function randomSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
@@ -32,8 +32,8 @@ export function createEndScreen(root: HTMLElement, session: GameSession) {
     box.appendChild(el('h2', undefined, TITLE[stats.status]));
     const st = session.state;
     const goal = st.config.thresholds.length;
-    const { slots, total } = emptySlotSummary(st);
-    const used = total - slots;
+    const { empty, total } = slotCounts(st);
+    const used = total - empty;
     box.appendChild(el('div', 'end-thresholds', `Thresholds reached: ${Math.min(st.thresholdIndex, goal)}/${goal}`));
     box.appendChild(el('div', 'end-board', `Board used: ${used}/${total} slots (${total === 0 ? 0 : Math.round((used / total) * 100)}%)`));
     const life = el('div', 'end-lifetime');

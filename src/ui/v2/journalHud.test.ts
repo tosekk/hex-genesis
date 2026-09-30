@@ -355,3 +355,30 @@ it('keeps a sticky building card and its deck after clicking dead or natural lan
   expect(build).not.toHaveBeenCalled();
   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
 });
+
+describe('V16 core hex exclusions in the journal HUD', () => {
+  it('shows a core tile with no chips/deck targets, rejects sticky/repeat builds, and skips it in Tab finder', () => {
+    const s = restoredFixture(), core = s.session.state.cores[0], build = vi.spyOn(s.session, 'placeBuilding');
+    s.click(`[data-building="${s.id}"]`); s.pointer({ hexId: core, slot: 0 });
+    expect(build).not.toHaveBeenCalled(); expect(s.root.querySelector('.j-notice')?.textContent).toBe('Terraformer core — no buildings');
+    expect(s.root.querySelector(`[data-building="${s.id}"].selected`)).not.toBeNull();
+    s.pointer({ hexId: s.tile.id, slot: 0 }); expect(build).toHaveBeenCalledOnce(); build.mockClear();
+    s.pointer({ hexId: core, slot: 0 }, 'move');
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'r', bubbles: true })); expect(build).not.toHaveBeenCalled();
+    expect(s.root.querySelector('.j-notice')?.textContent).toBe('Terraformer core — no buildings');
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); s.pointer({ hexId: core, slot: 1 });
+    expect(s.root.querySelector('.j-detail')?.textContent).toContain('Terraformer core — no buildings');
+    expect(s.root.querySelectorAll('.j-chip')).toHaveLength(0); expect(s.root.querySelector('.j-deck-prompt')).not.toBeNull();
+    expect(s.board.setSlotHighlight).toHaveBeenLastCalledWith(null);
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    expect(s.board.setHighlights).toHaveBeenLastCalledWith('selected', expect.not.arrayContaining([core]));
+    document.body.dispatchEvent(new KeyboardEvent('keyup', { key: 'Tab', bubbles: true }));
+  });
+  it('uses shared non-core counts for Slots left and the end screen board-used fraction', () => {
+    const s = restoredFixture(); const slots = s.session.state.hexes.filter(h => h.placeable && h.biome && !s.session.state.cores.includes(h.id)).length * 3;
+    expect(s.root.querySelector('.j-slots')?.textContent).toContain(`Slots left ${slots} of ${slots}`);
+    s.pointer({ hexId: s.tile.id, slot: 0 }); s.click(`[data-building="${s.id}"]`);
+    expect(s.root.querySelector('.j-slots')?.textContent).toContain(`Slots left ${slots - 1} of ${slots}`);
+    s.session.endRun(); expect(s.root.querySelector('.end-board')?.textContent).toContain(`Board used: 1/${slots} slots`);
+  });
+});

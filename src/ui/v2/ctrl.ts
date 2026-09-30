@@ -1,5 +1,6 @@
 import type { BoardPick, BoardView, GameSession, SessionEvent } from '../../core/contracts';
 import type { Biome, BuildingId, GameState, HexId, MainBiome, SlotIndex } from '../../core/types';
+import { isCoreHex, slotCounts } from '../../sim/economy';
 import { legalCoreSites } from '../../sim/spread/spread';
 
 export type Card = { kind: 'core' } | { kind: 'building'; id: BuildingId } | null;
@@ -7,13 +8,9 @@ export type Card = { kind: 'core' } | { kind: 'building'; id: BuildingId } | nul
 /** Terraformed placeable tiles with an empty slot, the empty-slot count and total slots. Reads state only. */
 export function slotSummary(state: Readonly<GameState>): { hexes: HexId[]; empty: number; total: number } {
   const hexes: HexId[] = [];
-  let empty = 0;
-  let total = 0;
+  const { empty, total } = slotCounts(state);
   for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null) continue;
-    total += h.slots.length;
-    const e = h.slots.filter((s) => s.building === null).length;
-    if (e > 0) { hexes.push(h.id); empty += e; }
+    if (h.placeable && h.biome !== null && !isCoreHex(state, h.id) && h.slots.some(s => s.building === null)) hexes.push(h.id);
   }
   return { hexes, empty, total };
 }
@@ -62,7 +59,7 @@ export class Ctrl {
   get state(): Readonly<GameState> { return this.session.state; }
   get finderOn(): boolean { return this.tabHeld || this.finderToggled; }
   /** A cleared triangle also clears the deck; no implicit biome is shown. */
-  get effectiveBiome(): Biome | null { return this.biome; }
+  get effectiveBiome(): Biome | null { return this.hex !== null && isCoreHex(this.state, this.hex) ? null : this.biome; }
   hasBiomeLand(biome: Biome): boolean { return this.state.hexes.some(hex => hex.biome === biome); }
   biomeEnabled(biome: Biome): boolean {
     return this.hasBiomeLand(biome) || ((biome === 'forest' || biome === 'desert' || biome === 'arctic') && this.state.coreStack.includes(biome));
@@ -106,6 +103,7 @@ export class Ctrl {
 
   selectSlot(hexId: HexId, slot: SlotIndex): void {
     if (this.isBlocked()) return;
+    if (isCoreHex(this.state, hexId)) { this.selectHex(hexId); return; }
     this.card = null;
     this.hex = hexId;
     this.slot = slot;
@@ -157,6 +155,7 @@ export class Ctrl {
   quickBuild(pick: BoardPick): void {
     const s = this.state;
     if (this.isBlocked() || this.lastBuilt === null || this.card?.kind === 'core' || s.pendingOffer || s.status !== 'playing') return;
+    if (isCoreHex(s, pick.hexId)) { this.fail(pick.hexId, 'Terraformer core — no buildings'); return; }
     const slot = this.targetSlot(pick);
     if (slot === null) { this.fail(pick.hexId, 'All slots on this tile are full.'); return; }
     this.place(pick.hexId, slot, this.lastBuilt);
@@ -181,6 +180,7 @@ export class Ctrl {
   }
 
   private targetSlot(pick: BoardPick): SlotIndex | null {
+    if (isCoreHex(this.state, pick.hexId)) return null;
     const slots = this.state.hexes[pick.hexId]?.slots;
     if (!slots) return null;
     if (pick.slot !== null && slots[pick.slot].building === null) return pick.slot;
@@ -190,6 +190,7 @@ export class Ctrl {
 
   /** Returns true on success; on failure flashes the tile, posts the reason and keeps every selection. */
   private place(hexId: HexId, slot: SlotIndex, id: BuildingId): boolean {
+    if (isCoreHex(this.state, hexId)) { this.fail(hexId, 'Terraformer core — no buildings'); return false; }
     const r = this.session.placeBuilding(hexId, slot, id);
     if (r.ok) { this.lastBuilt = id; return true; }
     this.fail(hexId, r.reason);
@@ -233,6 +234,9 @@ export class Ctrl {
     if (pick.slot !== null && s.hexes[pick.hexId]?.slots[pick.slot]?.building !== null) { this.selectSlot(pick.hexId, pick.slot); return; }
     if (this.card?.kind === 'building') {
       const hex = s.hexes[pick.hexId];
+      if (isCoreHex(s, pick.hexId)) {
+        this.hex = null; this.slot = null; this.fail(pick.hexId, 'Terraformer core — no buildings'); this.sync(); return;
+      }
       if (!hex?.placeable || hex.biome === null) {
         this.hex = null; this.slot = null;
         this.fail(pick.hexId, 'Choose terraformed land for this building.'); this.sync(); return;
@@ -293,10 +297,10 @@ export class Ctrl {
     const playing = s.status === 'playing';
     this.board.setHighlights('legalCore', this.card?.kind === 'core' && playing ? legalCoreSites(s) : []);
     const marks = new Set<HexId>();
-    if (this.hex !== null) marks.add(this.hex);
+    if (this.hex !== null && (!this.finderOn || !isCoreHex(s, this.hex))) marks.add(this.hex);
     if (this.finderOn && this.card?.kind !== 'core' && playing) for (const id of slotSummary(s).hexes) marks.add(id);
     this.board.setHighlights('selected', [...marks]);
-    this.board.setSlotHighlight?.(this.hex !== null && this.slot !== null ? { hexId: this.hex, slot: this.slot } : null);
+    this.board.setSlotHighlight?.(this.hex !== null && this.slot !== null && !isCoreHex(s, this.hex) ? { hexId: this.hex, slot: this.slot } : null);
     for (const c of this.changeCbs) c();
   }
 }

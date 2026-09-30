@@ -1,5 +1,6 @@
 import type { BoardView, GameSession } from '../core/contracts';
 import type { GameState, HexId } from '../core/types';
+import { isCoreHex, slotCounts } from '../sim/economy';
 import { legalCoreSites } from '../sim/spread/spread';
 import { el } from './format';
 import type { Interaction } from './interaction';
@@ -7,13 +8,9 @@ import type { Interaction } from './interaction';
 /** Terraformed placeable tiles with an empty slot, the empty-slot count and the total slots on terraformed placeable tiles. Reads state only. */
 export function emptySlotSummary(state: Readonly<GameState>): { hexes: HexId[]; slots: number; total: number } {
   const hexes: HexId[] = [];
-  let slots = 0;
-  let total = 0;
+  const { empty: slots, total } = slotCounts(state);
   for (const h of state.hexes) {
-    if (!h.placeable || h.biome === null) continue;
-    total += h.slots.length;
-    const empty = h.slots.filter((s) => s.building === null).length;
-    if (empty > 0) { hexes.push(h.id); slots += empty; }
+    if (h.placeable && h.biome !== null && !isCoreHex(state, h.id) && h.slots.some(s => s.building === null)) hexes.push(h.id);
   }
   return { hexes, slots, total };
 }
@@ -45,7 +42,7 @@ export function createWinProgress(root: HTMLElement, session: GameSession, board
     emptyBtn.classList.toggle('active', want);
     if (want) {
       const ids = new Set(emptySlotSummary(s).hexes);
-      if (ui.selected !== null) ids.add(ui.selected);
+      if (ui.selected !== null && !isCoreHex(s, ui.selected)) ids.add(ui.selected);
       board.setHighlights('selected', [...ids]);
       showing = true;
     } else if (showing) {

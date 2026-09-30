@@ -1,6 +1,6 @@
 import type { GameSession } from '../core/contracts';
 import type { SlotIndex } from '../core/types';
-import { demolishRefund, rosterFor } from '../sim/economy';
+import { demolishRefund, rosterFor, isCoreHex } from '../sim/economy';
 import { BIOME_LABEL, buildingName, cap, el, fmtResources, icon } from './format';
 import type { Interaction } from './interaction';
 import { renderPreview } from './preview';
@@ -27,6 +27,7 @@ export function createHexPanel(root: HTMLElement, session: GameSession, ui: Inte
     panel.appendChild(head);
     panel.appendChild(el('div', 'hex-info',
       `${cap(hex.terrain === 'hill' ? 'plain' : hex.terrain)} · ${hex.biome ? BIOME_LABEL[hex.biome] : 'Dead land'} · elevation ${hex.elevation}`));
+    if (isCoreHex(s, id)) { panel.appendChild(el('div', 'hint', 'A terraformer core occupies this tile')); return; }
     if (locked) { panel.appendChild(el('div', 'hint', 'Locked (spreading)')); return; }
     if (!hex.placeable) { panel.appendChild(el('div', 'hint', 'Nothing can be built here.')); return; }
     if (hex.biome === null) { panel.appendChild(el('div', 'hint', 'Not terraformed yet.')); return; }

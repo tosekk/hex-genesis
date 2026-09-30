@@ -171,3 +171,15 @@ describe('empty-slot finder', () => {
     expect(help).toContain('Reach the final threshold before you run out of room. Every slot and combo pays only once.');
   });
 });
+
+it('excludes core slots from the legacy count/end screen and explains core tiles without build controls', () => {
+  const t = setup(); t.state.cores = [0]; t.emit({ type: 'hexChanged', hexId: 0 });
+  expect(emptySlotSummary(t.state)).toMatchObject({ slots: 45, total: 45 });
+  expect(t.text('.wp-empty')).toContain('Slots left: 45 of 45');
+  t.click(0); expect(t.text('.hex-panel')).toContain('A terraformer core occupies this tile');
+  expect(t.root.querySelectorAll('.hex-panel .slot, .hex-panel .build, .hex-panel .demolish')).toHaveLength(0);
+  t.key('Tab'); expect(t.lastSelected()).not.toContain(0); t.key('Tab', 'keyup');
+  t.state.hexes[1].slots[0].building = 'lumber_camp';
+  t.emit({ type: 'runEnded', status: 'ended', stats: { status: 'ended', lifetime: {}, elapsedMs: 0, seed: 1 } });
+  expect(t.text('.end-board')).toContain('Board used: 1/45 slots');
+});

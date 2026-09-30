@@ -4,7 +4,7 @@ import type { BoardPick, BoardView, HighlightStyle, PointerKind } from '../core/
 import type { GameConfig, GameState, Hex, HexId, SlotIndex } from '../core/types';
 import { hexToWorld } from '../core/hex';
 import { disposeGroup, Instances } from './instances';
-import { HEX_SIZE, LAYER_HEIGHT, pickSlot, topHeight } from './layout';
+import { HEX_SIZE, LAYER_HEIGHT, topHeight } from './layout';
 import { HIGHLIGHT_COLORS, LAYER_COLOR, LAYER_ALT_COLOR, tileColor } from './palette';
 import { NaturalTerrain } from './terrain';
 import { Buildings, Cores } from './buildings';
@@ -18,6 +18,8 @@ import { trackRenderer } from './diagnostics';
 import { BoardEffects } from './effects';
 import { installPhotoMode } from './photo';
 import { SlotHighlight } from './slotHighlight';
+import { isCoreHex } from '../sim/economy';
+import { pickHexSlot, renderSlotPick } from './slots';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -76,11 +78,11 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     tops.set(id, p.x, topHeight(hex.elevation) - 0.025, p.z);
     tops.color(id, tileColor(hex.biome));
     natural?.refresh(hex, p.x, p.z, waterDirections(current, id));
-    buildings?.refresh(hex, p.x, p.z);
+    buildings?.refresh(hex, p.x, p.z, isCoreHex(current, id));
     decorations?.refresh(hex, p.x, p.z);
     decorations?.refreshFalls(current, id);
     effects?.refresh(hex); renderer.shadowMap.needsUpdate = true;
-    if (slotPick?.hexId === id) slotHighlight?.set(hex, slotPick.slot);
+    if (slotPick?.hexId === id) slotHighlight?.set(isCoreHex(current, id) ? null : hex, slotPick.slot);
   }
   function playReveal(current: Readonly<GameState>, ids: HexId[]): void {
     for (const id of ids) {
@@ -155,7 +157,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     if (!hit || hit.instanceId === undefined) return null;
     const hexId = hit.instanceId;
     const centre = positions.get(hexId)!;
-    return { hexId, slot: state.hexes[hexId].placeable ? pickSlot(hit.point.x - centre.x, hit.point.z - centre.z) : null };
+    return { hexId, slot: pickHexSlot(state, hexId, hit.point.x - centre.x, hit.point.z - centre.z) };
   }
   const emit = (event: PointerEvent, kind: PointerKind) => { const value = pick(event); listeners.forEach(cb => cb(value, kind)); };
   const down = (event: PointerEvent) => {
@@ -216,12 +218,12 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
       const tween = sampleReveal(reveal.elapsed, config.animation.tileFlipMs);
       const p = positions.get(id)!;
       tops!.set(id, p.x, topHeight(reveal.hex.elevation) - 0.025 + tween.lift, p.z, 1, 1, 1, tween.angle);
-      if (slotPick?.hexId === id) slotHighlight?.set(reveal.hex, slotPick.slot, tween.angle, tween.lift);
+      if (slotPick?.hexId === id) slotHighlight?.set(state && isCoreHex(state, id) ? null : reveal.hex, slotPick.slot, tween.angle, tween.lift);
       if (tween.showTarget && !reveal.swapped) {
         reveal.swapped = true;
         tops!.color(id, tileColor(reveal.hex.biome));
         natural?.refresh(reveal.hex, p.x, p.z, state ? waterDirections(state, id) : []);
-        buildings?.refresh(reveal.hex, p.x, p.z);
+        buildings?.refresh(reveal.hex, p.x, p.z, state ? isCoreHex(state, id) : false);
         decorations?.refresh(reveal.hex, p.x, p.z);
         if (state) decorations?.refreshFalls(state, id);
       }
@@ -250,13 +252,22 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   return {
     setBoard, refreshHex, setHighlights, playReveal,
     setSlotHighlight(pick) {
-      slotPick = pick && state?.hexes[pick.hexId] && [0, 1, 2].includes(pick.slot) ? { ...pick } : null;
+      slotPick = renderSlotPick(state, pick);
       const reveal = slotPick ? reveals.get(slotPick.hexId) : null;
       const tween = reveal ? sampleReveal(reveal.elapsed, config.animation.tileFlipMs) : null;
       slotHighlight?.set(slotPick && state ? state.hexes[slotPick.hexId] : null, slotPick?.slot ?? null, tween?.angle ?? 0, tween?.lift ?? 0);
     },
     showPayouts(current, events) { payouts.show(current, events); },
-    setCores(ids) { if (state) { cores?.set(ids, state.hexes, positions); effects?.setCores(ids, state); renderer.shadowMap.needsUpdate = true; } },
+    setCores(ids) {
+      if (!state) return;
+      cores?.set(ids, state.hexes, positions); effects?.setCores(ids, state);
+      for (const id of ids) {
+        const hex = state.hexes[id], p = positions.get(id);
+        if (hex && p) buildings?.refresh(hex, p.x, p.z, true);
+      }
+      if (slotPick && ids.includes(slotPick.hexId)) { slotPick = null; slotHighlight?.set(null, null); }
+      renderer.shadowMap.needsUpdate = true;
+    },
     onPointer(cb) { listeners.add(cb); return () => { listeners.delete(cb); }; },
     update, resize,
     dispose() {

@@ -15,6 +15,7 @@ export class Buildings {
   constructor(private readonly parent: THREE.Group, private readonly count: number) {
     this.slots = new Instances(parent, new THREE.CylinderGeometry(0.19, 0.19, 0.015, 16), 0xc7c5a0, count * 3,
       { opacity: 0.32 });
+    this.slots.mesh.name = 'slot-anchors';
   }
   private batchFor(id: BuildingId): ModelBatch {
     const model = buildingModelFor(id);
@@ -40,22 +41,23 @@ export class Buildings {
     }
     batch.keys.pop(); mesh.count = batch.keys.length; this.placed.delete(key);
   }
-  refresh(hex: Hex, x: number, z: number): void {
+  refresh(hex: Hex, x: number, z: number, coreHex = false): void {
     hex.slots.forEach((slot, index) => {
       const key = hex.id * 3 + index, anchor = SLOT_ANCHORS[index];
-      if (hex.placeable && hex.biome) this.slots.set(key, x + anchor.x, topHeight(hex.elevation) + 0.009, z + anchor.z);
+      if (!coreHex && hex.placeable && hex.biome) this.slots.set(key, x + anchor.x, topHeight(hex.elevation) + 0.009, z + anchor.z);
       else this.slots.hide(key);
+      const building = coreHex ? null : slot.building;
       const previous = this.placed.get(key);
-      if (previous?.id === slot.building) return;
+      if (previous?.id === building) return;
       if (previous) this.remove(key, previous);
-      if (!slot.building) return;
-      const model = buildingModelFor(slot.building), batch = this.batchFor(slot.building), instance = batch.keys.length;
+      if (!building) return;
+      const model = buildingModelFor(building), batch = this.batchFor(building), instance = batch.keys.length;
       batch.keys.push(key); batch.instances.mesh.count = batch.keys.length;
       batch.instances.set(instance, x + anchor.x, topHeight(hex.elevation) + 0.018, z + anchor.z);
       const color = model === FALLBACK_MODEL
-        ? new THREE.Color().setHSL((buildingHash(slot.building) % 360) / 360, 0.28, 0.54).getHex() : 0xffffff;
+        ? new THREE.Color().setHSL((buildingHash(building) % 360) / 360, 0.28, 0.54).getHex() : 0xffffff;
       batch.instances.color(instance, color);
-      this.placed.set(key, { id: slot.building, batch, index: instance });
+      this.placed.set(key, { id: building, batch, index: instance });
     });
   }
 }
