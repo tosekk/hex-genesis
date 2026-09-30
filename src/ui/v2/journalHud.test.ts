@@ -83,3 +83,13 @@ it('labels all four fixed-width resource pills and retains full-value tooltips',
   for (const p of pills) expect(p.title).toContain(`lifetime ${s.session.state.lifetime[p.dataset.resource!] ?? 0}`);
   expect(s.root.querySelector<HTMLElement>('.j-top')!.style.width).toBe('448px');
 });
+
+it('uses labeled drawn SVGs in the fixed top-right controls', () => {
+  const s = fixture();
+  for (const name of ['journal', 'menu']) {
+    const b = s.root.querySelector<HTMLButtonElement>(`.${name}-btn`)!;
+    expect(b.getAttribute('aria-label')).toBeTruthy();
+    expect(b.querySelector('img')!.src).toContain(`/assets/icons/${name}.svg`);
+  }
+  expect(s.root.querySelector<HTMLElement>('.j-topright')!.style.width).toBe('88px');
+});

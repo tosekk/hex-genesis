@@ -32,7 +32,7 @@ export function installJournalLayout(host: HTMLElement, stack: HTMLElement): () 
     const note = tutorial?.querySelector<HTMLElement>('.assistant-panel');
     const expandedLater = note?.dataset.collapsed === 'false' && note.dataset.line !== 'biomes';
     const layout = journalLayout(w, h, stack.getBoundingClientRect().height || 220, expandedLater);
-    rect('.j-top', layout.pills);
+    rect('.j-top', layout.pills); rect('.j-topright', layout.menu);
     rect('.j-detail', layout.detail); rect('.j-deck', layout.deck); rect('.j-triangle', layout.triangle);
     if (tutorial) {
       tutorial.style.setProperty('--tutorial-top', `${layout.tutorial.y}px`);

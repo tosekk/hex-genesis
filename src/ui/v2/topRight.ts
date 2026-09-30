@@ -1,6 +1,6 @@
 import type { GameSession } from '../../core/contracts';
 import { startNewRun } from '../endScreen';
-import { el } from '../format';
+import { el, icon } from '../format';
 
 /** Shape of sol's `audioSettings` (src/audio/settings.ts). Optional until it lands. */
 export interface AudioSettingsLike {
@@ -17,11 +17,13 @@ export function createTopRight(
   opts: { openHelp(): void; toggleJournal(): void; audio?: AudioSettingsLike },
 ) {
   const bar = el('div', 'j-topright');
-  const journalBtn = el('button', 'j-btn j-icon-btn journal-btn', '📖');
-  journalBtn.title = 'Journal (J)';
+  const journalBtn = el('button', 'j-btn j-icon-btn journal-btn');
+  journalBtn.title = 'Journal (J)'; journalBtn.setAttribute('aria-label', journalBtn.title);
+  journalBtn.appendChild(icon('journal', 'Book'));
   journalBtn.addEventListener('click', () => opts.toggleJournal());
-  const menuBtn = el('button', 'j-btn j-icon-btn menu-btn', '⚙');
-  menuBtn.title = 'Menu';
+  const menuBtn = el('button', 'j-btn j-icon-btn menu-btn');
+  menuBtn.title = 'Menu'; menuBtn.setAttribute('aria-label', menuBtn.title);
+  menuBtn.appendChild(icon('menu', 'Menu'));
   const menu = el('div', 'j-panel j-menu');
   menu.hidden = true;
   bar.append(journalBtn, menuBtn, menu);
