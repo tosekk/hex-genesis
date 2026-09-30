@@ -189,3 +189,15 @@ Read GAME_DESIGN §2, §39, §41, §42 (changed today) and the **"v4 changes"** 
    - `REPORT.md` shows all 6 v4 targets.
 3. **After `[sonnet] S8` lands:** calibrate on seeds 1–50, **at most 5 rounds**, priority 1 > 2 > 4 > 3 > 6 > 5, within the v4 guardrails. Starting stock and costs are unfrozen, so fix the starving openings (35/37). Log each round in the Balance log and commit each separately (`[astra] N8 round <n>: …`).
 4. Put a "**v4 result**" block at the top of your status file: combo wins and spam losses out of 50, median board use, targets pass/miss, and **2–3 recommended playtest seeds** (one tight win, one where spamming clearly fails).
+
+---
+
+## N9 — Stockpile pressure (P1, designer-assigned, time-box 90 min) — `src/config/economy.ts`, `tests/balance/**`
+
+In the designer's playtest, hundreds of every resource piled up (v4 T7 median wood ≈ 665), so costs never mattered. Try to make **spending matter** without losing anything the v4 targets already pass.
+- Levers, within the v4 guardrails: **raise costs** (up to 8 per resource), mainly for the premium and mid buildings; lower base yields that mostly feed the pile (≥ 1 total); **don't** touch combo payouts first (they carry the combo-vs-spam gap).
+- **Hard rule:** v4 targets 1, 2, 3, 4 and 6 must **still pass** on seeds 1–50, exactly as in `e4448fd`. Only target 5 (stock ≤ 3× max cost) may improve. At most 4 rounds; commit each (`[astra] N9 round <n>: …`).
+- If no round keeps 1–4 and 6 passing while clearly reducing stock (e.g. median T7 stock halved), **restore `e4448fd`'s config** and write down what you learned.
+- Put a short "**N9 result**" block at the top of your status file: before/after median stock at T3–T7 and all target results.
+
+The UI rework is happening in parallel (sonnet, sol, opus). Don't touch their files. Economy numbers show up in the UI automatically.
