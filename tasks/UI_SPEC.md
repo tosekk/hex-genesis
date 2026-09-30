@@ -124,3 +124,51 @@ Restyled as a journal page: result, thresholds N/8, board used %, lifetime per r
 3. **U3 — offer spheres** (sonnet): §5 offer. Simple version first. **Target ~02:00.**
 
 **Out of scope for the jam:** drag-to-place, 3D portraits and the bake tool, baked hex illustrations, adjacency recipes (post-jam design), a Buildings journal tab (optional).
+
+## 8. Parallel split for U2/U3 (designer, 2026-10-01 00:55)
+
+To finish early, U2 and U3 are built as **standalone modules by other agents**. Sol only wires them into the journal HUD. These signatures are agreed; changing one needs a note in both owners' status files.
+
+### 8.1 Journal data helpers: astra, `src/sim/economy/journal.ts` (pure, tested)
+```ts
+export type ComboPage =
+  | { locked: true; index: number }                       // undiscovered: nothing else, ever
+  | { locked: false; index: number; id: ComboId; name: string;
+      buildings: { id: BuildingId; name: string }[];      // recipe order
+      totalCost: Resources;                               // sum of the recipe's building costs
+      amount: Resources;                                  // payout
+      biomes: Biome[] };                                  // biomes whose roster can build the whole recipe
+export function comboPages(state: Readonly<GameState>): ComboPage[];      // config order; discovered-only enforced HERE
+export interface AdjacencyLogEntry { hexId: HexId; neighborId: HexId; hexCombos: string[]; neighborCombos: string[]; amount: Resources; }
+export function adjacencyLogEntry(state: Readonly<GameState>, e: PayoutEvent): AdjacencyLogEntry | null; // null unless e.kind === 'adjacency'
+export interface TerrainRuleView { terrain: Terrain[]; buildings: { id: BuildingId; name: string }[] | 'any'; bonus: Resources; }
+export function terrainRules(config: GameConfig): TerrainRuleView[];
+export interface ZoneEffectView { biome: Biome; building: { id: BuildingId; name: string } | 'any'; delta: Resources; }
+export function zoneEffects(config: GameConfig): ZoneEffectView[];
+```
+
+### 8.2 Journal book: sonnet, `src/ui/journal/**`
+```ts
+export interface Journal { open(tab?: 'contents' | 'combos' | 'adjacency' | 'terrain'): void; close(): void; isOpen(): boolean; dispose(): void; }
+export function createJournal(root: HTMLElement, session: GameSession): Journal;
+```
+- It subscribes to the session itself (the adjacency log starts on `runStarted`).
+- It uses §1 tokens and fonts from `public/assets/fonts/` (sol's). Esc closes it; J is wired by sol.
+- Its own tests; undiscovered pages render **only** "?" (assert that the DOM contains no name, buildings or amounts).
+
+### 8.3 Offer spheres: opus, `src/fx/offerSpheres.ts`
+```ts
+export interface OfferFx {
+  present(o: { offer: BiomeOffer; from: DOMRect | null; canReshuffle: boolean;
+               onChoose(i: 0 | 1): void; onReshuffle(): void }): void;  // own backdrop, blocks input, keys 1/2
+  update(offer: BiomeOffer, canReshuffle: boolean): void;             // after a reshuffle
+  resolve(chosen: 0 | 1, to: DOMRect | null): Promise<void>;          // god-rays + shatter/dissolve, then removes itself
+  hide(): void; dispose(): void;
+}
+export function createOfferFx(root: HTMLElement): OfferFx;
+```
+- Respects `prefers-reduced-motion` (simple fade). The whole resolve takes ≤ 1.6 s.
+- **The HUD calls `session.chooseOffer`,** never the FX.
+
+### 8.4 Integration (sol, after the V15 DoD)
+The 📖 button and **J** → `journal.open()`. On `offerShown` → `offerFx.present({ from: triangle bounding rect, … })`, and on `offerResolved` → `resolve(i, corner rect)`. Fall back to sol's simple modal if `createOfferFx` throws. Integrate each module **only once it's committed with passing tests**. Until then, the journal button shows "coming soon".

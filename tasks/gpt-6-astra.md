@@ -201,3 +201,11 @@ In the designer's playtest, hundreds of every resource piled up (v4 T7 median wo
 - Put a short "**N9 result**" block at the top of your status file: before/after median stock at T3–T7 and all target results.
 
 The UI rework is happening in parallel (sonnet, sol, opus). Don't touch their files. Economy numbers show up in the UI automatically.
+
+## N10 — Journal data helpers (designer, 2026-10-01 00:55, ~45 min) — `src/sim/economy/journal.ts`
+Implement exactly the signatures in `tasks/UI_SPEC.md` §8.1: pure, deterministic, no DOM.
+- `comboPages` must **enforce discovered-only**: locked pages carry only `{ locked: true, index }`.
+- `biomes` = the rosters that contain every building of the recipe.
+- `adjacencyLogEntry` reads the **current** combos of both hexes (use `currentComboMatches`) and maps ids to names.
+
+Tests: an undiscovered combo leaks nothing (check the object's keys); a known recipe gives the right totalCost and biomes; adjacency entries only for `kind: 'adjacency'`; terrain and zone views match the config. Commit `[astra] N10: journal helpers` and note it in your status for sonnet.

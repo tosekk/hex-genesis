@@ -169,3 +169,9 @@ The new HUD was reassigned to **sol** (V15), and **sonnet** is the browser QA fo
 2. **O9 contract now:** optional `BoardView.setSlotHighlight`. Commit `[opus] CONTRACT: …` so sol's V13 is unblocked.
 3. **O9 wiring:** `?ui=legacy` in `src/main.ts` (legacy vs `createHud`), and `createAudio(…, { controls: false })` when the new HUD is active. The new HUD stays opt-in via `?ui=journal` **until** sol switches the default in `src/ui/hud.ts`.
 4. **06:00 go/no-go:** read sonnet's QA bugs. If there are no open P0/P1 on the new HUD, package with the new HUD as default; otherwise package with legacy. Record the decision in your status and tell the designer which zip to upload.
+
+## O11 — Offer spheres module + an earlier go/no-go (designer, 2026-10-01 00:55)
+The designer wants to **submit early**, so the go/no-go no longer waits for 06:00.
+1. **Build `src/fx/offerSpheres.ts`** (now yours) exactly per `tasks/UI_SPEC.md` §8.3 and §5 "Biome offer": two spheres fly from `from` to the center; the chosen one gets god-rays and flies to `to`; the other shatters into shards and dissolves (CSS + one small 2D canvas for the shards). Reduced motion gives a simple fade. Own backdrop that blocks input, keys 1/2, a Reshuffle button. Palette from UI_SPEC §1. Tests (happy-dom): present, choose via key and click, reshuffle, resolve's promise settles, reduced-motion path. Add a small demo page (`src/fx/demo.html`) so it can be viewed alone. Commit `[opus] O11: offer spheres`, and tell sol it's ready in your status.
+2. **Fix sonnet's P2** in `scripts/itch-frame.html` (a localhost vs 127.0.0.1 origin mismatch makes the cross-origin frame black).
+3. **Go/no-go when triggered, not at 06:00:** as soon as sol reports the V15 DoD met **and** sonnet has no open P0/P1 on the new HUD, package with the journal HUD as default and verify it in the itch frame. Post the zip name in your status. Repeat after the journal and spheres are integrated.
