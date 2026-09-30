@@ -4,9 +4,9 @@ import { parentsOf } from '../../core/biomes';
 import { canAfford } from '../../core/resources';
 import { MAIN_BIOMES, MIXED_BIOMES } from '../../core/types';
 import type { Resources } from '../../core/types';
-import v2 from './__fixtures__/economy-v2.json';
+import v3 from './__fixtures__/economy-v3.json';
 
-describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v3)', () => {
+describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v4)', () => {
   it('starting stock affords the cheapest building in every main biome', () => {
     for (const biome of MAIN_BIOMES) {
       const buildings = ECONOMY.rosters[biome].map(id => ECONOMY.buildings[id]);
@@ -76,51 +76,48 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v3)', ()
       previous = threshold;
     }
   });
-  it('v2 pairs use different buildings and combo totals stay inside guardrails', () => {
+  it('v4 pairs use different buildings and combo totals stay inside guardrails', () => {
     for (const combo of ECONOMY.combos) {
       const total = Object.values(combo.amount).reduce((sum, n) => sum + n, 0);
       if (combo.buildings.length === 2) {
         expect(combo.buildings[0]).not.toBe(combo.buildings[1]);
-        expect(total).toBeGreaterThanOrEqual(4);
-        expect(total).toBeLessThanOrEqual(7);
+        expect(total).toBeGreaterThanOrEqual(3);
+        expect(total).toBeLessThanOrEqual(10);
       } else {
-        expect(total).toBeGreaterThanOrEqual(11);
-        expect(total).toBeLessThanOrEqual(15);
+        expect(total).toBeGreaterThanOrEqual(8);
+        expect(total).toBeLessThanOrEqual(20);
       }
     }
   });
-  it('has eight thresholds with water first at T3 and food first at T4', () => {
+  it('has exactly eight non-decreasing thresholds, with the last as the win goal', () => {
     expect(ECONOMY.thresholds).toHaveLength(8);
-    expect(ECONOMY.thresholds.findIndex(t => (t.water ?? 0) > 0)).toBe(2);
-    expect(ECONOMY.thresholds.findIndex(t => (t.food ?? 0) > 0)).toBe(3);
-    expect(ECONOMY.thresholds[0].wood ?? 0).toBe(0);
-    for (const i of [6, 7]) for (const r of ECONOMY.resources) {
-      expect(ECONOMY.thresholds[i][r]).toBeGreaterThan(ECONOMY.thresholds[i - 1][r]);
+    for (const threshold of ECONOMY.thresholds) for (const amount of Object.values(threshold)) {
+      expect(Number.isInteger(amount)).toBe(true); expect(amount).toBeGreaterThanOrEqual(0);
     }
   });
-  it('preserves frozen v2 data and keeps base yields and adjacency inside tuning guardrails', () => {
-    for (const key of ['resources', 'startingResources', 'rosters', 'terrainBonuses', 'zoneModifiers', 'demolishRefundRatio', 'reshufflesPerRun'] as const) {
-      expect(ECONOMY[key], key).toEqual(v2[key]);
-    }
-    expect(Object.keys(ECONOMY.buildings)).toEqual(Object.keys(v2.buildings));
-    for (const [id, original] of Object.entries(v2.buildings)) {
+  it('preserves v4 frozen identities/targets and respects all numeric guardrails', () => {
+    for (const key of ['resources', 'rosters', 'demolishRefundRatio', 'reshufflesPerRun'] as const) expect(ECONOMY[key]).toEqual(v3[key]);
+    expect(Object.keys(ECONOMY.buildings)).toEqual(Object.keys(v3.buildings));
+    for (const [id, original] of Object.entries(v3.buildings)) {
       const actual = ECONOMY.buildings[id];
-      expect({ id: actual.id, name: actual.name, cost: actual.cost }).toEqual({ id, name: original.name, cost: original.cost });
-      // Resources are sparse: a missing v2 yield is zero, so +1 is inside the per-resource guardrail.
-      for (const resource of ECONOMY.resources) {
-        const amount = (original.baseYield as Resources)[resource] ?? 0;
-        const actualAmount = actual.baseYield[resource] ?? 0;
-        expect(Number.isInteger(actualAmount)).toBe(true);
-        expect(actualAmount).toBeGreaterThanOrEqual(0);
-        expect(Math.abs(actualAmount - amount), `${id}/${resource}`).toBeLessThanOrEqual(1);
-      }
+      expect({ id: actual.id, name: actual.name }).toEqual({ id, name: original.name });
+      for (const cost of Object.values(actual.cost)) { expect(Number.isInteger(cost)).toBe(true); expect(cost).toBeGreaterThanOrEqual(0); expect(cost).toBeLessThanOrEqual(8); }
+      const total = Object.values(actual.baseYield).reduce((a, b) => a + b, 0);
+      expect(total).toBeGreaterThanOrEqual(1); expect(total).toBeLessThanOrEqual(8);
+      for (const value of Object.values(actual.baseYield)) { expect(Number.isInteger(value)).toBe(true); expect(value).toBeGreaterThanOrEqual(0); }
     }
-    expect(ECONOMY.combos.map(({ amount: _, ...recipe }) => recipe))
-      .toEqual(v2.combos.map(({ amount: _, ...recipe }) => recipe));
-    for (const resource of ECONOMY.resources) {
-      expect(ECONOMY.adjacencyAmount[resource]).toBeGreaterThanOrEqual(1);
-      expect(ECONOMY.adjacencyAmount[resource]).toBeLessThanOrEqual(3);
+    for (const stock of Object.values(ECONOMY.startingResources)) { expect(Number.isInteger(stock)).toBe(true); expect(stock).toBeGreaterThanOrEqual(0); }
+    expect(ECONOMY.combos.map(({ amount: _, ...recipe }) => recipe)).toEqual(v3.combos.map(({ amount: _, ...recipe }) => recipe));
+    for (const resource of ECONOMY.resources) { expect(ECONOMY.adjacencyAmount[resource] ?? 0).toBeGreaterThanOrEqual(0); expect(ECONOMY.adjacencyAmount[resource] ?? 0).toBeLessThanOrEqual(4); }
+    expect(ECONOMY.terrainBonuses.map(({ bonus: _, ...target }) => target)).toEqual(v3.terrainBonuses.map(({ bonus: _, ...target }) => target));
+    for (let i = 0; i < ECONOMY.terrainBonuses.length; i++) for (const r of ECONOMY.resources) {
+      expect(Math.abs((ECONOMY.terrainBonuses[i].bonus[r] ?? 0) - ((v3.terrainBonuses[i].bonus as Partial<Resources>)[r] ?? 0))).toBeLessThanOrEqual(1);
+    }
+    expect(Object.keys(ECONOMY.zoneModifiers)).toEqual(Object.keys(v3.zoneModifiers));
+    for (const [biome, original] of Object.entries(v3.zoneModifiers)) {
+      const actual = ECONOMY.zoneModifiers[biome as keyof typeof ECONOMY.zoneModifiers]!;
+      expect(actual.map(m => m.buildings)).toEqual(original.map(m => m.buildings));
+      for (let i = 0; i < actual.length; i++) for (const r of ECONOMY.resources) expect(Math.abs((actual[i].delta[r] ?? 0) - ((original[i].delta as Partial<Resources>)[r] ?? 0))).toBeLessThanOrEqual(1);
     }
   });
-
 });

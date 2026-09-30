@@ -1,21 +1,23 @@
 import { DEFAULT_CONFIG } from '../../src/config';
 import { neighbors, pairKey } from '../../src/core/hex';
-import { canAfford } from '../../src/core/resources';
+import { addRes, canAfford } from '../../src/core/resources';
 import { SLOT_PAIRS } from '../../src/core/types';
 import type { BuildingId, GameConfig, GameState, Hex, MainBiome, Resources, SlotIndex } from '../../src/core/types';
 import { createGameSession } from '../../src/game/session';
+import { demolishRefund } from '../../src/sim/economy';
 import { isProvablySoftLocked } from '../../src/sim/endgame';
 import { computeSpread, isHexLocked, legalCoreSites } from '../../src/sim/spread/spread';
 
 export type Strategy = 'spam' | 'combo';
 export interface Candidate { hexId: number; slot: SlotIndex; building: BuildingId; base: number; bonus: number; occupied: number; }
-export interface ThresholdRecord { placements: number; fill: number; lifetime: Resources; }
+export interface ThresholdRecord { placements: number; fill: number; boardUse: number; lifetime: Resources; stock: Resources; biome: string; maxCost: Resources; }
 export interface RunReport {
-  seed: number; strategy: Strategy; stop: 'won' | 'soft-lock' | 'stuck' | 'action-cap';
+  seed: number; strategy: Strategy; stop: 'won' | 'soft-lock' | 'board-full' | 'stuck' | 'action-cap';
   placements: number; actions: number; cores: number; thresholds: (ThresholdRecord | null)[];
   winPlacements: number | null; softLocks: number; lifetime: Resources; resources: Resources;
   livingSlots: number; buildings: Record<string, number>;
   legalSitesRemaining: number; heldCores: number; emptySlots: number;
+  outcome: 'win' | 'loss' | 'stuck' | 'cap'; mapSlots: number; boardUse: number; openingStall: boolean; falseSoftLocks: number;
 }
 const total = (r: Resources) => Object.values(r).reduce((sum, value) => sum + value, 0);
 const recipeKey = (ids: string[]) => [...ids].sort().join('|');
@@ -102,12 +104,35 @@ export function bestCoreSite(state: Readonly<GameState>, biome: MainBiome) {
   return best;
 }
 
+/** Concrete productive placement/replacement or refund-funded unpaid base-yield escape. */
+export function hasYieldEscape(state: Readonly<GameState>): boolean {
+  if (state.activeSpread || state.pendingOffer || (state.coreStack.length && legalCoreSites(state).length)) return true;
+  const scorer = new PayoutScorer(state);
+  let refunded = { ...state.resources };
+  for (const h of state.hexes) if (h.placeable && h.biome) for (const slot of h.slots) if (slot.building) refunded = addRes(refunded, demolishRefund(state, slot.building));
+  for (const h of state.hexes) {
+    if (!h.placeable || !h.biome || isHexLocked(state, h.id)) continue;
+    for (const slot of [0, 1, 2] as const) {
+      const old = h.slots[slot].building;
+      const wallet = old ? addRes(state.resources, demolishRefund(state, old)) : state.resources;
+      const copy = { ...h, slots: h.slots.map(s => ({ ...s })) as Hex['slots'] };
+      copy.slots[slot].building = null;
+      for (const b of state.config.rosters[h.biome]) {
+        const score = scorer.score(copy, slot, b), cost = state.config.buildings[b].cost;
+        if (canAfford(wallet, cost) && score.base + score.bonus > 0) return true;
+        if (!old && !h.slots[slot].yieldPaid && score.base > 0 && canAfford(refunded, cost)) return true;
+      }
+    }
+  }
+  return false;
+}
+
 export function runBalance(seed: number, strategy: Strategy, config: GameConfig = DEFAULT_CONFIG, maxActions = 1500): RunReport {
   const session = createGameSession({ config, now: () => 0 });
   session.newRun(seed);
   const report: RunReport = { seed, strategy, stop: 'action-cap', placements: 0, actions: 0, cores: 0,
     thresholds: config.thresholds.map(() => null), winPlacements: null, softLocks: 0, lifetime: {}, resources: {}, livingSlots: 0, buildings: {},
-    legalSitesRemaining: 0, heldCores: 0, emptySlots: 0 };
+    legalSitesRemaining: 0, heldCores: 0, emptySlots: 0, outcome: 'cap', mapSlots: session.state.hexes.filter(h => h.placeable).length * 3, boardUse: 0, openingStall: false, falseSoftLocks: 0 };
   let scorer = new PayoutScorer(session.state);
   for (; report.actions < maxActions; report.actions++) {
     const state = session.state;
@@ -143,7 +168,9 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
     const candidate = scorer.choose(strategy);
     if (!candidate) {
       const locked = isProvablySoftLocked(state);
-      report.stop = locked ? 'soft-lock' : 'stuck';
+      const empty = state.hexes.some(h => h.placeable && h.biome && h.slots.some(s => s.building === null));
+      report.stop = locked ? 'soft-lock' : empty ? 'stuck' : 'board-full';
+      report.openingStall = empty && state.thresholdIndex < 2;
       report.softLocks += Number(locked);
       break;
     }
@@ -159,17 +186,24 @@ export function runBalance(seed: number, strategy: Strategy, config: GameConfig 
     report.buildings[candidate.building] = (report.buildings[candidate.building] ?? 0) + 1;
     if (state.thresholdIndex > previousThreshold) {
       const slots = state.hexes.filter(h => h.placeable && h.biome !== null).length * 3;
-      report.thresholds[previousThreshold] = { placements: report.placements, fill: report.placements / slots, lifetime: { ...state.lifetime } };
+      const biome = state.hexes[candidate.hexId].biome!;
+      const maxCost = Object.fromEntries(config.resources.map(r => [r, Math.max(...config.rosters[biome].map(b => config.buildings[b].cost[r] ?? 0))]));
+      report.thresholds[previousThreshold] = { placements: report.placements, fill: report.placements / slots, boardUse: report.placements / report.mapSlots, lifetime: { ...state.lifetime }, stock: { ...state.resources }, biome, maxCost };
     }
   }
   const final = session.state;
   if (final.status === 'won') { report.stop = 'won'; report.winPlacements = report.placements; }
   if (final.status === 'lost' && report.softLocks === 0) { report.stop = 'soft-lock'; report.softLocks++; }
+  if (report.stop === 'won' && (final.thresholdIndex < config.thresholds.length || !canAfford(final.lifetime, config.thresholds.at(-1)!))) throw new Error('S8 required: win before final threshold');
+  if (report.softLocks && hasYieldEscape(final)) report.falseSoftLocks++;
+  report.outcome = report.stop === 'won' ? 'win' : report.stop === 'soft-lock' || report.stop === 'board-full' ? 'loss' : report.stop === 'stuck' ? 'stuck' : 'cap';
+  report.boardUse = report.placements / report.mapSlots;
   report.lifetime = { ...final.lifetime }; report.resources = { ...final.resources };
   report.livingSlots = final.hexes.filter(h => h.placeable && h.biome !== null).length * 3;
   report.legalSitesRemaining = legalCoreSites(final).length;
   report.heldCores = final.coreStack.length;
   report.emptySlots = final.hexes.filter(h => h.placeable && h.biome !== null)
     .reduce((sum, h) => sum + h.slots.filter(s => s.building === null).length, 0);
+  report.openingStall ||= report.stop !== 'won' && final.thresholdIndex < 2 && report.emptySlots > 0 && !new PayoutScorer(final).choose(strategy);
   return report;
 }

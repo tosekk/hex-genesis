@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG } from '../../src/config';
 import { makeTestState } from '../../src/core/testing';
 import { placeBuilding } from '../../src/sim/economy';
-import { PayoutScorer, runBalance } from './bot';
+import { hasYieldEscape, PayoutScorer, runBalance } from './bot';
 import { renderReport } from './report';
 import { measure } from './measure';
 
@@ -24,12 +24,26 @@ describe.skipIf(!enabled)('N2 opt-in balance harness', () => {
       expect(scored.base + scored.bonus).toBe(outcome.value.payouts.reduce((s, p) => s + Object.values(p.amount).reduce((a, b) => a + b, 0), 0));
     }
   });
+  it('audits productive refund escapes without inventing yield on exhausted slots', () => {
+    const state = makeTestState({ cols: 1, rows: 1, resources: {}, hex: () => ({ biome: 'forest' }), config: {
+      buildings: { fixture: { id: 'fixture', name: 'Fixture', cost: { wood: 2 }, baseYield: { wood: 1 } } },
+      rosters: { ...DEFAULT_CONFIG.rosters, forest: ['fixture'] }, combos: [], terrainBonuses: [], zoneModifiers: {},
+    } });
+    state.hexes[0].slots[0] = { building: 'fixture', yieldPaid: true };
+    state.hexes[0].slots[1] = { building: 'fixture', yieldPaid: true };
+    const before = structuredClone(state);
+    expect(hasYieldEscape(state)).toBe(true); // Two refunds fund the remaining unpaid slot.
+    expect(state).toEqual(before);
+    state.hexes[0].slots[2] = { building: 'fixture', yieldPaid: true };
+    state.hexes[0].everCompleted = true;
+    expect(hasYieldEscape(state)).toBe(false);
+  });
   it('measures both deterministic bots and writes the reviewable report', async () => {
     const count = Number(process.env.BALANCE_SEEDS ?? 50);
     const width = Number(process.env.BALANCE_COLS ?? DEFAULT_CONFIG.map.cols);
     const height = Number(process.env.BALANCE_ROWS ?? DEFAULT_CONFIG.map.rows);
     const config = { ...DEFAULT_CONFIG, map: { ...DEFAULT_CONFIG.map, cols: width, rows: height } };
-    const label = process.env.BALANCE_LABEL ?? 'Current v3 calibration';
+    const label = process.env.BALANCE_LABEL ?? 'Current v4 calibration';
     const file = process.env.BALANCE_FILE ?? 'current';
     if (!/^[a-z0-9-]+$/.test(file)) throw new Error('Invalid balance report file suffix');
     const started = performance.now();

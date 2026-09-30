@@ -30,9 +30,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — available. N7 COMPLETE: four calibration rounds committed, round 3 selected and restored exactly, final owned checks green. No further tuning; ready for Opus's final integration/browser run.
+IN PROGRESS: N8 v4 calibration. Preparation complete; Sonnet S8 landed (`c63b56d`, `51cef86`). Win/end acceptance passes with no expected-failure markers. At most five 50-seed rounds follow; prior v3 result is historical.
 
 ## Done
+- N8 preparation — final-threshold win/end acceptance (9 cases), v4 outcome/board-use/opening/stock metrics, all six report targets, frozen-v3 guardrail reference; 26 preliminary checks pass. S8 is committed; no calibration preceded it.
 - N7 — v3 eight-threshold calibration, four 50-seed rounds, 48/50 wins; selected `f6b6d45`, with rounds `cf27db5`, `1a2c142`, `f6b6d45`, `d04593b`. Final v3 result and report include all late fills/legal-site counts.
 - N6 confirmation — 50 seeds, exact replay of original 20, explicit larger-sample limits and final checks — `6557f14`.
 - N6 preview — bounded private copy, 2,592 exact old/new comparisons and about 25× lower cost — `4eacde4`.
@@ -57,6 +58,9 @@ IDLE — available. N7 COMPLETE: four calibration rounds committed, round 3 sele
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N8 target 6: require at least 45/50 T7 completers and every completer strictly below 60% all-map board use. Report median/max and coverage, so missing runs never produce a vacuous pass. Target 5 also requires ≥45 checkpoint samples. Keep historical v2/v3 report sections unchanged.
+- N8 / v4: win means all final lifetime targets met, final threshold awards no core. Report map board use against **all** placeable slots, including dead tiles (distinct from the end-screen living-slot denominator). Keep bots’ scoring, core/offer rules, no-demolition policy and 1500-action cap unchanged. A bot exhausting living slots with no usable held core is a separately labelled board-full loss; an unaffordable empty-slot stall without a detector proof remains `stuck`, never silently counted as a spam loss.
+- N8 stock-pressure measurement: snapshot held stock at each T3–T7 transaction, against the per-resource maximum cost in the placed building’s current-biome roster. Compare median stock/max-cost ratio at every checkpoint/resource; positive stock with zero roster cost is infinite pressure. Report raw held and max-cost medians too, and mark absent checkpoints unmeasurable. This is checkpoint sampling, not a claim about every frame between thresholds.
 - N7 final selection: retain round 3 exactly. Rounds 1/2/3/4 all win 48/50; round 3 alone passes targets 4, 2 and 1 together. Round 4 improves minimum spam fill but loses the finite T6 ratio, so target priority rejects it. Four rounds are a bounded search, not a proof that target 3 is impossible within all allowed configurations. Decision B remains declined; do not change or request changes to starting stock/costs for this task.
 - N7 round 4: use the last allowed calibration for small T6 resource increases (wood +50, stone +20, water +25) rather than changing openings or rewards. Select among the four measured rounds by target priority; no fifth tuning round. Within equal pass/fail outcomes and equal wins, prefer improved minimum spam T6 fill.
 - N7 round 3: interpret “keep round-4 pacing” as retaining its progression shape and target bands, not freezing all six literal gates (v3 explicitly permits retuning). A 7.7% T4 wood correction addresses the sole 50-seed pacing miss; T1–T3 and the known starving openings stay fixed.

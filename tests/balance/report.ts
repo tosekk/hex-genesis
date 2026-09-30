@@ -1,46 +1,59 @@
 import type { RunReport } from './bot';
 
-export const TARGETS = [7, 22, 45, 90, 160, 270, 360, 450];
+export const TARGETS = Array.from({ length: 8 }, (_, i) => i + 1);
+export const RESOURCES = ['wood', 'stone', 'water', 'food'];
 export function median(values: number[]): number {
+  if (!values.length) return Infinity;
   const sorted = [...values].sort((a, b) => a - b), mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
-const fmt = (value: number) => Number.isFinite(value) ? `${Math.round(value * 100) / 100}` : 'unreached';
-const summary = (values: number[]) => values.length ? `${fmt(median(values))} (${Math.min(...values)}–${Math.max(...values)})` : '—';
+const fmt = (value: number) => Number.isFinite(value) ? `${Math.round(value * 100) / 100}` : '∞';
+const summary = (values: number[]) => values.length ? `${fmt(median(values))} (${fmt(Math.min(...values))}–${fmt(Math.max(...values))})` : '—';
 export function assess(runs: RunReport[]) {
   const combo = runs.filter(r => r.strategy === 'combo'), spam = runs.filter(r => r.strategy === 'spam');
   const medians = (group: RunReport[]) => TARGETS.map((_, i) => median(group.map(r => r.thresholds[i]?.placements ?? Infinity)));
-  const c = medians(combo), s = medians(spam);
-  const ratios = c.map((n, i) => Number.isFinite(n) && Number.isFinite(s[i]) ? s[i] / n : null);
-  const fills = spam.flatMap(r => r.thresholds[5] ? [r.thresholds[5].fill] : []);
-  const comboT6 = combo.filter(r => r.thresholds[5]).length, wins = combo.filter(r => r.stop === 'won').length;
-  const softLocks = runs.reduce((n, r) => n + r.softLocks, 0);
-  const medianWin = median(combo.map(r => r.winPlacements ?? Infinity));
-  const lateBeforeWin = Number.isFinite(medianWin) && c.slice(6).every(n => n < medianWin);
-  return { combo: c, spam: s, ratios, fills, comboT6, wins, softLocks, medianWin, lateBeforeWin,
-    pacing: c.every((n, i) => i === 0 || (n >= TARGETS[i] * 0.8 && n <= TARGETS[i] * 1.2)) && lateBeforeWin,
-    combosMatter: ratios.slice(3, 6).every(r => r !== null && r >= 1.5),
-    noCoasting: fills.every(f => f >= 0.7),
-    reachable: comboT6 >= Math.ceil(combo.length * 0.96) && wins >= Math.ceil(combo.length * 0.9) && softLocks === 0 };
+  const wins = combo.filter(r => r.outcome === 'win'), losses = spam.filter(r => r.outcome === 'loss' && !r.thresholds[7]);
+  const falseSoftLocks = runs.reduce((n, r) => n + r.falseSoftLocks, 0);
+  const openingStalls = combo.filter(r => r.openingStall).map(r => r.seed);
+  const medianBoardUse = median(wins.map(r => r.boardUse));
+  const t7 = combo.flatMap(r => r.thresholds[6] ? [r.thresholds[6].boardUse] : []);
+  const pressure = [2, 3, 4, 5, 6].flatMap(i => RESOURCES.map(resource => {
+    const checkpoints = combo.flatMap(r => r.thresholds[i] ? [r.thresholds[i]!] : []);
+    const ratios = checkpoints.map(t => (t.maxCost[resource] ?? 0) > 0 ? (t.stock[resource] ?? 0) / t.maxCost[resource] : (t.stock[resource] ?? 0) > 0 ? Infinity : 0);
+    return { threshold: i + 1, resource, count: checkpoints.length, held: median(checkpoints.map(t => t.stock[resource] ?? 0)), maxCost: median(checkpoints.map(t => t.maxCost[resource] ?? 0)), ratio: median(ratios) };
+  }));
+  return { combo: medians(combo), spam: medians(spam), wins: wins.length, losses: losses.length, falseSoftLocks, openingStalls, medianBoardUse, t7, pressure,
+    targets: [combo.length > 0 && wins.length >= Math.ceil(combo.length * .9) && falseSoftLocks === 0,
+      spam.length > 0 && losses.length >= Math.ceil(spam.length * .9),
+      medianBoardUse >= .65 && medianBoardUse <= .85,
+      combo.length > 0 && openingStalls.length === 0,
+      pressure.every(p => p.count >= Math.ceil(combo.length * .9) && p.count > 0 && p.ratio <= 3),
+      combo.length > 0 && t7.length >= Math.ceil(combo.length * .9) && t7.every(use => use < .6)] };
 }
 export function renderReport(runs: RunReport[], label: string, width: number, height: number, elapsedMs: number): string {
   const a = assess(runs), count = runs.filter(r => r.strategy === 'combo').length;
-  let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds 1–${count}, ${Math.round(elapsedMs)} ms for both bots. No demolition, reshuffle, resource weighting, or lookahead. Offers favor a new mixed biome at the best legal site, then the less represented main biome. Core sites maximize dead placeable claims, tied by HexId. Combo ties favor partial hexes.\n\n`;
-  text += 'All-seed medians treat unreached thresholds as infinity. Parenthesized ranges and reached-only medians include completers only; missing runs are never silently excluded from target checks. Ratios require finite all-seed medians for both bots. T6 fill is measured at the threshold transaction before the new core is deployed. V3 exempts T1 from pacing and counts zero spam T6 completers as passing target 3. T7/T8 must precede the finite all-seed median win placement count.\n\n';
-  text += '| Threshold | Combo all-seed median | Combo reached median (range), n | Spam all-seed median | Spam reached median (range), n | Spam/combo | Target ±20% |\n|---|---:|---|---:|---|---:|---|\n';
-  for (let i = 0; i < TARGETS.length; i++) {
+  let text = `## ${label}\n\nReal GameSession, ${width}×${height}, seeds 1–${count}, ${Math.round(elapsedMs)} ms for both bots. No demolition, reshuffle, resource weighting, or lookahead. Offer/core scoring and tie rules are unchanged.\n\n`;
+  text += 'V4: T8 wins immediately. Loss means engine proof or no empty living slots after usable cores/offers/spread are exhausted (board-full bot loss; replacement escape may still exist). An unproven empty-slot stall is not a loss. Board use includes ALL map placeable slots, including dead land. All-seed threshold medians censor unreached thresholds as infinity. Stock pressure samples the T3–T7 payout transactions, against the current placement biome roster; positive stock against zero cost has infinite ratio. T7 requires ≥90% completion and EVERY completer below 60%, not only the median. False-loss audits check direct productive replacements and refund-funded unpaid base yields; they are a constructive check, not an exhaustive search of all future replacement sequences.\n\n';
+  const evidence = [`${a.wins}/${count} combo wins; ${a.falseSoftLocks} detected false soft-locks`, `${a.losses}/${count} spam losses before T8`, `${fmt(a.medianBoardUse * 100)}% median winning board use`, a.openingStalls.length ? `seeds ${a.openingStalls.join(', ')}` : 'zero combo opening stalls', `worst checkpoint/resource median stock/max-cost = ${fmt(Math.max(...a.pressure.map(p => p.ratio)))}×`, `${a.t7.length}/${count} reach T7; median ${fmt(median(a.t7) * 100)}%, max ${fmt(Math.max(...a.t7) * 100)}%`];
+  const names = ['Good play wins ≥90%; zero false loss', 'Spam loses ≥90%', 'Winning board use 65–85%', 'No opening stalls before T2', 'T3–T7 median stock ≤3× max cost', 'T7 before 60% board use'];
+  text += '| Target | Result | Evidence |\n|---|---|---|\n';
+  a.targets.forEach((pass, i) => { text += `| ${i + 1}. ${names[i]} | ${pass ? 'PASS' : 'MISS'} | ${evidence[i]} |\n`; });
+  text += '\n| Threshold | Combo all-seed median | Combo reached median (range), n | Spam all-seed median | Spam reached median (range), n |\n|---|---:|---|---:|---|\n';
+  for (let i = 0; i < 8; i++) {
     const samples = (strategy: string) => runs.filter(r => r.strategy === strategy).flatMap(r => r.thresholds[i] ? [r.thresholds[i]!.placements] : []);
     const c = samples('combo'), s = samples('spam');
-    text += `| T${i + 1} | ${fmt(a.combo[i])} | ${summary(c)}, ${c.length}/${count} | ${fmt(a.spam[i])} | ${summary(s)}, ${s.length}/${count} | ${a.ratios[i] === null ? 'unmeasurable' : fmt(a.ratios[i]!)} | ${i === 0 ? 'exempt (stone-only)' : `${TARGETS[i]} (${fmt(TARGETS[i] * 0.8)}–${fmt(TARGETS[i] * 1.2)})`} |\n`;
+    text += `| T${i + 1} | ${fmt(a.combo[i])} | ${summary(c)}, ${c.length}/${count} | ${fmt(a.spam[i])} | ${summary(s)}, ${s.length}/${count} |\n`;
   }
-  text += `\n| Target | Result | Evidence |\n|---|---|---|\n| 1. Combo pacing | ${a.pacing ? 'PASS' : 'MISS'} | ${a.combo.map(fmt).join(' / ')} |\n| 2. T4–T6 ≥1.5× | ${a.combosMatter ? 'PASS' : a.ratios.slice(3, 6).some(r => r === null) ? 'UNMEASURABLE' : 'MISS'} | ${a.ratios.slice(3, 6).map(r => r === null ? 'unmeasurable' : fmt(r)).join(' / ')} |\n| 3. Spam T6 fill ≥70% | ${a.noCoasting ? 'PASS' : 'MISS'} | ${a.fills.length ? `min ${fmt(100 * Math.min(...a.fills))}%, median ${fmt(100 * median(a.fills))}%` : 'no T6 completers (v3 passes)'} |\n| 4. ≥96% combo T6, ≥90% wins; zero soft-locks | ${a.reachable ? 'PASS' : 'MISS'} | T6 ${a.comboT6}/${count}; wins ${a.wins}/${count}; ${a.softLocks} soft-lock declarations across both bots |\n`;
-  text += `\nT7/T8 before median win: **${a.lateBeforeWin ? 'PASS' : 'MISS'}**; T7 ${fmt(a.combo[6])}, T8 ${fmt(a.combo[7])}, median win ${fmt(a.medianWin)}.\n`;
+  text += '\n| Combo stock checkpoint | Resource | Samples | Median held | Median max cost | Median held/max cost |\n|---|---|---:|---:|---:|---:|\n';
+  for (const p of a.pressure) text += `| T${p.threshold} | ${p.resource} | ${p.count}/${count} | ${fmt(p.held)} | ${fmt(p.maxCost)} | ${fmt(p.ratio)}× |\n`;
   for (const strategy of ['combo', 'spam']) {
-    const group = runs.filter(r => r.strategy === strategy), wins = group.flatMap(r => r.winPlacements === null ? [] : [r.winPlacements]);
-    text += `\n${strategy}: win placements median (range) **${summary(wins)}**; ${group.filter(r => r.stop === 'won').length} wins, ${group.filter(r => r.stop === 'stuck').length} stuck, ${group.filter(r => r.stop === 'soft-lock').length} soft-lock, ${group.filter(r => r.stop === 'action-cap').length} action-cap.\n`;
+    const group = runs.filter(r => r.strategy === strategy);
+    text += `\n${strategy}: ${group.filter(r => r.outcome === 'win').length} wins; ${group.filter(r => r.outcome === 'loss').length} losses (${group.filter(r => r.stop === 'board-full').length} board-full, ${group.filter(r => r.stop === 'soft-lock').length} proven); ${group.filter(r => r.outcome === 'stuck').length} unproven stalls; ${group.filter(r => r.outcome === 'cap').length} action-cap.\n`;
   }
-  text += '\n| Seed | Bot | T1–T8 placements | T6 fill | T7 fill | T8 fill | Win placements | Stop | Final placements | Legal core sites left | Final lifetime | Final stock |\n|---|---|---|---:|---:|---:|---:|---|---:|---:|---|---|\n';
-  const resources = (values: Record<string, number>) => Object.entries(values).map(([r, n]) => `${r}=${n}`).join(', ');
-  for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.thresholds.map(t => t?.placements ?? '—').join(' / ')} | ${r.thresholds[5] ? fmt(r.thresholds[5].fill * 100) + '%' : '—'} | ${r.thresholds[6] ? fmt(r.thresholds[6].fill * 100) + '%' : '—'} | ${r.thresholds[7] ? fmt(r.thresholds[7].fill * 100) + '%' : '—'} | ${r.winPlacements ?? '—'} | ${r.stop} | ${r.placements} | ${r.legalSitesRemaining} | ${resources(r.lifetime)} | ${resources(r.resources)} |\n`;
+  text += '\n| Seed | Bot | Outcome / stop | Placements | Board use / map slots | T1–T8 placements | Opening stall | False loss | Legal core sites left | Final lifetime W/S/A/F | Final stock W/S/A/F |\n|---|---|---|---:|---|---|---|---:|---:|---|---|\n';
+  const vector = (values: Record<string, number>) => RESOURCES.map(r => values[r] ?? 0).join('/');
+  for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.outcome} / ${r.stop} | ${r.placements} | ${fmt(r.boardUse * 100)}% / ${r.mapSlots} | ${r.thresholds.map(t => t?.placements ?? '—').join(' / ')} | ${r.openingStall ? 'yes' : 'no'} | ${r.falseSoftLocks} | ${r.legalSitesRemaining} | ${vector(r.lifetime)} | ${vector(r.resources)} |\n`;
+  text += '\nPer-run checkpoint vectors below use **wood/stone/water/food**; each cell is `held : max cost (biome)`. The JSON retains unrounded values, lifetime totals, and living-slot fill at every threshold.\n\n| Seed | Bot | T3 stock : cost | T4 stock : cost | T5 stock : cost | T6 stock : cost | T7 stock : cost |\n|---|---|---|---|---|---|---|\n';
+  for (const r of runs) text += `| ${r.seed} | ${r.strategy} | ${r.thresholds.slice(2, 7).map(t => t ? `${vector(t.stock)} : ${vector(t.maxCost)} (${t.biome})` : '—').join(' | ')} |\n`;
   return text;
 }
