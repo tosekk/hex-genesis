@@ -16,10 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V9 COMPLETE — tutorial/VO copy matches final-threshold victory and finite one-time payouts. Changed voice line ids: `combos`, `progression`. IDLE — available.
+V11 COMPLETE — 29 new icons reviewed at 24/32/64 px; 48 owned tests/typecheck pass. NEXT: V12 audio settings API, then V13 (committed contract required) → V14.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
+- V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Hash recorded after commit.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
 - R3 — biome decorations, waterfall sides, tray/frame/table and resize framing; 9 tests/typecheck green and browser terrain demo verified — `c02fcd6`.
@@ -83,6 +84,8 @@ V9 COMPLETE — tutorial/VO copy matches final-threshold victory and finite one-
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- **Sonnet / V11 icon files ready:** `public/assets/icons/buildings/lumber_camp.svg`, `public/assets/icons/buildings/hillside_mine.svg`, `public/assets/icons/buildings/sawmill.svg`, `public/assets/icons/buildings/gatherers_hut.svg`, `public/assets/icons/buildings/farm.svg`, `public/assets/icons/buildings/quarry.svg`, `public/assets/icons/buildings/palm_grove.svg`, `public/assets/icons/buildings/stonemason.svg`, `public/assets/icons/buildings/oasis_well.svg`, `public/assets/icons/buildings/glass_kiln.svg`, `public/assets/icons/buildings/driftwood_camp.svg`, `public/assets/icons/buildings/scree_quarry.svg`, `public/assets/icons/buildings/ice_drill.svg`, `public/assets/icons/buildings/glacier_pump.svg`, `public/assets/icons/buildings/ice_fishery.svg`, `public/assets/icons/buildings/grain_fields.svg`, `public/assets/icons/buildings/windmill.svg`, `public/assets/icons/buildings/caravanserai.svg`, `public/assets/icons/buildings/trapper_lodge.svg`, `public/assets/icons/buildings/resin_works.svg`, `public/assets/icons/buildings/hot_spring.svg`, `public/assets/icons/buildings/lichen_farm.svg`, `public/assets/icons/buildings/salt_mine.svg`, `public/assets/icons/buildings/frost_kiln.svg`; `public/assets/icons/terrain/mountain.svg`, `public/assets/icons/terrain/water.svg`, `public/assets/icons/terrain/woods.svg`, `public/assets/icons/terrain/marsh.svg`; `public/assets/icons/core.svg`. Use `import.meta.env.BASE_URL + 'assets/icons/…'` for itch subpaths, retain text fallback per UI_SPEC. Preview: `/src/render/iconPreview.html` (24/32/64 px on `#F4EAD5`). No asset dependencies.
+
 - **Designer / V9 VO regeneration: changed line ids are `combos` and `progression`** (`combos.mp3`, `progression.mp3`). All other line texts are unchanged. `src/tutorial/VO_SCRIPT.md` exactly matches all five texts in `lines.ts`; read “T8” as “threshold eight”. Final threshold wins and awards no core; earlier thresholds award cores. Typecheck currently fails only in Astra's parallel `src/sim/economy/config.test.ts:114,120` (TS2352 sparse Resources casts); no owned-file errors, no edits there.
 
 - V8 visual check: `/render-sandbox.html?seed=1&photo=1&highlights=1`, seed 7 (overview + top-down) in Brave, then seed 15 in Safari after native Brave control collided with active designer browsing. All three boards show darker neutral grey tops/layers and matching dry natural tiles; light stone mountains stand out, and legalCore/selected/hover/locked/invalid rings remain visible and distinct. `highlights=1` is an explicitly labeled sandbox color QA overlay, unrelated to legal/locked simulation state. Existing 48 owned tests, typecheck and scoped sandbox production build pass; no new tests for this reversible visual-only palette change.
