@@ -102,9 +102,10 @@ Before (`e4448fd`) → after, **median held stock over the same 50 combo seeds**
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IDLE — N11/N12 complete; selected v5 round6 `b76c051`, five targets pass and stock pressure remains missed. Available for designer balance feedback. Opus owns endgame/e2e/packaging; no writes there.
+IN PROGRESS — Night 2: verify P1-A, audit spam/random terminal states on seeds 1–100, generalize frozen v5 to 1–100 and101–200, then report strategy concentration and morning summary. No economy/gameplay retuning. Push after every commit.
 
 ## Done
+- Night 2 step1 / Opus P1-A: already fixed in `f8e53fb`; current W3 is a normal `it`. Confirmed with full `npm test`: **410 passed,11 skipped,57 passed files,11.74s** on `988875f`. No test edit required; this status confirmation is committed/pushed first.
 - N12 — six 50-seed rounds, selected `b76c051`, 50 combo wins, 50 spam/48 random failures, five targets pass; complete top v5 result and report.
 - N11 helpers and core-slot acceptance: `6e8c7f9`, 98 pass + one expected endgame dependency failure; typecheck green.
 - N12 cost-only prerequisite: `a15915b`, all 13 config checks green (four failures confirmed against old config).
@@ -138,6 +139,7 @@ IDLE — N11/N12 complete; selected v5 round6 `b76c051`, five targets pass and s
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- Night 2 freeze: all numeric economy data and bot policies remain at v5 round6. Distinguish a no-demolition bot stop from a genuinely dead state. A productive refund/rebuild witness disproves a soft-lock; absence of a bounded witness alone is not proof. Instrumentation and audit code live only under tests/balance.
 - N12 final cost audit correction: the round5 scripted `farm` match also changed Lichen Farm W2/S3/A1→W5/S2/A2. This was not listed in that round’s decision entry; it is in both measured archives5/6 and source. Retain the measured candidate exactly, with no silent post-measurement correction. All changed costs meet R1–R4.
 - N12 selection: round6 eliminates all combo losses and preserves the other passing targets; prefer this highest-priority win robustness over round5’s smaller stockpile. d remains explicitly missed (and its worst ratio worsens98.71→108.83); do not claim full balance compliance. T4 uses the inherited all-seed median convention, not a per-seed guarantee; per-seed exceptions are reported in the final report.
 - V5 round6 (final permitted experiment): round5 stalls have large food/water but only stone1, so Lumber S2→S1/A2/F2 and Driftwood S2/A1/F1→S1/A1/F1 spend surplus while making a one-stone recovery possible. Reduce raw water by1 on Oasis Well, Glass Kiln, Ice Drill, Glacier Pump, Hot Spring and Frost Kiln (the worst round5 pressure resource). Everything else, especially T8 and terrain/zone rewards, stays fixed. Select only a fully measured candidate; no seventh calibration or unmeasured blend.
@@ -197,6 +199,7 @@ IDLE — N11/N12 complete; selected v5 round6 `b76c051`, five targets pass and s
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 
 ## Bugs found in others' modules
+- Night 2: Opus P1-A report is stale relative to local main; W3 is already fixed (`f8e53fb`) and the full suite passes. Economy source exactly matches `b76c051`; no changes made to other owners’ paths.
 - RESOLVED N11 → Opus (`105fab2`, merged locally during N12): acceptance W3 now uses a 2×1 plain board, core at0, three fixture buildings on1, final threshold unmet. Expected lost; actual playing because core slots still count in endgame. Your core exclusion makes W3 pass; expected-failure marker removed. No outside module edits.
 - N9 / Opus O8.2 advisory acknowledged: the prescribed no-demolition harness's board-full bot losses may still have productive replacement combos and do not imply the live game's loss screen. This is an existing design/measurement distinction, not a new session bug. N9 preserves the designer-requested e4448fd target definitions and explicit labels; no endgame/UI changes. Parallel UI files are untouched.
 - N8: no new outside-owner issue observed. S8 final-threshold behavior passes nine independent acceptance cases; global typecheck passed. Owned/scoped tests only; no full-suite/browser claim.
