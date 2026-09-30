@@ -3,12 +3,21 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-O11 ✅ (items 1–4). **GO executed.** Next per O11.3: repeat the package + itch-frame check once sol integrates the journal book and the offer spheres (UI_SPEC §8.4).
+**IN PROGRESS: O13 (cloud night shift, branch `opus/night`).** Waiting on `main` for astra's N11 (`isCoreHex`/`slotCounts`), sol's night items 1–4 and astra's N12. Nothing from either has reached `origin/main` yet (last checked 21:52 UTC, `main` = `9c3434b`).
 
-> **Designer: upload `release/hex-genesis-2026-10-01.zip`** (journal HUD default). Built 01:54 from clean `f72ac73` (sol's default switch after sonnet QA pass 3: 0 open P0/P1), 48 files, 0.25 MB, sha256 `ff908edc2c47dfe3…`. Verified in the itch frame (Integration log). The old HUD stays reachable with `?ui=legacy`. Fallback if anything looks wrong on itch: `release/terraform-jam-2026-09-30.zip` (legacy HUD, verified).
+- O13.1 endgame: done against `state.cores` (`105fab2`); swap to `isCoreHex` when N11 lands.
+- O13.2 e2e: done. **`npm test` 83 s → 30 s** (cloud, 4 cores). Full sample: `npm run test:e2e-full`.
+- O13.3 adjacency-log integration test: done.
+- O13.4 review: waiting for sol/astra night commits.
+- O13.5 `npm run verify-zip`: done. **On current `main` it FAILS as designed: all 19 MP3s ship twice** (`audio/…` from `public/` + hashed `assets/…`). Sol's night item 1 (audio → `src/assets/audio`) fixes that.
+- O13.6 release gate: not yet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
+- O13.1 — `isProvablySoftLocked` skips core hexes (refund estimate + candidate scan). New test: full except three empty unpaid core hexes, rich, T8 unmet → loss; same board without the cores → not a loss (fails on the old endgame). `fullBoard()` fixture no longer builds on core hexes — `105fab2`.
+- O13.2 — `assertInvariants`: no building on a core hex (independent `state.cores` oracle) + a negative test; loss check and board-used stats skip core hexes; both bots skip core hexes; the spread-lock probe uses a revealed non-origin claim. Default autoplay = greedy 1–3, spam 1, replay 1; `E2E_FULL=1` / `npm run test:e2e-full` = the old full set. `npm test`: 52 files, 380 passed, **30 s** (was 83 s) — `18ba0b1`.
+- O13.3 — `src/ui/journal/journal.adjacency.test.ts`: real `createGameSession` + real `createJournal` (happy-dom), seed 1, config-driven combos on two adjacent same-biome non-core hexes → `payouts` with `kind: 'adjacency'` → the log row shows both combo names (hex side, then neighbour side) and `fmtResources(adjacencyAmount)`; `newRun` clears it — `1d42696`.
+- O13.5 — `scripts/verify-zip.mjs` (+ `.d.mts`, 3 tests in `tests/e2e/verify-zip.test.ts`): newest `release/*.zip` (or a path arg); `index.html` at root, no root-absolute URLs in html/js/css, every source MP3 (`public/audio`, `src/assets/audio`) exactly once **matched by content**, no unknown MP3s, no `src/`/TS files; prints files, bytes, MB, sha256; exit 1 on failure. `npm run package` = package, then verify — `8ca5ba1`.
 - O1: M0 DONE `4e877b6` (foundation, contracts, stubs). Committed by the human.
 - O2: spread engine (`src/sim/spread/spread.ts`) with 26 tests in `spread.test.ts`, all green. Covers every O2 required test plus min-depth conversion, discard-and-continue, and a perf check (< 5 ms on 20×14). Shipped in `4e877b6`.
 - O3 / **M2 DONE** (wiring `823728d`; playthrough on the build of `86038a9`, real D1 map, seed 7).
@@ -32,6 +41,9 @@ O11 ✅ (items 1–4). **GO executed.** Next per O11.3: repeat the package + itc
 
 ## Decisions
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
+- O13.2 / §10: the e2e invariant checks core hexes via `state.cores`, NOT the economy's `isCoreHex`, on purpose: an independent oracle cross-checks astra's helper instead of trusting it.
+- O13.2: "< 60 s" is met by sampling, not by weakening checks: invariants still run after every action; only the seed count drops by default. The dropped seeds stay one command away (`npm run test:e2e-full`).
+- O13.5: MP3s are matched by sha256 of their bytes, not by name, so Vite's hashed names (`win-CkpF4S8e.mp3`) and the `public/` copy (`audio/sfx/win.mp3`) are both recognised as the same file.
 - §13 pool as budget: Dijkstra pops by (cumulative cost, HexId). The pool is charged each tile's own step cost, not its cumulative cost. A popped node whose step cost exceeds the remaining pool is discarded, and the search continues with later nodes until the queue empties or the pool reaches 0. This follows "claims … until the pool has been consumed".
 - §13 origin costs `costUnit` (one flat tile). Flat dead board → 69 claims, `poolUsed` 276.
 - §13 mountain step cost = plain slope cost (no natural ×2). Mountains are claimed as `kind: 'mountain'` and never expanded from. A mountain claimed by an earlier spread is still dead, so a later spread may enter it again (pool spent, nothing changes).
