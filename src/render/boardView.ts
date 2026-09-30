@@ -20,6 +20,7 @@ import { installPhotoMode } from './photo';
 import { SlotHighlight } from './slotHighlight';
 import { isCoreHex } from '../sim/economy';
 import { pickHexSlot, renderSlotPick } from './slots';
+import { illustratedEnabled, installIllustratedStyle, type IllustratedStyle } from './materials';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -46,6 +47,8 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   sun.position.set(-12, 25, 10); scene.add(sun, sun.target);
   const fill = new THREE.DirectionalLight(0xbad9e5, 0.8);
   fill.position.set(15, 12, -12); scene.add(fill);
+  const illustrated = illustratedEnabled(window.location.search);
+  let style: IllustratedStyle | null = null;
   let board = new THREE.Group(); scene.add(board);
   let state: Readonly<GameState> | null = null;
   let tops: Instances | null = null;
@@ -107,6 +110,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     payouts.clear();
     scene.remove(board); disposeGroup(board);
     board = new THREE.Group(); scene.add(board); state = current;
+    style = illustrated ? installIllustratedStyle(board) : null;
     positions.clear(); highlights.clear(); highlightIds.clear(); reveals.clear();
     slotPick = null; slotHighlight = new SlotHighlight(board);
     const count = current.hexes.length;
@@ -198,7 +202,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   function resize(): void {
     if (disposed) return;
     const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
-    renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
+    renderer.setSize(width, height, false); style?.ink.uniforms.viewport.value.set(width, height); camera.aspect = width / height; camera.updateProjectionMatrix();
     if (bounds) {
       const { distance, minDistance, maxDistance } = framingFor(bounds, camera.aspect, camera.fov);
       if (framingDistance > 0) {

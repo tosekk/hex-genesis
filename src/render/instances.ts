@@ -1,12 +1,21 @@
 import * as THREE from 'three';
+import { illustratedStyle, prepareIllustratedGeometry } from './materials';
 
 /** Fixed indices keep a hex's visual identity stable across refreshes. */
 export class Instances {
   readonly mesh: THREE.InstancedMesh;
+  readonly outline: THREE.InstancedMesh | null;
   private readonly transform = new THREE.Object3D();
   constructor(parent: THREE.Group, geometry: THREE.BufferGeometry, color: number, capacity: number,
     options: { opacity?: number; roughness?: number; emissive?: number; vertexColors?: boolean; castShadow?: boolean; receiveShadow?: boolean } = {}) {
-    const material = new THREE.MeshStandardMaterial({ color, roughness: options.roughness ?? 0.85,
+    const style = options.opacity === undefined ? illustratedStyle(parent) : undefined;
+    if (style) {
+      const original = geometry; geometry = original.index ? original.toNonIndexed() : original;
+      if (geometry !== original) original.dispose();
+      geometry.computeVertexNormals();
+      prepareIllustratedGeometry(geometry, color, Boolean(options.emissive));
+    }
+    const material = style?.fill ?? new THREE.MeshStandardMaterial({ color, roughness: options.roughness ?? 0.85,
       metalness: 0, emissive: options.emissive ?? 0,
       transparent: options.opacity !== undefined, opacity: options.opacity ?? 1, vertexColors: options.vertexColors ?? false });
     this.mesh = new THREE.InstancedMesh(geometry, material, capacity);
@@ -16,7 +25,15 @@ export class Instances {
     this.mesh.frustumCulled = false;
     for (let i = 0; i < capacity; i++) this.hide(i);
     parent.add(this.mesh);
+    this.outline = style ? new THREE.InstancedMesh(geometry, style.ink, capacity) : null;
+    if (this.outline) {
+      this.outline.name = 'ink-hull'; this.outline.instanceMatrix = this.mesh.instanceMatrix;
+      this.outline.frustumCulled = false; this.outline.userData.inkHull = true;
+      // The hull uses the same transforms/buffer; no second CPU animation loop.
+      parent.add(this.outline);
+    }
   }
+  setCount(count: number): void { this.mesh.count = count; if (this.outline) this.outline.count = count; }
   set(index: number, x: number, y: number, z: number, sx = 1, sy = sx, sz = sx,
     rx = 0, ry = 0, rz = 0): void {
     this.transform.position.set(x, y, z);

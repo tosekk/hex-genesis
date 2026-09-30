@@ -24,11 +24,13 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
+V18 shader implemented: 42 renderer tests pass (12 files). Preparing commit, then GLB pipeline.
 IN PROGRESS — Night 2 review confirmation, V18 illustrated shader, GLB drop-in pipeline, then flagged paper journal. Default visuals frozen. Browser unavailable; fresh GPU FPS/visual approval are designer QA, never inferred from unit tests.
 
 Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts and end screen use shared slotCounts; core detail has no chips/deck targets; sticky/R core attempts fail; both Tab finders skip cores; renderer suppresses core anchors/building models/slot picks/highlights, including reveal refresh and setCores. All 166 owned tests / 28 files, typecheck and Vite production build pass (03:00); 19 MP3s occur once each by SHA-256, dist 5.89 MB, no public-directory warnings (existing >500kB bundle warning only). Night 1 `206e815`, Night 2 `1a502c6`, Night 3 `4980e85`. Item 6 skipped: no GLBs in src/assets/models. IDLE — available; designer browser QA checklists are at the top. No main/app/index/sim/tests edits.
 
 ## Done
+- Night 2 review — `38757d5` (pushed): confirmed V16(a) all four P1-B UI locations, full-board zero/100% regressions in both HUDs, Escape voice-gesture fix P2-D; 51 focused tests + typecheck pass.
 - Night 4 / V16(a) — core detail/no deck targeting, sticky/R reason, shared counts for journal/legacy/end, both finders exclude cores, renderer no anchors/slot picks/rings or building models on cores; 166 owned tests / 28 files, typecheck + production build pass — `8d13729`.
 - Night 3 / V16(b)(c) — useful biome availability, disabled/no-focus absent circles, core-only dimmed building deck with hover costs/yields; 71 audio/tutorial/v2 tests/typecheck — `4980e85`.
 - Night 2 — global Sound controls voice live, collapsed new steps narrate, gesture queue/policy retry/disposal, sticky dead/natural deck preserved, music+FX single cue integration; 67 audio/tutorial/v2 tests/typecheck — `1a502c6`.
@@ -76,6 +78,8 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
 - V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
+- V18 / RENDER_STYLE_SPEC: inverted hull chosen to avoid full-screen normal/depth targets. One shared fill + one shared ink ShaderMaterial per board, instanced hull reuses matrices and packed count. 1.25 CSS-pixel width is updated on resize; no second animation loop. Opaque tiles/natural objects also use the fill; translucent highlights/waterfall ribbons retain the existing readable materials. Shader lights use the existing warm top-left world direction and cool fill; AO alpha never becomes opacity. Kiln emission is limited to colored furnace openings.
+- Night 2 no-browser constraint: fresh settled/mid-wave GPU FPS is UNMEASURED for flagged visuals, not the historical 120 FPS. Sandbox `?load=1&wave=1` automatically measures a settled window then 69 flips, displays FPS/calls and logs the comparison. Designer approval and >=60 FPS remain open acceptance gates.
 - Night 3 / designer V16 overrides UI_SPEC §3.3: main circles with visible land remain enabled/colored even without a held core; absent land+core disables them. Land availability reads visible hex.biome only, never future spread claims. Building cards with no land remain hover/focus readable, but Ctrl rejects selecting them. A transient unavailable selection is cleared while a core awaits its first reveal.
 - Night 2 / §46: collapse changes visual expansion only; each new step narrates once, while expanding does not replay it. Global mute or zero volume stops/drops the active/queued line; unmute does not replay stale guidance. Policy rejection keeps only the current line for the next gesture. Next/Skip/run end/dispose cancel it.
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
@@ -112,9 +116,11 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
   Purpose: presentation-only staggered floating numbers over hexes, preserving event resolution order. Opus's `src/app/bindBoard.ts` now calls `board.showPayouts?.(state, e.events)` for `payouts`. HUD toasts remain authoritative. Sol implements only the renderer; earlier skip was before this approval.
 
 ## Bugs found in others' modules
+- Astra Night 2 WIP: typecheck reports tuple casts at `tests/balance/stuck/audit.test.ts:69,79` (TS2352). Owned render/UI files clean; leaving your file untouched.
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- Designer QA: V18 compare http://localhost:5173/render-sandbox.html?seed=7&load=1&wave=1 with http://localhost:5173/render-sandbox.html?seed=7&load=1&wave=1&style=illustrated; also add `&cols=30&rows=20` to both. Wait 3.5s for the automatic wave, record settled and active-wave FPS/peak calls, check rotated core/crystal/kiln silhouettes and 1–1.5px ink at both 1280×720 and 1024×640. In game: http://localhost:5173/?seed=7&style=illustrated versus http://localhost:5173/?seed=7. Port substitution only if Vite chooses another port.
 ### → opus — O13.4 night review confirmed (Night 2)
 - P1-B: `8d13729` fixed ALL FOUR locations: `slotSummary` numbers + `hexes` finder, legacy `emptySlotSummary`, and shared end screen. Existing DOM tests covered each; added the precise full-non-core-board regression in BOTH HUDs: zero empty slots, no finder highlight even with the core selected, end screen 100%. 51 focused tests pass across 3 files.
 - P2-D: Escape now leaves voice queued (unit regression), then 1/click unlocks once. P2-E: keep direct visible-state scans at the frozen 280-hex size, as review recommends; no stale caching or future-state access.

@@ -4,6 +4,7 @@ import { Instances } from './instances';
 import { SLOT_ANCHORS, topHeight } from './layout';
 import { buildingHash } from './reveal';
 import { buildingModelFor, FALLBACK_MODEL } from './buildingModels';
+import { illustratedStyle } from './materials';
 
 interface ModelBatch { instances: Instances; keys: number[]; }
 interface PlacedBuilding { id: BuildingId; batch: ModelBatch; index: number; }
@@ -21,10 +22,19 @@ export class Buildings {
     const model = buildingModelFor(id);
     let batch = this.models.get(model.id);
     if (!batch) {
-      const instances = new Instances(this.parent, model.geometry(), 0xffffff, this.count * 3,
+      const geometry = model.geometry();
+      if (illustratedStyle(this.parent) && (id === 'glass_kiln' || id === 'frost_kiln')) {
+        const colors = geometry.getAttribute('color'), emit = new Float32Array(colors.count);
+        for (let i = 0; i < colors.count; i++) {
+          // Only the orange furnace opening / blue frost opening emit; masonry stays shaded.
+          emit[i] = id === 'glass_kiln' ? Number(colors.getX(i) > .9 && colors.getY(i) < .5) : Number(colors.getZ(i) > .45 && colors.getX(i) < .15);
+        }
+        geometry.setAttribute('_EMIT', new THREE.BufferAttribute(emit, 1));
+      }
+      const instances = new Instances(this.parent, geometry, 0xffffff, this.count * 3,
         { vertexColors: true, castShadow: true, emissive: id === 'glass_kiln' ? 0x261000 : id === 'frost_kiln' ? 0x09232b : 0 });
       instances.mesh.name = `building:${model.id}`;
-      instances.mesh.count = 0;
+      instances.setCount(0);
       batch = { instances, keys: [] }; this.models.set(model.id, batch);
     }
     return batch;
@@ -39,7 +49,7 @@ export class Buildings {
       batch.keys[index] = movedKey; this.placed.get(movedKey)!.index = index;
       mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor!.needsUpdate = true;
     }
-    batch.keys.pop(); mesh.count = batch.keys.length; this.placed.delete(key);
+    batch.keys.pop(); batch.instances.setCount(batch.keys.length); this.placed.delete(key);
   }
   refresh(hex: Hex, x: number, z: number, coreHex = false): void {
     hex.slots.forEach((slot, index) => {
@@ -52,7 +62,7 @@ export class Buildings {
       if (previous) this.remove(key, previous);
       if (!building) return;
       const model = buildingModelFor(building), batch = this.batchFor(building), instance = batch.keys.length;
-      batch.keys.push(key); batch.instances.mesh.count = batch.keys.length;
+      batch.keys.push(key); batch.instances.setCount(batch.keys.length);
       batch.instances.set(instance, x + anchor.x, topHeight(hex.elevation) + 0.018, z + anchor.z);
       const color = model === FALLBACK_MODEL
         ? new THREE.Color().setHSL((buildingHash(building) % 360) / 360, 0.28, 0.54).getHex() : 0xffffff;
