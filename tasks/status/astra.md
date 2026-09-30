@@ -79,6 +79,7 @@ IN PROGRESS: N9 stockpile pressure. Started 2026-09-30 14:31 UTC; deadline 16:01
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- N9 round2: baseline final combo placements most often use Glass Kiln (3,526 across50 runs), which charges neither wood nor food despite adjacency paying both. Add moderate wood/food costs specifically there; its base payout retains at least3 stone, enough for the unchanged basic Quarry/Palm recovery costs. No general cross-resource tax on fragile opening buildings.
 - N9 / ECONOMY_SPEC v4: preserve baseline thresholds, starting resources, terrain/zone modifiers, adjacency and combo rewards/recipes; tune costs first, yields second. Never count an unproven empty-slot stall as a loss. Keep the established all-map denominator, checkpoint sampling and strict all-completer T7 check unchanged. Baseline `e4448fd` matches archived `v4-round-4.json`.
 - N9 selection: a candidate must pass targets1/2/3/4/6 on all50 seeds under the existing definitions, and show a clear raw-stock reduction, not merely a larger cost denominator. Aim for at least50% reduction in the median per-run total held stock at T7, with all four resource medians and T3–T7 checkpoints reported individually; do not hide a resource regression behind the total. If no candidate clearly qualifies after four rounds, restore the baseline exactly.
 - N9 round1: preserve cheap Lumber Camp, free Hillside Mine, Quarry, Palm Grove and Arctic driftwood/scree exchange to avoid N8 round5's basic-resource starvation. Raise mid/premium production-resource costs (returned immediately as raw/recipe yield) rather than broadly charging scarce cross-resources. No base-yield trim or combo reward change in the first experiment.
@@ -197,6 +198,11 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+
+### N9 round 2 — Glass Kiln wood/food sink
+- Round1 `51344a9` preserves all five required targets and cuts T7 median total34%. Starting from it, **Glass Kiln wood0→6, food0→4** (stone4/water6 unchanged). Every other number unchanged. Wood548 and food323 remain high; this targets the most frequent advanced building instead of again increasing opening costs.
+
+- Results: **50 combo wins, 44 spam bot losses**, one unproven stall, five spam wins. Targets **1/3/4/6 PASS; 2/5 MISS**. No combo opening stalls/false declarations; win board use69.28%, maxT7 use56.95%. T7 median stock **380/213/189.5/228**, median total **1023.5 (−47.42% vs baseline)**. Worst checkpoint ratio65×. Ten harness checks pass (99.84s including replay). Not selectable because target2 misses by one seed.
 
 ### N9 round 1 — production-resource costs
 - Start from `e4448fd` (N8 round4). Cost edits: sawmill wood 2→8; stonemason stone 2→8; resin_works wood 0→8; caravanserai wood 2→6; caravanserai stone 2→6; windmill stone 1→2; windmill food 3→8; salt_mine stone 0→4; farm food 4→8; gatherers_hut food 2→5; grain_fields food 4→8; trapper_lodge food 3→6; lichen_farm food 4→6; ice_fishery food 2→5; hot_spring food 2→5; hot_spring water 3→8; ice_drill water 4→7; glacier_pump water 4→8; oasis_well water 3→5; glass_kiln water 3→6; frost_kiln water 3→6.
