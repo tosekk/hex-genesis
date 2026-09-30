@@ -1,0 +1,42 @@
+/* Journal book (UI_SPEC §4). Tokens mirror §1; fonts: 'Patrick Hand' / 'Nunito' come from the HUD's @font-face. */
+.jr-overlay { position:fixed; inset:0; z-index:50; background:rgba(24,19,13,.62); display:flex; align-items:center; justify-content:center;
+  --paper:#F4EAD5; --paper2:#E8DBBE; --ink:#2E2A25; --ink2:#6B6257; --accent:#D9826B; --marker:#F5D547; --bad:#C0503A; --good:#4d7a3a;
+  color:var(--ink); font-family:'Nunito', system-ui, sans-serif; font-size:14px; }
+.jr-overlay[hidden] { display:none; }
+.jr-book { position:relative; display:flex; width:min(860px, 94vw); height:min(480px, 82vh); background:var(--paper2); border:2px solid var(--ink);
+  border-radius:10px; box-shadow:4px 6px 0 rgba(46,42,37,.4), 0 14px 40px rgba(0,0,0,.45); }
+.jr-page { flex:1; padding:22px 26px; overflow:auto; background:
+  radial-gradient(circle at 20% 15%, rgba(255,255,255,.35), transparent 45%),
+  repeating-linear-gradient(0deg, rgba(120,90,50,.035) 0 2px, transparent 2px 5px), var(--paper); }
+.jr-left { border-radius:8px 0 0 8px; border-right:2px solid rgba(46,42,37,.35); box-shadow:inset -14px 0 18px -14px rgba(46,42,37,.35); }
+.jr-right { border-radius:0 8px 8px 0; box-shadow:inset 14px 0 18px -14px rgba(46,42,37,.35); position:relative; }
+.jr-title, .jr-h { font-family:'Patrick Hand', 'Segoe Print', cursive; font-weight:400; margin:0 0 8px; }
+.jr-title { font-size:32px; } .jr-h { font-size:24px; margin-top:6px; }
+.jr-lead { line-height:1.4; } .jr-sub { color:var(--ink2); font-size:13px; }
+.jr-row { margin:4px 0; } .jr-pay { color:var(--good); font-weight:800; } .jr-neg { color:var(--bad); font-weight:800; }
+.jr-link { font:inherit; background:none; border:0; padding:2px 0; color:var(--ink); cursor:pointer; text-decoration:underline; text-decoration-color:var(--marker); text-decoration-thickness:3px; }
+.jr-contents, .jr-names { margin:4px 0 12px; padding-left:20px; }
+.jr-tabs { position:absolute; right:-92px; top:28px; display:flex; flex-direction:column; gap:6px; }
+.jr-tab { font:inherit; font-weight:700; text-align:left; width:92px; padding:8px 10px; background:var(--paper2); color:var(--ink); border:2px solid var(--ink); border-left:0; border-radius:0 9px 9px 0; cursor:pointer; }
+.jr-tab.active { background:var(--marker); }
+.jr-locked { height:100%; display:flex; align-items:center; justify-content:center; }
+.jr-q { width:150px; height:150px; border-radius:50%; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; font-family:'Patrick Hand', cursive; font-size:110px; line-height:1; }
+.jr-illus { position:relative; width:230px; height:210px; margin:10px auto; }
+.jr-hex { width:100%; height:100%; }
+.jr-slots { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:4px; }
+.jr-slots .icon { width:44px; height:44px; }
+.jr-recipe { list-style:none; margin:6px 0; padding:0; display:grid; gap:4px; }
+.jr-recipe .icon, .jr-icons .icon, .jr-terrain .icon { width:26px; height:26px; vertical-align:middle; }
+.jr-nav { position:absolute; left:26px; right:26px; bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+.jr-arrow { font:inherit; border:2px solid var(--ink); background:var(--paper2); border-radius:8px; width:40px; height:32px; cursor:pointer; }
+.jr-arrow:disabled { opacity:.35; cursor:default; }
+.jr-count { font-weight:800; font-variant-numeric:tabular-nums; }
+.jr-log { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+.jr-log-row { border-bottom:1px dashed rgba(46,42,37,.3); padding-bottom:4px; }
+.jr-rule { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin:6px 0; }
+.jr-zone { font-weight:800; margin-top:8px; border-bottom:2px solid var(--marker); }
+.jr-icons { display:inline-flex; gap:3px; }
+.jr-overlay .icon { display:inline-flex; align-items:center; justify-content:center; }
+.jr-overlay .icon img { width:100%; height:100%; display:block; }
+.jr-overlay .icon-missing { width:auto; font-size:.8em; font-weight:800; }
+@media (max-width:1000px) { .jr-tabs { right:-70px; } .jr-tab { width:70px; padding:6px; font-size:12px; } .jr-book { width:min(800px, calc(100vw - 90px)); margin-right:70px; } }
