@@ -8,11 +8,13 @@ const ROWS: [string, string][] = [
   ['Left-click', 'Select a tile / place a core / build'],
   ['Shift + click, or R over a tile', 'Repeat your last building'],
   ['1 / 2', 'Pick the left / right biome offer'],
+  ['Hold Tab, or click "Empty slots"', 'Highlight every tile that still has an empty slot'],
   ['Esc, or right-click', 'Cancel core placement / deselect'],
   ['Right-drag, or Q / E', 'Rotate the camera'],
   ['Mouse wheel', 'Zoom'],
   ['Middle-drag, or W A S D', 'Pan the camera'],
   ['? or H', 'Show / hide this help'],
+  ['Win', 'No legal core site left and every slot filled (see the counters, top-left)'],
 ];
 
 const typing = (t: EventTarget | null) =>

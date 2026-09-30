@@ -13,7 +13,8 @@
 .btn.danger { background:#f1c9c0; }
 .x { padding:0 8px; }
 
-.resource-bar { position:absolute; top:10px; left:10px; min-width:270px; }
+.hud-tl { position:absolute; top:10px; left:10px; display:flex; flex-direction:column; gap:8px; }
+.resource-bar { min-width:270px; }
 .res-head { font-size:12px; font-weight:700; opacity:.7; margin-bottom:4px; }
 .res-row { display:grid; grid-template-columns:96px 46px 1fr; gap:2px 8px; align-items:baseline; margin-bottom:6px; }
 .res-name { font-weight:700; }
@@ -107,3 +108,9 @@ details.slot[open] > summary::before { content:'▾ '; }
 .chip.no-site { opacity:.6; background:var(--paper); }
 .chip-note { display:block; font-size:10px; font-weight:700; color:var(--bad); }
 .res-name { white-space:nowrap; display:flex; align-items:center; }
+
+.win-progress { font-size:13px; padding:6px 10px; }
+.wp-empty { font:inherit; background:none; border:0; padding:0; cursor:pointer; color:inherit; text-align:left; display:block; }
+.wp-empty.active { text-decoration:underline; color:var(--accent); }
+.wp-row { margin-top:2px; }
+.wp-spread { margin-top:2px; font-weight:800; color:var(--accent); }

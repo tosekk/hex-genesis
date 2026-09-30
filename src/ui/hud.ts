@@ -11,6 +11,7 @@ import { createOfferModal } from './offerModal';
 import { createResourceBar } from './resourceBar';
 import './styles.css';
 import { createQuickBuild } from './quickBuild';
+import { createWinProgress } from './winProgress';
 import { createToasts } from './toasts';
 import { createLockedTooltip } from './tooltip';
 
@@ -19,7 +20,10 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   root.appendChild(host);
 
   const ui = createInteraction(session, board);
-  const resources = createResourceBar(host, session);
+  const topLeft = el('div', 'hud-tl');
+  host.appendChild(topLeft);
+  const resources = createResourceBar(topLeft, session);
+  const win = createWinProgress(topLeft, session, board, ui);
   const cores = createCoreStack(host, session, ui);
   const hexPanel = createHexPanel(host, session, ui);
   const codex = createCodex(host, session);
@@ -43,8 +47,8 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   yes.addEventListener('click', () => { confirm.hidden = true; session.endRun(); });
   host.append(endBtn, confirm);
 
-  const renderAll = () => { quick.render(); resources.render(); cores.render(); hexPanel.render(); codex.render(); };
-  ui.onChange(() => { cores.render(); hexPanel.render(); quick.render(); });
+  const renderAll = () => { win.render(); quick.render(); resources.render(); cores.render(); hexPanel.render(); codex.render(); };
+  ui.onChange(() => { win.render(); cores.render(); hexPanel.render(); quick.render(); });
 
   const off = session.subscribe((e) => {
     ui.handleEvent(e);
@@ -66,7 +70,7 @@ export function createHud(root: HTMLElement, session: GameSession, board: BoardV
   return {
     dispose() {
       off(); ui.dispose();
-      for (const c of [resources, cores, hexPanel, codex, toasts, quick, tooltip, offer, end, help]) c.dispose();
+      for (const c of [resources, win, cores, hexPanel, codex, toasts, quick, tooltip, offer, end, help]) c.dispose();
       host.remove();
     },
   };
