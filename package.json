@@ -9,10 +9,11 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "package": "node scripts/package.mjs",
+    "package": "node scripts/package.mjs && node scripts/verify-zip.mjs",
     "pacing": "PACING=1 vitest run tests/e2e/pacing.test.ts",
     "preview:head": "sh scripts/preview-head.sh",
-    "itch-test": "node scripts/itch-test.mjs"
+    "itch-test": "node scripts/itch-test.mjs",
+    "verify-zip": "node scripts/verify-zip.mjs"
   },
   "dependencies": {
     "three": "0.186.1"
