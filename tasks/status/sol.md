@@ -16,11 +16,11 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V11 COMPLETE — 29 new icons reviewed at 24/32/64 px; 48 owned tests/typecheck pass. NEXT: V12 audio settings API, then V13 (committed contract required) → V14.
+IN PROGRESS: V12 audio settings API. V11 committed `5f84c07`; V13 (committed contract required) → V14 remain.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
-- V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Hash recorded after commit.
+- V11 — all 24 live building ids, four natural terrain icons and a core SVG; accessible titles, existing 1.8 px rounded ink stroke, recognizable home-biome silhouettes. Paper/dark preview reviewed in Safari at 24/32/64 px; all 39 SVGs parse, 48 owned tests/typecheck pass. Commit `5f84c07`.
 - R1 — instanced board, natural terrain, camera, picking, highlights, standalone sandbox; 4 tests and typecheck green, browser 120 fps/no errors — `8955351`.
 - R2 — visible reveal flips, stable instanced buildings, core markers; 7 tests/typecheck green, browser wave/building/core checks and clean console — `5ca5c4a`.
 - R3 — biome decorations, waterfall sides, tray/frame/table and resize framing; 9 tests/typecheck green and browser terrain demo verified — `c02fcd6`.
