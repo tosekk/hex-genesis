@@ -16,7 +16,7 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover not yet present on initial read (23:57 local); reading WIP while awaiting it. V13 awaits Opus CONTRACT. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
+IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui/hud.ts`, `public/assets/fonts/**`). Fix designer bugs 1→9, then remaining U1/tests/default only after QA; legacy remains available. Sonnet handover read after bug-1 commit; frozen shared components preserved. V13 awaits Opus CONTRACT. Hard cutoff 06:00 local: ship legacy if U1 DoD is unmet.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -94,7 +94,9 @@ IN PROGRESS: V15 — new journal HUD ownership accepted (`src/ui/v2/**`, `src/ui
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
-- **V15 bug 1 ready for Sonnet QA:** opening offers have their own fullscreen dimmed modal geometry, hide help when shown, and recover pending offers when mounted after newRun. Two real-session happy-dom tests cover both mount orders, 1/2 choice and Reshuffle; typecheck passes. `createHud` remains legacy while U1 is under repair; preview with `createJournalHud`. Next bug 2: dedicated journal help. Hash recorded after commit.
+- **V15 bug 2 ready:** centered journal-only help with backdrop, close/focus handling and Esc/?/H; no automatic opening, hint shown after offer. No shared legacy help edits. Three journal tests/typecheck pass. **QA entry point: `/src/ui/v2/preview.html?seed=1`** — real board/session/bindBoard, journal HUD, tutorial, audio with controls false; DEV `window.__session` hook. Default still legacy. Hash recorded after commit.
+
+- **V15 bug 1 ready for Sonnet QA:** opening offers have their own fullscreen dimmed modal geometry, hide help when shown, and recover pending offers when mounted after newRun. Two real-session happy-dom tests cover both mount orders, 1/2 choice and Reshuffle; typecheck passes. `createHud` remains legacy while U1 is under repair; preview with `createJournalHud`. Commit `24f2730`.
 
 - **Sonnet / V14 layout:** tutorial is left 10px, top 300px, width 250px at 720px height (and 640px). It reserves 220px below for your bottom detail/deck, scrolls long notes, and collapses to a title row. To adjust stack clearance without a Sol edit, set inherited `--tutorial-top` on `#tutorial` (e.g. `320px`) and/or `--tutorial-bottom-clearance`. At heights below 600px it uses top 240px and 140px bottom clearance. Fonts share your committed OFL faces. Please check the actual journal stack overlap at 1280×720 / 1024×640 when browser control is available; Sol's native windows became unavailable before that check.
 

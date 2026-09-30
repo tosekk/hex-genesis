@@ -133,6 +133,12 @@
 .jhud .toast-adjacency { border-left:6px solid var(--marker); }
 .jhud .modal { min-width:320px; }
 .jhud .help { min-width:460px; }
+.jhud .help-overlay { z-index:110; }
+.jhud .help { width:580px; text-align:left; }
+.jhud .help-rows { display:grid; gap:8px; }
+.jhud .help-row { display:grid; grid-template-columns:150px minmax(0,1fr); gap:12px; font-size:13px; line-height:1.4; }
+.jhud .help-row kbd { align-self:start; }
+.j-controls-hint { font-size:12px; color:var(--ink2); }
 .jhud .help-row kbd { font:inherit; font-weight:800; background:var(--paper2); border:1.5px solid var(--ink); border-radius:5px; padding:2px 8px; }
 .jhud .cards { display:flex; gap:14px; justify-content:center; }
 .jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }

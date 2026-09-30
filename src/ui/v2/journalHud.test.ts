@@ -21,6 +21,19 @@ export function fixture(startBefore = false) {
 }
 
 describe('journal HUD opening offer', () => {
+  it('does not open help over offers, then opens and closes via H, Escape and the menu', () => {
+    const s = fixture();
+    const help = s.root.querySelector<HTMLElement>('.help-overlay')!;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'h', bubbles: true }));
+    expect(help.hidden).toBe(true);
+    s.click('.offer-overlay [data-index="0"]');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?', bubbles: true }));
+    expect(help.hidden).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); expect(help.hidden).toBe(true);
+    s.click('.menu-btn'); s.click('.menu-help'); expect(help.hidden).toBe(false);
+    s.click('.help-close'); expect(help.hidden).toBe(true);
+    expect(s.root.querySelector('.help-btn')).toBeNull();
+  });
   it('shows the real first offer above help, resolves by key 1, and restores a later offer', () => {
     const s = fixture();
     expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false);

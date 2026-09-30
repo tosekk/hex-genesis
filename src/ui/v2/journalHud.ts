@@ -2,7 +2,6 @@ import type { BoardView, GameSession, Hud } from '../../core/contracts';
 import { BIOME_COLORS } from '../../render/palette';
 import { createEndScreen } from '../endScreen';
 import { el } from '../format';
-import { createHelpOverlay } from '../helpOverlay';
 import { createOfferModal } from '../offerModal';
 import { createToasts } from '../toasts';
 import { Ctrl } from './ctrl';
@@ -12,6 +11,7 @@ import { createPills } from './pills';
 import { createThresholdStack } from './thresholds';
 import { createTopRight, type AudioSettingsLike } from './topRight';
 import { createTriangle } from './triangle';
+import { createJournalHelp } from './help';
 import './fonts.css';
 import './styles.css';
 
@@ -51,7 +51,8 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   const toasts = createToasts(host, session);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
-  const help = createHelpOverlay(host, { variant: 'journal' });
+  const help = createJournalHelp(host, () => session.state.pendingOffer !== null);
+  top.append(el('small', 'j-controls-hint', 'Press ? for controls'));
   const journal = deps.createJournal?.(host, session);
   const topRight = createTopRight(host, session, {
     openHelp: () => help.open(),
@@ -98,7 +99,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
     switch (e.type) {
       case 'runStarted':
         pills.reset(); toasts.clear(); offer.hide(); end.hide(); topRight.hideConfirm(); renderAll();
-        help.maybeAutoShow();
+        help.hide();
         break;
       case 'offerShown': help.hide(); offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
