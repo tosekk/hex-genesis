@@ -66,6 +66,7 @@ PAUSED (usage limit). O8.3 in progress; O9 not started.
 
 ## Contract changelog
 <!-- - <commit> · <change> · requested by <tag> -->
+- (this commit) · `BoardView.setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void` added to `src/core/contracts.ts`: optional, presentation only, `null` clears. No `bindBoard` wiring; the HUD calls it directly (`board.setSlotHighlight?.(…)`). · requested in O9/UI_SPEC for sol (V13) and the journal HUD (V15, formerly sonnet U1)
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log

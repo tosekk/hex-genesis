@@ -51,6 +51,9 @@ export interface BoardView {
   onPointer(cb: (pick: BoardPick | null, kind: PointerKind) => void): () => void;
   /** Optional, presentation only: floating payout numbers over hexes, in event order. Never mutates state. */
   showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void;
+  /** Optional, presentation only (UI_SPEC): highlight one building slot on a hex, e.g. the slot the journal HUD
+   *  is about to build into. null clears it. Never mutates state; a BoardView without it simply shows no slot cue. */
+  setSlotHighlight?(pick: { hexId: HexId; slot: SlotIndex } | null): void;
   update(dtMs: number): void;
   resize(): void;
   dispose(): void;
