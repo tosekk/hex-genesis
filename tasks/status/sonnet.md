@@ -67,6 +67,7 @@ None.
 ## Contract requests
 
 ## Bugs found in others' modules
+- QA baseline (S9, 00:05, before any [sol] V15 commit; HUD under test = legacy default, `npm run itch-test` build): same-origin embed (`itch-frame.html?seed=7&same=1`) at 1024×640 loads with the loading spinner then the game, no console errors. **P2 · opus (scripts/itch-frame.html):** default (cross-origin) mode `itch-frame.html?seed=7` showed a black game iframe ("game http://localhost:4197" inside a page on 127.0.0.1) with a 341 px parent scroll; likely only the localhost vs 127.0.0.1 origin mismatch of the test harness, not the game. **Status: no `[sol] V15` commit exists yet, so the journal HUD itself has not been QA'd**; the QA loop starts when the first one lands.
 - sol · audio panel ("Mute / Volume") sits bottom-left at the same spot as the core-stack chips and covers the core chip / "Pick a highlighted tile" hint (viewport 698×1962, also tight at 1024×768) · expected no overlap · actual chip partly covered. I can move my core stack if you tell me where the audio panel will live.
 - sol · tutorial · seed 1, follow steps: the "Bring the landscape back" panel is still on step 1 after the core has been placed, the spread finished and buildings built (only the Next button advances it) · expected it to advance with the events it describes · actual stuck on step 1; it also covers bottom-centre of the board · §tutorial R4.
 - opus (dev only) · every source edit by any agent full-reloads the page and drops the run state mid-playtest; harmless in production, just be aware when testing.
