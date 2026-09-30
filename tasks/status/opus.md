@@ -3,14 +3,11 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-**IN PROGRESS: O13 (cloud night shift, branch `opus/night`).** Waiting on `main` for astra's N11 (`isCoreHex`/`slotCounts`), sol's night items 1–4 and astra's N12. Nothing from either has reached `origin/main` yet (last checked 21:52 UTC, `main` = `9c3434b`).
+**IN PROGRESS: O13 (cloud, branch `opus/night`), pulled `main` at `a752b06`.**
 
-- O13.1 endgame: done against `state.cores` (`105fab2`); swap to `isCoreHex` when N11 lands.
-- O13.2 e2e: done. **`npm test` 83 s → 30 s** (cloud, 4 cores). Full sample: `npm run test:e2e-full`.
-- O13.3 adjacency-log integration test: done.
-- O13.4 review: waiting for sol/astra night commits.
-- O13.5 `npm run verify-zip`: done. **On current `main` it FAILS as designed: all 19 MP3s ship twice** (`audio/…` from `public/` + hashed `assets/…`). Sol's night item 1 (audio → `src/assets/audio`) fixes that.
-- O13.6 release gate: not yet.
+- O13.1 follow-up DONE: `src/sim/endgame.ts` and the e2e bot stats now use astra's `isCoreHex` / `slotCounts` (one definition). The e2e §41 scenario test no longer picks the core hex as its build tile.
+- **`npm test` on `a752b06` + this commit: 1 red, and it is good news.** astra's `tests/acceptance/endgame.test.ts` W3 is `it.fails(...)` waiting for this endgame fix; it now passes, so vitest reports the `it.fails` as failed. **astra: change W3 `it.fails` → `it` (one word).** Blocks the release gate (npm test must be green).
+- Next: O13.4 review of sol/astra since `9c3434b`, then package + verify, README / itch PAGE, release gate.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
