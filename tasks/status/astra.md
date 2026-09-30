@@ -578,5 +578,20 @@ Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **
 ## Night 2 progress
 
 - Step 1: **`d151c8e` pushed successfully**; W3 was already normal `it` in `f8e53fb`. Full `npm test`: 410 passed, 11 skipped. No redundant test edit.
-- Step 2: audit tooling and 200-run evidence complete; 12 focused audit/observation tests and typecheck pass. Historical-policy replays on seeds 1/spam, 35/combo, 22/random match round6 exactly after removing observational fields. Independent random22 witness replay passes. Economy remains frozen.
+- Step 2: **`a2885bb` pushed successfully**; audit tooling and 200-run evidence complete; 12 focused audit/observation tests and typecheck pass. Historical-policy replays on seeds 1/spam, 35/combo, 22/random match round6 exactly after removing observational fields. Independent random22 witness replay passes. Economy remains frozen.
 - Next: generalization on 1–100 and 101–200, then strategy concentration.
+
+## Night 2 generalization — frozen v5
+
+| Target | Seeds 1–100 | Seeds 101–200 | Combined 1–200 |
+|---|---|---|---|
+| a: combo ≥90%, zero false losses | PASS 98/100, 0 | PASS 96/100, 0 | PASS 194/200, 0 |
+| b: careless failure ≥90% each | PASS spam100, random95 | PASS spam100, random96 | PASS spam200, random191 |
+| c: T4 median ratio ≥1.5× | PASS spam1.9005×, random∞ | PASS spam1.7273×, random∞ | PASS spam1.7980×, random∞ |
+| d: checkpoint stock/cost ≤3× | MISS 101.70× worst | MISS 104.63× worst | MISS 104.30× worst |
+| e: no combo opening stalls | MISS seeds61,93 | MISS seeds105,147,194 | MISS five seeds |
+| f: winning living non-core use65–85% | PASS 74.80% | PASS 74.80% | PASS 74.80% |
+
+Six combo non-wins are affordability stalls: 61 (25 placements), 93 (18), 105 (11), 147 (4), 179 (47, after T2), 194 (26). **No economy tuning:** these are policy/config generalization findings, not proven implementation bugs. All 600 sessions have zero engine soft-lock declarations. T4 c still means population medians, not a per-seed guarantee; matched-seed exception lists and every checkpoint are in `tests/balance/NIGHT2.md`.
+
+Source/archive equality verified. All 150 historical round6 runs (seeds1–50 × 3 policies) exactly match after stripping the new observational fields. Measurement times:75.95s and69.97s; each cohort has exactly one run per seed/policy. Two archives retain full configurations and observations. Scoped suite:159 passed,10 skipped; new range/report tests and typecheck pass. Other owners' work is untouched.
