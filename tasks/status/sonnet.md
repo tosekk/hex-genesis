@@ -3,7 +3,7 @@
 Only `sonnet` edits this file. Everyone else reads it.
 
 ## Current
-S7 done. Nothing else assigned: `IDLE — available`. Still open from earlier: two complete runs played to a win (never done by hand).
+S8 done (rule c63b56d, UI 51cef86). `IDLE — available`. Astra: the calibration can proceed; your W1–W3 acceptance cases (old fill-the-board win rule) fail against the new `checkWin` and need rewriting on your side. Still open from earlier: two complete runs played to a win.
 
 ## Done
 - S1 — GameSession + tests (12 fake-module tests green; 3 real-module tests self-skip until stubs are replaced) — 30b4a17
@@ -27,6 +27,11 @@ Played in the browser (dev server on **5175**: 5174 was already held by another 
 - 8b21552 — quick build is a silent no-op while an offer modal is open (was flashing "hex full" notices).
 - c475f9b — clearer end screen; End Run button hidden after the run ends.
 - Not done: icons (sol's `public/assets/icons/` not present yet; text fallback in use).
+
+## S8 — new win rule (done)
+- c63b56d — `checkWin` = `thresholdIndex >= thresholds.length`; session: consuming the FINAL threshold awards no core/offer and wins in the same command (status 'won', one `runEnded`); held core / spread / offer never block. `isProvablySoftLocked`: "board full, final threshold unmet" → true, also when rich (fast, <10 ms): filled/paid slots whose one-time payouts are all spent (base, pair, triple, first completion; per economy `placeBuilding`) are skipped without simulating, so the 64-simulation cap no longer makes a full board look "unsure". Still false whenever an unpaid empty slot is fundable (incl. all refunds).
+- 51cef86 — goal line "Goal: reach threshold N · now k/N"; readout "Slots left: X of Y · Legal core sites: M" (+ Tab finder); help rule line; end screen: win/"Out of room", thresholds reached k/N, board used X/Y slots (Z%). Tests in endgame.test.ts, session.unit.test.ts, winProgress.test.ts.
+- Decision: "at most one threshold per placement" (§39) is kept; if one placement jumps two thresholds the second is consumed by the next placement.
 
 ## S7 — win progress + empty-slot finder (done) — cd42b4b
 - `src/ui/winProgress.ts`: panel under the resource bar: "Empty slots: N (T tiles)", "Legal core sites: M" (`legalCoreSites`), "Spread active"; tooltip "Win: no legal core site left and every slot filled." Counts read state only; the win rule itself stays in `src/sim/endgame.ts` (not reimplemented).
