@@ -36,7 +36,7 @@ export function createVoicePlayback(assets: Record<string, string> = VO_ASSETS):
     } catch { stop(); return false; }
   }
   function unlock(event: Event): void {
-    if (event instanceof KeyboardEvent && (event.ctrlKey || event.metaKey || event.altKey || event.repeat)) return;
+    if (event instanceof KeyboardEvent && (event.key === 'Escape' || event.ctrlKey || event.metaKey || event.altKey || event.repeat)) return;
     if (disposed) return;
     unlocked = true;
     const request = pending; pending = null;

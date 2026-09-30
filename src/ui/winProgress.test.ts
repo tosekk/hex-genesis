@@ -183,3 +183,14 @@ it('excludes core slots from the legacy count/end screen and explains core tiles
   t.emit({ type: 'runEnded', status: 'ended', stats: { status: 'ended', lifetime: {}, elapsedMs: 0, seed: 1 } });
   expect(t.text('.end-board')).toContain('Board used: 1/45 slots');
 });
+
+// O13.4 P1-B: a full board must remain 100% even though the core has empty slots.
+it('shows zero legacy slots and 100% board use when all non-core slots are filled', () => {
+  const t = setup(); t.state.cores = [0];
+  for (const h of t.state.hexes) if (h.biome && h.id !== 0) for (const slot of h.slots) slot.building = 'x';
+  t.emit({ type: 'hexChanged', hexId: 0 });
+  expect(t.text('.wp-empty')).toBe('Slots left: 0 of 45');
+  t.click(0); t.key('Tab'); expect(t.lastSelected()).toEqual([]); t.key('Tab', 'keyup');
+  t.state.status = 'ended'; t.emit({ type: 'runEnded', status: 'ended', stats: { status: 'ended', lifetime: {}, elapsedMs: 0, seed: 1 } });
+  expect(t.text('.end-board')).toContain('Board used: 45/45 slots (100%)');
+});

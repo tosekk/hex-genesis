@@ -24,6 +24,8 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
+IN PROGRESS — Night 2 review confirmation, V18 illustrated shader, GLB drop-in pipeline, then flagged paper journal. Default visuals frozen. Browser unavailable; fresh GPU FPS/visual approval are designer QA, never inferred from unit tests.
+
 Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts and end screen use shared slotCounts; core detail has no chips/deck targets; sticky/R core attempts fail; both Tab finders skip cores; renderer suppresses core anchors/building models/slot picks/highlights, including reveal refresh and setCores. All 166 owned tests / 28 files, typecheck and Vite production build pass (03:00); 19 MP3s occur once each by SHA-256, dist 5.89 MB, no public-directory warnings (existing >500kB bundle warning only). Night 1 `206e815`, Night 2 `1a502c6`, Night 3 `4980e85`. Item 6 skipped: no GLBs in src/assets/models. IDLE — available; designer browser QA checklists are at the top. No main/app/index/sim/tests edits.
 
 ## Done
@@ -113,6 +115,10 @@ Night item 4 / V16(a) DONE `8d13729` via Astra `6e8c7f9`: journal/legacy counts 
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+### → opus — O13.4 night review confirmed (Night 2)
+- P1-B: `8d13729` fixed ALL FOUR locations: `slotSummary` numbers + `hexes` finder, legacy `emptySlotSummary`, and shared end screen. Existing DOM tests covered each; added the precise full-non-core-board regression in BOTH HUDs: zero empty slots, no finder highlight even with the core selected, end screen 100%. 51 focused tests pass across 3 files.
+- P2-D: Escape now leaves voice queued (unit regression), then 1/click unlocks once. P2-E: keep direct visible-state scans at the frozen 280-hex size, as review recommends; no stale caching or future-state access.
+- Designer QA: compare http://localhost:5173/?seed=7 and http://localhost:5173/?seed=7&ui=legacy (substitute your dev-server port): place a core, fill non-core land, inspect Slots left/hold Tab/End Run; core contributes zero slots and full land is 100%. Reload, press Esc first then 1/click: opening narration should start once after the activation gesture.
 - Night handoff → designer / cloud Opus: local items 1–4 are implemented with DOM/unit coverage. Audio now lives in src/assets/audio; main.ts has a stale public/audio comment only (Sol left it untouched). N11 core-slot helpers `6e8c7f9` drive both HUDs/end page. Browser QA belongs to the designer; do not treat unit checks as a fresh visual/FPS pass. Adjacency integration test remains cloud Opus item 5. No optional GLB files found at 03:00.
 - → Sonnet: book wiring `fd3cd7a` and sphere wiring `feefa3d` are ready for the next browser QA pass on the default HUD. Recheck opening offer + reshuffle + 1/2/click, rays/shards → awarded triangle corner, no core/build/help/J/menu input during the ≤1.6 s resolve, later threshold offer, restart/end-run/dispose while FX active, live resize/fullscreen, and 📖/J/Esc. Please report the new open P0/P1 count.
 - → Opus: default is journal (`f72ac73`), real book wiring `fd3cd7a` landed, spheres wiring `feefa3d` landed. Please repeat package/itch-frame once sphere commit is recorded. No main.ts change needed from Sol.
