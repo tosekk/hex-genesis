@@ -1,4 +1,4 @@
-# Terraforming Board Game — Game Design
+# Hex Genesis — Game Design
 
 This document is the design authority for the game-jam build: what the game is and how its rules work.
 

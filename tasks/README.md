@@ -1,4 +1,4 @@
-# Team Plan — Terraforming Board Game (jam build)
+# Team Plan — Hex Genesis (jam build)
 
 **Hard deadline:** a playable itch.io build by **October 1, 2026, 10:00**.
 **Design authority:** `GAME_DESIGN.md`. **Implementation rules:** `AGENT_TASKS.md`. **Interfaces:** `tasks/CONTRACTS.md`.

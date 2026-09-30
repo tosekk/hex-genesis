@@ -1,4 +1,4 @@
-# itch.io page copy: [GAME NAME]
+# itch.io page copy: Hex Genesis
 
 Paste-ready. Everything in `[CHECK]` or `[CHECK BEFORE PUBLISHING]` needs a decision from you. Written against the code at HEAD `857086a`.
 
@@ -6,7 +6,7 @@ Paste-ready. Everything in `[CHECK]` or `[CHECK BEFORE PUBLISHING]` needs a deci
 
 ## 1. Form fields
 
-**Title:** [GAME NAME]
+**Title:** Hex Genesis
 
 **Short description** (shown under the title, about 100 characters max):
 
@@ -59,7 +59,7 @@ Board-game feel is covered by the tags below.
 
 ## 2. Page description
 
-**[GAME NAME]** is a small hex board game about bringing a dead planet back to life, one tile at a time.
+**Hex Genesis** is a small hex board game about bringing a dead planet back to life, one tile at a time.
 
 The board starts as bare ground: mountains, dry riverbeds, empty plains. You get a terraformer core and a choice of two biomes to put in it. Drop the core on a tile and the biome rolls outward across the land. It doesn't spread evenly. It climbs slopes slowly, flows along rivers and stops at mountain walls, so where you place a core matters.
 

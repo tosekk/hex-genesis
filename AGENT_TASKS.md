@@ -1,4 +1,4 @@
-# Terraforming Board Game — Agent Tasks and Implementation Rules
+# Hex Genesis — Agent Tasks and Implementation Rules
 
 This document tells the coding agent how to build the game-jam build.
 
