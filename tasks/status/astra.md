@@ -3,7 +3,7 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N3 round 4 — slow T2/T5 and shift T6 toward construction resources/water, reducing its spam food bottleneck. Round 3 `9b84564` is the fallback (20/20 T6, 18/20 wins; target 4 passes).
+IN PROGRESS: N3 round 5 — delay the bootstrap to the maximum safe 24 stone and raise late water to 625. Round 4 `7b2aa4c` passes targets 4 and 2, with T2–T6 pacing inside ±20%.
 
 ## Done
 - N2 — real-session balance harness, 90.54 s baseline for 20 seeds × two bots, report and exact config/run archive — `fd23f08`.
@@ -24,6 +24,7 @@ IN PROGRESS: N3 round 4 — slow T2/T5 and shift T6 toward construction resource
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N3 round 5: 24 stone is the largest safe T1 gate for the four Forest mine-only openings (three 8-stone mines spend all six starting wood). Raise late water 550→625, just below the smallest completed spam final water (seed 20: 627), to delay two of the four early T6 seeds without destroying the finite spam median. Keep other thresholds and rewards fixed.
 - N3 round 4: hold the successful opening yields/Polar Base rescue fixed. Raise T2/T5 toward pacing targets. At T6, reduce food 255→170 (eleven round-3 spam runs earned at least this much) while raising wood/stone/water to slow completion; this makes the spam comparison measurable without counting failed seeds as successes. Leave T1 stone-only because a positive wood requirement reintroduces the four frozen-terrain opening failures.
 - N3 round 3: prioritize reachability over early pacing. Four remaining Forest openings earn 24 stone and zero wood before exhausting stock; T1 becomes wood 0 / stone 16 so they unlock a core before the third mine. The Arctic seed-13 triple exhausts wood and leaves stone 1; Polar Base adds stone 2 (total 12→14, within the triple 11–15 guardrail) to fund Driftwood Camp. Combo recipes are frozen, but payout resource allocation is not; this adds an existing resource to a combo amount, not a base-yield channel or mechanic.
 - N3 harness runtime: round 2's serial measurement exceeded 120 s after more bots survived. Run the unchanged simulation/scorer in four bounded local Node test workers, with a tiny extension resolver for Vite-style TypeScript imports. All 40 serial/worker results match exactly; the ordinary Vitest replay remains as a cross-runtime check. This is measurement parallelism, not delegation or a gameplay change.
@@ -243,3 +244,16 @@ Retain the 20/20 T6 and 18/20 win rescue while shifting late pacing toward targe
 Before: combo T6 20/20, wins 18/20; spam T6 6/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 11.5 / 38.0 / 84.0 / 115.0 / 230.5.
 
 After: combo T6 20/20, wins 18/20; spam T6 11/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 21.0 / 44.0 / 93.0 / 173.5 / 299.0. Measurement 97.41 s. Exact configuration/run archive: `tests/balance/round-4.json`.
+
+### N3 round 5 — maximum safe bootstrap and late water
+
+The delayed bootstrap keeps reachability and improves T1 from 2 to 3 placements, but water 625 removes the eleventh spam T6 completion, making its all-seed median unreached again. Minimum spam fill remains 66.49%. By priority 4 > 2 > 1 > 3, round 4 remains the better fallback. Final round will test a +1 wood yield on Hillside Mine (missing resource is zero under CONTRACTS), allowing a later first gate without changing frozen starting stock/costs.
+
+| Value | Before → after |
+|---|---|
+| T1 | wood 0, stone 16 → wood 0, stone 24 |
+| T6 | wood 850, stone 740, water 550, food 170 → wood 850, stone 740, water 625, food 170 |
+
+Before: combo T6 20/20, wins 18/20; spam T6 11/20; 0 soft-lock declarations; combo all-seed medians 2.0 / 21.0 / 44.0 / 93.0 / 173.5 / 299.0.
+
+After: combo T6 20/20, wins 18/20; spam T6 10/20; 0 soft-lock declarations; combo all-seed medians 3.0 / 21.0 / 45.0 / 89.0 / 173.5 / 299.0. Measurement 97.62 s. Exact configuration/run archive: `tests/balance/round-5.json`.
