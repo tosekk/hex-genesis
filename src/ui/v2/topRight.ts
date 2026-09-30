@@ -2,7 +2,6 @@ import type { GameSession } from '../../core/contracts';
 import { startNewRun } from '../endScreen';
 import { el, icon } from '../format';
 
-/** Shape of sol's `audioSettings` (src/audio/settings.ts). Optional until it lands. */
 export interface AudioSettingsLike {
   readonly muted: boolean;
   readonly volume: number;
@@ -11,74 +10,57 @@ export interface AudioSettingsLike {
   subscribe(cb: () => void): () => void;
 }
 
-/** UI_SPEC §3.6: journal button and ⚙ menu (Help, Sound, End Run with confirm, New Run with a seed). */
-export function createTopRight(
-  root: HTMLElement, session: GameSession,
-  opts: { openHelp(): void; toggleJournal(): void; audio?: AudioSettingsLike },
-) {
+/** Persistent controls preserve focus and range dragging when sound settings change. */
+export function createTopRight(root: HTMLElement, session: GameSession,
+  opts: { openHelp(): void; toggleJournal(): void; audio?: AudioSettingsLike }) {
   const bar = el('div', 'j-topright');
   const journalBtn = el('button', 'j-btn j-icon-btn journal-btn');
   journalBtn.title = 'Journal (J)'; journalBtn.setAttribute('aria-label', journalBtn.title);
   journalBtn.appendChild(icon('journal', 'Book'));
-  journalBtn.addEventListener('click', () => opts.toggleJournal());
   const menuBtn = el('button', 'j-btn j-icon-btn menu-btn');
   menuBtn.title = 'Menu'; menuBtn.setAttribute('aria-label', menuBtn.title);
   menuBtn.appendChild(icon('menu', 'Menu'));
-  const menu = el('div', 'j-panel j-menu');
-  menu.hidden = true;
-  bar.append(journalBtn, menuBtn, menu);
-  root.appendChild(bar);
-
-  const confirm = el('div', 'overlay confirm-overlay');
-  confirm.hidden = true;
-  const cbox = el('div', 'panel modal');
-  const yes = el('button', 'btn danger', 'End run');
-  const no = el('button', 'btn', 'Keep playing');
-  cbox.append(el('h2', undefined, 'End this run?'), yes, no);
-  confirm.appendChild(cbox);
-  root.appendChild(confirm);
-  no.addEventListener('click', () => { confirm.hidden = true; });
-  yes.addEventListener('click', () => { confirm.hidden = true; session.endRun(); });
-
-  let unsub: (() => void) | null = null;
-  function build(): void {
-    menu.replaceChildren();
-    const help = el('button', 'j-btn menu-help', 'Help');
-    help.addEventListener('click', () => { menu.hidden = true; opts.openHelp(); });
-    menu.appendChild(help);
-    const a = opts.audio;
-    if (a) {
-      const sound = el('div', 'j-sound');
-      const mute = el('button', 'j-btn menu-mute', a.muted ? 'Sound: off' : 'Sound: on');
-      mute.addEventListener('click', () => a.setMuted(!a.muted));
-      const vol = el('input', 'menu-volume');
-      vol.type = 'range'; vol.min = '0'; vol.max = '100'; vol.value = String(Math.round(a.volume * 100));
-      vol.addEventListener('input', () => a.setVolume(Number(vol.value) / 100));
-      sound.append(mute, vol);
-      menu.appendChild(sound);
-    }
-    const end = el('button', 'j-btn danger menu-end', 'End Run');
-    end.addEventListener('click', () => { menu.hidden = true; confirm.hidden = false; });
-    menu.appendChild(end);
-    const seed = el('input', 'menu-seed');
-    seed.type = 'text'; seed.placeholder = 'seed (blank = random)';
-    const go = el('button', 'j-btn menu-new', 'New Run');
-    go.addEventListener('click', () => { menu.hidden = true; startNewRun(session, seed.value); });
-    const nr = el('div', 'j-newrun');
-    nr.append(seed, go);
-    menu.appendChild(nr);
+  bar.append(journalBtn, menuBtn); root.append(bar);
+  const menu = el('div', 'j-panel j-menu'); menu.hidden = true;
+  menu.setAttribute('aria-label', 'Run menu'); root.append(menu);
+  const help = el('button', 'j-btn menu-help', 'Help');
+  help.addEventListener('click', () => { hideMenu(); opts.openHelp(); }); menu.append(help);
+  let unsub: (() => void) | undefined;
+  if (opts.audio) {
+    const a = opts.audio, sound = el('div', 'j-sound');
+    const mute = el('button', 'j-btn menu-mute'), vol = el('input', 'menu-volume');
+    vol.type = 'range'; vol.min = '0'; vol.max = '100'; vol.setAttribute('aria-label', 'Sound volume');
+    const update = () => { mute.textContent = a.muted ? 'Sound: off' : 'Sound: on'; mute.setAttribute('aria-pressed', String(a.muted)); vol.value = String(Math.round(a.volume * 100)); };
+    mute.addEventListener('click', () => a.setMuted(!a.muted));
+    vol.addEventListener('input', () => a.setVolume(Number(vol.value) / 100));
+    sound.append(mute, vol); menu.append(sound); update(); unsub = a.subscribe(update);
   }
-  build();
-  if (opts.audio) unsub = opts.audio.subscribe(() => { const wasHidden = menu.hidden; build(); menu.hidden = wasHidden; });
-
-  menuBtn.addEventListener('click', () => { menu.hidden = !menu.hidden; });
-  const onDoc = (ev: MouseEvent) => { if (!bar.contains(ev.target as Node)) menu.hidden = true; };
-  document.addEventListener('mousedown', onDoc);
-
-  return {
-    isOpen: () => !menu.hidden || !confirm.hidden,
-    hideConfirm() { confirm.hidden = true; },
-    setEnabled(v: boolean) { menu.querySelector<HTMLButtonElement>('.menu-end')!.disabled = !v; },
-    dispose() { unsub?.(); document.removeEventListener('mousedown', onDoc); bar.remove(); confirm.remove(); },
+  const end = el('button', 'j-btn danger menu-end', 'End Run'); menu.append(end);
+  const seed = el('input', 'menu-seed'); seed.type = 'text'; seed.placeholder = 'seed (blank = random)'; seed.setAttribute('aria-label', 'New run seed');
+  const go = el('button', 'j-btn menu-new', 'New Run'), nr = el('div', 'j-newrun');
+  go.addEventListener('click', () => { hideMenu(); startNewRun(session, seed.value); }); nr.append(seed, go); menu.append(nr);
+  const confirm = el('div', 'overlay confirm-overlay'); confirm.hidden = true;
+  confirm.setAttribute('role', 'dialog'); confirm.setAttribute('aria-modal', 'true'); confirm.setAttribute('aria-label', 'End this run?');
+  const cbox = el('div', 'panel modal'), yes = el('button', 'btn danger', 'End run'), no = el('button', 'btn', 'Keep playing');
+  cbox.append(el('h2', undefined, 'End this run?'), yes, no); confirm.append(cbox); root.append(confirm);
+  function hideMenu(): void { menu.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); }
+  function hideConfirm(): void { confirm.hidden = true; menuBtn.focus(); }
+  no.addEventListener('click', hideConfirm);
+  yes.addEventListener('click', () => { hideConfirm(); session.endRun(); });
+  confirm.addEventListener('click', event => { if (event.target === confirm) hideConfirm(); });
+  end.addEventListener('click', () => { hideMenu(); confirm.hidden = false; no.focus(); });
+  journalBtn.addEventListener('click', () => { hideMenu(); opts.toggleJournal(); });
+  menuBtn.addEventListener('click', () => { menu.hidden = !menu.hidden; menuBtn.setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) help.focus(); });
+  const onDoc = (event: MouseEvent) => { if (!bar.contains(event.target as Node) && !menu.contains(event.target as Node)) hideMenu(); };
+  const onKey = (event: KeyboardEvent) => {
+    if (confirm.hidden && menu.hidden) return;
+    if (event.key === 'Escape') { hideMenu(); hideConfirm(); event.preventDefault(); event.stopImmediatePropagation(); return; }
+    if (!confirm.hidden && event.key === 'Tab') {
+      event.preventDefault(); (document.activeElement === no ? yes : no).focus(); event.stopImmediatePropagation();
+    } else if (!confirm.hidden && !['Enter', ' '].includes(event.key)) { event.preventDefault(); event.stopImmediatePropagation(); }
   };
+  document.addEventListener('mousedown', onDoc); document.addEventListener('keydown', onKey, true);
+  return { isOpen: () => !menu.hidden || !confirm.hidden, hideConfirm, close() { hideMenu(); confirm.hidden = true; },
+    setEnabled(v: boolean) { end.disabled = !v; },
+    dispose() { unsub?.(); document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey, true); bar.remove(); menu.remove(); confirm.remove(); } };
 }

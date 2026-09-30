@@ -52,7 +52,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   const toasts = createToasts(host, session);
   const offer = createOfferModal(host, session);
   const end = createEndScreen(host, session);
-  const help = createJournalHelp(host, () => session.state.pendingOffer !== null);
+  const help = createJournalHelp(host, () => session.state.pendingOffer !== null || session.state.status !== 'playing' || [...host.querySelectorAll<HTMLElement>('.overlay')].some(node => !node.hidden && !node.classList.contains('help-overlay')));
   top.append(el('small', 'j-controls-hint', 'Press ? for controls'));
   const journal = deps.createJournal?.(host, session);
   const topRight = createTopRight(host, session, {
@@ -77,6 +77,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => { box.hidden = true; }, 1400);
       },
+      hide() { box.hidden = true; if (timer) clearTimeout(timer); timer = null; },
       dispose() { document.removeEventListener('mousemove', move); if (timer) clearTimeout(timer); box.remove(); },
     };
   })();
@@ -100,18 +101,19 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
     ctrl.handleEvent(e); // re-renders the selection-dependent components via onChange
     switch (e.type) {
       case 'runStarted':
-        pills.reset(); toasts.clear(); offer.hide(); end.hide(); topRight.hideConfirm(); renderAll();
+        pills.reset(); toasts.clear(); offer.hide(); end.hide(); topRight.close(); notice.hide(); topRight.setEnabled(true); renderAll();
         help.hide();
         break;
       case 'offerShown': help.hide(); offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
       case 'payouts': toasts.push(e.events); pills.render(); break;
-      case 'runEnded': offer.hide(); topRight.hideConfirm(); renderAll(); end.show(e.stats); break;
+      case 'runEnded': offer.hide(); help.hide(); journal?.close(); topRight.close(); topRight.setEnabled(false); notice.hide(); toasts.clear(); renderAll(); end.show(e.stats); break;
       default: pills.render();
     }
   });
 
   // Mounting after newRun must recover the current modal, not wait for another event.
+  topRight.setEnabled(session.state.status === 'playing');
   if (session.state.pendingOffer) offer.show(session.state.pendingOffer);
   const disposeLayout = installJournalLayout(host, stackHost);
 

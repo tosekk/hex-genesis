@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BoardPick, BoardView, PointerKind } from '../../core/contracts';
 import { createGameSession } from '../../game/session';
 import { legalCoreSites } from '../../sim/spread/spread';
-import { createJournalHud } from './journalHud';
+import { createJournalHud, type JournalDeps } from './journalHud';
 
 const disposals: (() => void)[] = [];
 afterEach(() => { disposals.splice(0).forEach(off => off()); document.body.replaceChildren(); vi.useRealTimers(); });
-export function fixture(startBefore = false) {
+export function fixture(startBefore = false, deps: JournalDeps = {}) {
   const session = createGameSession({ now: () => 0 });
   let pointer: ((pick: BoardPick | null, kind: PointerKind) => void) | null = null;
   const board: BoardView = { setBoard: vi.fn(), refreshHex: vi.fn(), playReveal: vi.fn(), setCores: vi.fn(),
@@ -15,7 +15,7 @@ export function fixture(startBefore = false) {
     onPointer(cb) { pointer = cb; return () => { pointer = null; }; } };
   const root = document.createElement('div'); root.id = 'ui'; document.body.append(root);
   if (startBefore) session.newRun(1);
-  const hud = createJournalHud(root, session, board); disposals.push(() => hud.dispose());
+  const hud = createJournalHud(root, session, board, deps); disposals.push(() => hud.dispose());
   if (!startBefore) session.newRun(1);
   return { root, session, board, hud, pointer: (pick: BoardPick | null, kind: PointerKind = 'click') => pointer?.(pick, kind),
     click: (selector: string) => root.querySelector<HTMLButtonElement>(selector)!.click() };
@@ -160,4 +160,28 @@ describe('journal placement flows through real session commands', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); s.pointer({ hexId: s.tile.id, slot: 2 });
     document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })); expect(s.tile.slots[2].building).toBe(s.id);
   });
+});
+
+
+it('keeps sound controls stable during slider input and confirms End Run before showing the journal result', () => {
+  let muted = false, volume = 1; const callbacks = new Set<() => void>();
+  const audio = { get muted() { return muted; }, get volume() { return volume; },
+    setMuted(v: boolean) { muted = v; callbacks.forEach(cb => cb()); },
+    setVolume(v: number) { volume = v; callbacks.forEach(cb => cb()); },
+    subscribe(cb: () => void) { callbacks.add(cb); return () => { callbacks.delete(cb); }; } };
+  const s = fixture(false, { audio }); s.click('.offer-overlay [data-index="0"]'); s.click('.menu-btn');
+  const slider = s.root.querySelector<HTMLInputElement>('.menu-volume')!; slider.focus(); slider.value = '35'; slider.dispatchEvent(new Event('input', { bubbles: true }));
+  expect(volume).toBe(.35); expect(s.root.querySelector('.menu-volume')).toBe(slider); expect(document.activeElement).toBe(slider);
+  s.click('.menu-mute'); expect(muted).toBe(true); expect(s.root.querySelector('.menu-mute')?.textContent).toBe('Sound: off');
+  s.click('.menu-end'); expect(s.session.state.status).toBe('playing'); expect(s.root.querySelector<HTMLElement>('.confirm-overlay')!.hidden).toBe(false);
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'h', bubbles: true })); expect(s.root.querySelector<HTMLElement>('.help-overlay')!.hidden).toBe(true);
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); expect(s.root.querySelector<HTMLElement>('.confirm-overlay')!.hidden).toBe(true);
+  s.click('.menu-btn'); s.click('.menu-end'); s.click('.confirm-overlay .btn.danger');
+  expect(s.session.state.status).toBe('ended'); expect(s.root.querySelector<HTMLElement>('.end-overlay')!.hidden).toBe(false);
+  expect(s.root.querySelector('.end-thresholds')?.textContent).toContain('/8'); expect(s.root.querySelector('.end-board')?.textContent).toContain('%');
+  expect(s.root.querySelectorAll('.end-row')).toHaveLength(4); expect(s.root.querySelector<HTMLButtonElement>('.menu-end')!.disabled).toBe(true);
+  s.root.querySelector<HTMLInputElement>('.end-overlay .seed-input')!.value = '7'; s.click('.new-run');
+  expect(s.session.state.seed).toBe(7); expect(s.session.state.status).toBe('playing'); expect(s.root.querySelector<HTMLElement>('.end-overlay')!.hidden).toBe(true);
+  expect(s.root.querySelector<HTMLElement>('.offer-overlay')!.hidden).toBe(false); expect(s.root.querySelector<HTMLButtonElement>('.menu-end')!.disabled).toBe(false);
+  s.hud.dispose(); expect(callbacks.size).toBe(0);
 });

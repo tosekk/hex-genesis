@@ -87,7 +87,7 @@
 .jhud .j-icon-btn { width:40px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; }
 .jhud .j-icon-btn .icon { width:40px; height:40px; }
 .jhud .j-icon-btn .icon-missing { font-size:12px; }
-.j-menu { position:absolute; top:46px; right:0; width:230px; display:flex; flex-direction:column; gap:6px; }
+.j-menu { position:fixed; top:108px; right:16px; z-index:100; width:230px; display:flex; flex-direction:column; gap:6px; }
 .j-sound { display:flex; gap:6px; align-items:center; }
 .j-sound input { flex:1; }
 .j-newrun { display:flex; gap:6px; }
@@ -165,3 +165,8 @@
 
 .j-detail.empty-state { justify-content:center; }
 .j-detail.empty-state .j-hint { margin-top:8px; }
+
+.jhud .end-screen { width:480px; text-align:left; padding:24px; }
+.jhud .end-lifetime { background:var(--paper2); padding:10px 14px; border:1.5px dashed var(--ink2); border-radius:6px; }
+.jhud .end-row { display:inline-block; width:50%; padding:4px 0; font-variant-numeric:tabular-nums; }
+.jhud .end-thresholds, .jhud .end-board { font-weight:800; }
