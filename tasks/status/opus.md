@@ -3,7 +3,8 @@
 Only `opus` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: O4 packaging (`scripts/package.mjs`, README) and release checklist. O5 ongoing (D1 reviewed, see Integration log).
+IN PROGRESS: O6.4, waiting for astra's N7 commit (economy v3, 8 thresholds). Then: autoplay + pacing re-run and a full browser run to a win.
+O6.1 packaging ✅ `fc24fda` · O6.2 audio wiring ✅ `fc24fda` · O6.3 reviews ✅ (D4, N4, N6 all PASS; see Integration log).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -13,6 +14,12 @@ IN PROGRESS: O4 packaging (`scripts/package.mjs`, README) and release checklist.
   - Full run through the real UI: offer → Desert core → spread → builds → 8 thresholds → 7 cores (Arctic/Desert/Forest, with mixed borders) → 10 combos discovered → **"Planet terraformed!" win screen** (§41) with lifetime totals, time, and seed.
   - Then New Run (seed 8) → offer → End Run → confirm → "Run ended" screen.
   - Zero console errors across both runs. Bugs found are listed under "Bugs routed".
+- O4 packaging / O6.1 (`fc24fda`): `npm run package` → `release/terraform-jam-<date>.zip`.
+  - A dependency-free, deterministic ZIP writer (node:zlib, fixed timestamps); `index.html` sits at the zip root. The build runs with RELEASE=1, so `render-sandbox.html` is left out, and `.md` notes are skipped.
+  - It fails if any html/js/css references an absolute `/…` asset path.
+  - Verified: `unzip -t` OK, 13 files, 0.17 MB. Served the unzipped folder with `vite preview`: game loads, all requests 200/304, no console output.
+  - README now has controls (camera, R / Shift+click, 1/2, Esc, ?/H, Mute button + volume), packaging, itch settings, and AI credits.
+- O6.2 (`fc24fda`): `createAudio(#ui, session)` is wired in `main.ts` before `newRun`. A single `teardown()` (rAF, resize, audio, tutorial, hud, board binding, board) runs on `pagehide` (skipped when the page enters the bfcache) and on Vite HMR dispose. Dev server check: Mute + volume controls render and toggle, no console errors with the MP3s absent.
 - O4 (autoplay part, `823728d` + `dac18d9`): `tests/e2e/autoplay.test.ts` now runs on the REAL modules (the fallback fakes are deleted).
   - Seeds 1–5 all win. `assertInvariants` (§52) is checked after every action, and a replay-determinism check passes.
   - Bounded runtime: per-run action cap (3000), wall-clock budget (30 s → `stop: 'time'`), max 1000 `advance()` calls per spread (→ throws), and per-test timeouts. Full `npm test` finishes in ~34 s.
@@ -59,6 +66,17 @@ IN PROGRESS: O4 packaging (`scripts/package.mjs`, README) and release checklist.
 - `c357845` · `BoardView.showPayouts?(state: Readonly<GameState>, events: PayoutEvent[]): void` added to `src/core/contracts.ts`. It is additive and optional, presentation only: it must never mutate state, and HUD toasts stay authoritative. `src/app/bindBoard.ts` calls `board.showPayouts?.(state, e.events)` on every `payouts` SessionEvent, in resolution order. · requested by sol (R7)
 
 ## Integration log
+- **O6.3 independent reviews (morning):**
+  - **N6 `4eacde4` (preview without full-state clone): PASS.**
+    - Code read: every write in `placeBuilding` (`resources`/`lifetime` reassigned; target `slots[]`, `pairPaid[]`, `triplePaid`, `everCompleted`; `discoveredCombos.push`; `adjacencyPaid[key]=`) lands on an object the preview copies. Neighbours, config, and spread are read-only.
+    - Empirical: replayed bot games (seeds 2, 7) and, every 60 placements, compared `previewPlacement` with the pre-N6 clone-based reference for every biome hex × 3 slots × (roster + one off-roster + one unknown building). 106,986 previews (35,112 with non-empty payouts): 0 mismatches, and the live state was byte-identical after each checkpoint.
+  - **D4 `0b7f609` (map variety, plateau drainage): PASS.**
+    - Code read: hill patches grow from mountains with depth ≤ 3; edge hills sit at level 1 and only fully supported interiors rise (level 3 only next to a mountain), so §6 holds by construction; hill-adjacent plains are forced to 0.
+    - Plateau drainage: multi-source BFS distance to a lower outlet, which strictly decreases along flats, so walks are acyclic and non-increasing and never step onto hills. No reject/retry loop.
+    - Independent checker, seeds 1–200 (20×14): 0 violations of ids, §7 placeability, dead biomes, mountain ⇔ top level, hill within 1–3 of a mountain, hill elevation rule, ≤ 3 ascending hills, non-hill land below adjacent hills, or downhill walks (from EVERY tile: none climb, none revisit a tile).
+    - Variety fixed vs D1: 1–4 mountain clusters (59/47/60/34 maps), 3–34 mountains (median 15), 51 distinct cluster/mountain shapes, hills 38–70 (was ~100), riverbed 3–55 (median 19).
+    - Placeable: median 74%, 1/200 below 65% (min 60), 3/200 above 80% (max 83). Acceptable per D1 ("roughly 65–80%").
+  - **N4 `0642114` (area-scaled clusters): PASS.** The same checker passes 20 seeds each at 26×18, 30×20, 8×6 and 5×4. The "default stream unchanged" claim was verified: the SHA-256 over 200 seeded 20×14 maps is identical at `0b7f609` and `0642114` (`203915e92549ba75`).
 - **Pacing report** (economy v1 `7144980`; bot = sensible greedy player, never demolishes). Cumulative placements when each threshold is reached, vs `tasks/ECONOMY_SPEC.md` estimates:
 
   | T | spec est. | flat map median (min–max) | real D1 map median (min–max) |
