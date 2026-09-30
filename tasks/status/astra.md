@@ -3,9 +3,10 @@
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N1 — economy v2 exact tables and guardrail tests; then N2–N5 in order and N6 if time remains. Overnight start 2026-09-30 04:50 Asia/Almaty.
+IN PROGRESS: N2 — real-session spam/combo measurement harness and untuned v2 baseline. N1 committed `457a221`; scoped tests/typecheck pass, one outside-owner tutorial fixture failure reported.
 
 ## Done
+- N1 — exact v2 economy, immutable v2 guardrail fixture, six-threshold/recipe/yield checks — `457a221`.
 - D4 — 1–4 connected mountain clusters of 3–10 tiles, 15–25% hill coverage, draining plateau rivers, tuned natural-terrain probabilities and before/after statistics — `0b7f609`.
 - D1 step 3 — woods/marsh, all world/C3 acceptance passing, 200-seed checks and terrain statistics — `d978f14`.
 - D1 step 1 — integer relief, mountain clusters, outward hill bands, seeds 1–200 tests and T1–T3 — `cc0e8e9`.
@@ -22,6 +23,7 @@ IN PROGRESS: N1 — economy v2 exact tables and guardrail tests; then N2–N5 in
 - None. Opus O5 passed D1; D4 follow-up review and O4 real-map pacing requested below.
 
 ## Decisions
+- N2 measurement: both bots score every affordable building on each eligible hex, using its first empty slot (equivalent empty slots because these bots never demolish). Highest immediate total payout wins; combo bot ties favor more occupied hexes, then HexId/roster order. No resource weighting, cost penalty, lookahead, reshuffle, or rescue actions are added. Offer choice previews each option at its maximum-dead-placeable site and favors a newly represented mixed biome there, then fewer main-biome tiles, then option 0. Unreached thresholds are censored as infinity for all-seed medians, never silently dropped; reached-only ranges/counts are also reported. Stuck-without-affordable-action is distinct from a game soft-lock declaration.
 - Overnight: follow N1–N5 sequentially, commit each item/round using explicit owned paths, and report outside-owner failures without edits. N0 already complete. Treat v2 table sparse yield keys as the permitted yield channels (±1 on listed resources); keep missing resources at zero unless a later designer decision authorizes a new channel.
 - D4 §6/§53 (designer feedback): the old fixed-radius/count algorithm cannot express the requested variety through knobs alone. Add min/max cluster count/size and hill-budget knobs, grow connected irregular mountain/hill patches, and shape hill elevations from their outer boundary while retaining mountain distance ≤3. Rivers may cross an equal-height plateau only along a shortest route to a strictly lower outlet; enclosed plateaus remain local minima. All decisions use integer RNG and ascending HexId ties, with one construction pass and no map rejection/regeneration.
 - D1 §6/§53 vegetation: only remaining plains can become marsh/woods. Configured per-thousand marsh chance increases on low ground and beside riverbeds/basins; woods chance increases at mid elevations. Water, hill and mountain terrain/elevations stay untouched.
@@ -164,3 +166,9 @@ Reason: designer v1 playtest found spam dominating and T8 at ~32% fill. This ite
 | T8 | wood 440, stone 380, water 225, food 190 → removed |
 
 N1 scoped check: `npx vitest run src/sim src/config tests/acceptance tests/balance` — **158 passed**, 14 files, 3.36 s. Typecheck passes. Full `npm test`: 250 passed, 1 failed (sol tutorial fixture), 1 skipped; 114.06 s. Full run began before the final guardrail case was added; the later scoped 158-test run includes it. Tutorial failure reproduced and routed above.
+
+### N2 — untuned v2 measured baseline
+
+No balance values changed. Real-session harness (`tests/balance`) finished seeds 1–20 × both bots in **90.54 s**, plus replay/unit verification: **2 tests pass**, total **106.22 s**; default run skips both tests (132 ms). Typecheck passes. `baseline.json` preserves exact config and all run data; `REPORT.md` records every target and seed.
+
+Baseline combo T6 **9/20**, wins **7/20**, spam T6/wins **0/20**, **zero soft-lock declarations**. Ten combo runs and eighteen spam runs do not reach T1; all-seed medians are consequently unreached. Among combo completers, medians T1–T6 are **14.5 / 47.5 / 77 / 113 / 280 / 394** (completion counts **10 / 10 / 9 / 9 / 9 / 9**). Every target is missed or unmeasurable. Ten combo runs stop after only three high-yield buildings, spending all available wood (or wood+stone) without producing either required T1 resource. This is a bot/economy guardrail issue, not a Sonnet soft-lock bug: the detector conservatively allows demolition escape and never declares loss. Seeds 12 and 18 reach T6 but fill all living slots while legal core sites remain; N3 will quantify the seven-core ceiling before reporting a frozen-limit blocker.
