@@ -16,9 +16,10 @@ Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/READ
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-V15 U1 DoD passed Sonnet pass 3 (`5a5e8bb`): zero open P0/P1, live-resize fix `4cb1a62` verified. Default journal HUD DONE `f72ac73` (OWNER sol, legacy retained); book wiring DONE `fd3cd7a`; sphere wiring DONE `feefa3d`, simple offer fallback retained. Hex Genesis wordmark DONE `d67044a`; V13 DONE `f2e40d4`. All 91 owned tests / 20 files, typecheck, main production build pass (02:01); existing >500kB Three bundle warning only. Missing-audio tutorial fixture now isolates optional recordings, so designer VO drops cannot change this test. New wiring browser QA requested from Sonnet; Opus package/itch-frame recheck requested. Hard cutoff 06:00 local.
+V15 U1 DoD passed Sonnet pass 3 (`5a5e8bb`): zero open P0/P1, live-resize fix `4cb1a62` verified. Default journal HUD DONE `f72ac73` (OWNER sol, legacy retained); book wiring DONE `fd3cd7a`; sphere wiring DONE `feefa3d`, simple offer fallback retained. Hex Genesis wordmark DONE `d67044a`; V13 DONE `f2e40d4`. All 91 owned tests / 20 files, typecheck, main production build pass (02:01); existing >500kB Three bundle warning only. Missing-audio tutorial fixture DONE `e1457f2` isolates optional recordings, so designer VO drops cannot change this test. New wiring browser QA requested from Sonnet; Opus package/itch-frame recheck requested. Hard cutoff 06:00 local.
 
 ## Done
+- V15 verification — missing-audio tutorial test supplies an empty recording map, independent of designer VO file drops; no runtime/audio/asset changes. All 91 owned tests / 20 files, typecheck pass — `e1457f2`.
 - V15 — committed sphere module integrated, measured triangle/corner, reshuffle update, single choose command, resolve input guard, cancellation epoch, simple modal fallback; 35 UI tests/typecheck/main production build — `feefa3d`.
 - V15 — real journal book (`115135d`/`cf87d9e`): 📖 and J toggle open/close via isOpen, self-subscription retained, Escape preserves selection, blocked placement/help, reset/dispose, Tab release across modal, book tab margin/icons; 30 UI tests + typecheck — `fd3cd7a`.
 - V15 — default journal HUD / OWNER sol, legacy factory retained; Sonnet pass 3 zero P0/P1 (`5a5e8bb`), 25 UI tests + typecheck — `f72ac73`.
