@@ -587,7 +587,7 @@ Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **
 |---|---|---|---|
 | a: combo ≥90%, zero false losses | PASS 98/100, 0 | PASS 96/100, 0 | PASS 194/200, 0 |
 | b: careless failure ≥90% each | PASS spam100, random95 | PASS spam100, random96 | PASS spam200, random191 |
-| c: T4 median ratio ≥1.5× | PASS spam1.9005×, random∞ | PASS spam1.7273×, random∞ | PASS spam1.7980×, random∞ |
+| c: T4 median ratio ≥1.5× | PASS spam1.9005×, random∞ | PASS spam1.7255×, random∞ | PASS spam1.7980×, random∞ |
 | d: checkpoint stock/cost ≤3× | MISS 101.70× worst | MISS 104.63× worst | MISS 104.30× worst |
 | e: no combo opening stalls | MISS seeds61,93 | MISS seeds105,147,194 | MISS five seeds |
 | f: winning living non-core use65–85% | PASS 74.80% | PASS 74.80% | PASS 74.80% |
@@ -595,3 +595,13 @@ Final validation: scoped **164 passed / 5 opt-in skipped**, 10.31 s; C3 alone **
 Six combo non-wins are affordability stalls: 61 (25 placements), 93 (18), 105 (11), 147 (4), 179 (47, after T2), 194 (26). **No economy tuning:** these are policy/config generalization findings, not proven implementation bugs. All 600 sessions have zero engine soft-lock declarations. T4 c still means population medians, not a per-seed guarantee; matched-seed exception lists and every checkpoint are in `tests/balance/NIGHT2.md`.
 
 Source/archive equality verified. All 150 historical round6 runs (seeds1–50 × 3 policies) exactly match after stripping the new observational fields. Measurement times:75.95s and69.97s; each cohort has exactly one run per seed/policy. Two archives retain full configurations and observations. Scoped suite:159 passed,10 skipped; new range/report tests and typecheck pass. Other owners' work is untouched.
+
+## Night 2 strategy scan
+
+Generalization **`c8a3673` pushed successfully**. Scan covers all200 combo runs, including six non-wins, and all86,941 placements; full24-building tables for each cohort and combined sample are in `tests/balance/STRATEGIES.md`, with machine-readable `night2-strategies.json`.
+
+- No building exceeds25% overall: Lumber Camp16.80%, Sawmill11.42%, Farm9.08%. Per-run concentration is different: Hillside Mine reaches76%, Gatherer's Hut74.47%, Ice Drill55.56%, mostly short stalled runs. The report includes per-run median/max and counts above25%.
+- Five most frequent paid combos: Timber Line10,971; Homestead7,103; Woodland Village6,804; Frontier Outpost5,979; Salt Cure4,674. By resource units: Woodland Village88,452; Timber Line54,855; Homestead42,618; Frontier Outpost35,874; Sun Citadel34,450. Counts are actual paid pair/triple events, not potential recipe matches or adjacency.
+- Starting-biome win rates: **forest63/69 (91.30%), desert70/70 (100%), arctic61/61 (100%)**. All six non-wins begin forest. This is descriptive, not a causal biome-effect claim.
+- **Designer questions only:** should the forest opening's greedy Hillside/Gatherer concentration be mitigated in a future balance pass? Are near-unused premium buildings intended (Frost Kiln1 placement; Resin Works71)? No balance or policy changes made.
+- Strategy aggregation test covers losers, zero-use entries, payout sums, placement accounting and unsampled-biome denominators; range tests/typecheck pass.
