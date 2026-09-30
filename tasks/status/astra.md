@@ -171,6 +171,12 @@ D4 regressions cover connected mountain count/size variety, hill/placeable distr
 
 ## Balance log
 
+### N8 v4 round 5 — wood/stone spending (final allowed round)
+- Round4 committed `39e6ea9`. Preserve its thresholds, starting reserves, food/water costs, and all yields/rewards. Raise basic Lumber Camp/Quarry costs while retaining a positive plain-terrain return; advanced sawmill, stonemason and resin costs reach the permitted8. Keep Arctic driftwood/scree exchange costs unchanged to avoid introducing a cross-resource opening deadlock. Round4 stock is still hundreds per resource; this is the remaining bounded attempt, with earlier passing candidates retained if higher-priority targets regress.
+- Exact cost edits: lumber_camp wood 2→4; hillside_mine stone 0→1; sawmill wood 2→8; quarry stone 2→3; stonemason stone 2→8; resin_works wood 0→8; caravanserai wood 2→6; caravanserai stone 2→6; windmill stone 1→2; salt_mine stone 0→4.
+
+- Results: **50/50 combo wins, only38/50 spam losses**, eight unproven stalls and four spam wins; no combo opening stalls/false declarations. Median win use68.87%, T7 max59.80%. Targets **1/3/4/6 PASS**, **2/5 MISS**. T7 median stock **464.5/195/458.5/494.5**, worst checkpoint ratio220×; the stock improvement loses higher-priority target2. **Reject round5 and restore round4.** All ten harness checks and125 scoped tests pass; typecheck passes. No sixth calibration.
+
 ### N8 v4 round 4 — food/water spending
 - Round3 committed `6168e56` and passes all higher-priority targets. Keep thresholds, yields and rewards unchanged. Starting water/food **0/0→8/8**; wood/stone remain6/6. For food/water producers, set the corresponding cost to at least its raw yield. This spends produced stock while retaining existing wood/stone access costs; the reserve covers initial costs and negative polar-oasis modifiers. This is literal data tuning, not a new upkeep rule.
 - Exact cost edits: gatherers_hut food 0→2; farm food 0→4; oasis_well water 0→3; glass_kiln water 2→3; ice_drill water 0→4; glacier_pump water 0→4; ice_fishery water 0→1; ice_fishery food 0→2; grain_fields food 0→4; windmill food 0→3; trapper_lodge food 0→3; hot_spring water 0→3; hot_spring food 0→2; lichen_farm food 0→4; salt_mine food 0→1; frost_kiln water 0→3.
