@@ -18,15 +18,15 @@ export function boardBounds(hexes: readonly Hex[]): BoardBounds {
 }
 
 /** Fits all eight board/frame corners into the start view, including elevation. */
-export function framingFor(bounds: BoardBounds, aspect: number, fovDegrees = 42): { distance: number; minDistance: number; maxDistance: number } {
-  const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), START_DIRECTION).normalize();
-  const up = new THREE.Vector3().crossVectors(START_DIRECTION, right).normalize();
+export function framingFor(bounds: BoardBounds, aspect: number, fovDegrees = 42, direction = START_DIRECTION): { distance: number; minDistance: number; maxDistance: number } {
+  const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
+  const up = new THREE.Vector3().crossVectors(direction, right).normalize();
   const centre = new THREE.Vector3((bounds.minX + bounds.maxX) / 2, bounds.maxY / 2, (bounds.minZ + bounds.maxZ) / 2);
   const tanV = Math.tan(THREE.MathUtils.degToRad(fovDegrees) / 2), tanH = tanV * Math.max(0.1, aspect);
   let distance = 0;
   for (const x of [bounds.minX - 1.2, bounds.maxX + 1.2]) for (const y of [0, bounds.maxY]) for (const z of [bounds.minZ - 1.2, bounds.maxZ + 1.2]) {
     const relative = new THREE.Vector3(x, y, z).sub(centre);
-    distance = Math.max(distance, relative.dot(START_DIRECTION) + Math.max(Math.abs(relative.dot(right)) / tanH, Math.abs(relative.dot(up)) / tanV));
+    distance = Math.max(distance, relative.dot(direction) + Math.max(Math.abs(relative.dot(right)) / tanH, Math.abs(relative.dot(up)) / tanV));
   }
   distance *= 1.08;
   const minDistance = Math.max(8, Math.hypot(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ) * 0.17);

@@ -10,6 +10,7 @@ import { rendererStats } from './diagnostics';
 import { mountAudioSandbox } from '../audio/sandbox';
 
 const query = new URLSearchParams(location.search), config = sandboxConfig(DEFAULT_CONFIG, query);
+if (query.get('photo') === '1') document.querySelector('#populate-help')!.textContent = 'P PNG / Shift+P cover · F1–F4 cameras';
 const seed = Number(query.get('seed') ?? 42);
 const container = document.querySelector<HTMLElement>('#board')!;
 if (query.get('viewport') === '1280x720') container.style.cssText = 'width:1280px;height:720px';
@@ -30,7 +31,8 @@ board.onPointer((pick, kind) => {
   readout.textContent = pick ? `${kind} · hex ${pick.hexId} · slot ${pick.slot ?? '—'}${building ? ` · ${state.config.buildings[building]?.name ?? building}` : ''}` : 'Off board';
   if (kind !== 'move') { console.info('board pick', kind, pick); board.setHighlights('selected', pick ? [pick.hexId] : []); }
 });
-let wave: { ids: number[]; elapsed: number; next: number; biome: Biome } | null = null;
+let wave: { ids: number[]; elapsed: number; next: number; biome: Biome; frames: number; wallMs: number; maxCalls: number } | null = null;
+const waveStats = document.createElement('p'); waveStats.id = 'wave-stats'; document.querySelector('#fps')!.after(waveStats);
 const biomes: Biome[] = ['forest', 'desert', 'arctic', 'steppe', 'taiga', 'polarDesert'];
 let biomeIndex = 0;
 function payoutDemo(): void {
@@ -48,7 +50,8 @@ function reveal(): void {
   const origin = hovered?.hexId ?? Math.floor(state.rows / 2) * state.cols + Math.floor(state.cols / 2);
   const ids = state.hexes.filter(h => h.terrain !== 'mountain').map(h => h.id)
     .sort((a, b) => hexDistance(a, origin, state.cols) - hexDistance(b, origin, state.cols) || a - b).slice(0, 69);
-  wave = { ids, elapsed: 0, next: 0, biome: biomes[biomeIndex++ % biomes.length] };
+  wave = { ids, elapsed: 0, next: 0, biome: biomes[biomeIndex++ % biomes.length], frames: 0, wallMs: 0, maxCalls: 0 };
+  waveStats.textContent = 'Measuring active wave…';
   if (!state.cores.includes(origin)) state.cores.push(origin);
   board.setCores(state.cores);
   audio.emit({ type: 'spreadStarted', result: { origin, biome: 'forest', claims: [], poolUsed: 0 } });
@@ -125,12 +128,13 @@ document.querySelector('#load')!.addEventListener('click', loadTest);
 document.querySelector('#load')!.textContent = `${config.map.cols * config.map.rows * 3}-building load test`;
 document.querySelector('#size')!.textContent = `${config.map.cols} × ${config.map.rows} · ${config.map.cols * config.map.rows * 3} slots · F: payout demo`;
 window.addEventListener('keydown', event => {
-  if (event.repeat) return;
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey ||
+    (event.target instanceof HTMLElement && (event.target.matches('input,textarea,select') || event.target.isContentEditable))) return;
   switch (event.key.toLowerCase()) {
     case 'r': reveal(); break;
     case 'n': reset(); break;
     case 't': terrainDemo(); break;
-    case 'p': populate(); break;
+    case 'p': if (query.get('photo') !== '1') populate(); break;
     case 'g': gallery(); break;
     case 'l': loadTest(); break;
     case 'f': payoutDemo(); break;
@@ -151,6 +155,7 @@ if (query.has('load')) loadTest();
 let previous = performance.now(), frames = 0, sampleMs = 0;
 function frame(now: number): void {
   const elapsed = now - previous, dt = Math.min(elapsed, 100); previous = now;
+  const active = wave;
   if (wave) {
     wave.elapsed += dt;
     const cadence = (DEFAULT_CONFIG.animation.spreadMaxMs - DEFAULT_CONFIG.animation.tileFlipMs) / Math.max(wave.ids.length - 1, 1);
@@ -161,6 +166,11 @@ function frame(now: number): void {
     if (wave.elapsed >= DEFAULT_CONFIG.animation.spreadMaxMs) { wave = null; board.setHighlights('locked', []); audio.emit({ type: 'spreadFinished' }); }
   }
   board.update(dt); frames++; sampleMs += elapsed;
+  if (active) {
+    active.frames++; active.wallMs += elapsed;
+    active.maxCalls = Math.max(active.maxCalls, rendererStats(container)?.calls ?? 0);
+    if (!wave) waveStats.textContent = `Active wave: ${(active.frames * 1000 / active.wallMs).toFixed(1)} FPS · peak ${active.maxCalls} calls · ${active.ids.length} flips · ${(active.wallMs / 1000).toFixed(2)} s`;
+  }
   if (sampleMs > 1000) {
     const stats = rendererStats(container);
     document.querySelector('#fps')!.textContent = `${Math.round(frames * 1000 / sampleMs)} fps · ${stats?.calls ?? '—'} draw calls · ${stats?.triangles.toLocaleString() ?? '—'} triangles`;

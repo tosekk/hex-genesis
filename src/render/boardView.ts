@@ -16,6 +16,7 @@ import { waterDirections } from './water';
 import { boardBounds, boundedPan, framingFor, START_DIRECTION, type BoardBounds } from './framing';
 import { trackRenderer } from './diagnostics';
 import { BoardEffects } from './effects';
+import { installPhotoMode } from './photo';
 
 export function createBoardView(container: HTMLElement, config: GameConfig): BoardView {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -63,6 +64,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
   const keys = new Set<string>();
   let disposed = false;
   let press: { x: number; y: number; button: number; dragged: boolean } | null = null;
+  const photo = installPhotoMode(renderer.domElement, camera, controls, () => state, () => renderer.render(scene, camera));
 
   function refreshHex(current: Readonly<GameState>, id: HexId): void {
     const hex = current.hexes[id], p = positions.get(id);
@@ -137,6 +139,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     controls.target.set(centreX, bounds.maxY / 2, centreZ);
     camera.position.copy(controls.target).add(START_DIRECTION.clone().multiplyScalar(framingDistance));
     controls.update();
+    photo.reset();
   }
   function pick(event: PointerEvent): BoardPick | null {
     if (!pickSurface || !state) return null;
@@ -246,7 +249,7 @@ export function createBoardView(container: HTMLElement, config: GameConfig): Boa
     update, resize,
     dispose() {
       if (disposed) return; disposed = true;
-      observer.disconnect(); controls.dispose(); payouts.dispose(); disposeGroup(board); sun.shadow.dispose(); untrackRenderer(); renderer.dispose();
+      observer.disconnect(); photo.dispose(); controls.dispose(); payouts.dispose(); disposeGroup(board); sun.shadow.dispose(); untrackRenderer(); renderer.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move);
       renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerleave', leave); renderer.domElement.removeEventListener('contextmenu', context);

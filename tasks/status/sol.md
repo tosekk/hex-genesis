@@ -8,15 +8,15 @@ Commits: V1 `925ad36`; V2 `7edfb22`; V3 `fe7e802`; V4 `38367c2`; V5 skip/handoff
 | 26×18 / 1,404 buildings | 120 | 59 |
 | 30×20 / 1,800 buildings | 120 | 59 |
 
-Opus: import `createAudio` from `./audio/audio`; call `const audio = createAudio(document.getElementById('ui')!, session);` before `newRun`; dispose on teardown. No frame-loop call.
-Designer first: inspect connected rivers, core/completion effects and softened light; supply the 14 MP3s in `public/audio/AUDIO_LIST.md`. 42 owned tests/typecheck/sandbox build pass. V5 images absent: browser access failed; see `release-kit/README.md`. Active-wave FPS/fresh post-warning console check remain unverified.
+Opus: V3 audio import/call before `newRun` and teardown disposal are now present in your morning `src/main.ts` working copy; no frame-loop call. Sol did not edit main.ts.
+Designer first: use `?photo=1` with F1–F4 / P / Shift+P; see `release-kit/README.md`. V7 closes wave/console gaps: both filled-board sizes 120.0 FPS, real seed-7 win has zero console warnings/errors. 48 owned tests/typecheck/sandbox build pass. Supply the 14 MP3s; V5 release image set still pending.
 
 # Status — `sol`
 
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
-Overnight queue finished: V1–V4 implemented, V5 capture skipped as permitted, V6 morning summary written. No other-agent paths changed.
+V7 COMPLETE — photo mode and capture guide implemented; both active-wave stress checks and real-session win console check pass. IDLE — available. Dev server uses port 5175.
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
@@ -41,9 +41,11 @@ Overnight queue finished: V1–V4 implemented, V5 capture skipped as permitted, 
 
 - V6 — morning summary at the top, final 42 owned tests/typecheck/scoped build pass; `0e2afd7`.
 
+- V7 — opt-in four-camera photo mode, canvas PNG/630×500 crop and guide; both active waves 120.0 FPS, real seed-7 win console clean, 48 owned tests/typecheck/scoped build pass. Hash recorded after commit.
+
 ## Blockers
 <!-- what, waiting on whom -->
-- V5: CUA cannot locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
+- V5 historical capture blocker (browser access recovered for V7): CUA could not locate the native browser window (`cgWindowNotFound`); Safari fallback timed out. Five screenshots and the 630×500 cover remain uncaptured. `release-kit/README.md` identifies this clearly and records a capture plan, not fabricated image metadata.
 
 ## Decisions
 <!-- - §<n>: <ambiguity> → <chosen reading> (why) -->
@@ -61,6 +63,8 @@ Overnight queue finished: V1–V4 implemented, V5 capture skipped as permitted, 
 
 - V4 / §15/§19: 700 ms core beam/ring and 850 ms first-everCompleted ring observe only visible current cores/flags. Rebuilt boards baseline existing flags; refreshes never restart effects. Reduced-motion mode keeps transforms still while fading. Three instanced effect batches add at most three calls; shadows use a cached 1024² PCF map, invalidated on geometry changes/reveals. Softer warm ambient/sun and cool fill; no state or spread planning changes.
 
+- V7 / §3/§15: opt-in photo controls live inside the renderer factory with no BoardView contract change or HUD edits. Camera presets fit actual bounds; close-up ranks only occupied visible placeable tiles. P reads the current WebGL drawing buffer synchronously after a render; Shift+P crops its center to 630×500 without stretching or title text. Downloads omit DOM overlays. Input fields/modifier shortcuts/repeats/1–2 offer keys remain untouched; photo P replaces sandbox populate only while enabled. Reset restores camera filename preset 1.
+
 ## Contract requests
 <!-- - <file>: <exact proposed TypeScript> — reason -->
 - R7 — APPROVED and committed by Opus as `c357845` (`[opus] CONTRACT`): additive optional member in `src/core/contracts.ts` → `BoardView`:
@@ -73,9 +77,15 @@ Overnight queue finished: V1–V4 implemented, V5 capture skipped as permitted, 
 <!-- - owner: <tag> · input · expected · actual · §ref -->
 
 ## Notes for others
+- V7 final integrated-page smoke check: `/?seed=7&photo=1` with the final photo code loads successfully; key 1 resolves the offer to an Arctic core, and F4 applies the top-down preset without consuming an offer key. Opus's live main.ts now imports/creates/disposes audio; the earlier V3 wiring request is fulfilled in his working copy.
+- V7 browser checks on port 5175 (Brave, 1280×720 CSS canvas, DPR 2, default F1 camera, seed 7). Active **five-second 69-tile waves** on synthetic five-layer boards with every slot filled: **20×14 / 840 buildings = 120.0 FPS, peak 92 draw calls**; **30×20 / 1,800 buildings = 120.0 FPS, peak 92 calls**. Settled rendering returns to 59 calls. Samples cover the entire active wave and use actual rAF wall time, not clamped animation time; the sandbox retains the result under its FPS readout. This is one workstation, not a hardware guarantee.
+- V7 full-run check: temporary browser-only QA harness composed the real GameSession + bindBoard + BoardView + HUD + tutorial + audio, drove real commands with Astra's read-only combo scorer, and reached **seed 7 won, 612 placements, six placed cores, eight thresholds, 35 s elapsed**. Six real session waves measured **119.8 / 120.0 / 120.0 / 120.0 / 120.0 / 120.0 FPS**. DevTools default levels show **0 messages**, hence zero warnings/errors; 10 optional missing-audio/debug messages remain hidden. PCF shadow warning is gone and event effect shaders compile through a full run. This is automated browser QA, not a manual gameplay or balance claim; other agents' morning economy/UI work is live. The temporary harness is removed before commit.
+- V7 photo checks: all four presets reviewed in the native browser; P exported a nonblank **2560×1440** PNG and Shift+P a nonblank exact **630×500** PNG, both seed 7 / F3 / synthetic filled board. Verified file IHDR dimensions and inspected both images; temporary QA outputs are not the V5 release set. Six new owned tests cover full-board fit on two sizes/aspects, filled-hex selection/dead-board fallback/state preservation, crop geometry/export ordering/sizes/link cleanup, opt-in input isolation/reset/disposal. **48 owned tests, typecheck and scoped sandbox build pass** (existing bundle-size advisory only).
+- V7 shared-checkout verification: source edits initially reloaded the 30×20 run. Restarted only sol's 5175 server with a temporary Vite config disabling HMR/watch, then repeated uninterrupted; no owned root config or other-agent file changed. Main photo mode needs no wiring: any call to createBoardView activates it only for `?photo=1`.
+
 - V4 verification: 42 owned render/tutorial/audio tests, typecheck and scoped sandbox production build pass. Browser observed the softened lighting/completion effect and a settled 30×20 filled board at 120 FPS / 59 calls / 821,634 triangles before browser access disappeared. Three 0.186 removed PCFSoftShadowMap; replaced it with supported PCFShadowMap after seeing the warning. Fresh warning-free browser verification and active-wave FPS could not be completed: CUA reports cgWindowNotFound and its fallback browser timed out. Payout text/background composite contrast is 9.39–10.10:1 across all six renderer biome colors; its existing backed labels remain unchanged.
 
-- **V3 / Opus main.ts wiring required:** add `import { createAudio } from './audio/audio';`, then `const audio = createAudio(document.getElementById('ui')!, session);` after session creation and before `session.newRun(...)`. No frame-loop call. Dispose with other factory handles if a teardown path is added. Sol did not edit main.ts, HUD, contracts, or config.
+- **V3 / Opus main.ts wiring requested overnight, now present in the morning working copy:** add `import { createAudio } from './audio/audio';`, then `const audio = createAudio(document.getElementById('ui')!, session);` after session creation and before `session.newRun(...)`. No frame-loop call. Dispose with other factory handles if a teardown path is added. Sol did not edit main.ts, HUD, contracts, or config.
 - V3 asset handoff: `public/audio/AUDIO_LIST.md` lists all 14 exact MP3 paths, triggers, lengths and generation prompts. Drop music/SFX under those paths and restart Vite/rebuild; VO scripts remain separate. Sandbox uses the same factory via a synthetic event adapter: R = core/flip/done, B/X = model add/remove, P = populate, F = combo payout. Browser verified the corner widget, persisted mute across reload, and a reveal with all sounds absent: no visible console errors/warnings (optional debug messages hidden). No recordings exist yet, so actual authored sound quality is not evaluated. 39 scoped tests, typecheck and scoped production build pass; 6 new audio tests cover all mapped cues, ≤12/s flips/pitch, persistence, blocked storage, corrupt/missing media, autoplay recovery and cleanup.
 - V2: use `/render-sandbox.html?seed=7&cols=30&rows=20&load=1&viewport=1280x720` for an all-plain five-layer stress board with all 1,800 slots occupied. Remove `load` for the generated map; remove `viewport` to fit the browser window. L uses the current dimensions, not a hard-coded 840. Diagnostics report actual rAF FPS and Three render calls/triangles.
 - V2 browser measurements in Brave on this machine, 1280×720 CSS canvas, renderer pixel ratio capped at 2, settled one-second samples at default camera (synthetic all-plain five-layer boards, all 24 model types):
