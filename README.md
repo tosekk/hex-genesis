@@ -1,4 +1,4 @@
-# Terraform (game jam build)
+# Hex Genesis (game jam build)
 
 A deterministic hex-board terraforming game for the desktop browser, built with TypeScript, Three.js, and Vite. Choose a biome, drop a terraformer core, watch it spread across a dead planet, then build on the restored land to earn the next core. Where biomes meet, they mix.
 
@@ -44,7 +44,7 @@ The dev server hot-reloads whenever any file changes. In a shared checkout that 
 ## Release (itch.io)
 
 ```bash
-npm run package        # build → release/terraform-jam-<date>.zip
+npm run package        # build → release/hex-genesis-<date>.zip
 ```
 
 The zip has `index.html` at its root and only relative asset paths. The script refuses to package if it finds absolute paths. To check it locally, unzip it somewhere and run `npx vite preview --outDir <that folder>`.
@@ -55,9 +55,9 @@ itch.io settings: Kind of project **HTML**, upload the zip, tick **"This file wi
 
 ## itch.io page (draft)
 
-> Copy this section into the itch.io page editor. **`<GAME NAME>` is a placeholder**; the designer hasn't picked a name yet. Lines marked *(designer: confirm)* depend on assets that aren't in the build yet.
+> Copy this section into the itch.io page editor. Lines marked *(designer: confirm)* depend on assets that aren't in the build yet.
 
-### <GAME NAME>
+### Hex Genesis
 
 A dead planet, a handful of terraformer cores, and a hex board full of mountains, dry riverbeds, and empty plains. Choose a biome, drop a core, and watch forest, desert, or arctic life roll across the terrain. Where two biomes meet they blend into steppe, taiga, or polar desert. Every building and every combo pays out only once, so the land you restore is your real budget.
 

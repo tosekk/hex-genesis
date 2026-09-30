@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// npm run package: production build → release/terraform-jam-<YYYY-MM-DD>.zip for itch.io ("HTML" project).
+// npm run package: production build → release/hex-genesis-<YYYY-MM-DD>.zip for itch.io ("HTML" project).
 // index.html sits at the zip root. Refuses to package if the build references absolute asset paths,
 // which break under itch.io's sub-path hosting. No dependencies: a minimal ZIP writer over node:zlib.
 import { execSync } from 'node:child_process';
@@ -107,7 +107,7 @@ end.writeUInt32LE(offset, 16);
 const d = new Date();
 const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 mkdirSync(join(root, 'release'), { recursive: true });
-const out = join(root, 'release', `terraform-jam-${stamp}.zip`);
+const out = join(root, 'release', `hex-genesis-${stamp}.zip`);
 const zip = Buffer.concat([...locals, ...centrals, end]);
 writeFileSync(out, zip);
 
