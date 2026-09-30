@@ -180,6 +180,8 @@ it('keeps sound controls stable during slider input and confirms End Run before 
   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); expect(s.root.querySelector<HTMLElement>('.confirm-overlay')!.hidden).toBe(true);
   s.click('.menu-btn'); s.click('.menu-end'); s.click('.confirm-overlay .btn.danger');
   expect(s.session.state.status).toBe('ended'); expect(s.root.querySelector<HTMLElement>('.end-overlay')!.hidden).toBe(false);
+  expect(s.root.querySelector('.end-screen .j-wordmark')?.textContent).toBe('Hex Genesis');
+  expect(s.root.querySelector('.j-menu .j-wordmark')?.textContent).toBe('Hex Genesis');
   expect(s.root.querySelector('.end-thresholds')?.textContent).toContain('/8'); expect(s.root.querySelector('.end-board')?.textContent).toContain('%');
   expect(s.root.querySelectorAll('.end-row')).toHaveLength(4); expect(s.root.querySelector<HTMLButtonElement>('.menu-end')!.disabled).toBe(true);
   s.root.querySelector<HTMLInputElement>('.end-overlay .seed-input')!.value = '7'; s.click('.new-run');
@@ -198,4 +200,12 @@ it('removes the journal root stacking context so offer/help/end layers sit above
   expect(getComputedStyle(s.root.querySelector('.help-overlay')!).zIndex).toBe('110');
   expect(getComputedStyle(s.root.querySelector('.end-overlay')!).zIndex).toBe('120');
   s.hud.dispose(); expect(getComputedStyle(s.root).position).toBe('fixed');
+});
+
+it('keeps the journal coming-soon fallback available by button and J until integration', () => {
+  const s = fixture(); s.click('.offer-overlay [data-index="0"]'); s.click('.journal-btn');
+  expect(s.root.querySelector('.j-notice')?.textContent).toBe('Journal coming soon.');
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'J', bubbles: true }));
+  expect(s.root.querySelector<HTMLElement>('.j-notice')!.hidden).toBe(false);
+  expect(s.root.querySelector('.j-notice')?.textContent).toBe('Journal coming soon.');
 });

@@ -184,3 +184,6 @@
 .jhud .offer-overlay, .jhud .confirm-overlay { z-index:100; }
 .jhud .help-overlay { z-index:110; }
 .jhud .end-overlay { z-index:120; }
+
+.j-wordmark { font:400 20px/1.2 'Patrick Hand','Segoe Print',cursive; color:var(--ink2); }
+.j-menu .j-wordmark { border-bottom:1px dashed var(--ink2); padding-bottom:4px; }

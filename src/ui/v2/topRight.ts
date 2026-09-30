@@ -22,7 +22,7 @@ export function createTopRight(root: HTMLElement, session: GameSession,
   menuBtn.appendChild(icon('menu', 'Menu'));
   bar.append(journalBtn, menuBtn); root.append(bar);
   const menu = el('div', 'j-panel j-menu'); menu.hidden = true;
-  menu.setAttribute('aria-label', 'Run menu'); root.append(menu);
+  menu.setAttribute('aria-label', 'Run menu'); menu.append(el('div', 'j-wordmark', 'Hex Genesis')); root.append(menu);
   const help = el('button', 'j-btn menu-help', 'Help');
   help.addEventListener('click', () => { hideMenu(); opts.openHelp(); }); menu.append(help);
   let unsub: (() => void) | undefined;

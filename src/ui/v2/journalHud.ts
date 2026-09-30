@@ -58,7 +58,7 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
   const journal = deps.createJournal?.(host, session);
   const topRight = createTopRight(host, session, {
     openHelp: () => help.open(),
-    toggleJournal: () => (journal ? journal.toggle() : notice.show('The journal is on its way.')),
+    toggleJournal: () => (journal ? journal.toggle() : notice.show('Journal coming soon.')),
     audio: deps.audio ?? defaultAudioSettings(),
   });
 
@@ -90,7 +90,9 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
     const t = ev.target;
     if (t instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable)) return;
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    if ((ev.key === 'j' || ev.key === 'J') && journal) { journal.toggle(); }
+    if ((ev.key === 'j' || ev.key === 'J') && !ev.repeat && !ctrl.isBlocked()) {
+      if (journal) journal.toggle(); else notice.show('Journal coming soon.');
+    }
   };
   document.addEventListener('keydown', onKey);
 
@@ -108,7 +110,8 @@ export function createJournalHud(root: HTMLElement, session: GameSession, board:
       case 'offerShown': help.hide(); offer.show(e.offer); renderAll(); break;
       case 'offerResolved': offer.hide(); renderAll(); break;
       case 'payouts': toasts.push(e.events); pills.render(); break;
-      case 'runEnded': offer.hide(); help.hide(); journal?.close(); topRight.close(); topRight.setEnabled(false); notice.hide(); toasts.clear(); renderAll(); end.show(e.stats); break;
+      case 'runEnded': offer.hide(); help.hide(); journal?.close(); topRight.close(); topRight.setEnabled(false); notice.hide(); toasts.clear(); renderAll(); end.show(e.stats);
+        host.querySelector('.end-screen')?.prepend(el('div', 'j-wordmark', 'Hex Genesis')); break;
       default: pills.render();
     }
   });
