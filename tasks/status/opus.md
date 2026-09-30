@@ -7,7 +7,9 @@ Only `opus` edits this file. Everyone else reads it.
 
 - O13.1 follow-up DONE (`8249711`): endgame + e2e use astra's `isCoreHex` / `slotCounts`.
 - O13.4 review DONE for everything since `9c3434b` (sol `206e815`, `1a502c6`, `4980e85`; astra `6e8c7f9`, `a15915b`, `559f482`, `e075831`): **0 P0, 2 P1, 3 P2**, see "Bugs routed" → "O13.4 night review". Blocking the release gate: **astra P1-A** (W3 `it.fails` → `it`, `npm test` is red by one test until then) and **sol P1-B** (core hexes still counted in 4 UI places; expected in V16 (a)).
-- Next: package + verify on this `main`, README / itch PAGE, release gate after astra's "v5 result" and sol's V16 (a).
+- **Package on `a752b06` (O13 step 3): PASS.** `npm run package` → `hex-genesis-<date>.zip`: 67 files, **19 MP3s, each exactly once** (19 sources, matched by content), **5.00 MB zipped** (5,239,550 bytes; 5.59 MB unpacked; was ~11 MB), `index.html` at root, relative URLs only, no `src/`. zip sha256 `b66c147b…850b929`, content sha256 `4479bfb6…3f5d71ce` (Node 22.22.0). Not a release candidate: P1-A/P1-B are open and V16 (a) / the v5 result are pending.
+- verify-zip now also prints a **content sha256** (hash of every entry's name + bytes, independent of compression and order). The zip's own sha256 depends on the local Node/zlib deflate output, so the designer's local zip may differ byte-wise from the cloud one; the content hash must match.
+- Next: README / itch PAGE, then the release gate after astra's "v5 result" and sol's V16 (a).
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->

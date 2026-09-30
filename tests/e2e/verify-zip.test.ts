@@ -9,6 +9,7 @@ import { readZip, verify } from '../../scripts/verify-zip.mjs';
 const dir = mkdtempSync(join(tmpdir(), 'verify-zip-'));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
+let zips = 0;
 /** Minimal PKZIP writer: method 8 when `deflate`, else stored. CRC is not checked by the verifier. */
 function zip(files: Record<string, string | Buffer>, deflate = false): string {
   const locals: Buffer[] = [];
@@ -42,7 +43,7 @@ function zip(files: Record<string, string | Buffer>, deflate = false): string {
   end.writeUInt16LE(Object.keys(files).length, 10);
   end.writeUInt32LE(cd.length, 12);
   end.writeUInt32LE(offset, 16);
-  const path = join(dir, `z${Math.abs(offset * 31 + cd.length)}-${Object.keys(files).length}-${deflate ? 'd' : 's'}.zip`);
+  const path = join(dir, `z${++zips}.zip`);
   writeFileSync(path, Buffer.concat([...locals, cd, end]));
   return path;
 }
@@ -77,6 +78,16 @@ describe('verify-zip', () => {
     expect(r.mp3s).toBe(2);
     expect(r.sha256).toMatch(/^[0-9a-f]{64}$/);
     expect(r.bytes).toBeGreaterThan(0);
+  });
+
+  it('content sha256 ignores compression and entry order; zip sha256 does not', () => {
+    const stored = verify(zip(good, false), sources);
+    const deflated = verify(zip(good, true), sources);
+    const reordered = verify(zip(Object.fromEntries(Object.entries(good).reverse()), false), sources);
+    expect(stored.sha256).not.toBe(deflated.sha256);
+    expect(deflated.contentSha256).toBe(stored.contentSha256);
+    expect(reordered.contentSha256).toBe(stored.contentSha256);
+    expect(verify(zip({ ...good, 'assets/index-abc.js': 'changed' }), sources).contentSha256).not.toBe(stored.contentSha256);
   });
 
   it('fails: no root index.html, absolute URLs, duplicated/missing/unknown MP3s, src/ files', () => {

@@ -4,7 +4,7 @@
 //  - only relative asset URLs in html/js/css (itch serves the game from a sub-path)
 //  - every source MP3 (public/audio, src/assets/audio) exactly once, byte for byte; no other MP3s
 //  - no src/ files, no TypeScript
-// Prints the file count, size and sha256. Exits 1 on any failure. No dependencies: reads the ZIP with node:zlib.
+// Prints the file count, size, sha256, and a compression-independent content sha256. Exits 1 on any failure. No dependencies: reads the ZIP with node:zlib.
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
@@ -108,9 +108,16 @@ export function verify(zipPath, sources = sourceMp3s()) {
     if (n.startsWith('src/') || /\.(ts|tsx|mts)$/.test(n)) errors.push(`source file in the zip: ${n}`);
   }
 
+  // Content hash: independent of compression, so a zip built on another machine (different Node/zlib
+  // deflate output) from the same commit matches even when the zip's own sha256 does not.
+  const content = createHash('sha256');
+  for (const e of [...entries].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
+    content.update(`${e.name}\0${sha(e.data)}\n`);
+  }
+
   return {
     zip: zipPath, files: entries.length, mp3s: mp3s.length, sources: sources.length,
-    bytes: buf.length, sha256: sha(buf), errors,
+    bytes: buf.length, sha256: sha(buf), contentSha256: content.digest('hex'), errors,
   };
 }
 
@@ -121,6 +128,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     const mb = (r.bytes / 1024 / 1024).toFixed(2);
     console.log(`${basename(r.zip)}: ${r.files} files, ${r.mp3s} MP3s (${r.sources} sources), ${r.bytes} bytes (${mb} MB)`);
     console.log(`sha256 ${r.sha256}`);
+    console.log(`content sha256 ${r.contentSha256} (same commit → same value on any machine)`);
     if (r.errors.length) {
       console.error(`FAIL (${r.errors.length}):\n  ${r.errors.join('\n  ')}`);
       process.exit(1);
