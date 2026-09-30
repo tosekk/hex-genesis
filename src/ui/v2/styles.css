@@ -117,7 +117,7 @@
 
 .j-deck { flex:1; min-width:0; }
 .j-deck-strip { display:flex; gap:8px; overflow-x:auto; padding:4px 2px 6px; }
-.j-card { position:relative; flex:none; width:92px; height:92px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:4px; }
+.jhud .j-card { position:relative; flex:none; width:92px; height:92px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:4px; }
 .j-card .icon { width:40px; height:40px; margin:0; }
 .j-card-name { font-size:12px; font-weight:700; line-height:1.15; }
 .j-card.core { border-color:var(--accent); background:color-mix(in srgb, var(--biome, #ccc) 35%, var(--paper2)); }
@@ -126,7 +126,8 @@
 .j-card.disabled { cursor:not-allowed; }
 .j-card.unaffordable { opacity:.55; }
 .j-card-why { font-size:12px; font-weight:800; line-height:1; color:var(--bad); }
-.jhud .j-card.core.disabled .icon { width:26px; height:26px; }
+.jhud .j-card.core.disabled { gap:2px; }
+.jhud .j-card.core.disabled .icon { width:24px; height:24px; }
 .j-badge { position:absolute; top:2px; right:2px; background:var(--accent); color:#fff; border:1.5px solid var(--ink); border-radius:10px; font-size:12px; font-weight:800; min-width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
 .j-note { position:fixed; z-index:30; background:#fffaf0; border:1.5px solid var(--ink); padding:6px 9px; font-size:12px; box-shadow:2px 3px 0 rgba(46,42,37,.3); pointer-events:none !important; max-width:240px; overflow:auto; }
 
@@ -161,7 +162,7 @@
 .jhud .cards { display:flex; gap:14px; justify-content:center; }
 .jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }
 
-@media (max-width:1150px) { .j-card { width:84px; height:84px; } }
+@media (max-width:1150px) { .jhud .j-card { width:84px; } }
 
 .j-deck-prompt { display:flex; align-items:center; justify-content:center; width:100%; min-height:92px; color:var(--ink2); font-size:14px; }
 

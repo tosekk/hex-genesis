@@ -4,8 +4,8 @@ export function journalLayout(width: number, height: number, stackHeight: number
   const margin = 16, gap = 12, leftWidth = 248, triangleWidth = 232;
   const detail: PanelRect = { x: margin, y: height - margin - 176, width: leftWidth, height: 176 };
   const triangle: PanelRect = { x: width - margin - triangleWidth, y: height - margin - 224, width: triangleWidth, height: 224 };
-  const deck: PanelRect = { x: margin + leftWidth + gap, y: height - margin - 120,
-    width: triangle.x - gap - (margin + leftWidth + gap), height: 120 };
+  const deck: PanelRect = { x: margin + leftWidth + gap, y: height - margin - 136,
+    width: triangle.x - gap - (margin + leftWidth + gap), height: 136 };
   return { detail, deck, triangle,
     stack: { x: margin, y: margin, width: leftWidth, height: stackHeight },
     pills: { x: (width + leftWidth - 96) / 2 - 224, y: margin, width: 448, height: 60 },
