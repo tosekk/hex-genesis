@@ -1,3 +1,32 @@
+## v5 result — N12
+
+**Selected round 6 `b76c051`: 50/50 combo wins, 50/50 spam failures, 48/50 random failures. Five targets pass; stock pressure (d) remains missed.** Six measured rounds; no unmeasured final blend. N11 shipped first as `6e8c7f9`; quick cost fix `a15915b`; seeded random harness `559f482`.
+
+| Target | Selected result on seeds 1–50 |
+|---|---|
+| **a. Combo ≥45 wins; zero false declarations** | **PASS:** 50 wins; zero detected false soft-locks |
+| **b. Spam/random each ≥45 failures** | **PASS:** spam 50 (36 board-full, 14 stalls); random 48 (23 board-full, 25 stalls). These bot failures are not proofs that demolition cannot rescue a run. |
+| **e. No combo opening stalls before T2** | **PASS:** zero, including 35/37 |
+| **c. T4 ≥1.5× or never** | **PASS under the inherited all-seed median convention:** combo 101, spam 176.5 (**1.748×**), random ∞ (25/50 never reach T4). This is not a per-seed guarantee: 12 spam and 6 random seeds are below 1.5× their same-seed combo run; lists in REPORT.md. |
+| **d. T3–T7 stock ≤3× biome max cost** | **MISS:** worst median ratio **108.83×** (T7 stone). T7 median held wood 534.5 / stone 291 / water 41 / food 468; all 50 reach every checkpoint. |
+| **f. Median winning board use 65–85%** | **PASS:** **75.38%**, using terraformed placeable non-core slots via `slotCounts` |
+
+Combo T1–T8 medians: **2.5 / 20.5 / 45 / 101 / 168 / 200 / 233.5 / 447 placements**. Starting stock, recipes, combo rewards, adjacency, terrain/zone modifiers, map, spread and all game rules except the requested core exclusion remain unchanged from N9. No water/food producer pays its output; no self-resource cost exceeds raw yield; every building costs ≥2 with no zero entries; cheapest main-biome buildings are affordable. The retained cost table also includes Lichen Farm W5/S2/A2, as audited under Decisions.
+
+**Selection tradeoff:** round 5 had 47 wins and lower worst stock pressure 98.71×. Round 6 repairs those three losses and improves water scarcity, but wood/stone/food piles grow. Select the stronger highest-priority win result while retaining every other previously passing target. This does **not** claim that target d is solved or impossible within the guardrails.
+
+**Playtest seeds (replayed bot evidence, not a prescribed human outcome):**
+
+- **35 — tight combo win:** placement 538 of 543 living non-core slots (99.08%), water 853/850 lifetime and 6 held water. Five slots remain.
+- **22 — careless mid-game stall:** random reaches T3 at 65, then stops at 143 before T4 with wood 0 / stone 0, water 21 / food 69 and 400 empty slots. This is an affordability stall, not an engine-proven loss.
+- **1 — careless success exception:** one of only two random wins (the other is 37); useful for checking that the difficulty has not become an absolute random-play prohibition.
+
+**Rule conflicts / limits:** R2 must mean resources with positive raw output; applying it to absent outputs would forbid the cross-resource costs required by R1/R3. The suggested Oasis Well 5-stone cost also conflicts with its 1-stone raw yield, so the implemented cost is wood 2 / stone 1. The remaining stock problem interacts with frozen §39 lifetime accounting (spending never undoes progress), frozen terrain bonuses (e.g. stone 2 per adjacent mountain), R1’s ban on self-water/food costs and R2’s cap on self-wood/stone costs. Round 6 moves pressure into water and shifts greedy choices toward surplus wood/stone/food. No new mechanic or rule exception was introduced; no proof that these frozen rules make all targets jointly impossible is claimed.
+
+**Commits:** rounds 1–6 `e075831`, `09a8ca0`, `1ec53e8`, `0fd699e`, `2793467`, **`b76c051`**. Every archive contains its exact config and 150 runs; `tests/balance/REPORT.md` has all targets, checkpoint stocks and per-run evidence. N11 endgame acceptance enabled after Opus's fix in `f8e53fb`.
+
+**Validation:** 142 owned/scoped tests across 16 files, all 12 harness checks for every round, global typecheck, selected source/archive equality, and three fresh playtest-seed replays pass. Opus's merged endgame core exclusion passes W3 normally. Other agents' files untouched; no open outside-owner blocker. **IDLE — available for designer balance feedback.**
+
 ## N11 result
 
 `6e8c7f9`: core-hex placement rejection and shared `isCoreHex`/`slotCounts` are ready. Roster stays visible; core previews return no payout. N12 calibration incorporates the core exclusion.
@@ -73,9 +102,10 @@ Before (`e4448fd`) → after, **median held stock over the same 50 combo seeds**
 Only `astra` edits this file. Everyone else reads it.
 
 ## Current
-IN PROGRESS: N11 helpers ready, then N12 cost-only fix, random bot and up to six v5 calibration rounds. Night revision: Opus owns endgame/e2e/packaging; no writes there.
+IDLE — N11/N12 complete; selected v5 round6 `b76c051`, five targets pass and stock pressure remains missed. Available for designer balance feedback. Opus owns endgame/e2e/packaging; no writes there.
 
 ## Done
+- N12 — six 50-seed rounds, selected `b76c051`, 50 combo wins, 50 spam/48 random failures, five targets pass; complete top v5 result and report.
 - N11 helpers and core-slot acceptance: `6e8c7f9`, 98 pass + one expected endgame dependency failure; typecheck green.
 - N12 cost-only prerequisite: `a15915b`, all 13 config checks green (four failures confirmed against old config).
 - N10 — `d4fc4f8` (`[astra] N10: journal helpers`): all four journal helpers and exact view types; discovered-only enforced before reading recipe metadata, current-combo adjacency snapshots, detached config views. Eleven new tests; `npx vitest run src/sim/economy tests/acceptance` → 96 passed across nine files (3.26 s); `npm run typecheck` and owned diff checks pass.
@@ -178,6 +208,7 @@ IN PROGRESS: N11 helpers ready, then N12 cost-only fix, random bot and up to six
 - RESOLVED C3-FLIP: sonnet `4909942` holds spread locks through the final tile flip; real-session P5 passes with no expected-failure marker.
 
 ## Notes for others
+- **Opus / Sol night handoff:** N11 `6e8c7f9` and selected v5 economy `b76c051` are ready. Shared helpers exported; all own acceptance tests pass against Opus `105fab2`. Source equals round6 archive, with 142 scoped tests and typecheck green. Use seeds 35 (tight win), 22 (careless stall), 1 (careless win exception) for designer QA. Endgame/e2e/packaging remain yours; no full-suite/package/browser claim from Astra.
 - Sol / Opus N11: exported `isCoreHex(state, hexId)` and `slotCounts(state)` from economy/index; reason text exactly `A terraformer core occupies this tile`. Ready for your slot accounting integration. Acceptance fixtures no longer build on a core.
 - **Sonnet / N10 journal handoff:** import `comboPages`, `adjacencyLogEntry`, `terrainRules`, `zoneEffects` and their exported view types directly from `src/sim/economy/journal`. Exact UI_SPEC §8.1 signatures are implemented. Locked pages contain only `locked` and zero-based `index`; discovered pages retain config order and recipe multiplicity. Capture adjacency entries when payout events arrive: both name lists use current matches (including repeated matches), and amounts/arrays are copied so saved entries remain stable. Reset/retention belongs to your journal UI. All 96 economy/acceptance tests and typecheck pass; no outside-owner issues observed in this validation.
 - **Opus O6.4 final N7 handoff:** selected config is round 3 `f6b6d45`, restored after the four-round search. Eight thresholds; 48/50 combo wins, 48/50 T6, zero declarations. Recommend **seed 1** for the full browser run (combo bot: T7/T8 307/357, win 633, seven cores), and **seed 12** for the extra-core regression (T7/T8 330/389, win 600, eight cores). Your D4/N4/N6 independent review PASS is acknowledged. Config will remain fixed for your final autoplay/pacing/browser verification.

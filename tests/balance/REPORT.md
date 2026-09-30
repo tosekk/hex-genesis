@@ -1,5 +1,39 @@
 # Economy balance report
 
+## Selected v5 result — round 6 (`b76c051`)
+
+50/50 combo wins; 50/50 spam and 48/50 random failures; zero opening stalls or detected false soft-locks. Targets a, b, e, c and f pass under the recorded median convention. **Target d remains missed**: worst checkpoint median stock/max cost is 108.83×, not ≤3×. Six rounds completed; no seventh candidate.
+
+| Round / commit | Combo wins | Spam / random failures | Opening stalls | T4 spam / random ratio | Worst stock ratio | Win board use | a / b / e / c / d / f |
+|---|---:|---|---:|---|---:|---:|---|
+| 1 / e075831 | 44/50 | 49/50 / 44/50 | 4 | 2.43× / ∞× | ∞× | 72.41% | MISS / MISS / MISS / PASS / MISS / PASS |
+| 2 / 09a8ca0 | 49/50 | 50/50 / 28/50 | 0 | 3.03× / ∞× | ∞× | 72.6% | PASS / MISS / PASS / PASS / MISS / PASS |
+| 3 / 1ec53e8 | 49/50 | 50/50 / 43/50 | 0 | 3.03× / ∞× | ∞× | 79.37% | PASS / MISS / PASS / PASS / MISS / PASS |
+| 4 / 0fd699e | 48/50 | 50/50 / 47/50 | 0 | 3.03× / ∞× | ∞× | 82.39% | PASS / PASS / PASS / PASS / MISS / PASS |
+| 5 / 2793467 | 47/50 | 50/50 / 50/50 | 0 | 1.96× / ∞× | 98.71× | 80.81% | PASS / PASS / PASS / PASS / MISS / PASS |
+| 6 / b76c051 | 50/50 | 50/50 / 48/50 | 0 | 1.75× / ∞× | 108.83× | 75.38% | PASS / PASS / PASS / PASS / MISS / PASS |
+
+Round 6 is selected for the higher-priority win robustness (50 wins rather than round 5’s 47), while all other previously passing targets stay passing. Its stock-pressure maximum is worse than round 5’s 98.71×: the water trim lowers water stocks, but other resources accumulate. No claim of complete balance compliance.
+
+T4 target c uses all-seed medians, with unreached thresholds treated as infinity, as logged before calibration. On matched individual seeds, the ≥1.5× condition has these exceptions:
+
+- spam: 4, 5, 6, 7, 9, 15, 17, 19, 21, 27, 37, 43 (12/50 exceptions); 42/50 reach T4.
+- random: 4, 5, 7, 21, 41, 46 (6/50 exceptions); 25/50 reach T4.
+
+This is not an all-seed 1.5× guarantee. A stricter per-seed interpretation would mark c MISS; no policy or threshold was altered to hide those exceptions. Random successes are seeds 1 and 37.
+
+Recommended designer playtests (fresh exact replay against selected source):
+
+- Seed **35**, combo: **tight win**, won after 538 placements, 543 living non-core slots, stock W/S/A/F 1347/796/6/968. T1–T8: 2/40/60/120/210/268/318/538.
+- Seed **22**, random: **careless mid-game affordability stall**, stuck after 143 placements, 543 living non-core slots, stock W/S/A/F 0/0/21/69. T1–T8: 11/33/65/—/—/—/—/—.
+- Seed **1**, random: **careless success exception**, won after 609 placements, 612 living non-core slots, stock W/S/A/F 542/455/411/583. T1–T8: 6/43/66/170/270/333/381/609.
+
+R1–R4 pass. Interpret R2 for positive raw-yield resources: extending it to absent outputs contradicts the cross-resource costs required by R1/R3. Oasis Well’s suggested 5-stone cost conflicts with its 1-stone raw yield; actual cost is wood2/stone1. Frozen §39 lifetime accounting, terrain rewards and recipes remain intact. Those constraints limit which costs can absorb surplus; this bounded search does not establish impossibility of meeting d. The round-5/6 measured Lichen Farm cost is wood5/stone2/water2 (included by the farm edit and explicitly audited in status).
+
+Core exclusion uses slotCounts for living capacity; historical v4 percentages below use a different all-map denominator. All 150 runs in rounds 3–6 use the merged Opus detector; rounds 1–2 started before that merge, as logged in status. Validation: 142 owned tests, 12 harness checks per round, typecheck, source/archive equality, three playtest replays. Full application/e2e/package/browser QA belongs to Opus/designer.
+
+---
+
 ## N9 selected result — round 4
 
 Selected **`4ba61e3`**, after four measured rounds. Source exactly matches [n9-round-4.json](n9-round-4.json), which contains its config and all 100 seed/bot records. Baseline is `e4448fd`, archived in [v4-round-4.json](v4-round-4.json). No fifth round. The five hard targets still pass; target 5 improves but does not pass.
