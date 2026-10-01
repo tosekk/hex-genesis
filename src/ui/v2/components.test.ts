@@ -95,6 +95,11 @@ describe('journal component contract states', () => {
     const visibleCtrl = new Ctrl(visibleSession, s.board); disposals.push(() => visibleCtrl.dispose()); visibleCtrl.selectBiome('forest'); visibleCtrl.clickCard({ kind: 'building', id: 'sawmill' });
     const visibleDetail = createDetail(s.root, visibleSession, visibleCtrl); disposals.push(visibleDetail.dispose);
     expect(s.root.querySelectorAll('.j-combo')).toHaveLength(1);
+    const combo = s.root.querySelector<HTMLElement>('.j-combo')!;
+    expect(combo.querySelector('.j-combo-name')?.textContent).toBe('Timber Line:');
+    expect(combo.querySelector('.j-combo-reward')?.textContent).toMatch(/^→ \+5 wood$/);
+    expect(combo.querySelector('.j-combo-recipe')?.textContent).toBe('Lumber Camp + Sawmill');
+    expect(combo.title).toBe('Timber Line: Lumber Camp + Sawmill → +5 wood');
   });
 });
 

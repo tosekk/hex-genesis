@@ -53,7 +53,14 @@ export function createDetail(root: HTMLElement, session: GameSession, ctrl: Ctrl
     for (const cid of s.discoveredCombos) {
       const c = cfg.combos.find((x) => x.id === cid);
       if (!c?.buildings.includes(id)) continue;
-      panel.appendChild(row(`${c.name}: ${c.buildings.map((b) => buildingName(cfg, b)).join(' + ')} → ${fmtResources(c.amount, true)}`, 'j-combo'));
+      // Keep each payout intact; recipes use their own complete line and move to
+      // the title/Journal when the available detail column needs compaction.
+      const combo = row('', 'j-combo');
+      const recipe = c.buildings.map((b) => buildingName(cfg, b)).join(' + ');
+      const reward = fmtResources(c.amount, true);
+      combo.title = `${c.name}: ${recipe} → ${reward}`;
+      combo.append(el('span', 'j-combo-name', `${c.name}:`), el('span', 'j-combo-reward', `→ ${reward}`), el('span', 'j-combo-recipe', recipe));
+      panel.appendChild(combo);
     }
     let count = 0;
     for (const h of s.hexes) for (const sl of h.slots) if (sl.building === id) count++;

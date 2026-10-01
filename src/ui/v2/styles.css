@@ -102,7 +102,14 @@
 /* --- bottom --- */
 .j-bottom { position:absolute; left:10px; right:10px; bottom:10px; display:flex; align-items:flex-end; gap:12px; }
 .j-bottom > * { pointer-events:auto; }
-.j-detail { width:248px; flex:none; max-height:none; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+.j-detail { width:340px; height:auto; flex:none; max-height:none; overflow:visible; display:flex; flex-direction:column; gap:4px; }
+.j-detail-compact { gap:3px; }
+.j-detail-more { color:var(--ink2); font-style:italic; }
+.j-detail .j-rule, .j-detail .j-combo { line-height:17px; }
+.j-detail .j-combo { display:flex; flex-wrap:wrap; column-gap:4px; align-items:baseline; }
+.j-combo-name, .j-combo-reward { white-space:nowrap; }
+.j-combo-recipe { flex-basis:100%; color:var(--ink2); font-size:12px; font-weight:400; }
+.j-detail-compact .j-combo-recipe { display:none; }
 .j-detail-head { display:flex; gap:10px; align-items:center; }
 .j-portrait { width:52px; height:52px; border-radius:50%; border:2px solid var(--ink); background:var(--paper2); display:flex; align-items:center; justify-content:center; flex:none; }
 .j-portrait .icon { width:34px; height:34px; margin:0; }
@@ -121,9 +128,9 @@
 .j-chip .icon { width:28px; height:28px; margin:0; }
 .j-chip.selected { box-shadow:0 0 0 3px var(--marker); }
 
-.j-deck { flex:1; min-width:0; }
-.j-deck-strip { display:flex; gap:8px; overflow-x:auto; padding:4px 2px 6px; }
-.jhud .j-card { position:relative; flex:none; width:92px; height:92px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:4px; }
+.j-deck { flex:none; min-width:0; width:fit-content; height:auto; }
+.j-deck-strip { display:flex; width:max-content; max-width:100%; gap:var(--j-card-gap, 8px); overflow-x:auto; padding:4px 2px 6px; }
+.jhud .j-card { position:relative; flex:none; width:var(--j-card-width, 92px); height:92px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:4px; }
 .j-card .icon { width:40px; height:40px; margin:0; }
 .j-card-name { font-size:12px; font-weight:700; line-height:1.15; }
 .j-card.core { border-color:var(--accent); background:color-mix(in srgb, var(--biome, #ccc) 35%, var(--paper2)); }
@@ -168,9 +175,9 @@
 .jhud .cards { display:flex; gap:14px; justify-content:center; }
 .jhud .card { width:170px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; }
 
-@media (max-width:1150px) { .jhud .j-card { width:84px; } }
+@media (max-width:1150px) { .j-deck { --j-card-width:80px; --j-card-gap:6px; } }
 
-.j-deck-prompt { display:flex; align-items:center; justify-content:center; width:100%; min-height:92px; color:var(--ink2); font-size:14px; }
+.j-deck-prompt { display:flex; align-items:center; justify-content:center; width:220px; min-height:92px; color:var(--ink2); font-size:14px; }
 
 .j-detail.empty-state { justify-content:center; }
 .j-detail.empty-state .j-hint { margin-top:8px; }

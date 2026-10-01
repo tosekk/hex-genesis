@@ -1,3 +1,10 @@
+## Urgent HUD layout — ready 09:14 (deadline 09:25)
+- COMPLETE — detail is 340px at 1280 and 280px at 1024, bottom-anchored with natural height and no scrollbar. Overflow compacts to at most two bonus rows and two combo rows, with an exact +N more, see Journal count. Rewards remain complete; recipes have their own line and remain in the title/Journal when compacted.
+- Deck uses fit-content and centers in the interval between detail and triangle. Five cards: 520px at 1280 / 452px at 1024. Nine-card intrinsic content: 920px / 796px, capped to the free 652px / 456px with existing horizontal scrolling; no stretched empty tail. Cards are 92px / 80px wide.
+- Validation: npm test passes 477 tests (12 intentionally skipped); typecheck and diff whitespace check pass. Rectangle tests cover both target sizes, expanded/collapsed tutorials and dense detail, 5/9 cards, content changes, compaction restoration, CSS metrics, and stable observers. No browser available; visual approval remains designer QA.
+- Scope: only src/ui/v2 presentation/layout/tests plus this required status entry. Implementation commit/push follows immediately; commit receipt will be recorded here.
+- Designer QA: compare http://localhost:5173/?seed=7 and http://localhost:5173/?seed=7&style=illustrated&journal=paper at 1280×720 and 1024×640; select a building with discovered combos, expand/collapse the tutorial, switch between 5/9-card decks and scroll to the final card—detail must grow upward without scrolling/partial rewards, show +N more when compacted, and deck must stay centered without blank trailing space or overlaps.
+
 ## MORNING SUMMARY — Night 2 (ready 03:55, before 06:15)
 - Pushed: review/P1-B + voice P2-D `38757d5`; illustrated shader `c44481b`; GLB pipeline/native shader check `0454fda`; paper journal `7424160`; payout P2 `07946d2`; final regression/handoff `36639ae`.
 - Designer QA: default http://localhost:5173/?seed=7 → illustrated http://localhost:5173/?seed=7&style=illustrated → paper http://localhost:5173/?seed=7&journal=paper → both http://localhost:5173/?seed=7&style=illustrated&journal=paper (choose offer, then J).
