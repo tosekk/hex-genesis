@@ -1,6 +1,6 @@
 # Astra-2 — Desert terraformer core
 
-VALIDATED AND PROMOTED: scoped commit/push pending.
+COMPLETE — validated, promoted and committed in **de12852** (`[astra-2] models: build and validate desert terraformer core`). This status update accompanies the requested push to `origin/main`.
 
 ## Scope and decisions
 
