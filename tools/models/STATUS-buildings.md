@@ -1,6 +1,6 @@
 # Astra-2 — Lumber camp, quarry and ice drill
 
-ICE DRILL REVISION VALIDATED AND PROMOTED — commit/push pending. Designer requested a smaller derrick relative to the hut and the missing crates, ice blocks and snow. Initial three-building version: **1e5cc6c**; the revised asset supersedes that ice drill. Only owned tooling/status/output and `src/assets/models/ice_drill.glb` changed.
+ICE DRILL REVISION COMPLETE — validated and promoted in **2014d47** (`[astra-2] models: rebalance ice drill and restore snowy props`); this status update accompanies the requested push to `origin/main`. Designer requested a smaller derrick relative to the hut and the missing crates, ice blocks and snow. Initial three-building version: **1e5cc6c**; the revised asset supersedes that ice drill. Only owned tooling/status/output and `src/assets/models/ice_drill.glb` changed.
 
 ## Decisions
 
