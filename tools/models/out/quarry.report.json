@@ -1,0 +1,65 @@
+{
+  "name": "quarry",
+  "triangles": 434,
+  "vertices": 1302,
+  "bounds": {
+    "min": [
+      -0.18168458342552185,
+      0,
+      -0.19449999928474426
+    ],
+    "max": [
+      0.18168458342552185,
+      0.42899999022483826,
+      0.19449999928474426
+    ]
+  },
+  "radius": 0.2477933412009472,
+  "authoredScale": 1,
+  "groups": {
+    "terraces": 108,
+    "hoist": 104,
+    "load": 44,
+    "cart": 142,
+    "loose-blocks": 36
+  },
+  "regions": {
+    "cream": {
+      "hex": "#E8DCC4",
+      "triangles": 72
+    },
+    "sandstone": {
+      "hex": "#D2C4A8",
+      "triangles": 36
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 72
+    },
+    "iron": {
+      "hex": "#4E5352",
+      "triangles": 164
+    },
+    "terra": {
+      "hex": "#D9826B",
+      "triangles": 8
+    },
+    "rope": {
+      "hex": "#C9A46A",
+      "triangles": 8
+    },
+    "block": {
+      "hex": "#B8B2A7",
+      "triangles": 72
+    },
+    "seam": {
+      "hex": "#6E4630",
+      "triangles": 2
+    }
+  },
+  "bytes": 61232,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; _EMIT=0"
+}

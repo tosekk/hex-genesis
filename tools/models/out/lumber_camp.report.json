@@ -1,0 +1,72 @@
+{
+  "name": "lumber_camp",
+  "triangles": 422,
+  "vertices": 1266,
+  "bounds": {
+    "min": [
+      -0.19673621654510498,
+      0,
+      -0.18036341667175293
+    ],
+    "max": [
+      0.19673621654510498,
+      0.421999990940094,
+      0.18036341667175293
+    ]
+  },
+  "radius": 0.266900919769848,
+  "authoredScale": 1,
+  "groups": {
+    "cabin": 108,
+    "roof": 102,
+    "logs": 156,
+    "stump-axe": 56
+  },
+  "regions": {
+    "stone": {
+      "hex": "#9A9590",
+      "triangles": 48
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 168
+    },
+    "seam": {
+      "hex": "#6E4630",
+      "triangles": 52
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 54
+    },
+    "roofLight": {
+      "hex": "#6F8F7A",
+      "triangles": 10
+    },
+    "iron": {
+      "hex": "#4E5352",
+      "triangles": 2
+    },
+    "cream": {
+      "hex": "#E8DCC4",
+      "triangles": 12
+    },
+    "cut": {
+      "hex": "#E2C9A0",
+      "triangles": 52
+    },
+    "handle": {
+      "hex": "#9B4A32",
+      "triangles": 12
+    },
+    "axe": {
+      "hex": "#6B6B6B",
+      "triangles": 12
+    }
+  },
+  "bytes": 59584,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; _EMIT=0"
+}
