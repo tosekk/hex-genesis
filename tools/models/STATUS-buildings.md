@@ -1,6 +1,6 @@
 # Astra-2 — remaining Forest buildings
 
-**COMPLETE — four models built, validated and promoted to their designer-authorized shipping paths.** The commit for this batch includes only the five owned building-tooling files, these four models' generated outputs/reports, and the four approved `src/assets/models/<id>.glb` files.
+**COMPLETE — committed as `d79c6ce` (`[astra-2] models: complete Forest building set`) and pushed to `origin/main`.** Four models built, validated and promoted to their designer-authorized shipping paths. The commit for this batch includes only the five owned building-tooling files, these four models' generated outputs/reports, and the four approved `src/assets/models/<id>.glb` files.
 
 ## Batch 2 results
 
