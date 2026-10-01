@@ -1,6 +1,6 @@
 # Astra-2 — Lumber camp, quarry and ice drill
 
-COMPLETE — validated, promoted and committed in **1e5cc6c** (`[astra-2] models: add lumber camp quarry and ice drill`). This status update accompanies the requested push to `origin/main`. Designer-authorized building assets only. New building tooling/output and the three validated shipping GLBs are the complete write scope.
+ICE DRILL REVISION VALIDATED AND PROMOTED — commit/push pending. Designer requested a smaller derrick relative to the hut and the missing crates, ice blocks and snow. Initial three-building version: **1e5cc6c**; the revised asset supersedes that ice drill. Only owned tooling/status/output and `src/assets/models/ice_drill.glb` changed.
 
 ## Decisions
 
@@ -24,9 +24,9 @@ All three models pass **Sol’s actual `inspectGLB → GLTFLoader → normalizeM
 |---|---:|---|---|---:|---:|---|
 | `lumber_camp` | 422 | (-0.196736, 0.000000, -0.180363) | (0.196736, 0.422000, 0.180363) | 0.266901 | 59,584 | ACCEPTED, no fallback |
 | `quarry` | 434 | (-0.181685, 0.000000, -0.194500) | (0.181685, 0.429000, 0.194500) | 0.247793 | 61,232 | ACCEPTED, no fallback |
-| `ice_drill` | 548 | (-0.188830, 0.000000, -0.161250) | (0.188830, 0.467000, 0.161250) | 0.248311 | 76,972 | ACCEPTED, no fallback |
+| `ice_drill` | 590 | (-0.229205, 0.000000, -0.190308) | (0.229205, 0.347307, 0.190308) | 0.270000 | 82,764 | ACCEPTED, no fallback |
 
-All use Y-up, bottom-center pivot at y=0, a single white opaque material, flat split-vertex facets, linear COLOR_0 RGB with alpha AO, and `_EMIT=0`. No textures, images, UVs, skinning, animation, ground plate, tile layers, or modeled outlines. Minimum AO is 0.90 / 0.92 / 0.94 respectively. Authored scale is 1.0 for all three; they satisfy the limits before normalization.
+All use Y-up, bottom-center pivot at y=0, a single white opaque material, flat split-vertex facets, linear COLOR_0 RGB with alpha AO, and `_EMIT=0`. No textures, images, UVs, skinning, animation, ground plate, tile layers, or modeled outlines. Minimum AO is 0.90 / 0.92 / 0.94 respectively. Lumber/quarry authored scale remains 1.0. Ice drill uniformly fits its expanded props at scale 0.952832; all satisfy limits before loader normalization.
 
 ## Per-building results
 
@@ -50,16 +50,16 @@ Three U-shaped sandstone terraces leave an open pit. Wooden A-frame hoist, dark 
 
 ### `ice_drill.glb`
 
-Tall mint tripod with cream feet/head and dark joints, central dark shaft and closed 24-segment two-turn auger flight, cream collar, dark-teal water disk in a local thin ice ring. Lower six-facet quonset with cream walls, sage roof, aligned white snow cap and porthole. Short dark pipe connects a cream/sage tank on a tiny wooden stand; its diagonal terracotta stripe follows actual mesh edges. One faceted ice chunk. Tripod is the highest element.
+Rebalanced to the reference: shorter, slimmer tripod and substantially larger quonset hut. Hut wall/roof body now reaches about 61% of total derrick height (previously 28%); the snowy roof reaches about 63%. The derrick remains the highest feature. Added two snow-topped wooden supply crates, two ice blocks including a tall shard, broad white roof snow banks, a chimney, doorway frame/window and entrance step. Tank moved aside to expose the doorway; snow also rests on its wooden support. The auger is narrower, with 16 coarse spiral segments; triangle savings go to the missing reference details. No ground plate or terrain layers.
 
-- Normalized min/max: (-0.202174, 0.000000, -0.172645) → (0.202174, 0.500000, 0.172645); radius 0.265858.
+- Normalized min/max: (-0.237694, 0.000000, -0.197356) → (0.237694, 0.360170, 0.197356); radius 0.280000.
 - Regenerate: `node tools/models/build-buildings.mjs` (deterministically rebuilds all three).
-- Triangle allocation: hole 54, tripod 120, auger 178, hut 64, tank 124, ice-chunk 8.
-- SHA-256: `275af49abd95ea3f0494b93fac3fbc13bec820d73068e39945862be363d074b0`.
+- Triangle allocation: hole 54, tripod 120, auger 130, hut 88, roof-snow 16, tank 102, crates 56, ice-chunks 24.
+- SHA-256: `415264d2a48fb9d2ad79688142060815118f58f47694646c9c77f2cb420a0774`.
 
 ## Verification
 
-- **11 scoped tests pass**: custom primitive closed/outward winding and upward roof normals; current slot-anchor clearance; reproducible GLB/format/palette/flat normals/nondegenerate triangles/budget/pivot checks for each building; real-loader acceptance for each; byte parity of all three promoted assets.
+- **12 scoped tests pass**: ice drill hut-to-derrick height and restored snow/crate/ice regression; custom primitive closed/outward winding and upward roof normals; current slot-anchor clearance; reproducible GLB/format/palette/flat normals/nondegenerate triangles/budget/pivot checks for each building; real-loader acceptance for each; byte parity of all three promoted assets.
 - At the production `SLOT_ANCHORS`, even maximum-radius 0.28 circles retain **more than 0.11 units clearance** from each other and stay inside the tile incircle. This bound also covers any rotation.
 - Repository `npm run typecheck` passes. The offline test also typechecks with: `npx tsc --ignoreConfig --noEmit --target ES2022 --module ESNext --moduleResolution bundler --strict --skipLibCheck --types vite/client,node tools/models/buildings.test.ts`.
 - Browser review: each asset inspected in illustrated and default lit material, including front/three-quarter and rear views across the review. Wide and narrow preview layouts checked. No browser warnings/errors. The preview uses the real loader and illustrated shaders; its default MeshStandardMaterial and lights provide a separate vertex-color check, not a claim of identical full-board lighting.
@@ -76,7 +76,7 @@ Validate changed outputs before promotion, then run all tests including shipping
 
 ```sh
 node tools/models/build-buildings.mjs
-npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.test.ts -t 'winds|keeps|reproducible|accepted'
+npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.test.ts -t 'substantial|winds|keeps|reproducible|accepted'
 cp tools/models/out/lumber_camp.glb src/assets/models/lumber_camp.glb
 cp tools/models/out/quarry.glb src/assets/models/quarry.glb
 cp tools/models/out/ice_drill.glb src/assets/models/ice_drill.glb
@@ -85,4 +85,4 @@ npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.te
 
 ## Shared checkout
 
-No shared helper, writer, config, existing status, core asset/tooling, renderer, or gameplay file was edited. Other agents’ unrelated changes were left untouched. Explicit paths only are used for staging and committing.
+No shared helper, writer, config, other status, core asset/tooling, renderer, or gameplay file was edited. Lumber camp and quarry generated/shipping bytes remain unchanged by the revision. Other agents’ unrelated changes were left untouched. Explicit paths only are used for staging and committing.

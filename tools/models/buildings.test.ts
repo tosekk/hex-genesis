@@ -11,6 +11,25 @@ import {PALETTE,prism,screwFlight,stripedTank,roofArc} from './geometry-building
 import {writeGLB} from './glb-writer.mjs';
 
 describe('three compact building assets',()=>{
+  it('ice drill keeps the hut substantial and retains the restored snow/crate/ice details',()=>{
+    const {geometry,groups}=BUILDERS.ice_drill();
+    const p=geometry.getAttribute('position'),c=geometry.getAttribute('color');
+    const hutColor=new THREE.Color(PALETTE.hut),snowColor=new THREE.Color(PALETTE.snow);
+    let hutTop=0,snowVertices=0;
+    const matches=(i:number,color:THREE.Color)=>Math.abs(c.getX(i)-color.r)<1e-6&&Math.abs(c.getY(i)-color.g)<1e-6&&Math.abs(c.getZ(i)-color.b)<1e-6;
+    for(let i=0;i<p.count;i++) {
+      if(matches(i,hutColor)) hutTop=Math.max(hutTop,p.getY(i));
+      if(matches(i,snowColor)) snowVertices++;
+    }
+    // The rejected version's hut was under 30% of derrick height.
+    expect(hutTop/geometry.boundingBox.max.y).toBeGreaterThan(.58);
+    expect(hutTop/geometry.boundingBox.max.y).toBeLessThan(.75);
+    expect(groups.crates).toBeGreaterThanOrEqual(48);
+    expect(groups['ice-chunks']).toBeGreaterThanOrEqual(24);
+    expect(groups['roof-snow']).toBeGreaterThanOrEqual(16);
+    expect(snowVertices).toBeGreaterThanOrEqual(100);
+    geometry.dispose();
+  });
   it('keeps the maximum accepted footprints separate at all three production slot anchors',()=>{
     for(let i=0;i<SLOT_ANCHORS.length;i++) {
       const a=SLOT_ANCHORS[i];

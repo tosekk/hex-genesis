@@ -94,37 +94,56 @@ export function buildQuarry() {
 }
 
 export function buildIceDrill() {
-  const {b,add,box,plane,rod}=toolkit(),cx=-.064,cz=.040;
-  add(ring(.087,.028,0,.018,6),'ice','hole',{matrix:transform([cx,0,cz]),facet:n=>n.y>.5?'ice':'iceEdge'});
-  add(new THREE.CircleGeometry(.059,6),'water','hole',{matrix:transform([cx,.004,cz],[-Math.PI/2,0,0])});
-  const top=[cx,.444,cz];
-  for(const[dx,dz]of[[-.098,.056],[.098,.056],[0,-.113]]) {
+  const {b,add,box,plane,rod}=toolkit(),cx=-.064,cz=.057;
+  add(ring(.077,.020,0,.018,6),'ice','hole',{matrix:transform([cx,0,cz]),facet:n=>n.y>.5?'ice':'iceEdge'});
+  add(new THREE.CircleGeometry(.057,6),'water','hole',{matrix:transform([cx,.004,cz],[-Math.PI/2,0,0])});
+  // Reference proportions: hut roof is two thirds of the derrick height, not one third.
+  const top=[cx,.342,cz];
+  for(const[dx,dz]of[[-.093,.061],[.093,.061],[0,-.101]]) {
     const foot=[cx+dx,.024,cz+dz];
-    rod([foot,top],.016,'mint','tripod');
-    box([.046,.025,.043],[foot[0],.0125,foot[2]],'cream','tripod',undefined,.94);
-    box([.038,.026,.038],[cx+dx*.48,.244,cz+dz*.48],'iron','tripod');
+    rod([foot,top],.014,'mint','tripod');
+    box([.042,.023,.039],[foot[0],.0115,foot[2]],'cream','tripod',undefined,.94);
+    box([.034,.024,.034],[cx+dx*.48,.189,cz+dz*.48],'iron','tripod');
   }
-  box([.062,.032,.058],[cx,.451,cz],'cream','tripod');
-  add(profile([[.013,.010],[.43,.010]],4),'auger','auger',{matrix:transform([cx,0,cz])});
-  add(screwFlight(),'auger','auger',{matrix:transform([cx,0,cz]),ao:.96});
-  add(profile([[.229,.023],[.288,.023]],6),'cream','auger',{matrix:transform([cx,0,cz])});
-  // Low quonset behind the tripod; six broad roof facets with a top snow cap.
-  const hut=[.068,0,-.111],outline=[[-.076,0],[.076,0]];
-  for(let i=0;i<=6;i++){const a=i*Math.PI/6;outline.push([Math.cos(a)*.076,.057+Math.sin(a)*.076]);}
-  add(prism(outline,.137),'hut','hut',{matrix:transform(hut),ao:.96});
-  add(roofArc(.080,.057,.148,6),'sage','hut',{matrix:transform(hut)});
-  add(roofArc(.081,.057,.057,2,Math.PI/3,Math.PI*2/3),'snow','hut',{matrix:transform([hut[0],0,hut[2]-.026])});
-  plane([.038,.061],[hut[0],.031,hut[2]+.069],'sage','hut');
-  add(new THREE.CircleGeometry(.016,8),'iron','hut',{matrix:transform([hut[0],.094,hut[2]+.069])});
-  add(new THREE.CircleGeometry(.011,6),'water','hut',{matrix:transform([hut[0],.094,hut[2]+.0695])});
-  // Tiny wooden stand supports the tank only; tank stripe is tessellated into its sides.
-  const tank=[.147,.040,.097];
-  box([.09,.012,.081],[tank[0],.034,tank[2]],'wood','tank');
-  for(const x of [-.032,.032]) box([.014,.028,.067],[tank[0]+x,.014,tank[2]],'wood','tank');
+  box([.056,.029,.053],[cx,.350,cz],'cream','tripod');
+  add(profile([[.013,.009],[.337,.009]],4),'auger','auger',{matrix:transform([cx,0,cz])});
+  add(screwFlight(16),'auger','auger',{matrix:transform([cx,0,cz],[0,0,0],[.64,.79,.64]),ao:.96});
+  add(profile([[.177,.023],[.225,.023]],6),'cream','auger',{matrix:transform([cx,0,cz])});
+  // A substantial hut behind the rig, with a readable doorway and roof snow banks.
+  const hut=[.063,0,-.101],outline=[[-.098,0],[.098,0]];
+  for(let i=0;i<=6;i++){const a=i*Math.PI/6;outline.push([Math.cos(a)*.098,.124+Math.sin(a)*.098]);}
+  add(prism(outline,.164),'hut','hut',{matrix:transform(hut),ao:.96});
+  add(roofArc(.103,.124,.177,6),'sage','hut',{matrix:transform(hut)});
+  for(const[z,depth,start,end]of[[-.044,.057,Math.PI/6,Math.PI*5/6],[.045,.058,Math.PI/3,Math.PI]]) {
+    add(roofArc(.105,.124,depth,Math.round((end-start)/(Math.PI/6)),start,end),'snow','roof-snow',
+      {matrix:transform([hut[0],0,hut[2]+z])});
+  }
+  plane([.058,.095],[hut[0],.0475,hut[2]+.0825],'iron','hut');
+  plane([.043,.085],[hut[0],.043,hut[2]+.083],'sage','hut');
+  plane([.023,.023],[hut[0],.064,hut[2]+.0835],'water','hut');
+  add(new THREE.CircleGeometry(.020,8),'iron','hut',{matrix:transform([hut[0],.158,hut[2]+.0825])});
+  add(new THREE.CircleGeometry(.014,6),'water','hut',{matrix:transform([hut[0],.158,hut[2]+.083])});
+  box([.065,.016,.038],[hut[0],.008,hut[2]+.103],'wood','hut');
+  box([.022,.055,.025],[hut[0]+.028,.240,hut[2]-.031],'iron','hut');
+  // Keep the tank subordinate to the hut, and put snow on its wooden support.
+  const tank=[.187,.026,.123];
+  box([.083,.026,.074],[tank[0],.013,tank[2]],'wood','tank');
   add(stripedTank(),'cream','tank',{matrix:transform(tank),facet:(_,i)=>i<12||i>=48&&i<60?'sage':i>=24&&i<36?'terra':'cream'});
-  rod([[.023,.13,.077],[.147,.13,.077],[.147,.162,.097]],.010,'iron','tank');
-  add(new THREE.OctahedronGeometry(.040,0),'ice','ice-chunk',
-    {matrix:transform([-.157,.028,-.098],[0,.3,0],[.75,.7,1]),facet:n=>n.y>.3?'ice':'iceEdge'});
+  rod([[.023,.119,.090],[.187,.119,.090],[.187,.148,.123]],.009,'iron','tank');
+  plane([.041,.017],[tank[0]+.007,.0264,tank[2]+.028],'snow','tank',[-Math.PI/2,0,0]);
+  // Two snow-topped supply crates are large enough to read at slot scale.
+  for(const[x,z,size]of[[-.160,-.035,.052],[.196,-.072,.049]]) {
+    box([size,size,size],[x,size/2,z],'wood','crates',undefined,.94);
+    plane([size*.82,.005],[x,size*.72,z+size/2+.0003],'seam','crates');
+    plane([.006,size*.83],[x-size*.26,size/2,z+size/2+.0005],'cut','crates');
+    add(profile([[0,size*.72],[.008,size*.65]],4,Math.PI/4),'snow','crates',
+      {matrix:transform([x,size,z]),ao:1});
+  }
+  // A tall rear shard and a low front chunk, with broad light/dark ice faces.
+  for(const[x,z,r,h]of[[-.223,-.067,.036,.113],[-.119,.182,.034,.043]]) {
+    add(profile([[0,r],[h,r*.37]],4,Math.PI/4),'ice','ice-chunks',
+      {matrix:transform([x,0,z],[0,.18,0]),facet:n=>n.y>.3?'ice':'iceEdge'});
+  }
   return b.finish();
 }
 

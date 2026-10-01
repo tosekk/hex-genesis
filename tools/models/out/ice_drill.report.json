@@ -1,41 +1,43 @@
 {
   "name": "ice_drill",
-  "triangles": 548,
-  "vertices": 1644,
+  "triangles": 590,
+  "vertices": 1770,
   "bounds": {
     "min": [
-      -0.18883004784584045,
+      -0.22920460999011993,
       0,
-      -0.16124999523162842
+      -0.1903078556060791
     ],
     "max": [
-      0.18883004784584045,
-      0.46700000762939453,
-      0.16124999523162842
+      0.22920460999011993,
+      0.3473071753978729,
+      0.1903078556060791
     ]
   },
-  "radius": 0.2483109903561713,
-  "authoredScale": 1,
+  "radius": 0.2700000000512499,
+  "authoredScale": 0.9528317951378492,
   "groups": {
     "hole": 54,
     "tripod": 120,
-    "auger": 178,
-    "hut": 64,
-    "tank": 124,
-    "ice-chunk": 8
+    "auger": 130,
+    "hut": 88,
+    "roof-snow": 16,
+    "tank": 102,
+    "crates": 56,
+    "ice-chunks": 24
   },
   "regions": {
     "iceEdge": {
       "hex": "#A9C8DD",
-      "triangles": 40
+      "triangles": 48
     },
     "ice": {
       "hex": "#CFE2EE",
-      "triangles": 16
+      "triangles": 24
     },
     "water": {
       "hex": "#2F5E6A",
-      "triangles": 12
+      "triangles": 14
     },
     "mint": {
       "hex": "#8DB89F",
@@ -47,11 +49,11 @@
     },
     "iron": {
       "hex": "#4E5352",
-      "triangles": 64
+      "triangles": 78
     },
     "auger": {
       "hex": "#3E4446",
-      "triangles": 158
+      "triangles": 110
     },
     "hut": {
       "hex": "#EDE4D0",
@@ -63,18 +65,26 @@
     },
     "snow": {
       "hex": "#F2F5F7",
-      "triangles": 4
+      "triangles": 42
     },
     "wood": {
       "hex": "#8B5A3C",
-      "triangles": 36
+      "triangles": 48
     },
     "terra": {
       "hex": "#D9826B",
       "triangles": 12
+    },
+    "seam": {
+      "hex": "#6E4630",
+      "triangles": 4
+    },
+    "cut": {
+      "hex": "#E2C9A0",
+      "triangles": 4
     }
   },
-  "bytes": 76972,
+  "bytes": 82764,
   "materials": 1,
   "textures": 0,
   "front": "+Z",
