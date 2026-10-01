@@ -1,0 +1,90 @@
+{
+  "triangles": 1494,
+  "vertices": 4482,
+  "bounds": {
+    "min": [
+      -0.7200000286102295,
+      0,
+      -0.7200000286102295
+    ],
+    "max": [
+      0.7200000286102295,
+      1.1799999475479126,
+      0.7200000286102295
+    ]
+  },
+  "radius": 0.7200000286102295,
+  "groups": {
+    "ziggurat-stairs": 456,
+    "shrines": 278,
+    "drum-crystal": 148,
+    "panels-arms": 464,
+    "rocks-plants": 148
+  },
+  "features": {
+    "tiers": 3,
+    "staircases": 2,
+    "stairStepsEach": 6,
+    "shrines": 3,
+    "mirrors": 8,
+    "rocks": 5,
+    "tufts": 3
+  },
+  "regions": {
+    "sand": {
+      "hex": "#D9B27A",
+      "triangles": 28
+    },
+    "cream": {
+      "hex": "#E8DCC4",
+      "triangles": 481
+    },
+    "stone": {
+      "hex": "#D2C4A8",
+      "triangles": 199
+    },
+    "terra": {
+      "hex": "#D9826B",
+      "triangles": 228
+    },
+    "grey": {
+      "hex": "#8E8E8C",
+      "triangles": 144
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 240
+    },
+    "joint": {
+      "hex": "#3F5A4E",
+      "triangles": 106
+    },
+    "amber": {
+      "hex": "#F5B841",
+      "triangles": 13
+    },
+    "pool": {
+      "hex": "#FFD27A",
+      "triangles": 12
+    },
+    "light": {
+      "hex": "#FFE29A",
+      "triangles": 3
+    },
+    "rock": {
+      "hex": "#9C9790",
+      "triangles": 40
+    }
+  },
+  "format": "GLB 2.0; Y-up; bottom center; 1 unit = 1 hex radius",
+  "front": "+Z",
+  "materials": 1,
+  "textures": 0,
+  "attributes": [
+    "POSITION",
+    "NORMAL",
+    "COLOR_0 (linear RGBA; alpha AO)",
+    "_EMIT (float)"
+  ],
+  "bytes": 207524
+}
