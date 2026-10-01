@@ -1,51 +1,56 @@
 {
   "name": "lumber_camp",
-  "triangles": 422,
-  "vertices": 1266,
+  "triangles": 600,
+  "vertices": 1800,
   "bounds": {
     "min": [
-      -0.19673621654510498,
+      -0.22979676723480225,
       0,
-      -0.18036341667175293
+      -0.16948440670967102
     ],
     "max": [
-      0.19673621654510498,
-      0.421999990940094,
-      0.18036341667175293
+      0.22979676723480225,
+      0.3700485825538635,
+      0.16948440670967102
     ]
   },
-  "radius": 0.266900919769848,
-  "authoredScale": 1,
+  "radius": 0.2699999984574787,
+  "authoredScale": 0.8585814254331182,
   "groups": {
     "cabin": 108,
-    "roof": 102,
-    "logs": 156,
-    "stump-axe": 56
+    "roof": 110,
+    "entrance": 42,
+    "logs": 142,
+    "stump-axe": 56,
+    "pine": 42,
+    "fence": 60,
+    "rocks": 16,
+    "plants": 24
   },
   "regions": {
     "stone": {
       "hex": "#9A9590",
-      "triangles": 48
+      "triangles": 96
     },
     "wood": {
       "hex": "#8B5A3C",
-      "triangles": 168
+      "triangles": 222
     },
     "seam": {
       "hex": "#6E4630",
-      "triangles": 52
+      "triangles": 64
     },
     "sage": {
       "hex": "#5F7D6B",
-      "triangles": 54
+      "triangles": 85
     },
     "roofLight": {
       "hex": "#6F8F7A",
-      "triangles": 10
+      "triangles": 45
     },
     "iron": {
       "hex": "#4E5352",
-      "triangles": 2
+      "triangles": 8
     },
     "cream": {
       "hex": "#E8DCC4",
@@ -53,7 +58,7 @@
     },
     "cut": {
       "hex": "#E2C9A0",
-      "triangles": 52
+      "triangles": 44
     },
     "handle": {
       "hex": "#9B4A32",
@@ -64,7 +69,7 @@
       "triangles": 12
     }
   },
-  "bytes": 59584,
+  "bytes": 84152,
   "materials": 1,
   "textures": 0,
   "front": "+Z",

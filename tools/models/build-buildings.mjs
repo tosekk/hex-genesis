@@ -17,8 +17,8 @@ function toolkit() {
 export function buildLumberCamp() {
   const {b,add,box,plane,rod}=toolkit(),cx=-.063;
   box([.244,.035,.248],[cx,.0175,0],'stone','cabin',undefined,.9);
-  box([.222,.181,.222],[cx,.1255,0],'wood','cabin',undefined,.96);
-  add(prism([[-.111,.216],[.111,.216],[0,.372]],.222),'wood','cabin',{matrix:transform([cx,0,0])});
+  box([.222,.224,.222],[cx,.147,0],'wood','cabin',undefined,.96);
+  add(prism([[-.111,.259],[.111,.259],[0,.390]],.222),'wood','cabin',{matrix:transform([cx,0,0])});
   // Wide plank divisions, color-only planar insets, not modeled outlines.
   for(const y of [.075,.118,.161,.204]) {
     for(const z of [-.1112,.1112]) plane([.222,.003],[cx,y,z],'seam','cabin',[0,z<0?Math.PI:0,0]);
@@ -38,25 +38,56 @@ export function buildLumberCamp() {
   }
   for(const z of [-.117,.117]) box([.037,.031,.035],[cx,.405,z],'wood','roof');
   // Three large chimney courses and a dark mouth.
-  for(let i=0;i<3;i++) box([.047,.043,.047],[cx+.072,.31+i*.045,-.06],'stone','roof');
-  plane([.032,.032],[cx+.072,.422,-.06],'iron','roof',[-Math.PI/2,0,0]);
-  add(new THREE.CircleGeometry(.030,8),'cream','cabin',{matrix:transform([cx,.288,.112])});
-  add(new THREE.CircleGeometry(.021,8),'seam','cabin',{matrix:transform([cx,.288,.1125])});
+  box([.047,.108,.047],[cx+.072,.35,-.06],'stone','roof');
+  add(ring(.038,.012,.401,.431,4,Math.PI/4),'stone','roof',{matrix:transform([cx+.072,0,-.06])});
+  plane([.036,.036],[cx+.072,.4045,-.06],'iron','roof',[-Math.PI/2,0,0]);
+  add(new THREE.CircleGeometry(.034,8),'cream','cabin',{matrix:transform([cx,.288,.112])});
+  add(new THREE.CircleGeometry(.024,8),'seam','cabin',{matrix:transform([cx,.288,.1125])});
   plane([.006,.043],[cx,.288,.113],'cream','cabin');plane([.043,.006],[cx,.288,.1132],'cream','cabin');
   box([.061,.118,.009],[cx,.094,.116],'seam','cabin');
   box([.104,.015,.071],[cx,.182,.138],'sage','cabin',[.22,0,0]);
+  // Recessed plank door, visible frame, latch, and two broad stone entrance steps.
+  plane([.049,.108],[cx,.094,.121],'wood','entrance');
+  for(const x of [-.008,.009]) plane([.002,.105],[cx+x,.094,.1213],'seam','entrance');
+  add(new THREE.CircleGeometry(.0055,6),'iron','entrance',{matrix:transform([cx+.018,.089,.122])});
+  box([.084,.027,.055],[cx,.0135,.166],'stone','entrance');
+  box([.106,.012,.044],[cx,.006,.207],'stone','entrance');
+  for(let i=0;i<3;i++) {
+    const matrix=transform([cx,.182,.138],[.22,0,0]).multiply(transform([-.034+i*.034,.0078,0],[-Math.PI/2,0,0]));
+    add(new THREE.PlaneGeometry(.031,.065),i%2?'sage':'roofLight','entrance',{matrix});
+  }
   // Lean-to shelters a 3-2-1 stack: bark side faces and actual cream cut end caps.
   box([.132,.018,.253],[.117,.181,0],'sage','logs',[0,0,-.20]);
+  for(let i=0;i<3;i++) {
+    const matrix=transform([.117,.181,0],[0,0,-.20]).multiply(transform([-.043+i*.043,.0093,0],[-Math.PI/2,0,0]));
+    add(new THREE.PlaneGeometry(.039,.244),i%2?'sage':'roofLight','logs',{matrix});
+  }
   for(const z of [-.102,.102]) box([.017,.17,.017],[.172,.085,z],'wood','logs');
-  for(const[x,y]of[[.066,.021],[.109,.021],[.152,.021],[.0875,.059],[.1305,.059],[.109,.097]]) {
+  for(const[x,y]of[[.066,.021],[.109,.021],[.152,.021],[.0875,.059],[.1305,.059]]) {
     add(profile([[-.09,.021],[.09,.021]],6,Math.PI/6),'wood','logs',
       {matrix:transform([x,y,.004],[Math.PI/2,0,0]),facet:n=>Math.abs(n.z)>.95?'cut':'wood',ao:.96});
   }
   add(profile([[0,.043],[.048,.032],[.057,.033]],6),'wood','stump-axe',
-    {matrix:transform([.060,0,.182]),facet:n=>n.y>.5?'cut':'wood',ao:.94});
+    {matrix:transform([.060,0,.182]),facet:n=>n.y>.5?'cut':n.x<-.2?'seam':'wood',ao:.94});
   rod([[.037,.089,.18],[.118,.127,.18]],.007,'handle','stump-axe');
   add(prism([[-.023,0],[.021,-.004],[.014,.033],[-.013,.041]],.014),'axe','stump-axe',
     {matrix:transform([.045,.058,.18])});
+  // Reference yard: three-tier pine, an L-shaped fence, two stones and three tufts.
+  const pine=[-.235,0,.137];
+  box([.020,.072,.020],[pine[0],.036,pine[2]],'wood','pine');
+  for(const[y,r,h]of[[.098,.054,.099],[.156,.044,.093],[.211,.033,.086]]) {
+    add(new THREE.ConeGeometry(r,h,5),'sage','pine',{matrix:transform([pine[0],y,pine[2]],[0,.32,0]),facet:n=>n.x<0?'sage':'roofLight'});
+  }
+  for(const[x,z]of[[-.282,.213],[-.175,.213],[-.282,-.025]]) box([.021,.076,.021],[x,.038,z],'wood','fence');
+  box([.107,.020,.014],[-.2285,.048,.213],'wood','fence');
+  box([.014,.020,.238],[-.282,.048,.094],'wood','fence');
+  for(const[x,z,r]of[[.217,.123,.027],[.022,.237,.024]]) {
+    add(new THREE.OctahedronGeometry(r,0),'stone','rocks',{matrix:transform([x,r*.9,z],[0,.3,0],[1,.9,.82]),ao:.94});
+  }
+  for(const[x,z]of[[-.265,.101],[.132,.179],[-.114,.225]]) for(const sign of [-1,1]) {
+    add(new THREE.TetrahedronGeometry(.025,0),'sage','plants',
+      {matrix:transform([x+sign*.007,.020,z],[0,sign*.7,sign*.3],[.43,1,.40]),facet:n=>n.y>.2?'roofLight':'sage'});
+  }
   return b.finish();
 }
 

@@ -11,6 +11,18 @@ import {PALETTE,prism,screwFlight,stripedTank,roofArc} from './geometry-building
 import {writeGLB} from './glb-writer.mjs';
 
 describe('three compact building assets',()=>{
+  it('lumber camp retains the reference yard and detailed entrance',()=>{
+    const {geometry,groups}=BUILDERS.lumber_camp();
+    try {
+      expect(groups.pine).toBeGreaterThanOrEqual(42);
+      expect(groups.fence).toBeGreaterThanOrEqual(60);
+      expect(groups.rocks).toBeGreaterThanOrEqual(16);
+      expect(groups.plants).toBeGreaterThanOrEqual(24);
+      expect(groups.entrance).toBeGreaterThanOrEqual(42);
+      expect(groups.logs).toBeGreaterThanOrEqual(140);
+      expect(groups['stump-axe']).toBeGreaterThanOrEqual(56);
+    } finally {geometry.dispose();}
+  });
   it('ice drill keeps the hut substantial and retains the restored snow/crate/ice details',()=>{
     const {geometry,groups}=BUILDERS.ice_drill();
     const p=geometry.getAttribute('position'),c=geometry.getAttribute('color');

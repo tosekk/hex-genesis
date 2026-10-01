@@ -1,12 +1,12 @@
 # Astra-2 — Lumber camp, quarry and ice drill
 
-ICE DRILL REVISION COMPLETE — validated and promoted in **2014d47** (`[astra-2] models: rebalance ice drill and restore snowy props`); this status update accompanies the requested push to `origin/main`. Designer requested a smaller derrick relative to the hut and the missing crates, ice blocks and snow. Initial three-building version: **1e5cc6c**; the revised asset supersedes that ice drill. Only owned tooling/status/output and `src/assets/models/ice_drill.glb` changed.
+LUMBER CAMP REVISION VALIDATED AND PROMOTED — commit/push pending. Restored the designer-requested reference yard and architecture. Earlier commits: initial buildings **1e5cc6c**, corrected ice drill **2014d47**. Only owned tooling/status/output and `src/assets/models/lumber_camp.glb` change in this revision.
 
 ## Decisions
 
-- Follow the explicit building concepts and palette; simplify to readable silhouettes and the listed props. No fences, vegetation, ladders, pebbles, tiny trims, modeled ink, or ground plates.
+- Follow the explicit building concepts and palette. The later designer correction authorizes the lumber reference pine, fence, rocks, and plant tufts previously omitted under the simplification instruction. Retain the hard 600-triangle limit and no ground plates, tile layers, or modeled ink.
 - GAME_DESIGN §10 / RENDER_STYLE_SPEC: these are static building models sharing tile space, with radius ≤0.28, height ≤0.5, and ≤600 triangles each. No game or renderer changes.
-- Lumber camp omits the optional pine. Quarry terraces are the extracted sandstone body, not a terrain tile. Ice drill has only a local thin slab immediately around its water hole, not a platform under the hut/tank.
+- Lumber camp now includes the three-tier pine and reference yard. Quarry terraces are the extracted sandstone body, not a terrain tile. Ice drill has only a local thin slab immediately around its water hole, not a platform under the hut/tank.
 - New helper owns its palette without changing shared geometry or writer files. Front is +Z. Uniform authored fit preserves proportions and places the bounding-box bottom center at the origin.
 
 ## Commands
@@ -22,22 +22,22 @@ All three models pass **Sol’s actual `inspectGLB → GLTFLoader → normalizeM
 
 | Model | Triangles | Authored min XYZ | Authored max XYZ | Radius | Bytes | Validation |
 |---|---:|---|---|---:|---:|---|
-| `lumber_camp` | 422 | (-0.196736, 0.000000, -0.180363) | (0.196736, 0.422000, 0.180363) | 0.266901 | 59,584 | ACCEPTED, no fallback |
+| `lumber_camp` | 600 | (-0.229797, 0.000000, -0.169484) | (0.229797, 0.370049, 0.169484) | 0.270000 | 84,152 | ACCEPTED, no fallback |
 | `quarry` | 434 | (-0.181685, 0.000000, -0.194500) | (0.181685, 0.429000, 0.194500) | 0.247793 | 61,232 | ACCEPTED, no fallback |
 | `ice_drill` | 590 | (-0.229205, 0.000000, -0.190308) | (0.229205, 0.347307, 0.190308) | 0.270000 | 82,764 | ACCEPTED, no fallback |
 
-All use Y-up, bottom-center pivot at y=0, a single white opaque material, flat split-vertex facets, linear COLOR_0 RGB with alpha AO, and `_EMIT=0`. No textures, images, UVs, skinning, animation, ground plate, tile layers, or modeled outlines. Minimum AO is 0.90 / 0.92 / 0.94 respectively. Lumber/quarry authored scale remains 1.0. Ice drill uniformly fits its expanded props at scale 0.952832; all satisfy limits before loader normalization.
+All use Y-up, bottom-center pivot at y=0, a single white opaque material, flat split-vertex facets, linear COLOR_0 RGB with alpha AO, and `_EMIT=0`. No textures, images, UVs, skinning, animation, ground plate, tile layers, or modeled outlines. Minimum AO is 0.90 / 0.92 / 0.94 respectively. Quarry authored scale remains 1.0; lumber camp uniformly fits at 0.858581, and ice drill at 0.952832; all satisfy limits before loader normalization.
 
 ## Per-building results
 
 ### `lumber_camp.glb`
 
-Steep sage roof with broad lighter plank regions, wooden ridge caps, grey chimney courses, cream round gable window, dark door and small sage awning. Brown plank cabin on a grey foundation. Lean-to on two posts shelters six logs in a 3-2-1 stack, with cream cut end faces. Front stump and red-brown-handled grey axe. Optional pine omitted.
+Reference details restored: a three-tier sage pine clearly visible at the front-left, two wooden fence runs on three posts, two chunky grey stones, three two-leaf tufts, two stone entrance steps, an inset plank door with frame and handle, a larger cream window rim, a genuinely hollow chimney mouth, and plank divisions on the awning and lean-to roofs. Raised the wall/gable to close the roof gap discovered during rear-view inspection. The stump keeps its cut top and axe, with darker bark facets. Five logs remain under the two-post lean-to (within the requested 5–6). No ground plate.
 
-- Normalized min/max: (-0.206392, 0.000000, -0.189215) → (0.206392, 0.442711, 0.189215); radius 0.280000.
+- Normalized min/max: (-0.238308, 0.000000, -0.175762) → (0.238308, 0.383754, 0.175762); radius 0.280000.
 - Regenerate: `node tools/models/build-buildings.mjs` (deterministically rebuilds all three).
-- Triangle allocation: cabin 108, roof 102, logs 156, stump-axe 56.
-- SHA-256: `100edcc3cdcebf90848d592907568e28a9d4faa563616cf84d0f13f59ace94e8`.
+- Triangle allocation: cabin 108, roof 110, entrance 42, logs 142, stump-axe 56, pine 42, fence 60, rocks 16, plants 24.
+- SHA-256: `8f4023ee1fff6cb72096fc628ebdd98912d4a573c357a10840e5ed38c91df4e9`.
 
 ### `quarry.glb`
 
@@ -59,7 +59,7 @@ Rebalanced to the reference: shorter, slimmer tripod and substantially larger qu
 
 ## Verification
 
-- **12 scoped tests pass**: ice drill hut-to-derrick height and restored snow/crate/ice regression; custom primitive closed/outward winding and upward roof normals; current slot-anchor clearance; reproducible GLB/format/palette/flat normals/nondegenerate triangles/budget/pivot checks for each building; real-loader acceptance for each; byte parity of all three promoted assets.
+- **13 scoped tests pass**: lumber reference yard/entrance retention; ice drill hut-to-derrick height and restored snow/crate/ice regression; custom primitive closed/outward winding and upward roof normals; current slot-anchor clearance; reproducible GLB/format/palette/flat normals/nondegenerate triangles/budget/pivot checks for each building; real-loader acceptance for each; byte parity of all three promoted assets.
 - At the production `SLOT_ANCHORS`, even maximum-radius 0.28 circles retain **more than 0.11 units clearance** from each other and stay inside the tile incircle. This bound also covers any rotation.
 - Repository `npm run typecheck` passes. The offline test also typechecks with: `npx tsc --ignoreConfig --noEmit --target ES2022 --module ESNext --moduleResolution bundler --strict --skipLibCheck --types vite/client,node tools/models/buildings.test.ts`.
 - Browser review: each asset inspected in illustrated and default lit material, including front/three-quarter and rear views across the review. Wide and narrow preview layouts checked. No browser warnings/errors. The preview uses the real loader and illustrated shaders; its default MeshStandardMaterial and lights provide a separate vertex-color check, not a claim of identical full-board lighting.
@@ -76,7 +76,7 @@ Validate changed outputs before promotion, then run all tests including shipping
 
 ```sh
 node tools/models/build-buildings.mjs
-npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.test.ts -t 'substantial|winds|keeps|reproducible|accepted'
+npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.test.ts -t 'reference yard|substantial|winds|keeps|reproducible|accepted'
 cp tools/models/out/lumber_camp.glb src/assets/models/lumber_camp.glb
 cp tools/models/out/quarry.glb src/assets/models/quarry.glb
 cp tools/models/out/ice_drill.glb src/assets/models/ice_drill.glb
@@ -85,4 +85,4 @@ npx vitest run --config tools/models/vitest.config.mjs tools/models/buildings.te
 
 ## Shared checkout
 
-No shared helper, writer, config, other status, core asset/tooling, renderer, or gameplay file was edited. Lumber camp and quarry generated/shipping bytes remain unchanged by the revision. Other agents’ unrelated changes were left untouched. Explicit paths only are used for staging and committing.
+No shared helper, writer, config, other status, core asset/tooling, renderer, or gameplay file was edited. Quarry and ice drill generated/shipping bytes remain unchanged by the lumber revision. Other agents’ unrelated changes were left untouched. Explicit paths only are used for staging and committing.
