@@ -1,11 +1,11 @@
 # Optional vertex-color GLB models
 
-Models are currently opt-in with `?style=illustrated`. The default look stays procedural until the designer approves. Missing, invalid, or over-budget files always use the procedural model. No sample art is committed.
+Models load in both the default style and `?style=illustrated`. Default uses the existing lit material with authored vertex colors; illustrated adds its shared stepped-light material and ink hulls. Missing, invalid, or over-budget files always use the unchanged procedural model. `core_forest.glb` is the supplied Forest core.
 
 1. Name each building exactly like its ID in `src/config/economy.ts`, e.g. `sawmill.glb`, `farm.glb`, `glass_kiln.glb`. Names are case-sensitive.
 2. Name biome cores `core_forest.glb`, `core_desert.glb`, `core_arctic.glb`. `core.glb` is not used. Each core keeps the first main biome visibly revealed on its hex, including after conversion.
 3. Put the files in **this folder**, `src/assets/models/`. Restart Vite after adding/removing files, or rebuild the production bundle. Vite discovers the files with `import.meta.glob` and emits relative hashed asset URLs.
-4. Open `http://localhost:5173/render-sandbox.html?style=illustrated`, press **G** for the building gallery; **L** for the full board; **R** for a wave. In the game use `http://localhost:5173/?seed=7&style=illustrated`, choose the matching biome and place its core. Substitute your Vite port if necessary.
+4. Open `http://localhost:5173/render-sandbox.html`, press **G** for the building gallery; **L** for the full board; **R** for a wave. In the game use `http://localhost:5173/?seed=7`; **Reshuffle** the opening offer once, choose **Forest**, and place its core to check `core_forest.glb`. Compare with `http://localhost:5173/?seed=7&style=illustrated` for illustrated lighting/ink. Substitute your Vite port if necessary.
 5. Wait for loading. Buildings automatically replace their procedural instances without changing camera, selections, reveal timing, or game state. Cores switch when their own biome is visible. `[models] <id>: procedural fallback (<reason>)` at debug level explains rejected files.
 
 ## Blender export checklist (RENDER_STYLE_SPEC)
@@ -19,7 +19,7 @@ Models are currently opt-in with `?style=illustrated`. The default look stays pr
 - **One material, no textures of any kind**: no albedo, normal, roughness, metalness, emissive, or AO maps; no embedded images. The loader rejects images/texture descriptors before GLTFLoader runs, and validates all loaded materials again. RGB remains vertex color; material base color is baked into it.
 - Optional AO: COLOR_0 alpha, **1 = unoccluded, 0 = dark**; alpha never means transparency. Alternatively `_AO` float attribute, same convention. Optional `_EMIT` float attribute, **0 = shaded, 1 = emissive accent**. Both are preserved (GLTFLoader lower-case attribute aliases supported). Untextured material emission is baked as an emission flag if there is no `_EMIT`.
 - No animations, skinning, morph targets, cameras, lights, or external buffer files. Static triangle meshes only.
-- Export a single material whenever possible. Multiple source meshes sharing it merge into one geometry; up to four distinct materials are accepted and merged separately, but all rendered parts share the same illustrated material. More than four rejects to fallback to protect draw calls.
+- Export a single material whenever possible. Multiple source meshes sharing it merge into one geometry; up to four distinct materials are accepted and merged separately, but parts use the default lit vertex-color material, or share the illustrated material when that flag is active. More than four rejects to fallback to protect draw calls.
 
 ## QA / performance
 

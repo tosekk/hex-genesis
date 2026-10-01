@@ -80,10 +80,10 @@ describe('designer GLB drop-in pipeline', () => {
     source.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial()));
     expect(() => normalizeModel(source, 'farm', { ...BUILDING_LIMITS, triangles: 1 })).toThrow('Triangle budget'); disposeGroup(source);
   });
-  it('promotes fallback placements to packed GLB instances and compacts every material/outline on demolition', async () => {
+  it.each([false, true])('promotes fallback placements and compacts GLB parts on demolition (illustrated=%s)', async illustrated => {
     let finish!: (b: ArrayBuffer) => void;
     const assets = new ModelAssets({ '/src/assets/models/farm.glb': 'farm' }, () => new Promise(resolve => { finish = resolve; }));
-    const group = new THREE.Group(), style = installIllustratedStyle(group), state = makeTestState({ cols: 2, rows: 1, hex: () => ({ biome: 'forest' }) });
+    const group = new THREE.Group(), style = illustrated ? installIllustratedStyle(group) : null, state = makeTestState({ cols: 2, rows: 1, hex: () => ({ biome: 'forest' }) });
     const before = JSON.stringify(state), buildings = new Buildings(group, 2, assets);
     state.hexes[0].slots[0].building = state.hexes[1].slots[0].building = 'farm';
     buildings.refresh(state.hexes[0], 0, 0); buildings.refresh(state.hexes[1], 2, 0);
@@ -93,7 +93,16 @@ describe('designer GLB drop-in pipeline', () => {
     expect((group.getObjectByName('building:farm') as THREE.InstancedMesh).count).toBe(0);
     const meshes = group.children.filter(o => o.name.startsWith('building:glb:')) as THREE.InstancedMesh[];
     expect(meshes).toHaveLength(2);
-    for (const mesh of meshes) { expect(mesh.count).toBe(2); expect(mesh.material).toBe(style.fill); expect(materialHasTexture(mesh.material as THREE.Material)).toBe(false); }
+    for (const mesh of meshes) {
+      expect(mesh.count).toBe(2); expect(materialHasTexture(mesh.material as THREE.Material)).toBe(false);
+      if (style) expect(mesh.material).toBe(style.fill);
+      else {
+        expect(mesh.material).toBeInstanceOf(THREE.MeshStandardMaterial);
+        expect((mesh.material as THREE.MeshStandardMaterial).vertexColors).toBe(true);
+        expect(mesh.geometry.getAttribute('color').getX(0)).toBeCloseTo(.2);
+        expect(group.getObjectByName('ink-hull')).toBeUndefined();
+      }
+    }
     const last = new THREE.Matrix4(); meshes[0].getMatrixAt(1, last);
     state.hexes[0].slots[0].building = null; buildings.refresh(state.hexes[0], 0, 0);
     for (const mesh of meshes) { const moved = new THREE.Matrix4(); mesh.getMatrixAt(0, moved); expect(moved.elements).toEqual(last.elements); expect(mesh.count).toBe(1); }
@@ -101,9 +110,9 @@ describe('designer GLB drop-in pipeline', () => {
     state.hexes[1].slots[0].building = null; state.hexes[1].biome = 'forest'; expect(JSON.stringify(state)).toBe(before);
     disposeGroup(group); assets.dispose();
   });
-  it('selects forest/desert/arctic core files by visible biome and retains core identity on conversion', async () => {
+  it.each([false, true])('selects biome core files and retains identity on conversion (illustrated=%s)', async illustrated => {
     const assets = new ModelAssets(Object.fromEntries(['forest','desert','arctic'].map(b => [`/src/assets/models/core_${b}.glb`, b])), async () => tinyGLB()); await assets.ready;
-    const group = new THREE.Group(); installIllustratedStyle(group); const state = makeTestState({ cols: 3, rows: 1 });
+    const group = new THREE.Group(); if (illustrated) installIllustratedStyle(group); const state = makeTestState({ cols: 3, rows: 1 });
     const cores = new Cores(group, 3, assets), positions = new Map(state.hexes.map(h => [h.id, { x: h.id * 2, z: 0 }]));
     expect(visibleCoreBiome(state.hexes[0])).toBeNull();
     cores.set([0], state.hexes, positions); expect(group.getObjectByName('core:glb:forest:0')).toBeUndefined();
@@ -113,6 +122,17 @@ describe('designer GLB drop-in pipeline', () => {
     state.hexes[0].biome = 'steppe'; cores.set([0,1,2], state.hexes, positions);
     expect((group.getObjectByName('core:glb:forest:0') as THREE.InstancedMesh).count).toBe(1);
     cores.set([], state.hexes, positions); for (const mesh of group.children.filter(o => o.name.startsWith('core:glb:')) as THREE.InstancedMesh[]) expect(mesh.count).toBe(0);
+    disposeGroup(group); assets.dispose();
+  });
+  it('keeps the default procedural core when there is no matching file in the asset manifest', async () => {
+    const read = vi.fn(), assets = new ModelAssets({}, read); await assets.ready;
+    const group = new THREE.Group(), state = makeTestState({ cols: 1, rows: 1, hex: () => ({ biome: 'forest' }) });
+    const cores = new Cores(group, 1, assets); cores.set([0], state.hexes, new Map([[0, { x: 2, z: 3 }]]));
+    expect(read).not.toHaveBeenCalled(); expect(group.children).toHaveLength(2);
+    const crystal = group.children[1] as THREE.InstancedMesh, material = crystal.material as THREE.MeshStandardMaterial;
+    expect(material).toBeInstanceOf(THREE.MeshStandardMaterial); expect(material.color.getHex()).toBe(0x9cf4de);
+    const matrix = new THREE.Matrix4(); crystal.getMatrixAt(0, matrix);
+    expect(matrix.elements[12]).toBe(2); expect(matrix.elements[14]).toBe(3); expect(matrix.elements[5]).toBeCloseTo(1.65);
     disposeGroup(group); assets.dispose();
   });
   it('disposal during loading cancels promotion and cleans late geometry without notifying listeners', async () => {
