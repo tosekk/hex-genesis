@@ -1,4 +1,12 @@
-## MORNING SUMMARY — Night 2 (2026-10-01)
+**Designer cost fix — seeds 1–50: a PASS (50/50 combo wins, 0 false declarations); b PASS (spam 50/50 failures, random 47/50); e PASS (0 combo opening stalls).**
+
+## Designer cost fix — completed
+
+Applied exactly the ten requested cost maps. Yields, combos, thresholds, starting stock and every other configuration field match the previous config; independently verified against the archived round 6 config with only those ten substitutions. The new `config.test.ts` check enforces total raw base yield ≥ 75% of total cost; it rejects all ten old cost maps. R1–R4 pass. Historical observation regressions now replay the archived config rather than requiring current config to remain frozen.
+
+**Validation:** `npm test`: 462 passed, 12 skipped; typecheck passes. Then the unchanged balance harness measured **seeds 1–50 only**, exactly 150 runs across three policies; 28 harness tests pass, including deterministic replay. Archive: `tests/balance/designer-cost-fix.json`; full target table appended under “Designer urgent cost fix” in `tests/balance/REPORT.md`. No follow-up retuning or changes to another owner's files. Commit/push follows this status update.
+
+## Historical MORNING SUMMARY — Night 2 (before designer cost fix)
 
 **Economy remains exactly v5 round 6 `b76c051`; no retuning or production-code changes.** All requested audit/measurement work is complete. Generalization preserves four targets but reveals **five combo opening stalls** outside the original 50 seeds; stock pressure remains missed.
 
@@ -173,6 +181,7 @@ IN PROGRESS — Night 2: verify P1-A, audit spam/random terminal states on seeds
 - No N7 blocker. Accepted opening limitations (35/37) and the lower-priority spam-fill miss are documented in the v3 result. Opus O6.3 independently passed D4/N4/N6. Sonnet S6 fixed the historical HUD fixture, confirmed by source inspection and owner test report; no N7 full-suite claim is made.
 
 ## Decisions
+- Designer urgent cost override: change only the ten named cost maps; retain all yields, combos, thresholds and other config fields. The historical observation regression now runs its archived round6 config rather than asserting that current config stays frozen forever. Add the new 75% raw-yield floor with integer arithmetic; no tuning based on target results.
 - Night 2 audit: certify a missed dead state only after exhausting first-payout base/recipe goals under non-profitable refunds; unresolved adjacency or search limits stay unknown. Recoveries are legal transaction witnesses, not minimal paths or guarantees of eventual victory. All 200 sampled states resolved constructively; zero dead/unknown.
 - Night 2 freeze: all numeric economy data and bot policies remain at v5 round6. Distinguish a no-demolition bot stop from a genuinely dead state. A productive refund/rebuild witness disproves a soft-lock; absence of a bounded witness alone is not proof. Instrumentation and audit code live only under tests/balance.
 - N12 final cost audit correction: the round5 scripted `farm` match also changed Lichen Farm W2/S3/A1→W5/S2/A2. This was not listed in that round’s decision entry; it is in both measured archives5/6 and source. Retain the measured candidate exactly, with no silent post-measurement correction. All changed costs meet R1–R4.
@@ -318,6 +327,7 @@ Across **200 seeds**: all cluster counts 1–4 and all component sizes 3–10 oc
 D4 regressions cover connected mountain count/size variety, hill/placeable distributions, recurring longer rivers, flat routing only toward a lower outlet, bounded lookahead, deterministic flat-route ties and suffix consistency. Existing 200-seed hill rules, four-level maps, monotone water, terrain preservation, replay and performance tests pass unchanged. The new long-river test asks that they recur (at least 50/200 seeds), not that every map contain one; this matches the designer's “allow longer rivers.”
 
 ## Balance log
+- Designer urgent cost fix: Sawmill W2/A2/F4; Stonemason W2/S2/F2; Glass Kiln W3/F3; Caravanserai W2/S2/A2/F2; Salt Mine W3/A3; Farm and Lichen Farm W3/S2; Glacier Pump W2/S2; Resin Works S3/A3; Hot Spring W3/S2. W/S/A/F = wood/stone/water/food. All other config fields unchanged. One measurement only, seeds1–50: a PASS 50 wins/0 false declarations; b PASS spam50 and random47 failures; e PASS0 opening stalls. Designer-directed values retained exactly.
 - V5 round6 (`v5-round-6.json`): two recovery cost changes and six raw-water trims logged under Decisions. **a/b/e/c/f pass**: 50/50 combo wins, spam50/random48 failures; zero opening stalls or detected false losses; T4 medians101 vs176.5 vs∞ (spam1.748×); winning use75.38%. d misses: worst median108.83× at T7 stone; T7 held W534.5/S291/A41/F468. Water stock falls sharply from round5, but other stocks increase and its98.71× worst ratio was lower. All12 harness tests pass; measurement40.72s. Six-round limit reached.
 - V5 round5 (`v5-round-5.json`): cross-resource costs from Decisions. **a/b/e/c/f pass**: combo47/50, spam50/random50 failures, no opening stalls or detected false losses; T4 ratios1.957×/∞; winning use80.81%. d improves ∞→98.71× worst median, still misses badly; median T7 stock W306/S163.5/A345.5/F219 (48 completers). Seeds4/5 stall after T3 with W0–1/S1 but large water/food stocks;30 fills below final food. All12 harness tests pass.
 - V5 round4 (`v5-round-4.json`): T8 food1100→1200. **a/b/e/c/f pass**: combo48/50, spam50/random47 failures, no opening stalls or false losses, T4 ratios3.030×/∞, winning use82.39%. d misses (∞ ratios from missing water/food sinks). Combo5 stalls at67 after T2;30 fills549 slots below final food. All12 harness tests pass,109.32s. This is the fallback before lower-priority stock experiments.

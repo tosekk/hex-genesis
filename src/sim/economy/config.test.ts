@@ -32,6 +32,13 @@ describe('C0b approved economy data integrity (§22, §45, ECONOMY_SPEC v5)', ()
       for (const value of Object.values(building.cost)) expect(value, building.id).toBeGreaterThanOrEqual(1);
     }
   });
+  it('every building returns at least 75% of its total cost in raw base yield', () => {
+    for (const building of Object.values(ECONOMY.buildings)) {
+      const cost = Object.values(building.cost).reduce((a, b) => a + b, 0);
+      const baseYield = Object.values(building.baseYield).reduce((a, b) => a + b, 0);
+      expect(4 * baseYield, building.id).toBeGreaterThanOrEqual(3 * cost);
+    }
+  });
   it('main rosters have five; mixed have three from each parent plus three unique', () => {
     for (const biome of MAIN_BIOMES) expect(ECONOMY.rosters[biome]).toHaveLength(5);
     const mainIds = MAIN_BIOMES.flatMap(b => ECONOMY.rosters[b]);
