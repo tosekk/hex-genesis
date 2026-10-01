@@ -5,11 +5,15 @@ export const PALETTE = {
   wood:'#8B5A3C', seam:'#6E4630', stone:'#9A9590', sage:'#5F7D6B', roofLight:'#6F8F7A',
   cream:'#E8DCC4', cut:'#E2C9A0', axe:'#6B6B6B', handle:'#9B4A32', sandstone:'#D2C4A8',
   iron:'#4E5352', rope:'#C9A46A', block:'#B8B2A7', terra:'#D9826B', mint:'#8DB89F',
+  rockDark:'#8F8A82', grassCap:'#6E8F4E', tunnel:'#2E2A25', amber:'#F5C26B',
+  blade:'#C8C8C8', wheel:'#7A4E33', flow:'#7FD3D0', plank:'#EAD9B5',
+  straw:'#E3CF9A', strawBand:'#CBB57E', tie:'#D9C7A0', herb:'#5F8A5A', basket:'#A06A3E', berry:'#C0443A',
+  hay:'#D9B65A', wheat:'#D9B04A', soil:'#6B4A33', shirt:'#C8664E',
   auger:'#3E4446', water:'#2F5E6A', ice:'#CFE2EE', iceEdge:'#A9C8DD', hut:'#EDE4D0', snow:'#F2F5F7',
 };
 
 export class BuildingBuilder extends ModelBuilder {
-  add(geometry, region, {matrix=new THREE.Matrix4(),ao=1,category='structure',facet}={}) {
+  add(geometry, region, {matrix=new THREE.Matrix4(),ao=1,category='structure',facet,emission=0}={}) {
     const g=geometry.index?geometry.toNonIndexed():geometry.clone();
     g.applyMatrix4(matrix);g.computeVertexNormals();
     const p=g.getAttribute('position'),n=g.getAttribute('normal');
@@ -20,7 +24,7 @@ export class BuildingBuilder extends ModelBuilder {
       this.regions[name]=(this.regions[name]??0)+1;this.groups[category]=(this.groups[category]??0)+1;
       for(let j=i;j<i+3;j++) {
         this.positions.push(p.getX(j),p.getY(j),p.getZ(j));this.normals.push(n.getX(j),n.getY(j),n.getZ(j));
-        this.colors.push(c.r,c.g,c.b,ao);this.emit.push(0);
+        this.colors.push(c.r,c.g,c.b,ao);this.emit.push(emission);
       }
     }
     g.dispose();geometry.dispose();
@@ -87,5 +91,22 @@ export function stripedTank() {
     const a=row*sides+i,b=row*sides+(i+1)%sides;ids.push(a,b,a+sides,b,b+sides,a+sides);
   }
   for(let i=1;i<sides-1;i++) ids.push(0,i+1,i,30,30+i,30+i+1);
+  return geometry(pts,ids);
+}
+
+/** Star-shaped saw plate. A center fan keeps each tooth triangulated inside the outline. */
+export function sawPlate(radius,depth,teeth=10) {
+  const pts=[],ids=[],n=teeth*2;
+  for(const z of [-depth/2,depth/2]) {
+    pts.push(0,0,z);
+    for(let i=0;i<n;i++) {
+      const a=i/n*Math.PI*2,r=radius*(i%2?.86:1);
+      pts.push(Math.cos(a)*r,Math.sin(a)*r,z);
+    }
+  }
+  for(let i=0;i<n;i++) {
+    const a=1+i,b=1+(i+1)%n,c=a+n+1,d=b+n+1;
+    ids.push(0,b,a,n+1,c,d,a,b,c,b,d,c);
+  }
   return geometry(pts,ids);
 }

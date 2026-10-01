@@ -1,0 +1,65 @@
+{
+  "name": "hillside_mine",
+  "triangles": 466,
+  "vertices": 1398,
+  "bounds": {
+    "min": [
+      -0.2143448144197464,
+      0,
+      -0.23166242241859436
+    ],
+    "max": [
+      0.2143448144197464,
+      0.39563217759132385,
+      0.23166242241859436
+    ]
+  },
+  "radius": 0.2700000012255052,
+  "authoredScale": 0.9895607147312586,
+  "groups": {
+    "outcrop": 60,
+    "portal": 120,
+    "lantern": 68,
+    "cart": 202,
+    "loose-rocks": 16
+  },
+  "regions": {
+    "block": {
+      "hex": "#B8B2A7",
+      "triangles": 36
+    },
+    "rockDark": {
+      "hex": "#8F8A82",
+      "triangles": 60
+    },
+    "grassCap": {
+      "hex": "#6E8F4E",
+      "triangles": 4
+    },
+    "tunnel": {
+      "hex": "#2E2A25",
+      "triangles": 14
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 132
+    },
+    "iron": {
+      "hex": "#4E5352",
+      "triangles": 184
+    },
+    "stone": {
+      "hex": "#9A9590",
+      "triangles": 24
+    },
+    "amber": {
+      "hex": "#F5C26B",
+      "triangles": 12
+    }
+  },
+  "bytes": 65660,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; float _EMIT"
+}

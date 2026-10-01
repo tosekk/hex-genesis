@@ -1,0 +1,76 @@
+{
+  "name": "sawmill",
+  "triangles": 594,
+  "vertices": 1782,
+  "bounds": {
+    "min": [
+      -0.21825000643730164,
+      0,
+      -0.15625
+    ],
+    "max": [
+      0.21825000643730164,
+      0.40950000286102295,
+      0.15625
+    ]
+  },
+  "radius": 0.26841596042315036,
+  "authoredScale": 1,
+  "groups": {
+    "shed": 128,
+    "roof": 60,
+    "waterwheel": 156,
+    "chute": 36,
+    "saw": 86,
+    "carriage": 36,
+    "log": 32,
+    "planks": 60
+  },
+  "regions": {
+    "stone": {
+      "hex": "#9A9590",
+      "triangles": 60
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 228
+    },
+    "iron": {
+      "hex": "#4E5352",
+      "triangles": 38
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 26
+    },
+    "roofLight": {
+      "hex": "#6F8F7A",
+      "triangles": 10
+    },
+    "wheel": {
+      "hex": "#7A4E33",
+      "triangles": 84
+    },
+    "flow": {
+      "hex": "#7FD3D0",
+      "triangles": 24
+    },
+    "blade": {
+      "hex": "#C8C8C8",
+      "triangles": 80
+    },
+    "cut": {
+      "hex": "#E2C9A0",
+      "triangles": 8
+    },
+    "plank": {
+      "hex": "#EAD9B5",
+      "triangles": 36
+    }
+  },
+  "bytes": 83292,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; float _EMIT"
+}

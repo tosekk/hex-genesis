@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beam,profile,ring,transform} from './geometry.mjs';
-import {BuildingBuilder,PALETTE,prism,roofArc,screwFlight,stripedTank} from './geometry-buildings.mjs';
+import {BuildingBuilder,PALETTE,prism,roofArc,screwFlight,stripedTank,sawPlate} from './geometry-buildings.mjs';
 import {writeGLB} from './glb-writer.mjs';
 
 function toolkit() {
@@ -178,18 +178,189 @@ export function buildIceDrill() {
   return b.finish();
 }
 
-export const BUILDERS={lumber_camp:buildLumberCamp,quarry:buildQuarry,ice_drill:buildIceDrill};
-export function writeBuildings() {
+export function buildHillsideMine() {
+  const {b,add,box,plane,rod}=toolkit();
+  // A broad rear outcrop, with smaller shoulders framing a dark tunnel face.
+  for(const[x,z,r,s]of[[0,-.090,.235,[.89,1,.65]],[-.133,-.007,.121,[.62,1,.73]],[.138,-.017,.140,[.65,1,.8]]]) {
+    add(new THREE.IcosahedronGeometry(r,0),'block','outcrop',
+      {matrix:transform([x,r*.85065081,z],[0,.24,0],s),facet:n=>x!==0&&n.y>.55?'grassCap':n.y>.25?'block':'rockDark',ao:.95});
+  }
+  box([.143,.224,.017],[0,.119,.095],'tunnel','portal');
+  for(const x of [-.084,.084]) {
+    box([.034,.245,.045],[x,.1225,.117],'wood','portal');
+    box([.046,.036,.054],[x,.225,.117],'iron','portal');
+    box([.050,.031,.053],[x,.0155,.117],'stone','portal');
+  }
+  box([.220,.041,.052],[0,.246,.117],'wood','portal');
+  for(const sign of [-1,1])rod([[sign*.068,.204,.12],[sign*.03,.23,.12]],.009,'wood','portal');
+  // The lantern is the sole emissive object in this Forest building batch.
+  box([.023,.222,.023],[-.188,.111,.148],'wood','lantern');
+  box([.095,.018,.020],[-.151,.222,.148],'wood','lantern');
+  rod([[-.132,.219,.148],[-.132,.186,.148]],.004,'iron','lantern',3);
+  for(const y of [.143,.184])box([.039,.009,.034],[-.132,y,.148],'iron','lantern');
+  add(new THREE.BoxGeometry(.025,.033,.024),'amber','lantern',{matrix:transform([-.132,.164,.148]),emission:1});
+  // Stub rails, three wooden sleepers, loaded timber wagon with iron corner straps.
+  for(const z of [.106,.165,.226])box([.124,.009,.022],[0,.0045,z],'wood','cart');
+  for(const x of [-.042,.042])box([.009,.013,.172],[x,.013,.166],'iron','cart');
+  box([.101,.049,.078],[0,.063,.164],'wood','cart');
+  plane([.086,.064],[0,.0877,.164],'tunnel','cart',[-Math.PI/2,0,0]);
+  for(const x of [-.049,.049])box([.008,.055,.084],[x,.065,.164],'iron','cart');
+  for(const x of [-.055,.055])for(const z of [.14,.19])
+    add(profile([[-.006,.019],[.006,.019]],6),'iron','cart',{matrix:transform([x,.029,z],[0,0,Math.PI/2])});
+  for(const[x,z,r]of[[-.023,.157,.029],[.021,.173,.031],[.004,.14,.023]])
+    add(new THREE.OctahedronGeometry(r),'block','cart',{matrix:transform([x,.096,z]),facet:n=>n.y>.2?'block':'rockDark'});
+  for(const[x,z,r]of[[-.169,.181,.033],[.149,.176,.04]])
+    add(new THREE.OctahedronGeometry(r),'block','loose-rocks',{matrix:transform([x,r*.68,z],[0,.3,0],[1,.68,.8]),facet:n=>n.y>.2?'block':'rockDark'});
+  return b.finish();
+}
+
+export function buildSawmill() {
+  const {b,add,box,plane,rod}=toolkit();
+  for(const x of [-.105,.105])for(const z of [-.091,.091]) {
+    box([.042,.036,.042],[x,.018,z],'stone','shed');
+    box([.023,.252,.023],[x,.162,z],'wood','shed');
+    // Flat iron straps remain visible without spending geometry on hidden bracket backs.
+    plane([.028,.033],[x,.276,z+(z>0?.012:-.012)],'iron','shed',[0,z>0?0:Math.PI,0]);
+  }
+  for(const z of [-.091,.091])box([.252,.025,.028],[0,.282,z],'wood','shed');
+  for(const sign of [-1,1]) {
+    add(prism([[0,.386],[sign*.150,.266],[sign*.150,.278],[0,.398]],.258),'sage','roof',
+      {facet:n=>n.y>.3&&sign===1?'roofLight':'sage'});
+    for(let i=0;i<3;i++) {
+      const z0=-.126+i*.085,z1=z0+.079;
+      const pts=[0,.3984,z0,sign*.149,.2792,z0,sign*.149,.2792,z1,0,.3984,z1];
+      add(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(pts,3))
+        .setIndex(sign>0?[0,2,1,0,3,2]:[0,1,2,0,2,3]),i%2?'sage':'roofLight','roof');
+    }
+  }
+  for(const z of [-.104,.104])box([.028,.025,.031],[0,.397,z],'wood','roof');
+  // One thick rim, three diametric spokes and six paddles make a clear water wheel.
+  const wheel=[-.174,.129,-.015];
+  add(ring(.098,.017,-.014,.014,6),'wheel','waterwheel',{matrix:transform(wheel,[0,0,Math.PI/2])});
+  for(let i=0;i<3;i++) {
+    const a=i*Math.PI/3,dy=Math.sin(a)*.086,dz=Math.cos(a)*.086;
+    rod([[wheel[0],wheel[1]-dy,wheel[2]-dz],[wheel[0],wheel[1]+dy,wheel[2]+dz]],.008,'wheel','waterwheel');
+  }
+  for(let i=0;i<6;i++) {
+    const a=i*Math.PI/3;
+    box([.047,.023,.021],[wheel[0],wheel[1]+Math.cos(a)*.091,wheel[2]+Math.sin(a)*.091],'wood','waterwheel',[a,0,0]);
+  }
+  // Cyan flow is ordinary vertex color, never a glow flag or transparent material.
+  box([.041,.125,.045],[-.193,.177,-.107],'stone','chute');
+  box([.029,.009,.069],[-.193,.244,-.081],'flow','chute');
+  box([.030,.083,.006],[-.193,.207,-.047],'flow','chute');
+  add(sawPlate(.071,.008,10),'blade','saw',{matrix:transform([.025,.125,.030])});
+  add(new THREE.CircleGeometry(.015,6),'iron','saw',{matrix:transform([.025,.125,.0343])});
+  for(const x of [-.056,.039])box([.010,.011,.242],[x,.012,.062],'iron','carriage');
+  box([.105,.022,.109],[-.012,.034,.086],'wood','carriage');
+  add(profile([[-.084,.031],[.084,.031]],6),'wood','log',
+    {matrix:transform([-.038,.078,.091],[Math.PI/2,0,0]),facet:n=>Math.abs(n.z)>.95?'cut':'wood'});
+  add(new THREE.RingGeometry(.020,.022,6),'wood','log',{matrix:transform([-.038,.078,.176])});
+  for(const z of [-.06,.084])box([.080,.015,.021],[.183,.0075,z],'wood','planks');
+  for(let i=0;i<3;i++)box([.064,.014,.175],[.182+(i%2)*.009,.023+i*.017,.012],'plank','planks');
+  return b.finish();
+}
+
+export function buildGatherersHut() {
+  const {b,add,box,plane,rod}=toolkit(),cx=.027,cz=-.034;
+  add(profile([[0,.130],[.029,.13]],10),'stone','hut',{matrix:transform([cx,0,cz]),ao:.92});
+  add(profile([[.029,.115],[.204,.115]],10),'wood','hut',{matrix:transform([cx,0,cz]),facet:(_,i)=>i<20&&Math.floor(i/2)%3===0?'seam':'wood'});
+  for(const[y,r,top]of[[.184,.155,.319],[.260,.095,.356]])
+    add(profile([[y,r],[y+.012,r],[top,.026]],8),'straw','thatch',
+      {matrix:transform([cx,0,cz]),facet:(_,i)=>i<16?'strawBand':Math.floor(i/2)%3===0?'strawBand':'straw'});
+  for(let i=0;i<5;i++) {
+    const a=i*Math.PI*2/5;
+    rod([[cx+Math.cos(a)*.011,.326,cz+Math.sin(a)*.011],[cx+Math.cos(a)*.032,.408+(i%2)*.012,cz+Math.sin(a)*.032]],.008,'wood','apex',3);
+  }
+  add(ring(.029,.007,.357,.371,6),'tie','apex',{matrix:transform([cx,0,cz])});
+  plane([.069,.124],[cx,.086,cz+.116],'tunnel','entrance');
+  for(const x of [-.044,.044])box([.018,.154,.023],[cx+x,.077,cz+.118],'wood','entrance');
+  box([.099,.016,.058],[cx,.172,cz+.135],'sage','entrance',[.18,0,0]);
+  box([.09,.024,.046],[cx,.012,cz+.149],'stone','entrance');
+  box([.105,.012,.039],[cx,.006,cz+.187],'stone','entrance');
+  // Drying rack: two A-frames, one crossbar, two herbs and a short cream berry string.
+  for(const z of [-.096,.032])for(const side of [-1,1])
+    rod([[-.168+side*.022,0,z],[-.168,.181,z]],.008,'wood','rack');
+  rod([[-.168,.184,-.117],[-.168,.184,.052]],.009,'wood','rack');
+  for(const z of [-.072,.014]) {
+    rod([[-.168,.184,z],[-.168,.155,z]],.003,'tie','herbs',3);
+    for(const[y,r]of[[.129,.024],[.099,.018]])add(new THREE.ConeGeometry(r,.060,5),'herb','herbs',
+      {matrix:transform([-.168,y,z],[Math.PI,0,0])});
+  }
+  for(const y of [.147,.128,.109])add(new THREE.OctahedronGeometry(.011),'cream','herbs',{matrix:transform([-.168,y,-.029])});
+  // Broad basket bands suggest weaving; berries and mushrooms break its top silhouette.
+  add(profile([[0,.042],[.04,.050],[.055,.054]],6),'basket','basket',{matrix:transform([-.117,0,.149]),facet:(_,i)=>i>=16&&i<32?'cut':'basket'});
+  for(const[x,z]of[[-.138,.145],[-.109,.167],[-.115,.136]])
+    add(new THREE.OctahedronGeometry(.015),'berry','basket',{matrix:transform([x,.060,z])});
+  const mushroom=(x,y,z,r,color,category)=>{
+    add(profile([[0,r*.23],[r*.8,r*.23]],4),'cream',category,{matrix:transform([x,y,z])});
+    add(new THREE.ConeGeometry(r,r*.7,5),'cream',category,{matrix:transform([x,y+r*1.1,z]),facet:n=>n.y>0?color:'cream'});
+  };
+  mushroom(-.092,.05,.145,.015,'cream','basket');mushroom(-.14,.05,.17,.013,'cream','basket');
+  mushroom(.143,0,.117,.027,'terra','mushrooms');mushroom(.118,0,.154,.020,'terra','mushrooms');
+  return b.finish();
+}
+
+export function buildFarm() {
+  const {b,add,box,plane,rod}=toolkit(),cx=-.048,cz=-.075;
+  const outline=[[-.105,.025],[.105,.025],[.105,.278],[.084,.333],[0,.395],[-.084,.333],[-.105,.278]];
+  add(prism(outline,.193),'wood','barn',{matrix:transform([cx,0,cz]),ao:.96});
+  for(const x of [-.095,.095])for(const z of [-.087,.087])box([.035,.038,.035],[cx+x,.019,cz+z],'stone','barn');
+  for(const y of [.073,.115,.157,.199]) {
+    plane([.210,.003],[cx,y,cz+.097],'seam','barn');
+    plane([.193,.003],[cx+.1053,y,cz],'seam','barn',[0,Math.PI/2,0]);
+    plane([.210,.003],[cx,y,cz-.097],'seam','barn',[0,Math.PI,0]);
+    plane([.193,.003],[cx-.1053,y,cz],'seam','barn',[0,-Math.PI/2,0]);
+  }
+  // Four separate roof slopes give the barn its characteristic gambrel silhouette.
+  const roof=[[-.125,.225],[-.084,.333],[0,.395],[.084,.333],[.125,.225]];
+  for(let i=0;i<4;i++) {
+    const[a,c]=[roof[i],roof[i+1]];
+    add(prism([a,c,[c[0],c[1]+.012],[a[0],a[1]+.012]],.235),i%2?'roofLight':'sage','roof',{matrix:transform([cx,0,cz])});
+    for(const z of [-.12,.12])rod([[cx+a[0],a[1]+.008,cz+z],[cx+c[0],c[1]+.008,cz+z]],.009,'cream','roof');
+  }
+  for(const z of [-.092,.092])box([.026,.024,.031],[cx,.412,cz+z],'wood','roof');
+  plane([.082,.13],[cx,.092,cz+.098],'seam','door');
+  for(const x of [-.044,.044])plane([.009,.14],[cx+x,.096,cz+.099],'cream','door');
+  plane([.096,.009],[cx,.166,cz+.099],'cream','door');
+  rod([[cx-.037,.032,cz+.100],[cx+.037,.154,cz+.100]],.0045,'cream','door');
+  // The crossing braces are cream timber on the recessed plank door.
+  rod([[cx+.037,.032,cz+.101],[cx-.037,.154,cz+.101]],.0045,'cream','door');
+  plane([.047,.052],[cx,.28,cz+.097],'cream','window');plane([.034,.039],[cx,.28,cz+.098],'tunnel','window');
+  box([.117,.015,.194],[.12,.182,cz],'sage','hay-shelter',[0,0,-.18]);
+  for(const z of [-.151,.003])box([.015,.173,.015],[.165,.0865,z],'wood','hay-shelter');
+  for(const[x,y,z]of[[.096,.025,-.118],[.139,.025,-.063],[.095,.074,-.11]])
+    box([.043,.048,.047],[x,y,z],'hay','hay-shelter',undefined,.94);
+  // Three small tilled strips, not a ground plate: one wheat row and two sprout rows.
+  for(const x of [-.130,-.034,.043])box([.036,.009,.126],[x,.0045,.126],'soil','crops');
+  for(const z of [.078,.123,.168]) {
+    rod([[-.13,.01,z],[-.13,.06,z]],.003,'wheat','crops',3);
+    add(new THREE.OctahedronGeometry(.022),'wheat','crops',{matrix:transform([-.13,.060,z],[0,0,0],[.62,1.5,.46])});
+    for(const x of [-.034,.043])for(const sign of [-1,1])
+      add(new THREE.TetrahedronGeometry(.026),'herb','crops',{matrix:transform([x+sign*.007,.021,z],[0,0,sign*.5],[.48,1,.40])});
+  }
+  box([.013,.148,.013],[.142,.074,.137],'wood','scarecrow');
+  box([.043,.061,.024],[.142,.112,.137],'shirt','scarecrow');
+  box([.092,.018,.021],[.142,.13,.137],'shirt','scarecrow');
+  add(new THREE.OctahedronGeometry(.02),'hay','scarecrow',{matrix:transform([.142,.159,.137])});
+  add(profile([[.177,.033],[.183,.033],[.2,.018]],6),'hay','scarecrow',{matrix:transform([.142,0,.137])});
+  return b.finish();
+}
+
+export const BUILDERS={lumber_camp:buildLumberCamp,quarry:buildQuarry,ice_drill:buildIceDrill,hillside_mine:buildHillsideMine,sawmill:buildSawmill,gatherers_hut:buildGatherersHut,farm:buildFarm};
+export function writeBuildings(names=Object.keys(BUILDERS)) {
   const out=new URL('./out/',import.meta.url);mkdirSync(out,{recursive:true});const reports={};
-  for(const[name,build]of Object.entries(BUILDERS)) {
+  for(const name of names) {
+    const build=BUILDERS[name];if(!build)throw new Error(`Unknown building: ${name}`);
     const{geometry,regions,groups,authoredScale}=build(),binary=writeGLB(geometry,name),p=geometry.getAttribute('position');let radius=0;
     for(let i=0;i<p.count;i++) radius=Math.max(radius,Math.hypot(p.getX(i),p.getZ(i)));
     const report={name,triangles:geometry.index.count/3,vertices:p.count,bounds:{min:geometry.boundingBox.min.toArray(),max:geometry.boundingBox.max.toArray()},
       radius,authoredScale,groups,regions:Object.fromEntries(Object.entries(regions).map(([key,triangles])=>[key,{hex:PALETTE[key],triangles}])),
-      bytes:binary.length,materials:1,textures:0,front:'+Z',format:'GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; _EMIT=0'};
+      bytes:binary.length,materials:1,textures:0,front:'+Z',format:'GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; float _EMIT'};
+    if(report.triangles>600||radius>.28||report.bounds.max[1]>.5)throw new Error(`${name}: exceeds building limits (${report.triangles} triangles)`);
     writeFileSync(new URL(`${name}.glb`,out),binary);writeFileSync(new URL(`${name}.report.json`,out),JSON.stringify(report,null,2)+'\n');
     reports[name]=report;geometry.dispose();
   }
   console.log(JSON.stringify(reports,null,2));return reports;
 }
-if(process.argv[1]===fileURLToPath(import.meta.url)) writeBuildings();
+if(process.argv[1]===fileURLToPath(import.meta.url)) writeBuildings(process.argv.length>2?process.argv.slice(2):undefined);

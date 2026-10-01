@@ -1,0 +1,83 @@
+{
+  "name": "farm",
+  "triangles": 588,
+  "vertices": 1764,
+  "bounds": {
+    "min": [
+      -0.1834748238325119,
+      0,
+      -0.1951819807291031
+    ],
+    "max": [
+      0.1834748238325119,
+      0.42399999499320984,
+      0.1951819807291031
+    ]
+  },
+  "radius": 0.26787873484415897,
+  "authoredScale": 1,
+  "groups": {
+    "barn": 104,
+    "roof": 168,
+    "door": 32,
+    "window": 4,
+    "hay-shelter": 72,
+    "crops": 132,
+    "scarecrow": 76
+  },
+  "regions": {
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 84
+    },
+    "stone": {
+      "hex": "#9A9590",
+      "triangles": 48
+    },
+    "seam": {
+      "hex": "#6E4630",
+      "triangles": 34
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 36
+    },
+    "cream": {
+      "hex": "#E8DCC4",
+      "triangles": 128
+    },
+    "roofLight": {
+      "hex": "#6F8F7A",
+      "triangles": 24
+    },
+    "tunnel": {
+      "hex": "#2E2A25",
+      "triangles": 2
+    },
+    "hay": {
+      "hex": "#D9B65A",
+      "triangles": 76
+    },
+    "soil": {
+      "hex": "#6B4A33",
+      "triangles": 36
+    },
+    "wheat": {
+      "hex": "#D9B04A",
+      "triangles": 48
+    },
+    "herb": {
+      "hex": "#5F8A5A",
+      "triangles": 48
+    },
+    "shirt": {
+      "hex": "#C8664E",
+      "triangles": 24
+    }
+  },
+  "bytes": 82476,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; float _EMIT"
+}

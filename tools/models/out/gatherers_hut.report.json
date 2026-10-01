@@ -1,0 +1,92 @@
+{
+  "name": "gatherers_hut",
+  "triangles": 594,
+  "vertices": 1782,
+  "bounds": {
+    "min": [
+      -0.18290841579437256,
+      0,
+      -0.1880454123020172
+    ],
+    "max": [
+      0.18290841579437256,
+      0.42242369055747986,
+      0.1880454123020172
+    ]
+  },
+  "radius": 0.22710003575655408,
+  "authoredScale": 1,
+  "groups": {
+    "hut": 72,
+    "thatch": 88,
+    "apex": 88,
+    "entrance": 62,
+    "rack": 60,
+    "herbs": 80,
+    "basket": 100,
+    "mushrooms": 44
+  },
+  "regions": {
+    "stone": {
+      "hex": "#9A9590",
+      "triangles": 60
+    },
+    "seam": {
+      "hex": "#6E4630",
+      "triangles": 8
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 152
+    },
+    "strawBand": {
+      "hex": "#CBB57E",
+      "triangles": 52
+    },
+    "straw": {
+      "hex": "#E3CF9A",
+      "triangles": 36
+    },
+    "tie": {
+      "hex": "#D9C7A0",
+      "triangles": 64
+    },
+    "tunnel": {
+      "hex": "#2E2A25",
+      "triangles": 2
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 12
+    },
+    "herb": {
+      "hex": "#5F8A5A",
+      "triangles": 40
+    },
+    "cream": {
+      "hex": "#E8DCC4",
+      "triangles": 102
+    },
+    "basket": {
+      "hex": "#A06A3E",
+      "triangles": 16
+    },
+    "cut": {
+      "hex": "#E2C9A0",
+      "triangles": 16
+    },
+    "berry": {
+      "hex": "#C0443A",
+      "triangles": 24
+    },
+    "terra": {
+      "hex": "#D9826B",
+      "triangles": 10
+    }
+  },
+  "bytes": 83324,
+  "materials": 1,
+  "textures": 0,
+  "front": "+Z",
+  "format": "GLB 2.0; Y-up; bottom center; linear COLOR_0 RGB + AO alpha; float _EMIT"
+}
