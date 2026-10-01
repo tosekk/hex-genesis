@@ -4,7 +4,7 @@
 
 Applied exactly the ten requested cost maps. Yields, combos, thresholds, starting stock and every other configuration field match the previous config; independently verified against the archived round 6 config with only those ten substitutions. The new `config.test.ts` check enforces total raw base yield ≥ 75% of total cost; it rejects all ten old cost maps. R1–R4 pass. Historical observation regressions now replay the archived config rather than requiring current config to remain frozen.
 
-**Validation:** `npm test`: 462 passed, 12 skipped; typecheck passes. Then the unchanged balance harness measured **seeds 1–50 only**, exactly 150 runs across three policies; 28 harness tests pass, including deterministic replay. Archive: `tests/balance/designer-cost-fix.json`; full target table appended under “Designer urgent cost fix” in `tests/balance/REPORT.md`. No follow-up retuning or changes to another owner's files. Commit/push follows this status update.
+**Validation:** `npm test`: 462 passed, 12 skipped; typecheck passes. Then the unchanged balance harness measured **seeds 1–50 only**, exactly 150 runs across three policies; 28 harness tests pass, including deterministic replay. Archive: `tests/balance/designer-cost-fix.json`; full target table appended under “Designer urgent cost fix” in `tests/balance/REPORT.md`. No follow-up retuning or changes to another owner's files. **Committed `3156d5d` and pushed successfully to origin/main.** Ready for designer review.
 
 ## Historical MORNING SUMMARY — Night 2 (before designer cost fix)
 
