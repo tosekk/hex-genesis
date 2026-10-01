@@ -1,7 +1,7 @@
-## Default-style GLB — COMPLETE, 09:31
+## Default-style GLB — PUSHED, 09:31
 - Designer-authorized fix: ModelAssets is created in both styles. Existing Instances routing supplies default MeshStandardMaterial with vertexColors; illustrated fill/ink remains flag-only. Procedural geometry, colors, placement, and fallback are unchanged.
 - Verified the actual supplied src/assets/models/core_forest.glb through the real seed-7 session and BoardView scene construction: Reshuffle once → choose Forest → place first legal core → complete spread. GLB replaces fallback at the correct hex/pivot, keeps vertex colors, has no texture maps or default ink hulls, and survives board rebuild without changing state. WebGL drawing alone is mocked; no browser/screenshot claim.
-- Tests: 62 renderer tests pass, 1 skipped; typecheck and production build pass. Added real-asset default/illustrated integration and HTTP-404 fallback; generated tiny-GLB tests cover default buildings/three core biomes plus an empty asset manifest. Production emits core_forest-C68QXzcj.glb (207.80 kB). Commit/push receipt follows.
+- Tests: 62 renderer tests pass, 1 skipped; typecheck and production build pass. Added real-asset default/illustrated integration and HTTP-404 fallback; generated tiny-GLB tests cover default buildings/three core biomes plus an empty asset manifest. Production emits core_forest-C68QXzcj.glb (207.80 kB). Commit **ec4191f** pushed successfully to origin/main.
 - Designer QA: compare http://localhost:5173/?seed=7 with http://localhost:5173/?seed=7&style=illustrated; Reshuffle the opening offer once, choose Forest, select its core and place on a highlighted hex, then wait for the spread—both must show core_forest.glb, default with lit vertex colors and illustrated with stepped shading/ink. Missing GLBs retain the procedural crystal.
 
 ## Urgent HUD layout — PUSHED 09:14 (deadline 09:25)
@@ -28,6 +28,8 @@
 Only `sol` edits this file. Everyone else reads it.
 
 ## Current
+DONE — default-style GLB fix ec4191f pushed; real Forest asset/seed-7 tests, 62 renderer tests, typecheck/build pass; Designer QA above.
+
 DONE — urgent HUD layout ed899a3 pushed at 09:14; full npm test and typecheck pass; Designer QA above.
 
 DONE — Night 2 implementation and regression coverage complete. All feature/fix commits pushed to origin/main; morning handoff above. New looks remain behind their flags. Browser visual approval and fresh GPU FPS cannot be performed in this session and are explicitly pending designer QA.
