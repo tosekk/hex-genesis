@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Forest core • post-submission study</title>
+<style>body{margin:0;background:#f5f0e6;color:#3f4c3f;font:14px system-ui}canvas{display:block}aside{position:fixed;top:28px;left:30px;pointer-events:none}h1{font:500 26px Georgia;margin:0 0 10px}p{margin:5px 0}small{color:#777}nav{position:fixed;bottom:22px;left:30px}button{background:#f9f6ee;border:1px solid #b8b2a7;border-radius:6px;padding:9px 15px;margin-right:7px;color:#344f3e;cursor:pointer}</style></head><body>
+<aside><h1>Forest terraformer</h1><p>Procedural vertex-color study · post-submission only</p><small id="info">Loading local GLB through the production loader…</small></aside>
+<nav><button id="front">Front</button><button id="quarter">Three-quarter</button><button id="back">Back</button><button id="spin">Turntable</button><button id="ink">Ink on/off</button></nav>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { parseModel } from '/src/render/modelAssets.ts';
+import { createIllustratedMaterial, createInkMaterial } from '/src/render/materials.ts';
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(devicePixelRatio);renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);
+renderer.setClearColor('#f5f0e6');renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(32,innerWidth/innerHeight,.01,30);camera.position.set(.8,1.8,3.2);
+const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,.54,0);const fitDistance=()=>Math.max(1,1/camera.aspect);camera.position.sub(controls.target).multiplyScalar(fitDistance()).add(controls.target);controls.enableDamping=true;controls.minDistance=1.4;controls.maxDistance=14;
+const bytes=await(await fetch('./out/core_forest.glb')).arrayBuffer(),model=await parseModel(bytes,'core_forest');
+const fill=createIllustratedMaterial(),ink=createInkMaterial();ink.uniforms.viewport.value.set(innerWidth,innerHeight);ink.uniforms.inkWidth.value=.8;
+const group=new THREE.Group();scene.add(group);const hulls=[];
+for(const geometry of model.parts){group.add(new THREE.Mesh(geometry,fill));const hull=new THREE.Mesh(geometry,ink);group.add(hull);hulls.push(hull);}
+document.querySelector('#info').textContent=`${model.triangles} triangles · one material · no textures · real loader accepted`;
+const floor=new THREE.Mesh(new THREE.CircleGeometry(1.06,64),new THREE.MeshBasicMaterial({color:'#e8e4d8',side:THREE.DoubleSide}));floor.rotation.x=-Math.PI/2;floor.position.y=-.006;scene.add(floor);
+let spin=false;document.querySelector('#spin').onclick=()=>spin=!spin;document.querySelector('#ink').onclick=()=>hulls.forEach(h=>h.visible=!h.visible);
+for(const[id,pos]of[['front',[0,1.55,3.25]],['quarter',[1.65,1.9,2.8]],['back',[.2,1.55,-3.25]]])document.getElementById(id).onclick=()=>{spin=false;group.rotation.y=0;camera.position.set(...pos).sub(controls.target).multiplyScalar(fitDistance()).add(controls.target);controls.update();};
+addEventListener('resize',()=>{const previousFit=fitDistance();camera.aspect=innerWidth/innerHeight;camera.position.sub(controls.target).multiplyScalar(fitDistance()/previousFit).add(controls.target);camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);ink.uniforms.viewport.value.set(innerWidth,innerHeight);});
+renderer.setAnimationLoop(()=>{if(spin)group.rotation.y+=.004;controls.update();renderer.render(scene,camera);});
+window.modelPreview={renderer,scene,camera,group,model};
+</script></body></html>

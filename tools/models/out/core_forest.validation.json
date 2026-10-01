@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "fallbackReasons": [],
+  "triangles": 1496,
+  "parts": 1,
+  "normalizedBounds": {
+    "min": [
+      -0.7220339179039001,
+      0,
+      -0.7220339179039001
+    ],
+    "max": [
+      0.7220339179039001,
+      1.2000000476837158,
+      0.7220339179039001
+    ]
+  },
+  "normalizedRadius": 0.722033930523651,
+  "glowingVertices": 870,
+  "minAO": 0.800000011920929
+}

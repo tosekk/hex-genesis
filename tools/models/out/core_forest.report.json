@@ -1,0 +1,101 @@
+{
+  "triangles": 1496,
+  "vertices": 4488,
+  "bounds": {
+    "min": [
+      -0.7099999785423279,
+      0,
+      -0.7099999785423279
+    ],
+    "max": [
+      0.7099999785423279,
+      1.1799999475479126,
+      0.7099999785423279
+    ]
+  },
+  "radius": 0.7099999937494264,
+  "groups": {
+    "platform": 286,
+    "pillars": 128,
+    "pedestal": 180,
+    "capsule": 180,
+    "sapling": 148,
+    "petals-ribs": 256,
+    "hinges": 128,
+    "cap": 78,
+    "details": 112
+  },
+  "regions": {
+    "grass": {
+      "hex": "#819B61",
+      "triangles": 28
+    },
+    "trim": {
+      "hex": "#A8A196",
+      "triangles": 144
+    },
+    "cream": {
+      "hex": "#D8CFC0",
+      "triangles": 356
+    },
+    "terra": {
+      "hex": "#D9826B",
+      "triangles": 70
+    },
+    "stair": {
+      "hex": "#8E8E8C",
+      "triangles": 112
+    },
+    "sageDark": {
+      "hex": "#496457",
+      "triangles": 56
+    },
+    "glow": {
+      "hex": "#7BE0A8",
+      "triangles": 110
+    },
+    "sage": {
+      "hex": "#5F7D6B",
+      "triangles": 60
+    },
+    "mint": {
+      "hex": "#B5D6C9",
+      "triangles": 180
+    },
+    "wood": {
+      "hex": "#8B5A3C",
+      "triangles": 136
+    },
+    "leafLight": {
+      "hex": "#96C481",
+      "triangles": 24
+    },
+    "leaf": {
+      "hex": "#6FAF6A",
+      "triangles": 72
+    },
+    "woodLight": {
+      "hex": "#A67853",
+      "triangles": 68
+    },
+    "sageLight": {
+      "hex": "#819B7E",
+      "triangles": 64
+    },
+    "creamLight": {
+      "hex": "#EAE0CF",
+      "triangles": 16
+    }
+  },
+  "format": "GLB 2.0; Y-up; bottom center; 1 unit = 1 hex radius",
+  "front": "+Z",
+  "materials": 1,
+  "textures": 0,
+  "attributes": [
+    "POSITION",
+    "NORMAL",
+    "COLOR_0 (linear RGBA; alpha AO)",
+    "_EMIT (float)"
+  ],
+  "bytes": 207800
+}
