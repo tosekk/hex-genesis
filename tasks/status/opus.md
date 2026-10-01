@@ -2,9 +2,9 @@
 
 Only `opus` edits this file. Everyone else reads it.
 
-## MORNING SUMMARY (opus, night 2) — updated 04:20 GMT+5
+## MORNING SUMMARY (opus, night 2) — FINAL, 06:00 GMT+5
 
-**Ship candidate: `opus/night` @ `6fc9c4b`** = `main` `3b66b00` (incl. sol's payout-label fix, V18 and `?journal=paper` behind flags, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 461 passed / 0 failed (~30 s); package + verify OK. **Content sha256 `c9033ca29121769737d36f72cc54633991c948ade0390cf4aca9e30e7a37a2ce`, 5,269,370 bytes (5.03 MB), 68 files, 19 MP3s each once.** Headless-Chromium smoke of the default build in the itch frame (at `07a2985`): offer → core → spread, no exceptions, no crash note.
+**Ship candidate: `opus/night` @ `6fc9c4b`** = `main` `3b66b00` (incl. sol's payout-label fix, V18 and `?journal=paper` behind flags, astra's audit) + opus's crash note and soft-lock fix. All green: `npm test` 461 passed / 0 failed (~30 s); package + verify OK. **Content sha256 `c9033ca29121769737d36f72cc54633991c948ade0390cf4aca9e30e7a37a2ce`, 5,269,370 bytes (5.03 MB), 68 files, 19 MP3s each once.** Headless-Chromium smoke of the default build in the itch frame (at `07a2985`): offer → core → spread, no exceptions, no crash note. **No sol/astra commits after `3b66b00` (≈04:15 GMT+5); checked every 20 min until 06:00.**
 
 **Designer, locally:**
 ```bash
@@ -23,14 +23,15 @@ Upload `release/hex-genesis-<date>.zip` to itch as HTML, 1280×720, fullscreen b
 **Open risks:**
 - **`npm test` on your Mac:** sol's `src/render/shaderCheck.test.ts` runs only on macOS and calls `/usr/bin/clang` unguarded. Without Xcode Command Line Tools it fails with a clang error. It isn't a game bug; install the CLT or ignore that one test (P1-C → sol).
 - A spammer who fills the board still gets no loss screen (§42 vs §44, known): every such state has a real rebuild payout (astra's audit, 195/195 recoverable), so End Run is the exit. A HUD hint when "Slots left 0" would help (designer call).
-- The build's zip bytes differ by Node version; compare the content sha256.
+- The build's zip bytes differ by Node version; compare the content sha256. If the content hash differs, run `unzip -l` on both zips: a different file list means your `main` has commits that aren't in `opus/night`.
+- Flag-only work (`?style=illustrated`, `?journal=paper`) isn't approved for default. Try it in the browser; the perf notes are in Bugs routed.
 
 **Needs a designer decision:** v5 target d (stock pressure) is still missed (worst 108.83×, T7 stone); astra's v5 result has the options. The itch page `[CHECK]`s (jam name/tag, your name, cover and screenshots, browsers tested).
 
 > **RELEASE READY at `6fc9c4b`** (`opus/night`: `main` `3b66b00` + opus `168c4c5` crash note + `07a2985` soft-lock fix; later status-only commits change no build input). `npm test`: 461 passed, 0 failed. `npm run package` + `verify-zip`: 68 files, 19 MP3s each once, index.html at root, relative URLs, no `src/`. **Size 5,269,370 bytes (5.03 MB). Content sha256 `c9033ca29121769737d36f72cc54633991c948ade0390cf4aca9e30e7a37a2ce`.** zip sha256 here `adc960e7…d5312f43` (Node 22.22.0). Previous good: `07a2985` (content `63b103de…`).
 
 ## Current
-**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock ✅ `07a2985` (audit: 0 missed dead states; fixed 2 over-declarations its fixtures exposed) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work: V18 + `?journal=paper` reviewed (notes in Bugs routed) · 6 morning summary by 06:15.
+**Night 2 (unattended, until 06:15 GMT+5).** Steps: 1 re-review ✅ · 2 release gate ✅ (above) · 3 soft-lock ✅ `07a2985` (audit: 0 missed dead states; fixed 2 over-declarations its fixtures exposed) · 4 production crash note ✅ `168c4c5` (tested + checked in the itch frame) · 5 sol's flagged work: V18 + `?journal=paper` reviewed (notes in Bugs routed) · 6 morning summary ✅ (final at 06:00 GMT+5). **IDLE: night 2 done.**
 
 ## Done
 <!-- - <task id> — <one line> — <commit hash> -->
