@@ -1,6 +1,6 @@
 # Astra-2 — Lumber camp, quarry and ice drill
 
-VALIDATED AND PROMOTED — scoped commit/push pending. Designer-authorized building assets only. New building tooling/output and the three validated shipping GLBs are the complete write scope.
+COMPLETE — validated, promoted and committed in **1e5cc6c** (`[astra-2] models: add lumber camp quarry and ice drill`). This status update accompanies the requested push to `origin/main`. Designer-authorized building assets only. New building tooling/output and the three validated shipping GLBs are the complete write scope.
 
 ## Decisions
 
