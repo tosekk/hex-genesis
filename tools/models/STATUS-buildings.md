@@ -1,6 +1,6 @@
 # Astra-2 — Lumber camp, quarry and ice drill
 
-LUMBER CAMP REVISION VALIDATED AND PROMOTED — commit/push pending. Restored the designer-requested reference yard and architecture. Earlier commits: initial buildings **1e5cc6c**, corrected ice drill **2014d47**. Only owned tooling/status/output and `src/assets/models/lumber_camp.glb` change in this revision.
+LUMBER CAMP REVISION COMPLETE — validated and promoted in **76ed78a** (`[astra-2] models: restore lumber camp reference details`); this status update accompanies the requested push to `origin/main`. Restored the designer-requested reference yard and architecture. Earlier commits: initial buildings **1e5cc6c**, corrected ice drill **2014d47**. Only owned tooling/status/output and `src/assets/models/lumber_camp.glb` change in this revision.
 
 ## Decisions
 
