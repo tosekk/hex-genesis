@@ -1,0 +1,99 @@
+{
+  "triangles": 1488,
+  "vertices": 4464,
+  "bounds": {
+    "min": [
+      -0.6899999976158142,
+      0,
+      -0.6899999976158142
+    ],
+    "max": [
+      0.6899999976158142,
+      1.1890000104904175,
+      0.6899999976158142
+    ]
+  },
+  "radius": 0.6900000075787034,
+  "groups": {
+    "snow-ice": 280,
+    "platform": 168,
+    "stairs": 120,
+    "pillars": 104,
+    "plaque": 32,
+    "pedestal": 128,
+    "crystal": 44,
+    "tower": 208,
+    "pipes": 192,
+    "collars": 180,
+    "spire": 32
+  },
+  "regions": {
+    "snow": {
+      "hex": "#F2F5F7",
+      "triangles": 158
+    },
+    "stone": {
+      "hex": "#AAA69D",
+      "triangles": 16
+    },
+    "cream": {
+      "hex": "#D8CFC0",
+      "triangles": 394
+    },
+    "creamLight": {
+      "hex": "#EAE0CF",
+      "triangles": 46
+    },
+    "copper": {
+      "hex": "#C8664E",
+      "triangles": 98
+    },
+    "grey": {
+      "hex": "#7E8282",
+      "triangles": 72
+    },
+    "slate": {
+      "hex": "#4E5352",
+      "triangles": 352
+    },
+    "mint": {
+      "hex": "#8FE3C4",
+      "triangles": 58
+    },
+    "iceLight": {
+      "hex": "#CFE2EE",
+      "triangles": 73
+    },
+    "slateLight": {
+      "hex": "#68706D",
+      "triangles": 16
+    },
+    "crystalLight": {
+      "hex": "#D6F5E8",
+      "triangles": 30
+    },
+    "crystal": {
+      "hex": "#A8E6CF",
+      "triangles": 46
+    },
+    "pipe": {
+      "hex": "#5E7F78",
+      "triangles": 80
+    },
+    "ice": {
+      "hex": "#A9C8DD",
+      "triangles": 49
+    }
+  },
+  "format": "GLB 2.0; Y-up; bottom center; 1 unit = 1 hex radius",
+  "front": "+Z",
+  "materials": 1,
+  "textures": 0,
+  "attributes": [
+    "POSITION",
+    "NORMAL",
+    "COLOR_0 (linear RGBA; alpha AO)",
+    "_EMIT (float)"
+  ],
+  "bytes": 206696
+}

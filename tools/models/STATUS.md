@@ -1,3 +1,63 @@
+# Astra — Arctic core result
+
+**COMPLETE.** Generated `out/core_arctic.glb` and copied it byte-for-byte to the explicitly authorized `src/assets/models/core_arctic.glb`. Arctic helpers, tests and preview are isolated under `tools/models/`; shared `geometry.mjs` and `glb-writer.mjs` remain unchanged. The parallel model session's files were not edited or staged.
+
+- **1,488 triangles**, 4,464 split vertices, **206,696 bytes**. One static mesh, one white opaque material, no textures, animations, tile layers or modeled outlines.
+- Authored bounds: **min (-0.690, 0, -0.690), max (+0.690, 1.189, +0.690)**. Radius **0.690**, bottom-center pivot at y=0, Y-up, +Z front. All authored limits pass before normalization.
+- **Sol's real loader ACCEPTED, no fallback reasons**: `inspectGLB → GLTFLoader → normalizeModel → ModelAssets`. Normalized bounds: min (-0.696384, 0, -0.696384), max (+0.696384, 1.200000, +0.696384); radius 0.696384. The loader uniformly scales height to 1.2; floating-point height is 1.200000048.
+- Colors exist only in linear RGB `COLOR_0`, with AO in alpha (minimum 0.86). Float `_EMIT` is 0 or 1: **402 glowing vertices**, including the central crystal, spire, pillar/pedestal/clamp/collar slits.
+- **Six scoped tests pass**: three Arctic checks (exact promoted copy, deterministic authored GLB/format/geometry limits, actual-loader acceptance), plus all three existing Forest regression checks. Forest output remains byte-identical.
+- Visual check in the browser through Sol's actual illustrated fill/ink shaders: front and back checked; tapered four-strut silhouette, bright central crystal/spire, stairs, front emblem, snow caps, ice and exposed coolant pipes visible. The preview floor is display-only.
+- SHA-256 for both generated and promoted GLBs: `586e0b03b19417c28270613b0d4001226f769aa890a19f50270ecd7c51b9de62`.
+
+## Arctic regeneration and preview
+
+```sh
+node tools/models/build-core-arctic.mjs
+cp tools/models/out/core_arctic.glb src/assets/models/core_arctic.glb
+npx vitest run --config tools/models/vitest.config.mjs tools/models/core-arctic.test.ts tools/models/core-forest.test.ts
+npx vite --config tools/models/vite.config.mjs
+# Open http://127.0.0.1:4198/tools/models/preview-arctic.html
+```
+
+The generator prints its triangle count/bounds and writes `out/core_arctic.report.json`. The loader test writes `out/core_arctic.validation.json`. The preview has front, three-quarter, back, turntable and ink controls and links to the existing Forest entry.
+
+## Arctic details and decisions
+
+- Thin octagonal snow rim y=0–0.012 only; stepped octagonal cream platform with terracotta ring; paired three-step grey staircases and sloped cream walls.
+- Four slate ring posts with mint slits and faceted snow caps; a separate front plaque post with slit and terracotta hexagonal emblem; four edge ice chunks.
+- Cream octagonal central drum, terracotta seat, opaque glowing hexagonal crystal, four tapered cream struts with two slate clamps each, snow ledges and four downward icicles.
+- Four swept square-section teal coolant pipes with dark elbow sections are offset between the struts so their bends remain visible. Cream and slate collars narrow toward the small mint crystal spire.
+- Budget reduction preserves all requested features: square pipe sections, simpler snow-cap bevels, hexagonal cream top collars, four icicles, and omitted concealed snow-ledger bottom faces. Explicit concept colors take precedence over the generic 4–6-color recommendation.
+- Arctic-only `ArcticModelBuilder` supplies its palette without mutating the shared helpers or Forest palette. No packages, production code, loader rules or render materials changed.
+
+| Arctic color region | Source sRGB hex |
+|---|---|
+| Cream / light facets / stone trim | #D8CFC0 / #EAE0CF / #AAA69D |
+| Terracotta / stair grey | #C8664E / #7E8282 |
+| Dark slate / lighter housing | #4E5352 / #68706D |
+| Snow / ice / pale ice facets | #F2F5F7 / #A9C8DD / #CFE2EE |
+| Mint slits / crystal / lighter crystal | #8FE3C4 / #A8E6CF / #D6F5E8 |
+| Teal coolant pipes | #5E7F78 |
+
+| Arctic group | Triangles |
+|---|---:|
+| Snow, ice and icicles | 280 |
+| Platform | 168 |
+| Stairs | 120 |
+| Pillars | 104 |
+| Front plaque | 32 |
+| Pedestal | 128 |
+| Central crystal | 44 |
+| Tower and clamps | 208 |
+| Coolant pipes | 192 |
+| Top collars | 180 |
+| Spire | 32 |
+
+The unrelated `.gitignore` change is outside this task and remains untouched. The Forest section below records its earlier, separate promotion authorization; Arctic promotion is authorized by the current designer request.
+
+---
+
 # Astra — post-submission Forest core
 
 **COMPLETE — designer confirmed the jam build has been submitted and authorized committing the model.** Tooling remains under `tools/models/`. The sole authorized promotion outside that folder is the byte-identical `src/assets/models/core_forest.glb`.
